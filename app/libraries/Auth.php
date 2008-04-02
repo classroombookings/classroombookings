@@ -29,18 +29,22 @@ class Auth{
 	/**
 	 * Check to see if our user (belonging to a group) can access this action
 	 */
-	function check($action, $group_id = NULL){
+	function check($action){
 		// Get user's group_id. If empty, they're anonymous.
 		$group_id = $this->CI->session->userdata('group_id');
 		$group_id = ($group_id === FALSE) ? 0 : $group_id;
 		
+		// Permissions that the user is allowed to access (out in sessdata in the hook)
+		$permissions = $this->CI->session->userdata('permissions');
+		
 		// Get the permission action ID
-		$action_id = $this->get_permission_id($action);
+		$action_id = $this->get_permission_id_by_action($action);
 		
-		// Now we got a group ID and an action ID, we need to see if we can find these in the DB table
-		
-		$sql = 'SELECT permission_id FROM permissions2groups
-				WHERE group_id = ?';
+		// Now we have group and action_id they're trying to access.
+		// Got to check if this ID is in the array of permission_ids that they can access
+		if(!in_array($action_id, $permissions0)){
+			redirect("welcome");
+		}
 		
 	}
 	
@@ -151,7 +155,7 @@ class Auth{
 						WHERE cookiekey = ? 
 						LIMIT 1';
 				// Run query
-				$query = $this->db->query($sql, array($key));
+				$query = $this->CI->db->query($sql, array($key));
 				
 				// Check to see how many rows we got from selecting via the cookie key
 				if($query->num_rows() == 1){
@@ -232,7 +236,7 @@ class Auth{
 					LIMIT 1';
 			
 			// Run query
-			$query = $this->db->query($sql, array($username, $password));
+			$query = $this->CI->db->query($sql, array($username, $password));
 			
 			// Number of rows returned from the query - 1 row success, 0 rows failure
 			$rows = $query->num_rows();
@@ -248,7 +252,7 @@ class Auth{
 				$sql = 'UPDATE userinfo 
 						SET lastlogin = ? 
 						WHERE uid = ?';
-				$this->db->query($sql, array($timestamp, $userinfo->uid));
+				$this->CI->db->query($sql, array($timestamp, $userinfo->uid));
 				
 				// Create session data array
 				$sessdata['user_id']		= $userinfo->user_id;
@@ -283,7 +287,7 @@ class Auth{
 					$sql = 'UPDATE userinfo 
 							SET cookiekey = ? 
 							WHERE uid = ?';
-					$query = $this->db->query($sql, array($cookiekey, $userinfo->uid));
+					$query = $this->CI->db->query($sql, array($cookiekey, $userinfo->uid));
 				}
 				
 				// Return value
@@ -347,14 +351,63 @@ class Auth{
 	/**
 	 * Get a permission_id by it's name
 	 */
-	function get_permission_id($action){
+	function get_permission_id_by_action($action){
 		if($action == NULL){ return FALSE; }
 		$sql = 'SELECT permission_id FROM permissions WHERE action = ? LIMIT 1';
-		$query = $this->db->query($sql, array($action));
+		$query = $this->CI->db->query($sql, array($action));
 		
 		if($query->num_rows() == 1){
 			$row = $query->row();
 			return $row->action;
+		} else {
+			return FALSE;
+		}
+	}
+	
+	
+	
+	
+	/**
+	 * Get permission IDs for group
+	 *
+	 * @param int ID of group to find
+	 * @return array Permission IDs that the group is allowed to access
+	 */
+	function get_group_permission_ids($group_id){
+		if(!is_numeric($group_id)){ return FALSE; }
+		
+		// Get all permission IDs
+		$sql = 'SELECT permission_id FROM permissions2groups WHERE group_id = ?';
+		$query = $this->CI->db->query($sql, array($group_id));
+		
+		if($query->num_rows() > 0){
+			// Put them in a simple 1D array
+			$permissions = array();
+			$result = $query->result();
+			foreach($result as $row){
+				$permissions[] = $row->permission_id;
+			}
+			return $permissions;
+		} else {
+			return FALSE;
+		}
+	}
+	
+	
+	
+	
+	
+	function get_permission_by_url($url){
+		if($url == NULL){ return FALSE; }
+		
+		$sql = 'SELECT permission_id, action, menuname, `admin-title`
+				FROM permissions WHERE url = ? LIMIT 1';
+		$query = $this->CI->db->query($sql, array($url));
+		
+		if($query->num_rows() == 1){
+			// OK!
+			$row = $query->row();
+			return $row;
 		} else {
 			return FALSE;
 		}
@@ -371,7 +424,7 @@ class Auth{
 	 */
 	function userexists($username){
 		$sql = 'SELECT uid FROM userinfo WHERE username = ? LIMIT 1';
-		$query = $this->db->query($sql, array($username));
+		$query = $this->CI->db->query($sql, array($username));
 		return ($query->num_rows() == 1) ? TRUE : FALSE;
 	}
 	

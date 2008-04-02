@@ -32,6 +32,7 @@ class Bookings extends Controller {
 	
 	
 	function index(){
+		$this->auth->check('BKG_VIEW');
 		$tpl['title'] = 'Bookings';
 		$tpl['pagetitle'] = $tpl['title'];
 		$tpl['body'] = var_export($this->session->userdata('permissions'));

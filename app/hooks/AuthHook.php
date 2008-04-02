@@ -52,30 +52,49 @@ class AuthHook{
 	
 	function check($action_name = NULL){
 	
-		$sessdata['permissions'] = array(1,5,6,7,9);
+		#$sessdata['permissions'] = array(1,5,6,7,9);
 		
-		// Get our user's group_id. If empty, they're anonymous.
+		// Get username. We need this to find out if user is logged in or not.
+		$username = $this->CI->session->userdata('username');
+		
+		// Get our user's group_id fro msession. If empty, they're anonymous (Group ID 0)
 		$group_id = $this->CI->session->userdata('group_id');
-		$group_id = ($group_id === FALSE) ? 0 : $group_id;
+		$sessdata['group_id'] = ($group_id === FALSE) ? 0 : $group_id;
 		
-		$sessdata['group_id'] = $group_id;
+		// Ok, now we need to get the permissions allowed for this group (eg. what the user IS allowed to do)
+		$permissions = $this->CI->session->userdata('permissions');
+		if(is_array($permissions) && !empty($permissions)){
+			// Permissions in session is OK!
+		} else {
+			$sessdata['permissions'] = $this->CI->auth->get_group_permission_ids($group_id);
+		}
 		
-		$this->CI->session->set_userdata($sessdata);
+		// Now put the required stuff in the session
+		if(isset($sessdata) && is_array($sessdata)){
+			$this->CI->session->set_userdata($sessdata);
+		}
 		
 		// Check for current action. If not, we need to find it!
-		if($action_name == NULL){
-		
-			// no action, we need to find it from the URI
-			#$request = $this->CI->uri->uri_string();
-			#$request = preg_replace('/^\/|\/$/e', '', $request);
+		/* if($action_name == NULL){
 			
+			// Get it from the URI
 			$request = implode('/', $this->CI->uri->rsegments);
 			$request = str_replace('/index', '', $request);
-			#die($request);
-			#die(var_dump($this->CI));
-			#$action_name = $this->CI->auth->get_permission_name_by_uri($request);
 			
-		}
+			$segs = array();
+			$ls = "";
+			foreach($this->CI->uri->rsegments as $segment){
+				$thisone = "$ls$segment";
+				$segs[] = $thisone;
+				$ls = "$thisone/";
+			}
+	
+			
+			#die(var_dump($this->CI));
+			$permission = $this->CI->auth->get_permission_by_url($segs);
+			die(var_export($permission));
+			
+		} */
 		
 		// OK, now go to the Auth library and check if the group has permissions on the action
 		#$return = $this->CI->auth->check($action_name, $group);
