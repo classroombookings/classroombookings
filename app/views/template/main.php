@@ -14,7 +14,7 @@ if(!isset($title)){
 	<link rel="icon" type="image/x-icon" href="favicon.ico" />
 	<link rel="stylesheet" type="text/css" media="screen" href="css/layout.css" />
 	<link rel="stylesheet" type="text/css" media="screen" href="css/ui.css" />
-	<link rel="stylesheet" type="text/css" media="print" href="css/print.css" />
+	<!-- <link rel="stylesheet" type="text/css" media="print" href="css/print.css" /> -->
 </head>
 <body>
 	

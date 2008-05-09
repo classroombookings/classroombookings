@@ -348,6 +348,44 @@ class Auth{
 	
 	
 	
+	function ldap_auth($username, $password){
+		//$servername = "ldap://bbs-svr-001";  //IP/Name to the LDAP server
+		//$ldaprdn  = 'cn='.$username.',ou=teaching Staff,ou=bbs,ou=establishments,dc=bbarrington,dc=internal';
+		
+		$ldapconn = ldap_connect($servername);
+
+		// Check connection first
+		if($ldapconn){
+		
+			$ldapauth = FALSE;
+			
+			// Connection OK - loop through our possible DNs
+			foreach($ldaprdns as $rdn){
+				$ldapbind = ldap_bind($ldapconn, $rdn, $pass);// may have multiple bind statements depending on the tree structure of the LDAP OU
+				if ($ldapbind){
+					$ldapauth = TRUE;
+				}
+			}
+			
+			if($ldapauth == TRUE){
+				$ret = TRUE;
+			} else {
+				$ret = FALSE;
+				$this->err = "LDAP server rejected username and/or password";
+			}
+
+		} else {
+			$ret = FALSE;
+			$this->err = "LDAP connection failed";
+		}
+		
+		return $ret;
+		
+	}
+	
+	
+	
+	
 	/**
 	 * Get a permission_id by it's name
 	 */
