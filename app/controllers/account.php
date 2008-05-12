@@ -42,6 +42,7 @@ class Account extends Controller {
 	function login(){
 		$tpl['title'] = 'Login';
 		$tpl['pagetitle'] = $tpl['title'];
+		$tpl['body'] = $this->load->view('account/login', NULL, TRUE);
 		$this->load->view($this->tpl, $tpl);
 	}
 	

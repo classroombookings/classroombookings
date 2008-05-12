@@ -9,6 +9,7 @@ class Auth{
 	var $lasterr;
 	var $cookiesalt;
 	var $levels;
+	var $settings;
 
 
 	function Auth(){
@@ -20,6 +21,10 @@ class Auth{
 		
 		// Cookie salt for hash - can be any text string
 		$this->cookiesalt = 'CL455R00Mb00k1ng5';
+		
+		// Get LDAP settings
+		#$this->CI->load->library('settings');	//
+		$this->settings['ldap'] = $this->CI->settings->getldap();
 
 	}
 	
@@ -43,7 +48,7 @@ class Auth{
 		// Now we have group and action_id they're trying to access.
 		// Got to check if this ID is in the array of permission_ids that they can access
 		if(!in_array($action_id, $permissions0)){
-			redirect("welcome");
+			redirect("account/login");
 		}
 		
 	}

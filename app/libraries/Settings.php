@@ -17,14 +17,14 @@ class Settings{
 		$result1 = array();
 		$result2 = array();
 		
-		$sql = 'SELECT * FROM settings-ldap LIMIT 1';
+		$sql = 'SELECT * FROM `settings-ldap`LIMIT 1';
 		$query1 = $this->CI->db->query($sql);
 		
 		if($query1->num_rows() == 1){
 			$result1 = $query1->result_array();
 		}
 
-		$sql = 'SELECT * FROM settings-ldap-rdns';
+		$sql = 'SELECT * FROM `settings-ldap-rdns`';
 		$query2 = $this->CI->db->query($sql);
 		
 		if($query2->num_rows() > 0){
@@ -33,6 +33,8 @@ class Settings{
 			
 		$result['ldap'] = $result1;
 		$result['rnds'] = $result2;
+		
+		return $result;
 		
 	}
 
