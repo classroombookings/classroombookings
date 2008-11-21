@@ -17,13 +17,13 @@
 */
 
 
-class Settings extends Controller {
+class Configure extends Controller {
 
 
 	var $tpl;
 	
 
-	function Settings(){
+	function Configure(){
 		parent::Controller();
 		$this->tpl = $this->config->item('template');
 	}
@@ -32,7 +32,7 @@ class Settings extends Controller {
 	
 	
 	function index(){
-		$tpl['title'] = 'Settings';
+		$tpl['title'] = 'Configure';
 		$tpl['pagetitle'] = $tpl['title'];
 		$this->load->view($this->tpl, $tpl);
 	}

@@ -73,6 +73,8 @@ if(!isset($title)){
 				<h1><?php echo $pagetitle ?></h1>
 				<?php } ?>
 				
+
+				
 				<?php echo (isset($body)) ? $body : 'Nothing to display.'; ?>
 				
 				<!-- <p>

@@ -13,7 +13,7 @@ $t = 1;
 ?>
 
 
-<table class="form" width="100%" cellpadding="6" cellspacing="0" border="0">
+<table class="form" cellpadding="6" cellspacing="0" border="0">
 	<tr>
 		<td class="caption"><label for="username" class="r" accesskey="U"><u>U</u>sername</label></td>
 		<td class="field">

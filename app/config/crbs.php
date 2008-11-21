@@ -7,6 +7,6 @@ $config['base_url']	= "http://localhost/projects/crbs2/";
 $config['index_page'] = "index.php";
 
 // Template
-$config['template'] = 'template/main';
+$config['template'] = 'template/main2';
 
 ?>
