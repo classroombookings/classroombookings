@@ -26,16 +26,18 @@ class Bookings extends Controller {
 	function Bookings(){
 		parent::Controller();
 		$this->tpl = $this->config->item('template');
+		
 	}
 	
 	
 	
 	
 	function index(){
-		$this->auth->check('BKG_VIEW');
+	$this->output->enable_profiler(TRUE);
+		$this->auth->check('bookings/view');
 		$tpl['title'] = 'Bookings';
 		$tpl['pagetitle'] = $tpl['title'];
-		$tpl['body'] = var_export($this->session->userdata('permissions'));
+		$tpl['body'] = 'bookings';
 		#$tpl['sidebar'] = 'Side';
 		#$tpl['extra'] = 'extra';
 		$this->load->view($this->tpl, $tpl);

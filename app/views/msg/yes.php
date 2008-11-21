@@ -1,4 +1,4 @@
-<p class="msg yes">
+<div class="msg yes">
 <?php if(isset($title)){ echo '<strong>'.$title.'</strong><br />'; } ?>
 <?php echo $text; ?>
-</p>
+</div>

@@ -13,6 +13,14 @@ $t = 1;
 ?>
 
 
+<?php
+$foo = validation_errors();
+if($foo){
+	echo $this->msg->err('<ul>' . $foo . '</ul>', 'Form field validation error');
+}
+?>
+
+
 <table class="form" cellpadding="6" cellspacing="0" border="0">
 	<tr>
 		<td class="caption"><label for="username" class="r" accesskey="U"><u>U</u>sername</label></td>
@@ -23,8 +31,8 @@ $t = 1;
 				'accesskey' => 'U',
 				'name' => 'username',
 				'id' => 'username',
-				'size' => '20',
-				'maxlenght' => '20',
+				'size' => '30',
+				'maxlenght' => '30',
 				'tabindex' => $t,
 				'value' => $v_username,
 			));
@@ -41,12 +49,31 @@ $t = 1;
 			echo form_password(array(
 				'name' => 'password',
 				'id' => 'password',
-				'size' => '20',
-				'maxlength' => '20',
+				'size' => '30',
+				'maxlength' => '30',
 				'tabindex' => $t,
 			));
 			$t++;
 			?>
+		</td>
+	</tr>
+	
+	
+	<tr>
+		<td class="caption">&nbsp;</td>
+		<td class="field">
+			<label for="remember" class="check">
+			<?php
+				echo form_checkbox(array(
+				'name' => 'remember',
+				'id' => 'remember',
+				'value' => 'true',
+				'checked' => FALSE,
+				));
+				$t++;
+			?>
+			Remember me on this computer
+			</label>
 		</td>
 	</tr>
 	

@@ -42,17 +42,70 @@ class Account extends Controller {
 	function login(){
 		$tpl['title'] = 'Login';
 		$tpl['pagetitle'] = $tpl['title'];
-		$tpl['body'] = $this->load->view('account/login', NULL, TRUE);
+		if($this->auth->logged_in()){
+			$tpl['body'] = 'You are already logged in.';
+		} else {
+			$tpl['body'] = $this->load->view('account/login', NULL, TRUE);
+		}
 		$this->load->view($this->tpl, $tpl);
+	}
+	
+	
+	
+	
+	/*
+	 * Process login form
+	 */
+	function loginsubmit(){
+		// Validation rules for login form
+		$this->form_validation->set_rules('username', 'Username', 'required|max_length[30]');
+		$this->form_validation->set_rules('password', 'Password', 'required|max_length[30]');
+		$this->form_validation->set_error_delimiters('<li>', '</li>');
+		
+		// Check validation first
+		if ($this->form_validation->run() == FALSE){
+			// Failed validation - send back to login page to show errors
+			return $this->login();
+		} else {
+			// Get form values
+			$username = $this->input->post('username');
+			$password = $this->input->post('password');
+			
+			$login = $this->auth->login($username, $password, FALSE);
+			if($login == TRUE){
+			
+				// Login successful, going to page
+				$this->session->set_flashdata('flash', $this->msg->info($this->lang->line('AUTH_OK')));
+				redirect("account");
+			
+			} else {
+				
+				// Login failed
+				//print $this->msg->err($this->lang->line('AUTH_FAIL_USERPASS'));
+				$this->session->set_flashdata('flash', $this->msg->err($this->lang->line('AUTH_FAIL_USERPASS'), 'Authentication failure'));
+				redirect("account/login");
+				
+			}
+			
+		}
+		
 	}
 	
 	
 	
 
 	function logout(){
-		$tpl['title'] = 'Logout';
+		/*$tpl['title'] = 'Logout';
 		$tpl['pagetitle'] = $tpl['title'];
-		$this->load->view($this->tpl, $tpl);
+		$this->load->view($this->tpl, $tpl);*/
+		$logout = $this->auth->logout();
+		if($logout == TRUE){
+			$this->session->set_flashdata('flash', $this->msg->info($this->lang->line('AUTH_LOGOUT_OK')));
+			redirect("account/login");
+		} else {
+			$this->session->set_flashdata('flash', $this->msg->err($this->lang->line('AUTH_LOGOUT_FAIL')));
+			redirect("account/login");
+		}
 	}
 	
 	

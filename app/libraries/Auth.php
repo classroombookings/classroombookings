@@ -24,8 +24,71 @@ class Auth{
 		
 		// Get LDAP settings
 		#$this->CI->load->library('settings');	//
-		$this->settings['ldap'] = $this->CI->settings->getldap();
+		
+		#$this->settings['ldap'] = $this->CI->settings->getldap();
+		
+		
 
+	}
+	
+	
+	
+	
+	function check($action){
+		
+		// Get permission_id of the action
+		$p_id = $this->get_permission_id($action);
+		if($p_id == FALSE || $p_id == NULL){
+			$this->lasterr = sprintf($this->CI->lang->line('AUTH_CHECK_NO_PID'), $action);
+			$this->CI->msg->add('err', $this->lasterr);
+			redirect("welcome/error");
+		}
+		
+		//echo $p_id;
+		
+		// Get the user's group ID from the session
+		$g_id = $this->CI->session->userdata('group_id');
+		$g_id = ($g_id === FALSE) ? 0 : $g_id;
+		
+		//echo $g_id;
+		
+		// Query to select the exact permission available for this user
+		$sql = 'SELECT p_id FROM permissions2groups WHERE p_id = ? AND g_id = ? OR g_id = 0 LIMIT 1';
+		$query_pid = $this->CI->db->query($sql, array($p_id, $g_id));
+		
+		$sql = 'SELECT g_id FROM permissions2groups WHERE p_id = ?';
+		$query_gids = $this->CI->db->query($sql, array($p_id));
+		
+		if($query_gids->num_rows() > 0){
+			foreach($query_gids->result_array() as $g_id){
+				$g_ids[] = $g_id['g_id'];
+			}
+		}
+		
+		//echo $query->num_rows();
+		
+		// Return true if user has this permission assigned to their group
+		$check = ($query_pid->num_rows() == 1) ? TRUE : FALSE;
+		
+		
+		
+		if($check == FALSE){
+		
+			$uri = $this->CI->uri->uri_string();
+			$this->CI->session->set_userdata('uri', $uri);
+			
+			if($this->logged_in() == FALSE){
+				$this->lasterr = $this->CI->lang->line('AUTH_MUST_LOGIN');
+				$uri = 'account/login';
+			} else {
+				$this->lasterr = $this->CI->lang->line('AUTH_NO_PRIVS');
+				$uri = 'welcome/error';
+			}
+			
+			$this->CI->msg->add('err', $this->lasterr);
+			redirect($uri);
+		}
+		
 	}
 	
 	
@@ -34,7 +97,7 @@ class Auth{
 	/**
 	 * Check to see if our user (belonging to a group) can access this action
 	 */
-	function check($action){
+	/*function check($action){
 		// Get user's group_id. If empty, they're anonymous.
 		$group_id = $this->CI->session->userdata('group_id');
 		$group_id = ($group_id === FALSE) ? 0 : $group_id;
@@ -51,7 +114,7 @@ class Auth{
 			redirect("account/login");
 		}
 		
-	}
+	}*/
 	
 	
 	
@@ -228,16 +291,17 @@ class Auth{
 	
 		if($username != NULL && $password != NULL){
 		
-			// SHA1 password if not already
+			// SHA1 password if not already (passwords are <= 30chars, SHA1 is == 40chars)
 			if(strlen($password) != 40){
 				$password = sha1($password);
 			}
 			
 			// Query to pick the user
-			$sql = 'SELECT * FROM userinfo 
+			$sql = 'SELECT user_id, group_id, username, displayname AS display
+					FROM users
 					WHERE username = ? 
 					AND password = ? 
-					AND active = 1 
+					AND enabled = 1 
 					LIMIT 1';
 			
 			// Run query
@@ -254,15 +318,17 @@ class Auth{
 				
 				// Update the DB's last login time (now)..
 				$timestamp = mdate('%Y-%m-%d %H:%i:%s');
-				$sql = 'UPDATE userinfo 
+				$sql = 'UPDATE users 
 						SET lastlogin = ? 
-						WHERE uid = ?';
-				$this->CI->db->query($sql, array($timestamp, $userinfo->uid));
+						WHERE user_id = ?';
+				$this->CI->db->query($sql, array($timestamp, $userinfo->user_id));
 				
 				// Create session data array
 				$sessdata['user_id']		= $userinfo->user_id;
+				$sessdata['group_id']		= $userinfo->group_id;
 				$sessdata['username']		= $userinfo->username;
-				$sessdata['authlevel']		= $userinfo->authlevel;
+				$sessdata['display']		= ($userinfo->display == NULL) ? $userinfo->username : $userinfo->display;
+				//$sessdata['authlevel']		= $userinfo->authlevel;
 				
 				// Set session 
 				#$this->CI->session->set_userdata(array());
@@ -274,7 +340,7 @@ class Auth{
 					// Generate hash
 					$cookiekey = sha1(implode("", array(
 						$this->cookiesalt,
-						$userinfo->uid, 
+						$userinfo->user_id, 
 						$userinfo->username,
 						$timestamp,
 					)));
@@ -284,14 +350,14 @@ class Auth{
 					$cookie['name'] = 'key';
 					$cookie['value'] = $cookiekey;
 					set_cookie($cookie);
-					$cookie['name'] = 'uid';
-					$cookie['value'] = $userinfo->uid;
+					$cookie['name'] = 'user_id';
+					$cookie['value'] = $userinfo->user_id;
 					set_cookie($cookie);
 					
 					// Update DB table with the hash that we check on return visit
-					$sql = 'UPDATE userinfo 
+					$sql = 'UPDATE users 
 							SET cookiekey = ? 
-							WHERE uid = ?';
+							WHERE user_id = ?';
 					$query = $this->CI->db->query($sql, array($cookiekey, $userinfo->uid));
 				}
 				
@@ -331,23 +397,23 @@ class Auth{
 		
 		// Set session data to NULL (include all fields!)
 		$sessdata['user_id'] = NULL;
+		$sessdata['group_id'] = NULL;
 		$sessdata['username'] = NULL;
-		$sessdata['level'] = NULL;
+		$sessdata['display'] = NULL;
 		
 		// Set empty session data
-		$this->CI->session->set_userdata($sessdata);
+		$this->CI->session->unset_userdata($sessdata);
 		
 		// Destroy session
-		$this->CI->session->destroy();
+		$this->CI->session->sess_destroy();
 		
 		// Remove cookies too
-		delete_cookie("crbs_key");
-		delete_cookie("crbs_user_id");
+		delete_cookie("key");
+		delete_cookie("user_id");
 		
 		// Verify session has been destroyed by retrieving info 
-		$ret = ($this->CI->session->userdata('user_id') == FALSE) ? TRUE : FALSE;
+		return ($this->CI->session->userdata('user_id') == FALSE) ? TRUE : FALSE;
 		
-		return $ret;
 	}
 	
 	
@@ -394,16 +460,16 @@ class Auth{
 	/**
 	 * Get a permission_id by it's name
 	 */
-	function get_permission_id_by_action($action){
+	function get_permission_id($action){
 		if($action == NULL){ return FALSE; }
 		$sql = 'SELECT permission_id FROM permissions WHERE action = ? LIMIT 1';
 		$query = $this->CI->db->query($sql, array($action));
 		
 		if($query->num_rows() == 1){
 			$row = $query->row();
-			return $row->action;
+			return $row->permission_id;
 		} else {
-			return FALSE;
+			return NULL;
 		}
 	}
 	
@@ -416,7 +482,7 @@ class Auth{
 	 * @param int ID of group to find
 	 * @return array Permission IDs that the group is allowed to access
 	 */
-	function get_group_permission_ids($group_id){
+	/*function get_group_permission_ids($group_id){
 		if(!is_numeric($group_id)){ return FALSE; }
 		
 		// Get all permission IDs
@@ -434,13 +500,13 @@ class Auth{
 		} else {
 			return FALSE;
 		}
-	}
+	}*/
 	
 	
 	
 	
 	
-	function get_permission_by_url($url){
+	/*function get_permission_by_url($url){
 		if($url == NULL){ return FALSE; }
 		
 		$sql = 'SELECT permission_id, action, menuname, `admin-title`
@@ -454,7 +520,7 @@ class Auth{
 		} else {
 			return FALSE;
 		}
-	}
+	}*/
 	
 	
 	
@@ -484,6 +550,16 @@ class Auth{
 		$sql = 'SELECT uid FROM userinfo WHERE email = ? LIMIT 1';
 		$query = $this->dbuser->query($sql, array($email));
 		return ($query->num_rows() == 1) ? TRUE : FALSE;
+	}
+	
+	
+	
+	
+	/**
+	 * Return if user is logged in or not
+	 */
+	function logged_in(){
+		return ($this->CI->session->userdata('user_id') && $this->CI->session->userdata('username'));
 	}
 	
 	

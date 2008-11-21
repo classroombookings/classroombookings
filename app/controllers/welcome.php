@@ -32,8 +32,18 @@ class Welcome extends Controller {
 	
 	
 	function index(){
+		$this->auth->check('welcome');
 		$tpl['title'] = 'Welcome';
 		$tpl['body'] = $this->load->view('welcome/index', NULL, TRUE);
+		$this->load->view($this->tpl, $tpl);
+	}
+	
+	
+	
+	
+	function error(){
+		$tpl['title'] = 'An error occured';
+		$tpl['body'] = '';
 		$this->load->view($this->tpl, $tpl);
 	}
 	

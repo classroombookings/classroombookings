@@ -21,7 +21,7 @@ class Msg{
 			$data['text'] = $text;
 			$thismsg = $this->CI->load->view('msg/'.$type, $data, TRUE);
 			$this->msgs .= $thismsg . "\n";
-			$this->CI->session->set_flashdata('msg', $this->msgs);
+			$this->CI->session->set_flashdata('flash', $this->msgs);
 		}
 	}
 	

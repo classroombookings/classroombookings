@@ -6,12 +6,12 @@
 # Server version:       5.0.51b-community-nt
 # Server OS:            Win32
 # Target-Compatibility: MySQL 4.0
-# Extended INSERTs:     Y
 # max_allowed_packet:   1048576
-# HeidiSQL version:     3.0 Revision: 572
+# HeidiSQL version:     3.2 Revision: 1129
 # --------------------------------------------------------
 
 /*!40100 SET CHARACTER SET latin1*/;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0*/;
 
 
 #
@@ -36,7 +36,7 @@ CREATE TABLE `academicyears` (
   PRIMARY KEY  (`year_id`),
   UNIQUE KEY `year_id` (`year_id`),
   KEY `year_id_2` (`year_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Academic year definitions';
+) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Academic year definitions'*/;
 
 
 
@@ -44,10 +44,37 @@ CREATE TABLE `academicyears` (
 # Dumping data for table 'academicyears'
 #
 
-/*!40000 ALTER TABLE `academicyears` DISABLE KEYS*/;
-LOCK TABLES `academicyears` WRITE;
+# (No data found.)
+
+
+
+#
+# Table structure for table 'ci_sessions'
+#
+
+CREATE TABLE `ci_sessions` (
+  `session_id` varchar(40) NOT NULL default '0',
+  `ip_address` varchar(16) NOT NULL default '0',
+  `user_agent` varchar(50) NOT NULL,
+  `last_activity` int(10) unsigned NOT NULL default '0',
+  `user_data` text NOT NULL,
+  PRIMARY KEY  (`session_id`)
+) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1*/;
+
+
+
+#
+# Dumping data for table 'ci_sessions'
+#
+
+LOCK TABLES `ci_sessions` WRITE;
+/*!40000 ALTER TABLE `ci_sessions` DISABLE KEYS*/;
+INSERT INTO `ci_sessions` (`session_id`, `ip_address`, `user_agent`, `last_activity`, `user_data`) VALUES
+	('1418cfdafa04d299fc621025f594b859','127.0.0.1','Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;','1227280917',''),
+	('dd89983c03d57891d62e06c4972f6624','127.0.0.1','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv','1227282950','a:2:{s:3:\"uri\";s:9:\"/bookings\";s:15:\"flash:old:flash\";s:79:\"<div class=\"msg err\">\r\nYou are required to login to access this section.</div>\n\";}'),
+	('e647885ed8331c46d3901ba7f62e78ca','127.0.0.1','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) Ap','1227280333','');
+/*!40000 ALTER TABLE `ci_sessions` ENABLE KEYS*/;
 UNLOCK TABLES;
-/*!40000 ALTER TABLE `academicyears` ENABLE KEYS*/;
 
 
 #
@@ -61,7 +88,7 @@ CREATE TABLE `departments` (
   PRIMARY KEY  (`department_id`),
   UNIQUE KEY `department_id` (`department_id`),
   KEY `department_id_2` (`department_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='School departments';
+) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='School departments'*/;
 
 
 
@@ -69,10 +96,8 @@ CREATE TABLE `departments` (
 # Dumping data for table 'departments'
 #
 
-/*!40000 ALTER TABLE `departments` DISABLE KEYS*/;
-LOCK TABLES `departments` WRITE;
-UNLOCK TABLES;
-/*!40000 ALTER TABLE `departments` ENABLE KEYS*/;
+# (No data found.)
+
 
 
 #
@@ -86,7 +111,7 @@ CREATE TABLE `groups` (
   PRIMARY KEY  (`group_id`),
   UNIQUE KEY `group_id` (`group_id`),
   KEY `group_id_2` (`group_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 COMMENT='Security groups';
+) TYPE=InnoDB AUTO_INCREMENT=2 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Security groups'*/;
 
 
 
@@ -94,11 +119,12 @@ CREATE TABLE `groups` (
 # Dumping data for table 'groups'
 #
 
-/*!40000 ALTER TABLE `groups` DISABLE KEYS*/;
 LOCK TABLES `groups` WRITE;
-INSERT INTO `groups` (`group_id`, `name`, `description`) VALUES ('1','Anonymous','No login is required');
-UNLOCK TABLES;
+/*!40000 ALTER TABLE `groups` DISABLE KEYS*/;
+INSERT INTO `groups` (`group_id`, `name`, `description`) VALUES
+	('1','Anonymous','No login is required');
 /*!40000 ALTER TABLE `groups` ENABLE KEYS*/;
+UNLOCK TABLES;
 
 
 #
@@ -113,7 +139,7 @@ CREATE TABLE `holidays` (
   PRIMARY KEY  (`holiday_id`),
   UNIQUE KEY `year_id` (`holiday_id`),
   KEY `year_id_2` (`holiday_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='School holidays';
+) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='School holidays'*/;
 
 
 
@@ -121,10 +147,8 @@ CREATE TABLE `holidays` (
 # Dumping data for table 'holidays'
 #
 
-/*!40000 ALTER TABLE `holidays` DISABLE KEYS*/;
-LOCK TABLES `holidays` WRITE;
-UNLOCK TABLES;
-/*!40000 ALTER TABLE `holidays` ENABLE KEYS*/;
+# (No data found.)
+
 
 
 #
@@ -139,7 +163,7 @@ CREATE TABLE `periods` (
   `days` int(2) unsigned NOT NULL,
   `bookable` tinyint(1) NOT NULL,
   PRIMARY KEY  (`period_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Periods';
+) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Periods'*/;
 
 
 
@@ -147,10 +171,8 @@ CREATE TABLE `periods` (
 # Dumping data for table 'periods'
 #
 
-/*!40000 ALTER TABLE `periods` DISABLE KEYS*/;
-LOCK TABLES `periods` WRITE;
-UNLOCK TABLES;
-/*!40000 ALTER TABLE `periods` ENABLE KEYS*/;
+# (No data found.)
+
 
 
 #
@@ -158,6 +180,64 @@ UNLOCK TABLES;
 #
 
 CREATE TABLE `permissions` (
+  `permission_id` int(10) unsigned NOT NULL auto_increment,
+  `action` varchar(20) NOT NULL,
+  `name` varchar(50) default NULL,
+  `desc` text,
+  PRIMARY KEY  (`permission_id`),
+  UNIQUE KEY `permission_id` (`permission_id`,`action`),
+  KEY `permission_id_2` (`permission_id`,`action`)
+) TYPE=InnoDB AUTO_INCREMENT=5 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Permission descriptions'*/;
+
+
+
+#
+# Dumping data for table 'permissions'
+#
+
+LOCK TABLES `permissions` WRITE;
+/*!40000 ALTER TABLE `permissions` DISABLE KEYS*/;
+INSERT INTO `permissions` (`permission_id`, `action`, `name`, `desc`) VALUES
+	('1','bookings/view','View bookings',NULL),
+	('2','bookings/make-one','Create booking',NULL),
+	('3','bookings/make-recur','Create timetable booking',NULL),
+	('4','welcome','Welcome page',NULL);
+/*!40000 ALTER TABLE `permissions` ENABLE KEYS*/;
+UNLOCK TABLES;
+
+
+#
+# Table structure for table 'permissions2groups'
+#
+
+CREATE TABLE `permissions2groups` (
+  `p_id` int(10) unsigned default NULL,
+  `g_id` int(10) unsigned default NULL,
+  KEY `permission_id` (`p_id`,`g_id`)
+) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Link permissions with groups'*/;
+
+
+
+#
+# Dumping data for table 'permissions2groups'
+#
+
+LOCK TABLES `permissions2groups` WRITE;
+/*!40000 ALTER TABLE `permissions2groups` DISABLE KEYS*/;
+INSERT INTO `permissions2groups` (`p_id`, `g_id`) VALUES
+	(NULL,NULL),
+	('1','3'),
+	('2','1'),
+	('2','3');
+/*!40000 ALTER TABLE `permissions2groups` ENABLE KEYS*/;
+UNLOCK TABLES;
+
+
+#
+# Table structure for table 'permissions_copy'
+#
+
+CREATE TABLE `permissions_copy` (
   `permission_id` int(10) unsigned NOT NULL auto_increment,
   `action` varchar(20) NOT NULL,
   `menuname` varchar(20) default NULL,
@@ -169,56 +249,35 @@ CREATE TABLE `permissions` (
   PRIMARY KEY  (`permission_id`),
   UNIQUE KEY `permission_id` (`permission_id`,`action`),
   KEY `permission_id_2` (`permission_id`,`action`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1 COMMENT='Permission descriptions';
+) TYPE=InnoDB AUTO_INCREMENT=17 /*!40100 DEFAULT CHARSET=latin1*/;
 
 
 
 #
-# Dumping data for table 'permissions'
+# Dumping data for table 'permissions_copy'
 #
 
-/*!40000 ALTER TABLE `permissions` DISABLE KEYS*/;
-LOCK TABLES `permissions` WRITE;
-INSERT INTO `permissions` (`permission_id`, `action`, `menuname`, `url`, `order`, `admin-parent`, `admin-title`, `admin-desc`) VALUES ('1','BKG_VIEW','Bookings','bookings',0,NULL,'View bookings',NULL),
+LOCK TABLES `permissions_copy` WRITE;
+/*!40000 ALTER TABLE `permissions_copy` DISABLE KEYS*/;
+INSERT INTO `permissions_copy` (`permission_id`, `action`, `menuname`, `url`, `order`, `admin-parent`, `admin-title`, `admin-desc`) VALUES
+	('1','BKG_VIEW','Bookings','bookings','0',NULL,'View bookings',NULL),
 	('2','BKG_MAKE',NULL,NULL,NULL,'1','Make a booking',NULL),
 	('3','BKG_MAKE_RECUR',NULL,NULL,NULL,'1','Make recurring bookings',NULL),
 	('4','BKG_MAKE_RECUR_OWNER',NULL,NULL,NULL,'1','Allow room owners to make recurring bookings',NULL),
-	('5','ACC','Account','account',1,NULL,'Account',NULL),
-	('6','CFG','Settings','settings',2,NULL,'Global settings',NULL),
-	('7','RMS','Rooms','rooms',3,NULL,'Rooms',NULL),
-	('8','PDS','Periods','periods',4,NULL,'Periods (school day)',NULL),
-	('9','WKS','Weeks','weeks',5,NULL,'Timetable weeks',NULL),
+	('5','ACC','Account','account','1',NULL,'Account',NULL),
+	('6','CFG','Settings','settings','2',NULL,'Global settings',NULL),
+	('7','RMS','Rooms','rooms','3',NULL,'Rooms',NULL),
+	('8','PDS','Periods','periods','4',NULL,'Periods (school day)',NULL),
+	('9','WKS','Weeks','weeks','5',NULL,'Timetable weeks',NULL),
 	('10','WKS_ACYR',NULL,'weeks/academic-year',NULL,'8','Academic year',NULL),
-	('11','HOL','Holidays','holidays',6,NULL,'School holidays',NULL),
-	('12','DEP','Departments','departments',7,NULL,'Departments',NULL),
-	('13','REP','Reports','reports',8,NULL,'Reports',NULL),
-	('14','USR','Users','users',9,NULL,'User management',NULL),
+	('11','HOL','Holidays','holidays','6',NULL,'School holidays',NULL),
+	('12','DEP','Departments','departments','7',NULL,'Departments',NULL),
+	('13','REP','Reports','reports','8',NULL,'Reports',NULL),
+	('14','USR','Users','users','9',NULL,'User management',NULL),
 	('15','USR_GRPS',NULL,'users/groups',NULL,'13','Group management',NULL),
 	('16','WEL','','welcome',NULL,NULL,'Welcome page',NULL);
+/*!40000 ALTER TABLE `permissions_copy` ENABLE KEYS*/;
 UNLOCK TABLES;
-/*!40000 ALTER TABLE `permissions` ENABLE KEYS*/;
-
-
-#
-# Table structure for table 'permissions2groups'
-#
-
-CREATE TABLE `permissions2groups` (
-  `permission_id` int(10) unsigned default NULL,
-  `group_id` int(10) unsigned default NULL,
-  KEY `permission_id` (`permission_id`,`group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Link permissions with groups';
-
-
-
-#
-# Dumping data for table 'permissions2groups'
-#
-
-/*!40000 ALTER TABLE `permissions2groups` DISABLE KEYS*/;
-LOCK TABLES `permissions2groups` WRITE;
-UNLOCK TABLES;
-/*!40000 ALTER TABLE `permissions2groups` ENABLE KEYS*/;
 
 
 #
@@ -230,7 +289,7 @@ CREATE TABLE `rooms-fields` (
   `name` varchar(50) NOT NULL,
   `type` enum('TEXT','SELECT','CHECKBOX','MULTI') NOT NULL,
   PRIMARY KEY  (`field_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Names of fields that can be assigned to rooms';
+) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Names of fields that can be assigned to rooms'*/;
 
 
 
@@ -238,10 +297,8 @@ CREATE TABLE `rooms-fields` (
 # Dumping data for table 'rooms-fields'
 #
 
-/*!40000 ALTER TABLE `rooms-fields` DISABLE KEYS*/;
-LOCK TABLES `rooms-fields` WRITE;
-UNLOCK TABLES;
-/*!40000 ALTER TABLE `rooms-fields` ENABLE KEYS*/;
+# (No data found.)
+
 
 
 #
@@ -252,7 +309,7 @@ CREATE TABLE `rooms-options` (
   `option_id` int(10) unsigned NOT NULL auto_increment,
   `value` varchar(50) NOT NULL,
   PRIMARY KEY  (`option_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1*/;
 
 
 
@@ -260,10 +317,8 @@ CREATE TABLE `rooms-options` (
 # Dumping data for table 'rooms-options'
 #
 
-/*!40000 ALTER TABLE `rooms-options` DISABLE KEYS*/;
-LOCK TABLES `rooms-options` WRITE;
-UNLOCK TABLES;
-/*!40000 ALTER TABLE `rooms-options` ENABLE KEYS*/;
+# (No data found.)
+
 
 
 #
@@ -276,7 +331,7 @@ CREATE TABLE `rooms-values` (
   `field_id` int(10) unsigned NOT NULL,
   `value` varchar(255) NOT NULL,
   PRIMARY KEY  (`value_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Actual values of room fields for each room';
+) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Actual values of room fields for each room'*/;
 
 
 
@@ -284,10 +339,8 @@ CREATE TABLE `rooms-values` (
 # Dumping data for table 'rooms-values'
 #
 
-/*!40000 ALTER TABLE `rooms-values` DISABLE KEYS*/;
-LOCK TABLES `rooms-values` WRITE;
-UNLOCK TABLES;
-/*!40000 ALTER TABLE `rooms-values` ENABLE KEYS*/;
+# (No data found.)
+
 
 
 #
@@ -305,7 +358,7 @@ CREATE TABLE `rooms` (
   `photo` char(40) NOT NULL,
   PRIMARY KEY  (`room_id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='School rooms';
+) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='School rooms'*/;
 
 
 
@@ -313,10 +366,8 @@ CREATE TABLE `rooms` (
 # Dumping data for table 'rooms'
 #
 
-/*!40000 ALTER TABLE `rooms` DISABLE KEYS*/;
-LOCK TABLES `rooms` WRITE;
-UNLOCK TABLES;
-/*!40000 ALTER TABLE `rooms` ENABLE KEYS*/;
+# (No data found.)
+
 
 
 #
@@ -330,7 +381,7 @@ CREATE TABLE `settings-crbs` (
   `bk-columns` enum('periods','rooms','days') default NULL,
   `bk-viewtype` enum('room','day') default NULL,
   `preauthkey` varchar(255) default NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Global app settings';
+) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Global app settings'*/;
 
 
 
@@ -338,10 +389,8 @@ CREATE TABLE `settings-crbs` (
 # Dumping data for table 'settings-crbs'
 #
 
-/*!40000 ALTER TABLE `settings-crbs` DISABLE KEYS*/;
-LOCK TABLES `settings-crbs` WRITE;
-UNLOCK TABLES;
-/*!40000 ALTER TABLE `settings-crbs` ENABLE KEYS*/;
+# (No data found.)
+
 
 
 #
@@ -354,7 +403,7 @@ CREATE TABLE `settings-ldap-rdns` (
   PRIMARY KEY  (`rdn_id`),
   UNIQUE KEY `dn_id` (`rdn_id`),
   KEY `dn_id_2` (`rdn_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Settings for LDAP bind DNs';
+) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Settings for LDAP bind DNs'*/;
 
 
 
@@ -362,10 +411,8 @@ CREATE TABLE `settings-ldap-rdns` (
 # Dumping data for table 'settings-ldap-rdns'
 #
 
-/*!40000 ALTER TABLE `settings-ldap-rdns` DISABLE KEYS*/;
-LOCK TABLES `settings-ldap-rdns` WRITE;
-UNLOCK TABLES;
-/*!40000 ALTER TABLE `settings-ldap-rdns` ENABLE KEYS*/;
+# (No data found.)
+
 
 
 #
@@ -376,7 +423,7 @@ CREATE TABLE `settings-ldap` (
   `serverhost` varchar(20) default NULL,
   `serverport` int(5) unsigned default NULL,
   `base` varchar(255) default NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='LDAP configuration';
+) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='LDAP configuration'*/;
 
 
 
@@ -384,10 +431,8 @@ CREATE TABLE `settings-ldap` (
 # Dumping data for table 'settings-ldap'
 #
 
-/*!40000 ALTER TABLE `settings-ldap` DISABLE KEYS*/;
-LOCK TABLES `settings-ldap` WRITE;
-UNLOCK TABLES;
-/*!40000 ALTER TABLE `settings-ldap` ENABLE KEYS*/;
+# (No data found.)
+
 
 
 #
@@ -413,7 +458,7 @@ CREATE TABLE `users` (
   `created` date NOT NULL,
   PRIMARY KEY  (`user_id`),
   KEY `ldap` (`ldap`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 COMMENT='Main users table';
+) TYPE=InnoDB AUTO_INCREMENT=2 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Main users table'*/;
 
 
 
@@ -421,11 +466,12 @@ CREATE TABLE `users` (
 # Dumping data for table 'users'
 #
 
-/*!40000 ALTER TABLE `users` DISABLE KEYS*/;
 LOCK TABLES `users` WRITE;
-INSERT INTO `users` (`user_id`, `group_id`, `department_id`, `enabled`, `username`, `firstname`, `lastname`, `email`, `password`, `password-expire`, `displayname`, `ext`, `cookiekey`, `lastlogin`, `ldap`, `created`) VALUES ('1',1,'0',1,'admin',NULL,NULL,'craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8',NULL,NULL,NULL,NULL,'2008-02-02 13:09:55',0,'0000-00-00');
-UNLOCK TABLES;
+/*!40000 ALTER TABLE `users` DISABLE KEYS*/;
+INSERT INTO `users` (`user_id`, `group_id`, `department_id`, `enabled`, `username`, `firstname`, `lastname`, `email`, `password`, `password-expire`, `displayname`, `ext`, `cookiekey`, `lastlogin`, `ldap`, `created`) VALUES
+	('1',1,'0',1,'admin',NULL,NULL,'craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8',NULL,NULL,NULL,NULL,'2008-11-21 15:47:45',0,'0000-00-00');
 /*!40000 ALTER TABLE `users` ENABLE KEYS*/;
+UNLOCK TABLES;
 
 
 #
@@ -436,7 +482,7 @@ CREATE TABLE `weekdates` (
   `week_id` int(10) unsigned NOT NULL,
   `date` date NOT NULL,
   KEY `week_id` (`week_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Start-dates of weeks for timetable';
+) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Start-dates of weeks for timetable'*/;
 
 
 
@@ -444,10 +490,8 @@ CREATE TABLE `weekdates` (
 # Dumping data for table 'weekdates'
 #
 
-/*!40000 ALTER TABLE `weekdates` DISABLE KEYS*/;
-LOCK TABLES `weekdates` WRITE;
-UNLOCK TABLES;
-/*!40000 ALTER TABLE `weekdates` ENABLE KEYS*/;
+# (No data found.)
+
 
 
 #
@@ -461,7 +505,7 @@ CREATE TABLE `weeks` (
   `bgcol` char(6) NOT NULL,
   `icon` varchar(255) default NULL,
   PRIMARY KEY  (`week_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Week definitions for timetable weeks';
+) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Week definitions for timetable weeks'*/;
 
 
 
@@ -469,7 +513,6 @@ CREATE TABLE `weeks` (
 # Dumping data for table 'weeks'
 #
 
-/*!40000 ALTER TABLE `weeks` DISABLE KEYS*/;
-LOCK TABLES `weeks` WRITE;
-UNLOCK TABLES;
-/*!40000 ALTER TABLE `weeks` ENABLE KEYS*/;
+# (No data found.)
+
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS*/;

@@ -49,6 +49,7 @@
 
 	<!-- // #main -->
 	<div id="main">
+		<?php echo $this->session->flashdata('flash'); ?>
 		<?php echo (isset($pagetitle)) ? '<h1>' . $pagetitle . '</h1>' : ''; ?>
 		<?php echo (isset($body)) ? $body : 'Nothing to display.'; ?>
 	</div>

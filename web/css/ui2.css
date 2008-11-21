@@ -4,6 +4,8 @@
  * Colours
  *	Blue (light):	#468ED8
  *	Blue (dark):	#006699
+ *  Red (light):	#D86B46
+ *  Red (dark):		#991900
  *	Orange:			#FFA500
  *	Green:			#60AA37
  *	Grey text:		#777777
@@ -59,7 +61,7 @@ table.form td.caption{
 	font-weight:bold;
 }
 table.form td.caption label.r{
-	color:darkred;
+	color:#991900;
 }
 table.form td.field{
 	background:transparent;
@@ -68,7 +70,6 @@ table.form td.field span.hint{ clear:both; display:block; color:#000; font-size:
 table.form td.actions{padding-top:16px;}
 table.form td.actions input{
 	font-weight:normal;
-
 }
 /* Make subsequent buttons non-bold */
 table.form td.actions input+input{font-weight:normal;}
@@ -79,54 +80,99 @@ table.form td.actions a{vertical-align:middle;}
 table.checks tr td{padding:2px;margin:0;}
 
 
+label.check{
+    display: block;
+    padding-left:15px;
+    text-indent:-15px;
+}
+
+label.check input{
+    width:13px;
+    height:13px;
+    padding:0;
+    margin:0;
+    vertical-align:bottom;
+    position:relative;
+    top:-1px;
+    *overflow: hidden;
+}
+
+
+
+p ul{
+	margin:0;
+	padding:0;
+	display:block;
+	clear:both;
+}
+
+p ul li{
+	margin:0;
+	padding:0;
+	display:block;
+}
+
+
+
+div.msg.err ul{
+	margin:6px 0;
+	padding:0 0 0 1.5em;
+	list-style-type:square;
+}
+
+div.msg.err ul li{
+	margin:3px 0;
+}
 
 
 
 /* Message box - Base class */
-p.msg{
+div.msg{
 	background-position:5px 50%;
 	background-repeat:no-repeat;
-	/*width:320px;*/
+	width:400px;
 	color:#000;
 	padding:5px 5px 5px 26px !important;
 	border-style:solid;
 	border-width:0;
 	border-left-width:8px;
 	/*font-size:8pt;*/
+	margin-left:0;
+	margin:1em 0;
 }
 /* ERROR */
-p.msg.err{
-	background-image:url(../img/ico/i_error.gif);
+div.msg.err{
+	background-image:url(../img/ico/f_err.gif);
 	background-color:#FBE6F2;
 	border-color:#D893A1;
 }
 /* INFORMATION */
-p.msg.info{
-	background-image:url(../img/ico/i_info.gif);
+div.msg.info{
+	background-image:url(../img/ico/f_info.gif);
 	background-color:#E6FBF2;
 	border-color:#93D8A1;
 }
 /* EXCLAMATION */
-p.msg.warn{
-	background-image:url(../img/ico/i_exclamation.gif);
+div.msg.warn{
+	background-image:url(../img/ico/f_warn.gif);
 	background-color:#FBE6F2;
 	border-color:#D893A1;
 }
 /* QUESTION */
-p.msg.help{
-	background-image:url(../img/ico/i_help.gif);
+div.msg.help{
+	background-image:url(../img/ico/f_help.gif);
 	/*background-color:#E6FBF2;
 	border-color:#93D8A1;*/
 	background-color:#fff9d7;
 	border-color:#e2c822;
 }
-p.msg.note{
-	background-image:url(../img/ico/i_info.gif);
+div.msg.note{
+	background-image:url(../img/ico/f_info.gif);
 	background-color:#fff9d7;
 	border-color:#e2c822;
 }
-p.msg.yes{
-	background-image:url(../img/ico/i_yes.gif);
+div.msg.yes{
+	background-image:url(../img/ico/f_yes.gif);
 	background-color:#FFF3A8;
 	border-color:#e2c822;
 }
