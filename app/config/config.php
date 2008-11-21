@@ -23,7 +23,7 @@ $config['base_url']	= "http://localhost/projects/crbs2/";
 | variable so that it is blank.
 |
 */
-$config['index_page'] = "index170.php";
+$config['index_page'] = "index.php";
 
 /*
 |--------------------------------------------------------------------------
