@@ -17,13 +17,13 @@
 */
 
 
-class Welcome extends Controller {
+class Dashboard extends Controller {
 
 
 	var $tpl;
 	
 
-	function Welcome(){
+	function Dashboard(){
 		parent::Controller();
 		$this->tpl = $this->config->item('template');
 	}
@@ -32,9 +32,14 @@ class Welcome extends Controller {
 	
 	
 	function index(){
-		$this->auth->check('welcome');
-		$tpl['title'] = 'Welcome';
-		$tpl['body'] = $this->load->view('welcome/index', NULL, TRUE);
+		#$this->auth->check('dashboard');
+		$tpl['title'] = 'Dashboard';
+		$tpl['pagetitle'] = $tpl['title'];
+		if($this->auth->logged_in()){
+			$tpl['body'] = $this->load->view('dashboard/index', NULL, TRUE);
+		} else {
+			$tpl['body'] = 'You are not currently logged in.';
+		}
 		$this->load->view($this->tpl, $tpl);
 	}
 	

@@ -10,6 +10,7 @@ class Auth{
 	var $cookiesalt;
 	var $levels;
 	var $settings;
+	var $errpage;
 
 
 	function Auth(){
@@ -21,6 +22,9 @@ class Auth{
 		
 		// Cookie salt for hash - can be any text string
 		$this->cookiesalt = 'CL455R00Mb00k1ng5';
+		
+		// Redirect to this error page
+		$this->errpage = 'dashboard/error';
 		
 		// Get LDAP settings
 		#$this->CI->load->library('settings');	//
@@ -41,7 +45,7 @@ class Auth{
 		if($p_id == FALSE || $p_id == NULL){
 			$this->lasterr = sprintf($this->CI->lang->line('AUTH_CHECK_NO_PID'), $action);
 			$this->CI->msg->add('err', $this->lasterr);
-			redirect("welcome/error");
+			redirect($this->errpage);
 		}
 		
 		//echo $p_id;
@@ -82,7 +86,7 @@ class Auth{
 				$uri = 'account/login';
 			} else {
 				$this->lasterr = $this->CI->lang->line('AUTH_NO_PRIVS');
-				$uri = 'welcome/error';
+				$uri = $this->errpage;
 			}
 			
 			$this->CI->msg->add('err', $this->lasterr);
@@ -270,7 +274,7 @@ class Auth{
 		
 		$this->CI->session->set_flashdata('msg', $this->lasterr);
 		if($ret == FALSE){
-			#redirect('home');
+			redirect($this->errpage);
 		}
 					
 	}

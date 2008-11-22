@@ -17,13 +17,13 @@
 */
 
 
-class Configure extends Controller {
+class Users extends Controller {
 
 
 	var $tpl;
 	
 
-	function Configure(){
+	function Users(){
 		parent::Controller();
 		$this->tpl = $this->config->item('template');
 	}
@@ -32,9 +32,9 @@ class Configure extends Controller {
 	
 	
 	function index(){
-		$tpl['title'] = 'Configure';
-		$tpl['pagetitle'] = 'Configure classroombookings';
-		$tpl['body'] = $this->load->view('configure/conf.index.php', NULL, TRUE);
+		$tpl['title'] = 'Manage users';
+		$tpl['pagetitle'] = $tpl['title'];
+		$tpl['body'] = $this->load->view('security/users.index.php', NULL, TRUE);
 		$this->load->view($this->tpl, $tpl);
 	}
 	

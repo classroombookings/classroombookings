@@ -50,7 +50,7 @@ class AuthHook{
 	
 	
 	
-	function check($action_name = NULL){
+	/*function check($action_name = NULL){
 	
 		#$sessdata['permissions'] = array(1,5,6,7,9);
 		
@@ -101,7 +101,7 @@ class AuthHook{
 		
 		// Get what permissions this group has
 		#$arrperms = $this->CI->auth->get_group_permissions($group_id);
-	}
+	#}*/
 	
 	
 	

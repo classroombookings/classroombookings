@@ -17,13 +17,13 @@
 */
 
 
-class Users extends Controller {
+class Permissions extends Controller {
 
 
 	var $tpl;
 	
 
-	function Users(){
+	function Permissions(){
 		parent::Controller();
 		$this->tpl = $this->config->item('template');
 	}
@@ -32,8 +32,9 @@ class Users extends Controller {
 	
 	
 	function index(){
-		$tpl['title'] = 'User Management';
+		$tpl['title'] = 'Manage group permissions';
 		$tpl['pagetitle'] = $tpl['title'];
+		$tpl['body'] = $this->load->view('security/permissions.index.php', NULL, TRUE);
 		$this->load->view($this->tpl, $tpl);
 	}
 	

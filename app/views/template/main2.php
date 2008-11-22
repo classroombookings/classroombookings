@@ -42,8 +42,9 @@
 		</ul>
 		<br />
 		<ul class="menu">
+			<li><?php echo anchor('dashboard', 'Dashboard', 'style="background-image:url(img/ico/home.gif)"') ?></li>
 			<li><?php echo anchor('bookings', 'Bookings', 'style="background-image:url(img/ico/books.gif)"') ?></li>
-			<li><?php echo anchor('account', 'Account', 'style="background-image:url(img/ico/user_grey.gif)"') ?></li>
+			<li><?php echo anchor('account', 'My Profile', 'style="background-image:url(img/ico/user_grey.gif)"') ?></li>
 			<li><?php echo anchor('configure', 'Configure', 'style="background-image:url(img/ico/tools.gif)"') ?></li>
 			<li><?php echo anchor('rooms', 'Rooms', 'style="background-image:url(img/ico/door.gif)"') ?></li>
 			<li><?php echo anchor('periods', 'Periods', 'style="background-image:url(img/ico/clock1.gif)"') ?></li>
@@ -51,7 +52,7 @@
 			<li><?php echo anchor('holidays', 'Holidays', 'style="background-image:url(img/ico/weather.gif)"') ?></li>
 			<li><?php echo anchor('departments', 'Departments', 'style="background-image:url(img/ico/addressbook.gif)"') ?></li>
 			<li><?php echo anchor('reports', 'Reports', 'style="background-image:url(img/ico/piechart.gif)"') ?></li>
-			<li><?php echo anchor('users', 'Users', 'style="background-image:url(img/ico/group.gif)"') ?></li>
+			<li><?php echo anchor('security/users', 'Users and Security', 'style="background-image:url(img/ico/lock.gif)"') ?></li>
 		</ul>
 	</div>
 	<!-- #sidebar //-->

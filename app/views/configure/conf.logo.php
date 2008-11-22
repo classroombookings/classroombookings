@@ -4,7 +4,7 @@
 
 echo form_open(
 	'configure/save',
-	array('id' => 'conf-main')
+	array('id' => 'conf-logo')
 );
 
 // Start tabindex
@@ -13,21 +13,15 @@ $t = 1;
 
 
 <table class="form" cellpadding="6" cellspacing="0" border="0" width="99%">
+
+	<tr class="h"><td colspan="2">Logo</td></tr>
+
 	<tr>
-		<td class="caption"><label for="schoolname" class="r" accesskey="N">School <u>n</u>ame</label></td>
+		<td class="caption"><label>Current logo</label></td>
 		<td class="field">
-		  <?php
-			#$ = @field($this->validation->username);
-			echo form_input(array(
-				'accesskey' => 'N',
-				'name' => 'schoolname',
-				'id' => 'schoolname',
-				'size' => '40',
-				'maxlenght' => '30',
-				'tabindex' => $t,
-				'value' => set_value('schoolname'),
-			));
-			$t++;
+			<?php
+			$img = 'foo.jpg';
+			echo '<img src="web/img/upload/'.$img.'" />
 			?>
 		</td>
 	</tr>

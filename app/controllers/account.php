@@ -75,8 +75,8 @@ class Account extends Controller {
 			if($login == TRUE){
 			
 				// Login successful, going to page
-				$this->session->set_flashdata('flash', $this->msg->info($this->lang->line('AUTH_OK')));
-				redirect("account");
+				$this->session->set_flashdata('flash', $this->msg->note($this->lang->line('AUTH_OK')));
+				redirect("dashboard");
 			
 			} else {
 				
