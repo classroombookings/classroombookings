@@ -34,6 +34,7 @@ class Configure extends Controller {
 	function index(){
 		$tpl['title'] = 'Configure';
 		$tpl['pagetitle'] = $tpl['title'];
+		$tpl['body'] = $this->load->view('configure/conf.index.php', NULL, TRUE);
 		$this->load->view($this->tpl, $tpl);
 	}
 	

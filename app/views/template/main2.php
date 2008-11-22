@@ -10,7 +10,10 @@
 	<link rel="icon" type="image/x-icon" href="favicon.ico" />
 	<link rel="stylesheet" type="text/css" media="screen" href="css/layout2.css" />
 	<link rel="stylesheet" type="text/css" media="screen" href="css/ui2.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="css/jquery-ui-theme.css" />
 	<!-- <link rel="stylesheet" type="text/css" media="print" href="css/print.css" /> -->
+	<script type="text/javascript" src="js/jquery-1.2.6.min.js"></script>
+	<script type="text/javascript" src="js/jquery-ui-personalized-1.6rc2.packed.js"></script>
 </head>
 
 <body>
@@ -27,9 +30,15 @@
 	<!-- // #sidebar -->
 	<div id="sidebar">
 		<ul class="links">
-			<li>Logged in as <?php echo anchor('account/view/46', 'john.smith'); ?></li>
-			<li><?php echo anchor('account/bookings', '4 active bookings') ?></li>
-			<li><?php echo anchor('account/logout', 'Logout') ?></li>
+			<?php
+			if($this->auth->logged_in()){
+				echo sprintf('<li>Logged in as %s</li>', anchor('account/edit', $this->session->userdata('display')));
+				echo sprintf('<li>%s</li>', anchor('account/bookings', sprintf('%d active bookings', 5)));
+				echo sprintf('<li>%s</li>', anchor('account/logout', 'Logout'));
+			} else {
+				echo sprintf('<li>%s</li>', anchor('account/login', 'Login'));
+			}
+			?>
 		</ul>
 		<br />
 		<ul class="menu">
