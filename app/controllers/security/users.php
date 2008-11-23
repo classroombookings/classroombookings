@@ -25,16 +25,48 @@ class Users extends Controller {
 
 	function Users(){
 		parent::Controller();
+		$this->load->model('Security');
 		$this->tpl = $this->config->item('template');
+		$this->output->enable_profiler(TRUE);
 	}
 	
 	
 	
 	
 	function index(){
+		// Get list of users
+		$body['users'] = $this->Security->get_user();
+		if ($body['users'] == FALSE) {
+			$tpl['body'] = $this->msg->err($this->Security->lasterr);
+		} else {
+			$tpl['body'] = $this->load->view('security/users.index.php', $body, TRUE);
+		}
+		
 		$tpl['title'] = 'Manage users';
 		$tpl['pagetitle'] = $tpl['title'];
-		$tpl['body'] = $this->load->view('security/users.index.php', NULL, TRUE);
+		
+		$this->load->view($this->tpl, $tpl);
+	}
+	
+	
+	
+	
+	function ingroup($group_id){
+		$tpl['title'] = 'Manage users';
+		$groupname = $this->Security->get_group_name($group_id);
+		if ($groupname == FALSE) {
+			$tpl['body'] = $this->msg->err($this->Security->lasterr);
+			$tpl['pagetitle'] = $tpl['title'];
+		} else {
+			$body['users'] = $this->Security->get_user(NULL, $group_id);
+			if ($body['users'] === FALSE) {
+				$tpl['body'] = $this->msg->err($this->Security->lasterr);
+			} else {
+				$tpl['body'] = $this->load->view('security/users.index.php', $body, TRUE);
+			}
+			$tpl['pagetitle'] = sprintf('Manage users in the %s group', $groupname);
+		}
+		
 		$this->load->view($this->tpl, $tpl);
 	}
 	

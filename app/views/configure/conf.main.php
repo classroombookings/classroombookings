@@ -134,15 +134,22 @@ $t = 1;
 
 	
 	<?php
-	$submit['submit'] = array('Save main settings', $t);
+	/*$submit['submit'] = array('Save main settings', $t);
 	$submit['cancel'] = array('Cancel', $t+1, site_url());
 	$this->load->view('parts/submit', $submit);
-	echo form_close();
+	echo form_close();*/
+	?>
+	
+	<?php
+	$buttons[] = array('submit', 'positive', 'Save main settings', 'disk1.gif', $t);
+	#$buttons[] = array('submit', '', 'Save and add another', 'add.gif', $t+1);
+	#$buttons[] = array('cancel', 'negative', 'Cancel', 'arr-left.gif', $t+2, site_url('dashboard'));
+	$this->load->view('parts/buttons', array('buttons' => $buttons));
 	?>
 	
 
 </table>
-
+</form>
 
 <script type="text/javascript">
 $("#bd-day").bind("click", function(e){
