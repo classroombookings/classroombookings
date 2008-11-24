@@ -5,7 +5,7 @@ $icondata[2] = array('security/permissions', 'Change group permissions', 'key2.g
 $this->load->view('parts/iconbar', $icondata);
 ?>
 
-<p>Here is a list of the existing users, including those that authenticate via LDAP. Click on a username to edit the user, or click the Delete icon link to delete them.</p>
+<p>Here is a list of the existing users, including those that authenticate via LDAP. To edit a user's details or properties, click on their username. Use the links on the right to view an audit trail of their actions or delete them.</p>
 
 <?php
 if($users != 0){
@@ -35,7 +35,13 @@ if($users != 0){
 		<td class="m"><?php echo $user->groupname ?>&nbsp;</td>
 		<td class="m"><?php echo mysqlhuman($user->lastlogin, "d/m/Y H:i") ?>&nbsp;</td>
 		<td class="m"><?php echo ($user->ldap == 1) ? 'LDAP' : 'Local'; ?></td>
-		<td class="d"><?php $this->load->view('parts/delete', array('url' => 'security/users/delete/'.$user->user_id)); ?></td>
+		<td class="il">
+		<?php
+		$actiondata[0] = array('security/users/view/'.$user->user_id, 'Report', 'magnifier_sm.gif' );
+		$actiondata[1] = array('security/users/delete', 'Delete', 'cross_sm.gif' );
+		$this->load->view('parts/listactions', $actiondata);
+		#$this->load->view('parts/delete', array('url' => 'security/users/delete/'.$user->user_id));
+		?></td>
 	</tr>
 	<?php $i++; } ?>
 	</tbody>

@@ -73,6 +73,19 @@ class Users extends Controller {
 	
 	
 	
+	function add(){
+	}
+	
+	
+	
+	
+	function edit($user_id){
+		echo $user_id;
+	}
+	
+	
+	
+	
 }
 
 

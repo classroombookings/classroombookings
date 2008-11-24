@@ -10,10 +10,13 @@
 	<link rel="icon" type="image/x-icon" href="favicon.ico" />
 	<link rel="stylesheet" type="text/css" media="screen" href="css/layout2.css" />
 	<link rel="stylesheet" type="text/css" media="screen" href="css/ui2.css" />
-	<link rel="stylesheet" type="text/css" media="screen" href="css/jquery-ui-theme.css" />
+	<!-- <link rel="stylesheet" type="text/css" media="screen" href="css/jquery-ui-theme.css" /> -->
 	<!-- <link rel="stylesheet" type="text/css" media="print" href="css/print.css" /> -->
 	<script type="text/javascript" src="js/jquery-1.2.6.min.js"></script>
-	<script type="text/javascript" src="js/jquery-ui-personalized-1.6rc2.packed.js"></script>
+	<!-- <script type="text/javascript" src="js/jquery-ui-personalized-1.6rc2.js"></script> -->
+	<script src="js/qTip.js" type="text/javascript"></script>
+	<script src="js/tabber-minimized.js" type="text/javascript"></script>
+	
 </head>
 
 <body>

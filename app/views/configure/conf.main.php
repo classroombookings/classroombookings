@@ -17,7 +17,7 @@ $t = 1;
 	<tr class="h"><td colspan="2">School Information</td></tr>
 	
 	<tr>
-		<td class="caption"><label for="schoolname" class="r" accesskey="N">School <u>n</u>ame</label></td>
+		<td class="caption"><label for="schoolname" class="r" accesskey="N" title="The school name will appear beneath the Classroombookings logo at the top of the page.">School <u>n</u>ame</label></td>
 		<td class="field">
 		  <?php
 			#$ = @field($this->validation->username);
@@ -58,7 +58,7 @@ $t = 1;
 	<tr class="h"><td colspan="2">Booking settings</td></tr>
 	
 	<tr>
-		<td class="caption"><label for="booking-display" class="r" accesskey="D"><u>D</u>isplay mode</label></td>
+		<td class="caption"><label for="booking-display" class="r" accesskey="D" title="This is the style in which the main booking table will be displayed."><u>D</u>isplay mode</label></td>
 		<td class="field">
 			<label for="bd-day" class="check">
 			<?php
@@ -90,7 +90,7 @@ $t = 1;
 	
 	
 	<tr>
-		<td class="caption"><label for="booking-columns" class="r" accesskey="C"><u>C</u>olumn item</label></td>
+		<td class="caption"><label for="booking-columns" class="r" accesskey="C" title="This controls what information is displayed in columns on your bookings table - the other option will be displayed in the rows."><u>C</u>olumn item</label></td>
 		<td class="field">
 			<label for="col-periods" class="check">
 			<?php

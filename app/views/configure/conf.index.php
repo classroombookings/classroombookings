@@ -1,6 +1,3 @@
-
-
-
 <?php
 $foo = validation_errors();
 if($foo){
@@ -9,32 +6,16 @@ if($foo){
 ?>
 
 
-<div id="tabs-configure">
+<div class="tabber" id="tabs-configure">
 
-	<ul style="height:30px;"> 
-		<li><a href="#conf-main"><span>Main settings</span></a></li>
-		<!-- <li><a href="#conf-logo"><span>School logo</span></a></li> -->
-		<li><a href="#conf-ldap"><span>LDAP authentication</span></a></li>
-	</ul>
-    
-	<div id="conf-main"> 
-        <?php $this->load->view('configure/conf.main.php'); ?>
-    </div> 
-	
-    <!-- <div id="conf-logo"> 
-		<?php #$this->load->view('configure/conf.logo.php'); ?>
-	</div> -->
-	
-    <div id="conf-ldap"> 
+	<div class="tabbertab">
+		<h2>Main Settings</h2>
+		<?php $this->load->view('configure/conf.main.php'); ?>
+	</div>
+
+	<div class="tabbertab">
+		<h2>LDAP authentication</h2>
 		<?php $this->load->view('configure/conf.ldap.php'); ?>
 	</div>
-	
+
 </div>
-
-
-</form>
-
-
-<script type="text/javascript">
-$("#tabs-configure > ul").tabs();
-</script>
