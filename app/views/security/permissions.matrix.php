@@ -91,7 +91,7 @@
 	
 	<tr>
 		<td colspan="3">
-			<table class="form" cellpadding="6" cellspacing="0" border="0" width="650%">
+			<table class="form" cellpadding="6" cellspacing="0" border="0" width="100%">
 				
 				<tr class="h"><td colspan="2">Other options</td></tr>
 				
