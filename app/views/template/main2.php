@@ -13,6 +13,7 @@
 	<!-- <link rel="stylesheet" type="text/css" media="screen" href="css/jquery-ui-theme.css" /> -->
 	<!-- <link rel="stylesheet" type="text/css" media="print" href="css/print.css" /> -->
 	<script type="text/javascript" src="js/jquery-1.2.6.min.js"></script>
+	<script type="text/javascript" src="js/jquery.boxy.js"></script>
 	<!-- <script type="text/javascript" src="js/jquery-ui-personalized-1.6rc2.js"></script> -->
 	<script src="js/qTip.js" type="text/javascript"></script>
 	<script src="js/tabber-minimized.js" type="text/javascript"></script>
@@ -26,7 +27,7 @@
 		<a href="<?php echo site_url() ?>">
 			<img src="img/template/title.gif" alt="Classroombookings" />
 		</a><br />
-		<span>Bishop Barrington School Sports With Mathematics College</span>
+		<span><?php echo $this->settings->get('schoolname') ?></span>
 	</div>
 	<!-- #header // -->
 
@@ -62,9 +63,12 @@
 
 	<!-- // #main -->
 	<div id="main">
-		<?php echo $this->session->flashdata('flash'); ?>
-		<?php echo (isset($pagetitle)) ? '<h1>' . $pagetitle . '</h1>' : ''; ?>
-		<?php echo (isset($body)) ? $body : 'Nothing to display.'; ?>
+		<?php
+		echo $this->session->flashdata('flash');
+		echo (isset($pretitle)) ? $pretitle : '';
+		echo (isset($pagetitle)) ? '<h1>' . $pagetitle . '</h1>' : '';
+		echo (isset($body)) ? $body : 'Nothing to display.';
+		?>
 	</div>
 	<!-- #main // -->
 

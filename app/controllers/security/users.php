@@ -34,6 +34,11 @@ class Users extends Controller {
 	
 	
 	function index(){
+		$icondata[0] = array('security/users/add', 'Add a new user', 'plus.gif' );
+		$icondata[1] = array('security/groups', 'Manage groups', 'group.gif' );
+		$icondata[2] = array('security/permissions', 'Change group permissions', 'key2.gif');
+		$tpl['pretitle'] = $this->load->view('parts/iconbar', $icondata, TRUE);
+		
 		// Get list of users
 		$body['users'] = $this->Security->get_user();
 		if ($body['users'] == FALSE) {
@@ -42,8 +47,8 @@ class Users extends Controller {
 			$tpl['body'] = $this->load->view('security/users.index.php', $body, TRUE);
 		}
 		
-		$tpl['title'] = 'Manage users';
-		$tpl['pagetitle'] = $tpl['title'];
+		$tpl['title'] = 'Users';
+		$tpl['pagetitle'] = 'Manage users';
 		
 		$this->load->view($this->tpl, $tpl);
 	}
@@ -52,7 +57,12 @@ class Users extends Controller {
 	
 	
 	function ingroup($group_id){
-		$tpl['title'] = 'Manage users';
+		$icondata[0] = array('security/users/add', 'Add a new user', 'plus.gif' );
+		$icondata[1] = array('security/groups', 'Manage groups', 'group.gif' );
+		$icondata[2] = array('security/permissions', 'Change group permissions', 'key2.gif');
+		$tpl['pretitle'] = $this->load->view('parts/iconbar', $icondata, TRUE);
+		
+		$tpl['title'] = 'Users';
 		$groupname = $this->Security->get_group_name($group_id);
 		if ($groupname == FALSE) {
 			$tpl['body'] = $this->msg->err($this->Security->lasterr);

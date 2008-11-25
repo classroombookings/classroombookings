@@ -90,6 +90,34 @@
 	</tr>
 	
 	<tr>
+		<td width="300">
+			<!-- DEPARTMENTS -->
+			<?php
+			unset($options);
+			$options[] = array('departments', 'Departments', 'Has access to the Departments page', TRUE);
+			$options[] = array('departments/add', 'Add a department', NULL, FALSE);
+			$options[] = array('departments/edit', 'Edit a department', NULL, TRUE);
+			$options[] = array('departments/delete', 'Delete a department', NULL, FALSE);
+			$this->load->view('security/permissions.checks.php', array('category' => 'Departments', 'options' => $options));
+			?>
+		</td>
+		<td width="50">&nbsp;</td>
+		<td width="300">
+			<!-- REPORTS -->
+			<?php
+			unset($options);
+			$options[] = array('reports', 'Reports', NULL, TRUE);
+			$options[] = array('reports/owndepartment', 'View reports for their own deparment', NULL, FALSE);
+			$options[] = array('reports/alldepartments', 'View reports on all departments', NULL, TRUE);
+			$options[] = array('reports/ownroom', 'View reports for their own room', NULL, FALSE);
+			$options[] = array('reports/allrooms', 'View reports on all rooms', NULL, FALSE);
+			$options[] = array('reports/other', 'View other reports', NULL, TRUE);
+			$this->load->view('security/permissions.checks.php', array('category' => 'Reports', 'options' => $options));
+			?>
+		</td>
+	</tr>
+	
+	<tr>
 		<td colspan="3">
 			<table class="form" cellpadding="6" cellspacing="0" border="0" width="100%">
 				
@@ -163,8 +191,6 @@
 				<?php
 				unset($buttons);
 				$buttons[] = array('submit', 'positive', 'Save group permissions', 'disk1.gif', 0);
-				#$buttons[] = array('submit', '', 'Save and add another', 'add.gif', $t+1);
-				#$buttons[] = array('cancel', 'negative', 'Cancel', 'arr-left.gif', $t+2, site_url('dashboard'));
 				$this->load->view('parts/buttons', array('buttons' => $buttons));
 				?>
 				

@@ -18,11 +18,11 @@
 
 
 class Configure extends Controller {
-
-
+	
+	
 	var $tpl;
 	
-
+	
 	function Configure(){
 		parent::Controller();
 		$this->tpl = $this->config->item('template');
@@ -31,11 +31,101 @@ class Configure extends Controller {
 	
 	
 	
-	function index(){
+	function index($tab = 'conf-main'){
+		if($this->session->flashdata('tab')){
+			$body['tab'] = $this->session->flashdata('tab');
+		} else {
+			$body['tab'] = $tab;
+		}
+		
+		$body['conf']['main'] = $this->settings->get_all('main');
+		$body['conf']['auth'] = $this->settings->get_all('auth');
+		
 		$tpl['title'] = 'Configure';
 		$tpl['pagetitle'] = 'Configure classroombookings';
-		$tpl['body'] = $this->load->view('configure/conf.index.php', NULL, TRUE);
+		$tpl['body'] = $this->load->view('configure/conf.index.php', $body, TRUE);
 		$this->load->view($this->tpl, $tpl);
+	}
+	
+	
+	
+	
+	/* function save(){
+		print_r($_POST);
+		$tpl['title'] = 'Form error';
+		$section = $this->input->post('form_id');
+		
+		if(!$section){
+			$tpl['body'] = $this->msg->err('No form data was submitted');
+		} else {
+			switch($section){
+				case 'conf-main': return $this->save_main(); break;
+				case 'conf-ldap': return $this->save_ldap(); break;
+				default:
+					$tpl['body'] = $this->msg->err('No valid form was submitted');
+				break;
+			}
+		}
+		$this->load->view($this->tpl, $tpl);
+	} */
+	
+	
+	
+	
+	function save_main(){
+#				die(print_r($_POST));
+		$this->form_validation->set_rules('schoolname', 'School name', 'required|max_length[100]|trim');
+		$this->form_validation->set_rules('schoolurl', 'Website address', 'max_length[255]|prep_url|trim');
+		$this->form_validation->set_rules('bd_mode', 'Booking display mode', 'required');
+		$this->form_validation->set_rules('bd_col', 'Booking display columns', 'required');
+		$this->form_validation->set_error_delimiters('<li>', '</li>');
+
+		if($this->form_validation->run() == FALSE){
+			
+			// Validation failed
+			$this->index('conf-main');
+			
+		} else {
+			
+			#$this->load->view('formsuccess');
+			$data['schoolname']		= $this->input->post('schoolname');
+			$data['schoolurl']		= $this->input->post('schoolurl');
+			$data['bd_mode'] 		= $this->input->post('bd_mode');
+			$data['bd_col']			= $this->input->post('bd_col');
+			
+			$this->settings->save('main', $data);
+			
+			$this->session->set_flashdata('flash', $this->msg->info($this->lang->line('CONF_MAIN_SAVEOK')));
+			$this->session->set_flashdata('tab', 'conf-main');
+			redirect('configure');
+			
+		}
+		
+	}
+	
+	
+	
+	
+	function save_ldap(){
+		die(print_r($_POST));
+
+		
+		$this->form_validation->set_rules('preauth', 'Pre-authentication');
+		$this->form_validation->set_rules('ldap', 'LDAP enable');
+		
+		if($this->form_validation->run() == FALSE){
+		
+			// Validation failed
+			$this->index('conf-auth');
+			
+		} else {
+		
+			$this->session->set_flashdata('flash', $this->msg->info($this->lang->line('CONF_AUTH_SAVEOK')));
+			$this->session->set_flashdata('tab', 'conf-auth');
+			redirect('configure');
+			
+		}
+		
 	}
 	
 	

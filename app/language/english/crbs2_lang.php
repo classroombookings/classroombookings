@@ -10,4 +10,7 @@ $lang['AUTH_CHECK_NO_PID'] = 'Could not locate privilege ID for requested action
 $lang['AUTH_MUST_LOGIN'] = 'You are required to login to access this section.';
 $lang['AUTH_NO_PRIVS'] = 'You do not have the correct privileges to access this section.';
 
+$lang['CONF_MAIN_SAVEOK'] = 'Main settings were saved successfully.';
+$lang['CONF_AUTH_SAVEOK'] = 'Authentication settings were saved successfully.';
+
 ?>

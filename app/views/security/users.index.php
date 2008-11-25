@@ -1,9 +1,4 @@
-<?php
-$icondata[0] = array('security/users/add', 'Add a new user', 'plus.gif' );
-$icondata[1] = array('security/groups', 'Manage groups', 'group.gif' );
-$icondata[2] = array('security/permissions', 'Change group permissions', 'key2.gif');
-$this->load->view('parts/iconbar', $icondata);
-?>
+
 
 <p>Here is a list of the existing users, including those that authenticate via LDAP. To edit a user's details or properties, click on their username. Use the links on the right to view an audit trail of their actions or delete them.</p>
 

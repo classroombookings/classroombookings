@@ -32,8 +32,13 @@ class Groups extends Controller {
 	
 	
 	function index(){
-		$tpl['title'] = 'Manage user groups';
-		$tpl['pagetitle'] = $tpl['title'];
+		$icondata[0] = array('security/groups/add', 'Add a new group', 'plus.gif' );
+		$icondata[1] = array('security/users', 'Manage users', 'user_orange.gif' );
+		$icondata[2] = array('security/permissions', 'Change group permissions', 'key2.gif');
+		$tpl['pretitle'] = $this->load->view('parts/iconbar', $icondata, TRUE);
+		
+		$tpl['title'] = 'Groups';
+		$tpl['pagetitle'] = 'Manage user groups';
 		$tpl['body'] = $this->load->view('security/groups.index.php', NULL, TRUE);
 		$this->load->view($this->tpl, $tpl);
 	}

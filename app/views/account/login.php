@@ -1,6 +1,8 @@
 <?php
-// Load errors
-#echo $this->validation->error_string;
+$foo = validation_errors();
+if($foo){
+	echo $this->msg->err('<ul>' . $foo . '</ul>', 'Form field validation error');
+}
 
 echo form_open(
 	'account/loginsubmit',
@@ -10,14 +12,6 @@ echo form_open(
 
 // Start tabindex
 $t = 1;
-?>
-
-
-<?php
-$foo = validation_errors();
-if($foo){
-	echo $this->msg->err('<ul>' . $foo . '</ul>', 'Form field validation error');
-}
 ?>
 
 

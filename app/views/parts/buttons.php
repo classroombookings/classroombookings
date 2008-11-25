@@ -24,6 +24,12 @@
 					echo sprintf($html, $button[1], $button[2], $button[3], $button[4])."\n";
 				break;
 				
+				case 'other':
+					$html = '<button type="button" name="%2$s" value="%2$s" class="%1$s" tabindex="%4$d">';
+					$html .= '<img src="img/ico/%3$s" alt="" width="16" height="16" />%2$s</button>';
+					echo sprintf($html, $button[1], $button[2], $button[3], $button[4])."\n";
+				break;
+				
 				case 'cancel':
 					if($button[3] == NULL){
 						$width = 1;
