@@ -25,7 +25,9 @@ class Groups extends Controller {
 
 	function Groups(){
 		parent::Controller();
+		$this->load->model('security');
 		$this->tpl = $this->config->item('template');
+		$this->load->helper('text');
 	}
 	
 	
@@ -37,9 +39,17 @@ class Groups extends Controller {
 		$icondata[2] = array('security/permissions', 'Change group permissions', 'key2.gif');
 		$tpl['pretitle'] = $this->load->view('parts/iconbar', $icondata, TRUE);
 		
+		// Get list of users
+		$body['groups'] = $this->security->get_group();
+		if ($body['groups'] == FALSE) {
+			$tpl['body'] = $this->msg->err($this->security->lasterr);
+		} else {
+			$tpl['body'] = $this->load->view('security/groups.index.php', $body, TRUE);
+		}
+		
 		$tpl['title'] = 'Groups';
 		$tpl['pagetitle'] = 'Manage user groups';
-		$tpl['body'] = $this->load->view('security/groups.index.php', NULL, TRUE);
+		
 		$this->load->view($this->tpl, $tpl);
 	}
 	

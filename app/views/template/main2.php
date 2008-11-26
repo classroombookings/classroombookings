@@ -17,7 +17,6 @@
 	<!-- <script type="text/javascript" src="js/jquery-ui-personalized-1.6rc2.js"></script> -->
 	<script src="js/qTip.js" type="text/javascript"></script>
 	<script src="js/tabber-minimized.js" type="text/javascript"></script>
-	
 </head>
 
 <body>
@@ -27,14 +26,21 @@
 		<a href="<?php echo site_url() ?>">
 			<img src="img/template/title.gif" alt="Classroombookings" />
 		</a><br />
-		<span><?php echo $this->settings->get('schoolname') ?></span>
+		<span><?php
+			$schoolname = $this->settings->get('schoolname');
+			$schoolurl = $this->settings->get('schoolurl');
+			if($schoolurl != FALSE){
+				echo '<a href="'.$schoolurl.'">'.$schoolname.'</a>';
+			} else {
+				echo $schoolname;
+			}
+			?></span>
 	</div>
 	<!-- #header // -->
 
 	<!-- // #sidebar -->
 	<div id="sidebar">
-		<ul class="links">
-			<?php
+		<ul class="links"><?php
 			if($this->auth->logged_in()){
 				echo sprintf('<li>Logged in as %s</li>', anchor('account/edit', $this->session->userdata('display')));
 				echo sprintf('<li>%s</li>', anchor('account/bookings', sprintf('%d active bookings', 5)));
@@ -42,8 +48,7 @@
 			} else {
 				echo sprintf('<li>%s</li>', anchor('account/login', 'Login'));
 			}
-			?>
-		</ul>
+			?></ul>
 		<br />
 		<ul class="menu">
 			<li><?php echo anchor('dashboard', 'Dashboard', 'style="background-image:url(img/ico/home.gif)"') ?></li>

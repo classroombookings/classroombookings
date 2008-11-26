@@ -19,15 +19,15 @@
 			switch($button[0]){
 				
 				case 'submit':
-					$html = '<button type="submit" name="submit" value="%2$s" class="%1$s" tabindex="%4$d">';
+					$html = '<button type="submit" name="btn_submit" value="%2$s" class="%1$s" tabindex="%4$d">';
 					$html .= '<img src="img/ico/%3$s" alt="" width="16" height="16" />%2$s</button>';
 					echo sprintf($html, $button[1], $button[2], $button[3], $button[4])."\n";
 				break;
 				
 				case 'other':
-					$html = '<button type="button" name="%2$s" value="%2$s" class="%1$s" tabindex="%4$d">';
+					$html = '<button type="button" id="%5$s" name="%2$s" value="%2$s" class="%1$s" tabindex="%4$d">';
 					$html .= '<img src="img/ico/%3$s" alt="" width="16" height="16" />%2$s</button>';
-					echo sprintf($html, $button[1], $button[2], $button[3], $button[4])."\n";
+					echo sprintf($html, $button[1], $button[2], $button[3], $button[4], strtolower(url_title($button[2])))."\n";
 				break;
 				
 				case 'cancel':

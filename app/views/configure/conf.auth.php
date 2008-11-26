@@ -1,6 +1,5 @@
 <?php
-print_r($auth);
-echo form_open('configure/save_ldap');
+echo form_open('configure/save_ldap', array('name' => 'form_confauth', 'id' => 'form_confauth'));
 
 // Start tabindex
 $t = 1;
@@ -45,7 +44,7 @@ $t = 1;
 	
 	<tr>
 		<td class="caption">
-			<label for="ldap" accesskey="L"><u>L</u>DAP</label>
+			<label for="ldap" accesskey="L" title="If you enable LDAP authentication, users who attempt to login with LDAP credentials will be added to Classroombookings if successful. Ensure you set the Default group below to ensure they inherit the correct permissions."><u>L</u>DAP</label>
 		</td>
 		<td class="field">
 			<label for="ldap" class="check">
@@ -127,7 +126,23 @@ $t = 1;
 	
 	<tr>
 		<td class="caption">
-			<label for="ldaptestuser" class="r" accesskey="U" title="Enter a username to test the LDAP settings with, and click Test LDAP.">Test username</label>
+			<label for="ldapgroup_id" class="r" accesskey="G" title="This is the group that users who authenticate via LDAP will become members of automatically.">Default CRBS group</label>
+		</td>
+		<td class="field">
+		  <?php
+		  	unset($input);
+			$input[0] = 'Guests';
+			$input[1] = 'Administrators';
+			$input[3] = 'Teachers';
+			echo form_dropdown('ldapgroup_id', $input, 0, 'id="ldapgroup_id"');
+			$t++;
+			?>
+		</td>
+	</tr>
+	
+	<tr>
+		<td class="caption">
+			<label for="ldaptestuser" accesskey="U" title="Enter a username to test the LDAP settings with, and click Test LDAP.">Test username</label>
 		</td>
 		<td class="field">
 		  <?php
@@ -138,6 +153,7 @@ $t = 1;
 			$input['size'] = '20';
 			$input['maxlength'] = '50';
 			$input['tabindex'] = $t;
+			$input['autocomplete'] = 'off';
 			$input['value'] = set_value('ldaptestuser');
 			echo form_input($input);
 			$t++;
@@ -147,7 +163,7 @@ $t = 1;
 	
 	<tr>
 		<td class="caption">
-			<label for="ldaptestpass" class="r" accesskey="W">Test password</label>
+			<label for="ldaptestpass" accesskey="W">Test password</label>
 		</td>
 		<td class="field">
 		  <?php
@@ -158,6 +174,7 @@ $t = 1;
 			$input['size'] = '20';
 			$input['maxlength'] = '50';
 			$input['tabindex'] = $t;
+			$input['autocomplete'] = 'off';
 			$input['value'] = set_value('ldaptestpass');
 			echo form_password($input);
 			$t++;
@@ -173,4 +190,21 @@ $t = 1;
 	?>
 
 </table>
+
 </form>
+
+
+
+
+<script type="text/javascript">
+$("#test-ldap").bind("click", function(e){
+    var w = window.open("about:blank","ldaptestwin","width=640,height=400,toolbar=0");
+	var oldaction = $("#form_confauth").attr("action");
+	var oldtarget = $("#form_confauth").attr("target");
+	$("#form_confauth").attr("action","<?php echo site_url("configure/test_ldap") ?>");
+	$("#form_confauth").attr("target","ldaptestwin");
+	$("#form_confauth").submit();
+	$("#form_confauth").attr("action",oldaction);
+	$("#form_confauth").attr("target",oldtarget);
+});
+</script>

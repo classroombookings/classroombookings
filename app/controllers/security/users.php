@@ -25,7 +25,7 @@ class Users extends Controller {
 
 	function Users(){
 		parent::Controller();
-		$this->load->model('Security');
+		$this->load->model('security');
 		$this->tpl = $this->config->item('template');
 		$this->output->enable_profiler(TRUE);
 	}
@@ -40,9 +40,9 @@ class Users extends Controller {
 		$tpl['pretitle'] = $this->load->view('parts/iconbar', $icondata, TRUE);
 		
 		// Get list of users
-		$body['users'] = $this->Security->get_user();
+		$body['users'] = $this->security->get_user();
 		if ($body['users'] == FALSE) {
-			$tpl['body'] = $this->msg->err($this->Security->lasterr);
+			$tpl['body'] = $this->msg->err($this->security->lasterr);
 		} else {
 			$tpl['body'] = $this->load->view('security/users.index.php', $body, TRUE);
 		}
@@ -63,14 +63,14 @@ class Users extends Controller {
 		$tpl['pretitle'] = $this->load->view('parts/iconbar', $icondata, TRUE);
 		
 		$tpl['title'] = 'Users';
-		$groupname = $this->Security->get_group_name($group_id);
+		$groupname = $this->security->get_group_name($group_id);
 		if ($groupname == FALSE) {
-			$tpl['body'] = $this->msg->err($this->Security->lasterr);
+			$tpl['body'] = $this->msg->err($this->security->lasterr);
 			$tpl['pagetitle'] = $tpl['title'];
 		} else {
-			$body['users'] = $this->Security->get_user(NULL, $group_id);
+			$body['users'] = $this->security->get_user(NULL, $group_id);
 			if ($body['users'] === FALSE) {
-				$tpl['body'] = $this->msg->err($this->Security->lasterr);
+				$tpl['body'] = $this->msg->err($this->security->lasterr);
 			} else {
 				$tpl['body'] = $this->load->view('security/users.index.php', $body, TRUE);
 			}

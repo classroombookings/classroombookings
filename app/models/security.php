@@ -79,6 +79,58 @@ class Security extends Model{
 	
 	
 	
+	function get_group($group_id = NULL, $page = NULL){
+		if ($group_id == NULL) {
+		
+			// Getting all groups
+			$this->db->select('
+				groups.*,
+				(
+					SELECT COUNT(user_id)
+					FROM users
+					WHERE groups.group_id = users.group_id
+					LIMIT 1
+				) AS usercount',
+				FALSE
+			);
+			$this->db->from('groups');
+						
+			$this->db->orderby('groups.name ASC');
+			
+			if (isset($page) && is_array($page)) {
+				$this->db->limit($page[0], $page[1]);
+			}
+			
+			$query = $this->db->get();
+			if ($query->num_rows() > 0){
+				return $query->result();
+			} else {
+				$this->lasterr = 'No groups available.';
+				return 0;
+			}
+			
+		} else {
+			
+			if (!is_numeric($user_id)) {
+				return FALSE;
+			}
+			
+			// Getting one user
+			$sql = 'SELECT * FROM groups WHERE group_id = ? LIMIT 1';
+			$query = $this->db->query($sql, array($user_id));
+			
+			if($query->num_rows() == 1){
+				return $query->result();
+			} else {
+				return FALSE;
+			}
+			
+		}
+	}
+	
+	
+	
+	
 	function get_group_name($group_id){
 		if($group_id == NULL || !is_numeric($group_id)){
 			$this->lasterr = 'No group_id given or invalid data type.';

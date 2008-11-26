@@ -131,6 +131,27 @@ class Configure extends Controller {
 	
 	
 	
+	function test_ldap(){
+		if(!function_exists('ldap_bind')){
+			echo "It appears you don't have the PHP LDAP module installed!";
+			exit();
+		}
+		$ldaphost = $this->input->post('ldaphost');
+		$ldapport = $this->input->post('ldapport');
+		$ldapbase = $this->input->post('ldapbase');
+		echo '<pre style="font-size:9pt;">';		
+		echo sprintf("Trying to connect to '%s' on port %d ...", $ldaphost, $ldapport);
+		ob_flush();
+		#$bind1 = ldap_bind($ldaphost, $ldapport);
+		fsockopen("foobar");
+		ob_flush();
+		echo 'Blah';
+		echo "</pre>";
+	}
+	
+	
+	
+	
 }
 
 

@@ -13,7 +13,7 @@
 
  
 body{
-	font:0.75em tahoma,Verdana, Sans-serif;
+	font:0.75em Tahoma, Verdana, Sans-serif;
 	text-align:center;
 }
 
@@ -97,10 +97,10 @@ a:hover{text-decoration:underline;}
 
 
 div#qTip{
-	padding:3px;
-	border:0px solid #006699;
+	padding:5px;
+	border:3px solid #B1DE98;	/*#006699;*/
 	display:none;
-	background:#B1DE98;	/*#D86B46;*/
+	background:#fff;	/*#B1DE98;	/*#D86B46;*/
 	color:#000;
 	font-size:90%;
 	width:300px;
@@ -414,10 +414,13 @@ table.form td.caption label.r{
 table.form td.field{
 	background:transparent;
 }
-table.form td.field input{
+table.form td.field input,
+table.form td.field select,
+table.form td.field textarea{
 	border:1px solid #999;
 	padding:2px;
 }
+table.form td.field select{padding:0;}
 table.form td.field span.hint{ clear:both; display:block; color:#000; font-size:90%;}
 table.form td.actions{padding-top:16px;vertical-align:middle;}
 table.form td.actions input{

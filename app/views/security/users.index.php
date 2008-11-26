@@ -1,5 +1,3 @@
-
-
 <p>Here is a list of the existing users, including those that authenticate via LDAP. To edit a user's details or properties, click on their username. Use the links on the right to view an audit trail of their actions or delete them.</p>
 
 <?php
@@ -33,7 +31,8 @@ if($users != 0){
 		<td class="il">
 		<?php
 		$actiondata[0] = array('security/users/view/'.$user->user_id, 'Report', 'magnifier_sm.gif' );
-		$actiondata[1] = array('security/users/delete', 'Delete', 'cross_sm.gif' );
+		$actiondata[1] = array('security/permissions/effective/'.$user->user_id, 'View effective permissions', 'key-sm.gif' );
+		$actiondata[2] = array('security/users/delete', 'Delete', 'cross_sm.gif' );
 		$this->load->view('parts/listactions', $actiondata);
 		#$this->load->view('parts/delete', array('url' => 'security/users/delete/'.$user->user_id));
 		?></td>
