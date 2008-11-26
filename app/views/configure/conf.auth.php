@@ -97,7 +97,7 @@ $t = 1;
 			$input['size'] = '5';
 			$input['maxlength'] = '5';
 			$input['tabindex'] = $t;
-			$input['value'] = set_value('ldapport', $auth->ldapport);
+			$input['value'] = set_value('ldapport', ($auth->ldapport) ? $auth->ldapport : '389');
 			echo form_input($input);
 			$t++;
 			?>
@@ -106,7 +106,7 @@ $t = 1;
 	
 	<tr>
 		<td class="caption">
-			<label for="ldapbase" class="r" accesskey="D">Base <u>D</u>N</label>
+			<label for="ldapbase" class="r" accesskey="D" title="Separate multiple DNs to search with a semicolon">Base <u>D</u>Ns</label>
 		</td>
 		<td class="field">
 		  <?php
@@ -114,11 +114,35 @@ $t = 1;
 			$input['accesskey'] = 'D';
 			$input['name'] = 'ldapbase';
 			$input['id'] = 'ldapbase';
-			$input['size'] = '60';
-			$input['maxlength'] = '1024';
+			#$input['size'] = '60';
+			$input['maxlength'] = '5120';
 			$input['tabindex'] = $t;
+			$input['rows'] = '4';
+			$input['cols'] = '60';
 			$input['value'] = set_value('ldapbase', $auth->ldapbase);
-			echo form_input($input);
+			echo form_textarea($input);
+			$t++;
+			?>
+		</td>
+	</tr>
+	
+	<tr>
+		<td class="caption">
+			<label for="ldapfilter" class="r" accesskey="F" title="LDAP query filter. %u is where the supplied username will be replaced. Leave as default if unsure.">LDAP query filter</label>
+		</td>
+		<td class="field">
+		  <?php
+		  	unset($input);
+			$input['accesskey'] = 'F';
+			$input['name'] = 'ldapfilter';
+			$input['id'] = 'ldapfilter';
+			#$input['size'] = '60';
+			$input['maxlength'] = '5120';
+			$input['tabindex'] = $t;
+			$input['rows'] = '4';
+			$input['cols'] = '60';
+			$input['value'] = set_value('ldapfilter', ($auth->ldapfilter) ? $auth->ldapfilter : "(& (| (!(displayname=Administrator*)) (!(displayname=Admin*)) ) (cn=%u) )");
+			echo form_textarea($input);
 			$t++;
 			?>
 		</td>

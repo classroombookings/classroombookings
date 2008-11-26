@@ -32,11 +32,11 @@ class Configure extends Controller {
 	
 	
 	function index($tab = 'conf-main'){
-		if($this->session->flashdata('tab')){
+		/*if($this->session->flashdata('tab')){
 			$body['tab'] = $this->session->flashdata('tab');
 		} else {
 			$body['tab'] = $tab;
-		}
+		}*/
 		
 		$body['conf']['main'] = $this->settings->get_all('main');
 		$body['conf']['auth'] = $this->settings->get_all('auth');
@@ -132,21 +132,71 @@ class Configure extends Controller {
 	
 	
 	function test_ldap(){
+		error_reporting(E_ALL);
+		#echo '<pre style="font-size:9pt;">';
+		$this->_d('Testing for PHP LDAP module... ', FALSE);
+		ob_flush();
 		if(!function_exists('ldap_bind')){
-			echo "It appears you don't have the PHP LDAP module installed!";
+			$this->_d("It appears you don't have the PHP LDAP module installed - cannot continue!");
 			exit();
+		} else {
+			$this->_d('OK');
 		}
 		$ldaphost = $this->input->post('ldaphost');
 		$ldapport = $this->input->post('ldapport');
 		$ldapbase = $this->input->post('ldapbase');
-		echo '<pre style="font-size:9pt;">';		
-		echo sprintf("Trying to connect to '%s' on port %d ...", $ldaphost, $ldapport);
+		$ldaptestuser = $this->input->post('ldaptestuser');
+		$ldaptestpass = $this->input->post('ldaptestpass');
+		
+		if(!$ldaphost && !$ldapport){
+			$this->_d('No LDAP server and port combination were supplied - cannot continue.');
+			exit();
+		}
+		
+		if(!$ldapbase){
+			$this->_d("No LDAP search base was specified - cannot continue.");
+			exit();
+		}
+			
+		$this->_d(sprintf("Trying to connect to '%s' on port %d... ", $ldaphost, $ldapport), FALSE);
+		$connect = ldap_connect($ldaphost, $ldapport);
+		
+		if(!$connect){
+			$this->_d('Failed!');
+			exit();
+		} else {
+			$this->_d("OK!");
+			$this->_d($connect);
+		}
+		
+		if(!$ldaptestuser && !$ldaptestpass){
+			$this->_d("You didn't specify a username and password to test the authentication with. It seems the connection was successful so far.");
+			exit();
+		}
+		
+		$this->_d("Trying bind with supplied credentials... ", FALSE);
+		$bind = @ldap_bind($connect, $ldaptestuser, $ldaptestpass);
+		
+		if(!$bind){
+			$this->_d("failed.");
+			$this->_d($bind);
+			exit();
+		} else {
+			$this->_d("seems successful.");
+		}
+		
+		
+
+
+		#echo "</pre>";
+	}
+	
+	
+	
+	function _d($message, $br = TRUE){
+		echo "$message";
+		echo ($br == TRUE) ? '<br /><br />' : '';
 		ob_flush();
-		#$bind1 = ldap_bind($ldaphost, $ldapport);
-		fsockopen("foobar");
-		ob_flush();
-		echo 'Blah';
-		echo "</pre>";
 	}
 	
 	

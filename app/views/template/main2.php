@@ -10,8 +10,34 @@
 	<link rel="icon" type="image/x-icon" href="favicon.ico" />
 	<link rel="stylesheet" type="text/css" media="screen" href="css/layout2.css" />
 	<link rel="stylesheet" type="text/css" media="screen" href="css/ui2.css" />
-	<!-- <link rel="stylesheet" type="text/css" media="screen" href="css/jquery-ui-theme.css" /> -->
-	<!-- <link rel="stylesheet" type="text/css" media="print" href="css/print.css" /> -->
+	
+	<script type="text/javascript">
+	var tabberOptions = {
+		'cookie':"crbstabber",
+		'onLoad':function(argsObj){
+			var t = argsObj.tabber;
+			var i;
+			/* Optional: Add the id of the tabber to the cookie name to allow
+			   for multiple tabber interfaces on the site.  If you have
+			   multiple tabber interfaces (even on different pages) I suggest
+			   setting a unique id on each one, to avoid having the cookie set
+			   the wrong tab.
+			*/
+			if(t.id){
+				t.cookie = t.id + t.cookie;
+			}
+			/* If a cookie was previously set, restore the active tab */
+			i = parseInt(getCookie(t.cookie));
+			if (isNaN(i)) { return; }
+			t.tabShow(i);
+		},
+		'onClick':function(argsObj){
+			var c = argsObj.tabber.cookie;
+			var i = argsObj.index;
+			setCookie(c, i);
+		}
+	};
+	</script>
 	<script type="text/javascript" src="js/jquery-1.2.6.min.js"></script>
 	<script type="text/javascript" src="js/jquery.boxy.js"></script>
 	<!-- <script type="text/javascript" src="js/jquery-ui-personalized-1.6rc2.js"></script> -->

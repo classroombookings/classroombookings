@@ -22,7 +22,7 @@ class Users extends Controller {
 
 	var $tpl;
 	
-
+	
 	function Users(){
 		parent::Controller();
 		$this->load->model('security');
