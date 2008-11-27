@@ -35,8 +35,9 @@ class Users extends Controller {
 	
 	function index(){
 		$icondata[0] = array('security/users/add', 'Add a new user', 'plus.gif' );
-		$icondata[1] = array('security/groups', 'Manage groups', 'group.gif' );
-		$icondata[2] = array('security/permissions', 'Change group permissions', 'key2.gif');
+		$icondata[1] = array('security/users/import', 'Import from file', 'database-arr.gif' );
+		$icondata[2] = array('security/groups', 'Manage groups', 'group.gif' );
+		$icondata[3] = array('security/permissions', 'Change group permissions', 'key2.gif');
 		$tpl['pretitle'] = $this->load->view('parts/iconbar', $icondata, TRUE);
 		
 		// Get list of users
@@ -58,8 +59,9 @@ class Users extends Controller {
 	
 	function ingroup($group_id){
 		$icondata[0] = array('security/users/add', 'Add a new user', 'plus.gif' );
-		$icondata[1] = array('security/groups', 'Manage groups', 'group.gif' );
-		$icondata[2] = array('security/permissions', 'Change group permissions', 'key2.gif');
+		$icondata[1] = array('security/users/import', 'Import', 'database-arr.gif' );
+		$icondata[2] = array('security/groups', 'Manage groups', 'group.gif' );
+		$icondata[3] = array('security/permissions', 'Change group permissions', 'key2.gif');
 		$tpl['pretitle'] = $this->load->view('parts/iconbar', $icondata, TRUE);
 		
 		$tpl['title'] = 'Users';
@@ -84,6 +86,13 @@ class Users extends Controller {
 	
 	
 	function add(){
+		$body['user'] = NULL;
+		$body['user_id'] = NULL;
+		$body['groups'] = $this->security->get_groups_dropdown();
+		$tpl['title'] = 'Add user';
+		$tpl['pagetitle'] = 'Add a new user';
+		$tpl['body'] = $this->load->view('security/users.addedit.php', $body, TRUE);
+		$this->load->view($this->tpl, $tpl);
 	}
 	
 	

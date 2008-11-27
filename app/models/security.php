@@ -131,6 +131,25 @@ class Security extends Model{
 	
 	
 	
+	function get_groups_dropdown(){
+		$sql = 'SELECT group_id, name FROM groups';
+		$query = $this->db->query($sql);
+		if($query->num_rows() > 0){
+			$result = $query->result();
+			$groups = array();
+			foreach($result as $group){
+				$groups[$group->group_id] = $group->name;
+			}
+			return $groups;
+		} else {
+			$this->lasterr = 'No groups found';
+			return FALSE;
+		}
+	}
+	
+	
+	
+	
 	function get_group_name($group_id){
 		if($group_id == NULL || !is_numeric($group_id)){
 			$this->lasterr = 'No group_id given or invalid data type.';

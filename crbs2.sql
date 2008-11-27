@@ -18,7 +18,8 @@
 # Database structure for database 'crbs2'
 #
 
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ "crbs2" /*!40100 DEFAULT CHARACTER SET latin1 */;
+DROP DATABASE IF EXISTS "crbs2";
+CREATE DATABASE "crbs2" /*!40100 DEFAULT CHARACTER SET latin1 */;
 
 USE "crbs2";
 
@@ -27,7 +28,7 @@ USE "crbs2";
 # Table structure for table 'academicyears'
 #
 
-CREATE TABLE /*!32312 IF NOT EXISTS*/ "academicyears" (
+CREATE TABLE "academicyears" (
   "year_id" int(10) unsigned NOT NULL auto_increment,
   "date_start" date NOT NULL,
   "date_end" date NOT NULL,
@@ -52,7 +53,7 @@ CREATE TABLE /*!32312 IF NOT EXISTS*/ "academicyears" (
 # Table structure for table 'ci_sessions'
 #
 
-CREATE TABLE /*!32312 IF NOT EXISTS*/ "ci_sessions" (
+CREATE TABLE "ci_sessions" (
   "session_id" varchar(40) NOT NULL default '0',
   "ip_address" varchar(16) NOT NULL default '0',
   "user_agent" varchar(50) NOT NULL,
@@ -69,10 +70,8 @@ CREATE TABLE /*!32312 IF NOT EXISTS*/ "ci_sessions" (
 
 LOCK TABLES "ci_sessions" WRITE;
 /*!40000 ALTER TABLE "ci_sessions" DISABLE KEYS;*/
-REPLACE INTO "ci_sessions" ("session_id", "ip_address", "user_agent", "last_activity", "user_data") VALUES
-	('0e84098adf3784a8a322a2f3e6198dc7','127.0.0.1','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv','1227657060','');
-REPLACE INTO "ci_sessions" ("session_id", "ip_address", "user_agent", "last_activity", "user_data") VALUES
-	('67e83bed5fa7730b7439b792ef8cb757','127.0.0.1','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv','1227649533','');
+INSERT INTO "ci_sessions" ("session_id", "ip_address", "user_agent", "last_activity", "user_data") VALUES
+	('58efe0bcd6cbbe4af6d6c59f1599d6f7','127.0.0.1','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv','1227743579','a:1:{s:3:"uri";s:9:"/bookings";}');
 /*!40000 ALTER TABLE "ci_sessions" ENABLE KEYS;*/
 UNLOCK TABLES;
 
@@ -81,7 +80,7 @@ UNLOCK TABLES;
 # Table structure for table 'departments'
 #
 
-CREATE TABLE /*!32312 IF NOT EXISTS*/ "departments" (
+CREATE TABLE "departments" (
   "department_id" int(10) unsigned NOT NULL auto_increment,
   "name" varchar(20) NOT NULL,
   "description" varchar(255) default NULL,
@@ -104,7 +103,7 @@ CREATE TABLE /*!32312 IF NOT EXISTS*/ "departments" (
 # Table structure for table 'groups'
 #
 
-CREATE TABLE /*!32312 IF NOT EXISTS*/ "groups" (
+CREATE TABLE "groups" (
   "group_id" int(10) unsigned NOT NULL auto_increment,
   "name" varchar(20) NOT NULL,
   "description" varchar(255) default NULL,
@@ -121,12 +120,12 @@ CREATE TABLE /*!32312 IF NOT EXISTS*/ "groups" (
 
 LOCK TABLES "groups" WRITE;
 /*!40000 ALTER TABLE "groups" DISABLE KEYS;*/
-REPLACE INTO "groups" ("group_id", "name", "description") VALUES
+INSERT INTO "groups" ("group_id", "name", "description") VALUES
+	('0','Guests','Default group for guests');
+INSERT INTO "groups" ("group_id", "name", "description") VALUES
 	('1','Administrators','Default group for administrator users');
-REPLACE INTO "groups" ("group_id", "name", "description") VALUES
+INSERT INTO "groups" ("group_id", "name", "description") VALUES
 	('2','Foo','Teachers from LDAP');
-REPLACE INTO "groups" ("group_id", "name", "description") VALUES
-	('3','Guests','Default group for guests');
 /*!40000 ALTER TABLE "groups" ENABLE KEYS;*/
 UNLOCK TABLES;
 
@@ -135,7 +134,7 @@ UNLOCK TABLES;
 # Table structure for table 'holidays'
 #
 
-CREATE TABLE /*!32312 IF NOT EXISTS*/ "holidays" (
+CREATE TABLE "holidays" (
   "holiday_id" int(10) unsigned NOT NULL auto_increment,
   "ayear_id" int(10) unsigned NOT NULL,
   "date_start" date NOT NULL,
@@ -160,7 +159,7 @@ CREATE TABLE /*!32312 IF NOT EXISTS*/ "holidays" (
 # Table structure for table 'periods'
 #
 
-CREATE TABLE /*!32312 IF NOT EXISTS*/ "periods" (
+CREATE TABLE "periods" (
   "period_id" int(10) unsigned NOT NULL auto_increment,
   "ayear_id" int(10) unsigned default NULL,
   "time_start" time NOT NULL,
@@ -185,7 +184,7 @@ CREATE TABLE /*!32312 IF NOT EXISTS*/ "periods" (
 # Table structure for table 'permissions'
 #
 
-CREATE TABLE /*!32312 IF NOT EXISTS*/ "permissions" (
+CREATE TABLE "permissions" (
   "permission_id" int(10) unsigned NOT NULL auto_increment,
   "action" varchar(20) NOT NULL,
   "name" varchar(50) default NULL,
@@ -203,13 +202,13 @@ CREATE TABLE /*!32312 IF NOT EXISTS*/ "permissions" (
 
 LOCK TABLES "permissions" WRITE;
 /*!40000 ALTER TABLE "permissions" DISABLE KEYS;*/
-REPLACE INTO "permissions" ("permission_id", "action", "name", "desc") VALUES
+INSERT INTO "permissions" ("permission_id", "action", "name", "desc") VALUES
 	('1','bookings/view','View bookings',NULL);
-REPLACE INTO "permissions" ("permission_id", "action", "name", "desc") VALUES
+INSERT INTO "permissions" ("permission_id", "action", "name", "desc") VALUES
 	('2','bookings/make-one','Create booking',NULL);
-REPLACE INTO "permissions" ("permission_id", "action", "name", "desc") VALUES
+INSERT INTO "permissions" ("permission_id", "action", "name", "desc") VALUES
 	('3','bookings/make-recur','Create timetable booking',NULL);
-REPLACE INTO "permissions" ("permission_id", "action", "name", "desc") VALUES
+INSERT INTO "permissions" ("permission_id", "action", "name", "desc") VALUES
 	('4','welcome','Welcome page',NULL);
 /*!40000 ALTER TABLE "permissions" ENABLE KEYS;*/
 UNLOCK TABLES;
@@ -219,7 +218,7 @@ UNLOCK TABLES;
 # Table structure for table 'permissions2groups'
 #
 
-CREATE TABLE /*!32312 IF NOT EXISTS*/ "permissions2groups" (
+CREATE TABLE "permissions2groups" (
   "p_id" int(10) unsigned default NULL,
   "g_id" int(10) unsigned default NULL,
   KEY "permission_id" ("p_id","g_id")
@@ -233,21 +232,21 @@ CREATE TABLE /*!32312 IF NOT EXISTS*/ "permissions2groups" (
 
 LOCK TABLES "permissions2groups" WRITE;
 /*!40000 ALTER TABLE "permissions2groups" DISABLE KEYS;*/
-REPLACE INTO "permissions2groups" ("p_id", "g_id") VALUES
+INSERT INTO "permissions2groups" ("p_id", "g_id") VALUES
 	(NULL,NULL);
-REPLACE INTO "permissions2groups" ("p_id", "g_id") VALUES
+INSERT INTO "permissions2groups" ("p_id", "g_id") VALUES
 	(NULL,NULL);
-REPLACE INTO "permissions2groups" ("p_id", "g_id") VALUES
+INSERT INTO "permissions2groups" ("p_id", "g_id") VALUES
 	('1','3');
-REPLACE INTO "permissions2groups" ("p_id", "g_id") VALUES
+INSERT INTO "permissions2groups" ("p_id", "g_id") VALUES
 	('1','3');
-REPLACE INTO "permissions2groups" ("p_id", "g_id") VALUES
+INSERT INTO "permissions2groups" ("p_id", "g_id") VALUES
 	('2','1');
-REPLACE INTO "permissions2groups" ("p_id", "g_id") VALUES
+INSERT INTO "permissions2groups" ("p_id", "g_id") VALUES
 	('2','1');
-REPLACE INTO "permissions2groups" ("p_id", "g_id") VALUES
+INSERT INTO "permissions2groups" ("p_id", "g_id") VALUES
 	('2','3');
-REPLACE INTO "permissions2groups" ("p_id", "g_id") VALUES
+INSERT INTO "permissions2groups" ("p_id", "g_id") VALUES
 	('2','3');
 /*!40000 ALTER TABLE "permissions2groups" ENABLE KEYS;*/
 UNLOCK TABLES;
@@ -257,7 +256,7 @@ UNLOCK TABLES;
 # Table structure for table 'permissions_copy'
 #
 
-CREATE TABLE /*!32312 IF NOT EXISTS*/ "permissions_copy" (
+CREATE TABLE "permissions_copy" (
   "permission_id" int(10) unsigned NOT NULL auto_increment,
   "action" varchar(20) NOT NULL,
   "menuname" varchar(20) default NULL,
@@ -279,37 +278,37 @@ CREATE TABLE /*!32312 IF NOT EXISTS*/ "permissions_copy" (
 
 LOCK TABLES "permissions_copy" WRITE;
 /*!40000 ALTER TABLE "permissions_copy" DISABLE KEYS;*/
-REPLACE INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
+INSERT INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
 	('1','BKG_VIEW','Bookings','bookings','0',NULL,'View bookings',NULL);
-REPLACE INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
+INSERT INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
 	('2','BKG_MAKE',NULL,NULL,NULL,'1','Make a booking',NULL);
-REPLACE INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
+INSERT INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
 	('3','BKG_MAKE_RECUR',NULL,NULL,NULL,'1','Make recurring bookings',NULL);
-REPLACE INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
+INSERT INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
 	('4','BKG_MAKE_RECUR_OWNER',NULL,NULL,NULL,'1','Allow room owners to make recurring bookings',NULL);
-REPLACE INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
+INSERT INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
 	('5','ACC','Account','account','1',NULL,'Account',NULL);
-REPLACE INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
+INSERT INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
 	('6','CFG','Settings','settings','2',NULL,'Global settings',NULL);
-REPLACE INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
+INSERT INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
 	('7','RMS','Rooms','rooms','3',NULL,'Rooms',NULL);
-REPLACE INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
+INSERT INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
 	('8','PDS','Periods','periods','4',NULL,'Periods (school day)',NULL);
-REPLACE INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
+INSERT INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
 	('9','WKS','Weeks','weeks','5',NULL,'Timetable weeks',NULL);
-REPLACE INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
+INSERT INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
 	('10','WKS_ACYR',NULL,'weeks/academic-year',NULL,'8','Academic year',NULL);
-REPLACE INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
+INSERT INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
 	('11','HOL','Holidays','holidays','6',NULL,'School holidays',NULL);
-REPLACE INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
+INSERT INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
 	('12','DEP','Departments','departments','7',NULL,'Departments',NULL);
-REPLACE INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
+INSERT INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
 	('13','REP','Reports','reports','8',NULL,'Reports',NULL);
-REPLACE INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
+INSERT INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
 	('14','USR','Users','users','9',NULL,'User management',NULL);
-REPLACE INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
+INSERT INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
 	('15','USR_GRPS',NULL,'users/groups',NULL,'13','Group management',NULL);
-REPLACE INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
+INSERT INTO "permissions_copy" ("permission_id", "action", "menuname", "url", "order", "admin-parent", "admin-title", "admin-desc") VALUES
 	('16','WEL','','welcome',NULL,NULL,'Welcome page',NULL);
 /*!40000 ALTER TABLE "permissions_copy" ENABLE KEYS;*/
 UNLOCK TABLES;
@@ -319,7 +318,7 @@ UNLOCK TABLES;
 # Table structure for table 'rooms-fields'
 #
 
-CREATE TABLE /*!32312 IF NOT EXISTS*/ "rooms-fields" (
+CREATE TABLE "rooms-fields" (
   "field_id" int(10) unsigned NOT NULL auto_increment,
   "name" varchar(50) NOT NULL,
   "type" enum('TEXT','SELECT','CHECKBOX','MULTI') NOT NULL,
@@ -340,7 +339,7 @@ CREATE TABLE /*!32312 IF NOT EXISTS*/ "rooms-fields" (
 # Table structure for table 'rooms-options'
 #
 
-CREATE TABLE /*!32312 IF NOT EXISTS*/ "rooms-options" (
+CREATE TABLE "rooms-options" (
   "option_id" int(10) unsigned NOT NULL auto_increment,
   "value" varchar(50) NOT NULL,
   PRIMARY KEY  ("option_id")
@@ -360,7 +359,7 @@ CREATE TABLE /*!32312 IF NOT EXISTS*/ "rooms-options" (
 # Table structure for table 'rooms-values'
 #
 
-CREATE TABLE /*!32312 IF NOT EXISTS*/ "rooms-values" (
+CREATE TABLE "rooms-values" (
   "value_id" int(10) unsigned NOT NULL auto_increment,
   "room_id" int(10) unsigned NOT NULL,
   "field_id" int(10) unsigned NOT NULL,
@@ -382,7 +381,7 @@ CREATE TABLE /*!32312 IF NOT EXISTS*/ "rooms-values" (
 # Table structure for table 'rooms'
 #
 
-CREATE TABLE /*!32312 IF NOT EXISTS*/ "rooms" (
+CREATE TABLE "rooms" (
   "room_id" int(10) unsigned NOT NULL auto_increment,
   "user_id" int(10) unsigned NOT NULL,
   "name" varchar(20) NOT NULL,
@@ -409,12 +408,13 @@ CREATE TABLE /*!32312 IF NOT EXISTS*/ "rooms" (
 # Table structure for table 'settings-auth'
 #
 
-CREATE TABLE /*!32312 IF NOT EXISTS*/ "settings-auth" (
+CREATE TABLE "settings-auth" (
+  "preauthkey" char(40) default NULL,
   "ldap" tinyint(1) unsigned NOT NULL default '0',
   "ldaphost" varchar(50) default NULL,
   "ldapport" int(5) unsigned default NULL,
   "ldapbase" text,
-  "preauthkey" char(40) default NULL,
+  "ldapfilter" text,
   "ldapgroup_id" int(10) unsigned default NULL
 ) /*!40100 DEFAULT CHARSET=latin1 COMMENT='LDAP configuration'*/;
 
@@ -426,8 +426,8 @@ CREATE TABLE /*!32312 IF NOT EXISTS*/ "settings-auth" (
 
 LOCK TABLES "settings-auth" WRITE;
 /*!40000 ALTER TABLE "settings-auth" DISABLE KEYS;*/
-REPLACE INTO "settings-auth" ("ldap", "ldaphost", "ldapport", "ldapbase", "preauthkey", "ldapgroup_id") VALUES
-	(0,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO "settings-auth" ("preauthkey", "ldap", "ldaphost", "ldapport", "ldapbase", "ldapfilter", "ldapgroup_id") VALUES
+	(NULL,0,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE "settings-auth" ENABLE KEYS;*/
 UNLOCK TABLES;
 
@@ -436,7 +436,7 @@ UNLOCK TABLES;
 # Table structure for table 'settings-ldap-rdns'
 #
 
-CREATE TABLE /*!32312 IF NOT EXISTS*/ "settings-ldap-rdns" (
+CREATE TABLE "settings-ldap-rdns" (
   "rdn_id" int(10) unsigned NOT NULL auto_increment,
   "string" varchar(255) NOT NULL,
   PRIMARY KEY  ("rdn_id"),
@@ -458,7 +458,7 @@ CREATE TABLE /*!32312 IF NOT EXISTS*/ "settings-ldap-rdns" (
 # Table structure for table 'settings-main'
 #
 
-CREATE TABLE /*!32312 IF NOT EXISTS*/ "settings-main" (
+CREATE TABLE "settings-main" (
   "schoolname" varchar(100) default NULL,
   "schoolurl" varchar(255) default NULL,
   "bd_mode" enum('room','day') default NULL,
@@ -473,7 +473,7 @@ CREATE TABLE /*!32312 IF NOT EXISTS*/ "settings-main" (
 
 LOCK TABLES "settings-main" WRITE;
 /*!40000 ALTER TABLE "settings-main" DISABLE KEYS;*/
-REPLACE INTO "settings-main" ("schoolname", "schoolurl", "bd_mode", "bd_col") VALUES
+INSERT INTO "settings-main" ("schoolname", "schoolurl", "bd_mode", "bd_col") VALUES
 	('Bishop Barrington School Sports With Mathematics College','','day','periods');
 /*!40000 ALTER TABLE "settings-main" ENABLE KEYS;*/
 UNLOCK TABLES;
@@ -483,18 +483,17 @@ UNLOCK TABLES;
 # Table structure for table 'users'
 #
 
-CREATE TABLE /*!32312 IF NOT EXISTS*/ "users" (
+CREATE TABLE "users" (
   "user_id" int(10) unsigned NOT NULL auto_increment,
   "group_id" int(10) NOT NULL,
   "department_id" int(10) unsigned default NULL,
   "enabled" tinyint(1) NOT NULL default '0',
-  "username" varchar(20) NOT NULL,
+  "username" varchar(104) NOT NULL,
   "firstname" varchar(20) default NULL,
   "lastname" varchar(20) default NULL,
-  "email" varchar(255) default NULL,
+  "email" varchar(100) default NULL,
   "password" char(40) NOT NULL,
-  "password-expire" datetime default NULL,
-  "displayname" varchar(20) default NULL,
+  "displayname" varchar(64) default NULL,
   "ext" varchar(10) default NULL,
   "cookiekey" char(40) default NULL,
   "lastlogin" timestamp NOT NULL default '0000-00-00 00:00:00',
@@ -512,10 +511,10 @@ CREATE TABLE /*!32312 IF NOT EXISTS*/ "users" (
 
 LOCK TABLES "users" WRITE;
 /*!40000 ALTER TABLE "users" DISABLE KEYS;*/
-REPLACE INTO "users" ("user_id", "group_id", "department_id", "enabled", "username", "firstname", "lastname", "email", "password", "password-expire", "displayname", "ext", "cookiekey", "lastlogin", "ldap", "created") VALUES
-	('1',1,'0',1,'admin',NULL,NULL,'craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8',NULL,NULL,NULL,NULL,'2008-11-24 13:05:51',0,'0000-00-00');
-REPLACE INTO "users" ("user_id", "group_id", "department_id", "enabled", "username", "firstname", "lastname", "email", "password", "password-expire", "displayname", "ext", "cookiekey", "lastlogin", "ldap", "created") VALUES
-	('2',2,'0',0,'craig',NULL,NULL,'craig.rodway@bishopbarrington.net','test',NULL,NULL,NULL,NULL,'0000-00-00 00:00:00',0,'2008-11-23');
+INSERT INTO "users" ("user_id", "group_id", "department_id", "enabled", "username", "firstname", "lastname", "email", "password", "displayname", "ext", "cookiekey", "lastlogin", "ldap", "created") VALUES
+	('1',1,'0',1,'admin',NULL,NULL,'craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8',NULL,NULL,NULL,'2008-11-24 13:05:51',0,'0000-00-00');
+INSERT INTO "users" ("user_id", "group_id", "department_id", "enabled", "username", "firstname", "lastname", "email", "password", "displayname", "ext", "cookiekey", "lastlogin", "ldap", "created") VALUES
+	('2',2,'0',0,'craig',NULL,NULL,'craig.rodway@bishopbarrington.net','test',NULL,NULL,NULL,'0000-00-00 00:00:00',0,'2008-11-23');
 /*!40000 ALTER TABLE "users" ENABLE KEYS;*/
 UNLOCK TABLES;
 
@@ -524,7 +523,7 @@ UNLOCK TABLES;
 # Table structure for table 'weekdates'
 #
 
-CREATE TABLE /*!32312 IF NOT EXISTS*/ "weekdates" (
+CREATE TABLE "weekdates" (
   "week_id" int(10) unsigned NOT NULL,
   "date" date NOT NULL,
   KEY "week_id" ("week_id")
@@ -544,7 +543,7 @@ CREATE TABLE /*!32312 IF NOT EXISTS*/ "weekdates" (
 # Table structure for table 'weeks'
 #
 
-CREATE TABLE /*!32312 IF NOT EXISTS*/ "weeks" (
+CREATE TABLE "weeks" (
   "week_id" int(10) unsigned NOT NULL auto_increment,
   "ayear_id" int(10) unsigned default NULL,
   "name" varchar(20) NOT NULL,
