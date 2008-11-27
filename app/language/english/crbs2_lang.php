@@ -13,4 +13,12 @@ $lang['AUTH_NO_PRIVS'] = 'You do not have the correct privileges to access this 
 $lang['CONF_MAIN_SAVEOK'] = 'Main settings were saved successfully.';
 $lang['CONF_AUTH_SAVEOK'] = 'Authentication settings were saved successfully.';
 
+$lang['SECURITY_USER_ADD_OK_ENABLED'] = 'The user was created successfully and can now log in using the password you set.';
+$lang['SECURITY_USER_ADD_OK_DISABLED'] = 'The user was created successfully, but they will not be able to log in until you enable their account.';
+$lang['SECURITY_USER_ADD_FAIL'] = 'An error occured and the user could not be added (%s)';
+
+$lang['SECURITY_USER_EDIT_OK_ENABLED'] = 'The user was updated successfully.';
+$lang['SECURITY_USER_EDIT_OK_DISABLED'] = 'The user was updated successfully, but they will not be able to log in until you enable their account.';
+$lang['SECURITY_USER_ADD_FAIL'] = 'An error occured and the user could not be updated (%s)';
+
 ?>

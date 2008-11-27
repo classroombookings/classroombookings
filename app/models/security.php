@@ -43,7 +43,7 @@ class Security extends Model{
 				$this->db->where('users.group_id', $group_id);
 			}
 			
-			$this->db->orderby('groups.name ASC, users.username ASC');
+			$this->db->orderby('users.username ASC');
 			
 			if (isset($page) && is_array($page)) {
 				$this->db->limit($page[0], $page[1]);
@@ -68,12 +68,34 @@ class Security extends Model{
 			$query = $this->db->query($sql, array($user_id));
 			
 			if($query->num_rows() == 1){
-				return $query->result();
+				return $query->row();
 			} else {
 				return FALSE;
 			}
 			
 		}
+	}
+	
+	
+	
+	
+	function add_user($data){
+		$data['created'] = date("Y-m-d");
+		$add = $this->db->insert('users', $data);
+		return $add;
+	}
+	
+	
+	
+	
+	function edit_user($user_id = NULL, $data){
+		if($user_id == NULL){
+			$this->lasterr = 'Cannot update a user without their ID.';
+			return FALSE;
+		}
+		$this->db->where('user_id', $user_id);
+		$edit = $this->db->update('users', $data);
+		return $edit;
 	}
 	
 	

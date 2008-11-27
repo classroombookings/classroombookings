@@ -4,7 +4,7 @@
 if($users != 0){
 ?>
 
-<table class="list" width="100%" cellpadding="0" cellspacing="0" border="0">
+<table class="list" width="99%" cellpadding="0" cellspacing="0" border="0">
 	<col /><col /><col />
 	<thead>
 	<tr class="heading">
@@ -28,11 +28,11 @@ if($users != 0){
 		<td class="m"><?php echo $user->groupname ?>&nbsp;</td>
 		<td class="m"><?php echo mysqlhuman($user->lastlogin, "d/m/Y H:i") ?>&nbsp;</td>
 		<td class="m"><?php echo ($user->ldap == 1) ? 'LDAP' : 'Local'; ?></td>
-		<td class="il">
+		<td class="il" width="270">
 		<?php
 		$actiondata[0] = array('security/users/view/'.$user->user_id, 'Report', 'magnifier_sm.gif' );
 		$actiondata[1] = array('security/permissions/effective/'.$user->user_id, 'View effective permissions', 'key-sm.gif' );
-		$actiondata[2] = array('security/users/delete', 'Delete', 'cross_sm.gif' );
+		$actiondata[2] = array('security/users/delete/'.$user->user_id, 'Delete', 'cross_sm.gif' );
 		$this->load->view('parts/listactions', $actiondata);
 		#$this->load->view('parts/delete', array('url' => 'security/users/delete/'.$user->user_id));
 		?></td>

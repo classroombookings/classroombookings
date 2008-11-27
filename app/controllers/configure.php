@@ -25,6 +25,7 @@ class Configure extends Controller {
 	
 	function Configure(){
 		parent::Controller();
+		$this->load->model('security');
 		$this->tpl = $this->config->item('template');
 	}
 	
@@ -40,6 +41,7 @@ class Configure extends Controller {
 		
 		$body['conf']['main'] = $this->settings->get_all('main');
 		$body['conf']['auth'] = $this->settings->get_all('auth');
+		$body['conf']['groups'] = $this->security->get_groups_dropdown();
 		
 		$tpl['title'] = 'Configure';
 		$tpl['pagetitle'] = 'Configure classroombookings';
@@ -73,7 +75,7 @@ class Configure extends Controller {
 	
 	
 	function save_main(){
-#				die(print_r($_POST));
+		#print_r($_POST);
 		$this->form_validation->set_rules('schoolname', 'School name', 'required|max_length[100]|trim');
 		$this->form_validation->set_rules('schoolurl', 'Website address', 'max_length[255]|prep_url|trim');
 		$this->form_validation->set_rules('bd_mode', 'Booking display mode', 'required');
@@ -132,69 +134,115 @@ class Configure extends Controller {
 	
 	
 	function test_ldap(){
-		error_reporting(E_ALL);
-		#echo '<pre style="font-size:9pt;">';
 		$this->_d('Testing for PHP LDAP module... ', FALSE);
-		ob_flush();
 		if(!function_exists('ldap_bind')){
 			$this->_d("It appears you don't have the PHP LDAP module installed - cannot continue!");
 			exit();
 		} else {
 			$this->_d('OK');
 		}
+		
+		// Get form values
 		$ldaphost = $this->input->post('ldaphost');
 		$ldapport = $this->input->post('ldapport');
 		$ldapbase = $this->input->post('ldapbase');
-		$ldaptestuser = $this->input->post('ldaptestuser');
+		$ldapfilter = str_replace("%u", $this->input->post('ldaptestuser'), $this->input->post('ldapfilter'));
+		$ldaptestuser = "cn=" . $this->input->post('ldaptestuser');
 		$ldaptestpass = $this->input->post('ldaptestpass');
 		
-		if(!$ldaphost && !$ldapport){
-			$this->_d('No LDAP server and port combination were supplied - cannot continue.');
+		if(!$ldaphost){
+			$this->_d('No LDAP server was specified - cannot continue.');
 			exit();
 		}
-		
+		if(!$ldapport){
+			$this->_d('No LDAP server port was specified - cannot continue.');
+			exit();
+		}
 		if(!$ldapbase){
 			$this->_d("No LDAP search base was specified - cannot continue.");
 			exit();
 		}
-			
+		if(!$ldapfilter){
+			$this->_d("No LDAP search query filter was specified - cannot continue.");
+			exit();
+		}
+		
+		// Try to connect to server
 		$this->_d(sprintf("Trying to connect to '%s' on port %d... ", $ldaphost, $ldapport), FALSE);
 		$connect = ldap_connect($ldaphost, $ldapport);
-		
 		if(!$connect){
 			$this->_d('Failed!');
 			exit();
 		} else {
 			$this->_d("OK!");
-			$this->_d($connect);
+			#$this->_d($connect);
 		}
 		
-		if(!$ldaptestuser && !$ldaptestpass){
-			$this->_d("You didn't specify a username and password to test the authentication with. It seems the connection was successful so far.");
+		// Connected... now see if we have user & pass.
+		if(!$ldaptestuser){
+			$this->_d("You didn't specify a username to test the authentication with.");
+			exit();
+		}
+ 		if(!$ldaptestpass){
+ 			$this->_d("You didn't specify a password to test the authentication with.");
+ 			exit();
+ 		}
+		
+		// Now go through the supplied DNs and see if we can bind as the user in them
+		$dns = explode(";", $ldapbase);
+		$found = FALSE;
+		
+		foreach($dns as $dn){
+			if($found == FALSE){ 
+				$thisdn = trim($dn);
+				$this->_d("Trying $ldaptestuser,$thisdn... ", FALSE);
+				$bind = @ldap_bind($connect, "$ldaptestuser,$thisdn", $ldaptestpass);
+				if(!$bind){ 
+					$this->_d("Failed."); 
+				} else {
+					$this->_d("Success!");
+					$correctdn = $thisdn;
+					$found = TRUE;
+				}
+			}
+		}
+		
+		if($found == FALSE){
+			$this->_d("Failed to bind with the given user in any of the supplied base DNs");
 			exit();
 		}
 		
-		$this->_d("Trying bind with supplied credentials... ", FALSE);
-		$bind = @ldap_bind($connect, $ldaptestuser, $ldaptestpass);
+		$this->_d("The user authentication was OK. Going to find their details...");
 		
-		if(!$bind){
-			$this->_d("failed.");
-			$this->_d($bind);
+		$search = @ldap_search($connect, $correctdn, $ldapfilter);
+		if(!$search){
+			$this->_d("Could not find the user's details - the query filter is probably incorrect.");
 			exit();
-		} else {
-			$this->_d("seems successful.");
 		}
+		 
+		$info = ldap_get_entries($connect, $search); 
+		$user['displayname'] = $info[0]['displayname'][0];
+		$user['email'] = $info[0]['mail'][0];
+		$user['memberof'] = $info[0]['memberof'];
+		//echo var_export($user, true);
+		$str = "<strong>Username:</strong> {$this->input->post('ldaptestuser')}<br />";
+		$str = "<strong>Display name:</strong> {$user['displayname']}<br />";
+		$str .= "<strong>Email:</strong> {$user['email']}<br />";
+		$str .= "<strong>Member of:</strong><ul>";
+		unset($info[0]['memberof']['count']);
+		foreach($info[0]['memberof'] as $group){
+			$str .= "<li>$group</li>";
+		}
+		$str .= "</ul>";
+		$this->_d($str);
 		
-		
-
-
-		#echo "</pre>";
 	}
 	
 	
 	
+	
 	function _d($message, $br = TRUE){
-		echo "$message";
+		echo $message;
 		echo ($br == TRUE) ? '<br /><br />' : '';
 		ob_flush();
 	}

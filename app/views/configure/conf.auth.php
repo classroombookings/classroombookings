@@ -5,7 +5,6 @@ echo form_open('configure/save_ldap', array('name' => 'form_confauth', 'id' => '
 $t = 1;
 ?>
 
-
 <table class="form" cellpadding="6" cellspacing="0" border="0" width="50%">
 	
 	<tr class="h"><td colspan="2">Authentication options</td></tr>
@@ -117,7 +116,7 @@ $t = 1;
 			#$input['size'] = '60';
 			$input['maxlength'] = '5120';
 			$input['tabindex'] = $t;
-			$input['rows'] = '4';
+			$input['rows'] = '6';
 			$input['cols'] = '60';
 			$input['value'] = set_value('ldapbase', $auth->ldapbase);
 			echo form_textarea($input);
@@ -153,12 +152,8 @@ $t = 1;
 			<label for="ldapgroup_id" class="r" accesskey="G" title="This is the group that users who authenticate via LDAP will become members of automatically.">Default CRBS group</label>
 		</td>
 		<td class="field">
-		  <?php
-		  	unset($input);
-			$input[0] = 'Guests';
-			$input[1] = 'Administrators';
-			$input[3] = 'Teachers';
-			echo form_dropdown('ldapgroup_id', $input, 0, 'id="ldapgroup_id"');
+			<?php
+			echo form_dropdown('ldapgroup_id', $groups, @set_select('ldapgroup_id', $auth->ldapgroup_id), array('tabindex' => $t));
 			$t++;
 			?>
 		</td>
@@ -217,12 +212,9 @@ $t = 1;
 
 </form>
 
-
-
-
 <script type="text/javascript">
 $("#test-ldap").bind("click", function(e){
-    var w = window.open("about:blank","ldaptestwin","width=640,height=400,toolbar=0");
+    var w = window.open("about:blank","ldaptestwin","width=640,height=400,toolbar=0,location=0,menubar=0,scrollbars=1,resizable=1");
 	var oldaction = $("#form_confauth").attr("action");
 	var oldtarget = $("#form_confauth").attr("target");
 	$("#form_confauth").attr("action","<?php echo site_url("configure/test_ldap") ?>");

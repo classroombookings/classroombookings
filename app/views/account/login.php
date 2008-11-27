@@ -71,13 +71,14 @@ $t = 1;
 		</td>
 	</tr>
 	
-	
 	<?php
-	$submit['submit'] = array('Login', $t);
-	$submit['cancel'] = array('Cancel', $t+1, site_url());
-	$this->load->view('parts/submit', $submit);
-	echo form_close();
+	unset($buttons);
+	$buttons[] = array('submit', 'positive', 'Login', 'key2.gif', $t);
+	#$buttons[] = array('submit', '', 'Save and add another', 'add.gif', $t+1);
+	#$buttons[] = array('cancel', 'negative', 'Cancel', 'arr-left.gif', $t+2, site_url('security/users'));
+	$this->load->view('parts/buttons', array('buttons' => $buttons));
 	?>
-	
 
 </table>
+
+</form>

@@ -33,6 +33,8 @@ img{border:0;}
 }
 
 
+
+
 /* Headings */
 h1{font-size:200%;font-weight:normal;margin:0 0 10px 0;}
 h2{font-size:160%;font-weight:normal;}
@@ -341,7 +343,7 @@ display:none;
  */
 table.list{
 	border-top:1px solid #ddd;
-	width:100%;
+	/*width:100%;*/
 	margin-bottom:16px;
 	background:#fff;
 }
@@ -442,6 +444,7 @@ label.check{
 }
 
 label.check input{
+	border:0px solid #000 !important;
     width:13px;
     height:13px;
     padding:0;
