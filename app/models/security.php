@@ -1,4 +1,22 @@
 <?php
+/*
+	This file is part of Classroombookings.
+
+	Classroombookings is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	Classroombookings is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with Classroombookings.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
 class Security extends Model{
 
 
@@ -68,12 +86,15 @@ class Security extends Model{
 			$query = $this->db->query($sql, array($user_id));
 			
 			if($query->num_rows() == 1){
-				return $query->row();
+				$user = $query->row();
+				$user->display2 = ($user->displayname) ? $user->displayname : $user->username;
+				return $user;
 			} else {
 				return FALSE;
 			}
 			
 		}
+		
 	}
 	
 	
@@ -96,6 +117,39 @@ class Security extends Model{
 		$this->db->where('user_id', $user_id);
 		$edit = $this->db->update('users', $data);
 		return $edit;
+	}
+	
+	
+	
+	
+	function delete_user($user_id){
+		
+		$sql = 'DELETE FROM users WHERE user_id = ? LIMIT 1';
+		$query = $this->db->query($sql, array($user_id));
+		
+		if($query == FALSE){
+			
+			$this->lasterr = 'Could not delete user. Do they exist?';
+			return FALSE;
+			
+		} else {
+			
+			/* $sql = 'DELETE FROM bookings WHERE user_id = ?';
+			$query = $this->db->query($sql, array($user_id));
+			if($query == FALSE){ $failed[] = 'bookings'; }*/
+			
+			$sql = 'UPDATE rooms SET user_id = NULL where user_id = ?';
+			$query = $this->db->query($sql, array($user_id));
+			if($query == FALSE){ $failed[] = 'rooms'; }
+			
+			if(isset($failed)){
+				$this->lasterr = 'The user was deleted successfully, but an error occured while removing their bookings and/or updating any rooms they owned.';
+			}
+			
+			return TRUE;
+			
+		}
+
 	}
 	
 	

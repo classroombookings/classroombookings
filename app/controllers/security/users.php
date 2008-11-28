@@ -112,8 +112,8 @@ class Users extends Controller {
 	
 	
 	
+	
 	function save(){
-		#die(print_r($_POST));
 		
 		$user_id = $this->input->post('user_id');
 		
@@ -132,14 +132,12 @@ class Users extends Controller {
 
 		if($this->form_validation->run() == FALSE){
 			
-			// Validation failed
-			
+			// Validation failed - load required action depending on the state of user_id
 			($user_id == NULL) ? $this->add() : $this->edit($user_id);
 			
 		} else {
 		
 			// Validation OK
-			
 			$data['username'] = $this->input->post('username');
 			$data['displayname'] = $this->input->post('displayname');
 			$data['email'] = $this->input->post('email');
@@ -181,6 +179,74 @@ class Users extends Controller {
 			
 			// All done, redirect!
 			redirect('security/users');
+			
+		}
+		
+	}
+	
+	
+	
+	
+	function delete($user_id = NULL){
+	
+		// Check if a form has been submitted; if not - show it to ask user confirmation
+		if($this->input->post('id')){
+		
+			// Form has been submitted (so the POST value exists)
+			// Call model function to delete user
+			$delete = $this->security->delete_user($this->input->post('id'));
+			if($delete == FALSE){
+				$this->msg->add('err', $this->security->lasterr, 'An error occured');
+			} else {
+				$this->msg->add('info', 'The user has been deleted.');
+			}
+			// Redirect
+			redirect('security/users');
+			
+		} else {
+		
+			if( ($this->session->userdata('user_id')) && ($user_id == $this->session->userdata('user_id')) ){
+				$this->msg->add(
+					'warn',
+					base64_decode('WW91IGNhbm5vdCBkZWxldGUgeW91cnNlbGYsIHRoZSB1bml2ZXJzZSB3aWxsIGltcGxvZGUu'),
+					base64_decode('RXJyb3IgSUQjMTBU')
+				);
+				redirect('security/users');
+			}
+			
+			if($user_id == NULL){
+				
+				$tpl['title'] = 'Delete user';
+				$tpl['pagetitle'] = $tpl['title'];
+				$tpl['body'] = $this->msg->err('Cannot find the user or no user ID given.');
+				
+			} else {
+				
+				// Get user info so we can present the confirmation page with a dsplayname/username
+				$user = $this->security->get_user($user_id);
+				
+				if($user == FALSE){
+				
+					$tpl['title'] = 'Delete user';
+					$tpl['pagetitle'] = $tpl['title'];
+					$tpl['body'] = $this->msg->err('Could not find that user or no user ID given.');
+					
+				} else {
+					
+					// Initialise page
+					$body['action'] = 'security/users/delete';
+					$body['id'] = $user_id;
+					$body['cancel'] = 'security/users';
+					$body['text'] = 'If you delete this user, all of their bookings and room owenership information will also be deleted.';
+					$tpl['title'] = 'Delete user';
+					$tpl['pagetitle'] = 'Delete ' . $user->display2;
+					$tpl['body'] = $this->load->view('parts/deleteconfirm', $body, TRUE);
+					
+				}
+				
+			}
+			
+			$this->load->view($this->tpl, $tpl);
 			
 		}
 		

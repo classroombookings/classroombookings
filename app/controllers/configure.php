@@ -27,18 +27,14 @@ class Configure extends Controller {
 		parent::Controller();
 		$this->load->model('security');
 		$this->tpl = $this->config->item('template');
+		$this->output->enable_profiler(TRUE);
 	}
 	
 	
 	
 	
 	function index($tab = 'conf-main'){
-		/*if($this->session->flashdata('tab')){
-			$body['tab'] = $this->session->flashdata('tab');
-		} else {
-			$body['tab'] = $tab;
-		}*/
-		
+		$body['tab'] = ($this->session->flashdata('tab')) ? $this->session->flashdata('tab') : $tab;
 		$body['conf']['main'] = $this->settings->get_all('main');
 		$body['conf']['auth'] = $this->settings->get_all('auth');
 		$body['conf']['groups'] = $this->security->get_groups_dropdown();
@@ -52,29 +48,8 @@ class Configure extends Controller {
 	
 	
 	
-	/* function save(){
-		print_r($_POST);
-		$tpl['title'] = 'Form error';
-		$section = $this->input->post('form_id');
-		
-		if(!$section){
-			$tpl['body'] = $this->msg->err('No form data was submitted');
-		} else {
-			switch($section){
-				case 'conf-main': return $this->save_main(); break;
-				case 'conf-ldap': return $this->save_ldap(); break;
-				default:
-					$tpl['body'] = $this->msg->err('No valid form was submitted');
-				break;
-			}
-		}
-		$this->load->view($this->tpl, $tpl);
-	} */
-	
-	
-	
-	
 	function save_main(){
+	
 		#print_r($_POST);
 		$this->form_validation->set_rules('schoolname', 'School name', 'required|max_length[100]|trim');
 		$this->form_validation->set_rules('schoolurl', 'Website address', 'max_length[255]|prep_url|trim');
@@ -108,21 +83,57 @@ class Configure extends Controller {
 	
 	
 	
-	function save_ldap(){
-		die(print_r($_POST));
-
-		
-		$this->form_validation->set_rules('preauth', 'Pre-authentication');
+	function save_auth(){
+	
+		$this->form_validation->set_rules('preauth', 'Pre-authentication enable');
 		$this->form_validation->set_rules('ldap', 'LDAP enable');
+		if($this->input->post('ldap') == '1'){
+			// LDAP validation (only required if LDAP box is ticked)
+			$this->form_validation->set_rules('ldaphost', 'LDAP host', 'required|max_length[50]|trim');
+			$this->form_validation->set_rules('ldapport', 'LDAP TCP port', 'required|max_length[5]|integer|callback__port_check');
+			$this->form_validation->set_rules('ldapbase', 'LDAP Base DN', 'required|max_length[65536]');
+			$this->form_validation->set_rules('ldapfilter', 'LDAP filter', 'required|max_length[65536]');
+			$this->form_validation->set_rules('ldapgroup_id', 'LDAP group', 'require|integer');
+			$this->form_validation->set_rules('ldaptestuser', 'LDAP test username');
+		}
+		$this->form_validation->set_error_delimiters('<li>', '</li>');
 		
 		if($this->form_validation->run() == FALSE){
-		
+			
 			// Validation failed
 			$this->index('conf-auth');
 			
 		} else {
-		
-			$this->session->set_flashdata('flash', $this->msg->info($this->lang->line('CONF_AUTH_SAVEOK')));
+			
+			// All fields were validated!
+			
+			$preauth = ($this->input->post('preauth') == '1') ? TRUE : FALSE;
+			$preauthkey = ($this->input->post('preauthkey')) ? $this->input->post('preauthkey') : FALSE;
+			
+			// No existing preauthkey, and enabling it for the first time - generate one
+			if($preauthkey == FALSE && $preauth == TRUE){
+				// Make a new preauth key
+				$data['preauthkey'] = sha1(uniqid(rand(), TRUE));
+			}
+			// Existing preauthkey, and now disabling it by removing it from DB
+			if($preauthkey == TRUE && $preauth == FALSE){
+				$data['preauthkey'] = NULL;
+			}
+			$data['ldap'] = ($this->input->post('ldap') == '1') ? 1 : 0;
+			$data['ldaphost'] = $this->input->post('ldaphost');
+			$data['ldapport'] = $this->input->post('ldapport');
+			$data['ldapbase'] = $this->input->post('ldapbase');
+			$data['ldapfilter'] = $this->input->post('ldapfilter');
+			$data['ldapgroup_id'] = $this->input->post('ldapgroup_id');
+			
+			$save = $this->settings->save('auth', $data);
+			
+			if($save == FALSE){
+				$this->msg->add('err', $this->lang->line('CONF_AUTH_SAVE_FAIL'));
+			} else {
+				$this->msg->add('info', $this->lang->line('CONF_AUTH_SAVE_OK'));
+			}
+			
 			$this->session->set_flashdata('tab', 'conf-auth');
 			redirect('configure');
 			
@@ -133,6 +144,10 @@ class Configure extends Controller {
 	
 	
 	
+	/**
+	 * LDAP test function.
+	 * Runs through the procedure one line at a time and tests for success.
+	 */	 	
 	function test_ldap(){
 		$this->_d('Testing for PHP LDAP module... ', FALSE);
 		if(!function_exists('ldap_bind')){
@@ -245,6 +260,21 @@ class Configure extends Controller {
 		echo $message;
 		echo ($br == TRUE) ? '<br /><br />' : '';
 		ob_flush();
+	}
+	
+	
+	
+	
+	/**
+	 * Check TCP port given in the LDAP config is a valid TCP port number between 1-65536
+	 */	 	
+	function _port_check($port){
+		$port = (int)$port;
+		$check = ( ($port >= 1) && ($port <= 65536) );
+		if($check == FALSE){
+			$this->form_validation->set_message('_port_check', 'The %s must be between 1 and 65536.');
+		}
+		return $check;
 	}
 	
 	

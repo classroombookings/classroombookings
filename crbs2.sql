@@ -71,8 +71,8 @@ CREATE TABLE `ci_sessions` (
 LOCK TABLES `ci_sessions` WRITE;
 /*!40000 ALTER TABLE `ci_sessions` DISABLE KEYS*/;
 INSERT INTO `ci_sessions` (`session_id`, `ip_address`, `user_agent`, `last_activity`, `user_data`) VALUES
-	('07b0d222f1216e1e097fac60ad5dc7ab','127.0.0.1','Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;','1227807922',''),
-	('bde3dc588d9469855f7c36b5882a75a9','127.0.0.1','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv','1227808297','a:1:{s:3:\"uri\";s:9:\"/bookings\";}');
+	('39f5432a4646ce31afcb4733df0860f2','127.0.0.1','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv','1227887172',''),
+	('aded2369e2086df8e688eebb05efb7e6','127.0.0.1','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) Ap','1227884531','');
 /*!40000 ALTER TABLE `ci_sessions` ENABLE KEYS*/;
 UNLOCK TABLES;
 
@@ -401,7 +401,7 @@ CREATE TABLE `settings-auth` (
 LOCK TABLES `settings-auth` WRITE;
 /*!40000 ALTER TABLE `settings-auth` DISABLE KEYS*/;
 INSERT INTO `settings-auth` (`preauthkey`, `ldap`, `ldaphost`, `ldapport`, `ldapbase`, `ldapfilter`, `ldapgroup_id`) VALUES
-	(NULL,0,NULL,NULL,NULL,NULL,NULL);
+	('fa14b12a82d5722cc47520008371ae93da6ef4f7',1,'bbs-svr-001','389','ou=teaching staff,ou=bbs,ou=establishments,dc=bbarrington,dc=internal;ou=system administrators,ou=bbs,ou=establishments,dc=bbarrington,dc=internal','(& (| (!(displayname=Administrator*)) (!(displayname=Admin*)) ) (cn=%u) )','1');
 /*!40000 ALTER TABLE `settings-auth` ENABLE KEYS*/;
 UNLOCK TABLES;
 
@@ -453,7 +453,7 @@ CREATE TABLE `users` (
   `created` date NOT NULL,
   PRIMARY KEY  (`user_id`),
   KEY `ldap` (`ldap`)
-) TYPE=InnoDB AUTO_INCREMENT=5 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Main users table'*/;
+) TYPE=InnoDB AUTO_INCREMENT=8 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Main users table'*/;
 
 
 
@@ -464,7 +464,7 @@ CREATE TABLE `users` (
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS*/;
 INSERT INTO `users` (`user_id`, `group_id`, `department_id`, `enabled`, `username`, `firstname`, `lastname`, `email`, `password`, `displayname`, `ext`, `cookiekey`, `lastlogin`, `ldap`, `created`) VALUES
-	('1',1,'0',1,'admin',NULL,NULL,'craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8',NULL,NULL,NULL,'2008-11-24 13:05:51',0,'0000-00-00'),
+	('1',1,'0',1,'admin',NULL,NULL,'craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8',NULL,NULL,NULL,'2008-11-28 11:43:13',0,'0000-00-00'),
 	('2',1,'0',0,'craig.rodway',NULL,NULL,'craig.rodway@bishopbarrington.net','354c0efe3f189e6bb078399d9a75ee5cc402f8f8','Craig Rodway',NULL,NULL,'2008-11-27 17:32:10',0,'2008-11-23'),
 	('3',2,'0',1,'user1',NULL,NULL,'','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Foo Number 1',NULL,NULL,'0000-00-00 00:00:00',0,'2008-11-27'),
 	('4',0,'0',1,'adrian.staff',NULL,NULL,'','8843d7f92416211de9ebb963ff4ce28125932878','',NULL,NULL,'0000-00-00 00:00:00',0,'2008-11-27');

@@ -1,4 +1,22 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+/*
+	This file is part of Classroombookings.
+
+	Classroombookings is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	Classroombookings is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with Classroombookings.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
 class Settings{
 
 
@@ -37,18 +55,23 @@ class Settings{
 				$sql = 'SELECT * FROM `settings-auth` LIMIT 1';
 				break;
 			default:
+				$sql = NULL;
 				$this->lasterr = 'The settings type you loaded was not valid.';
 				break;
 		}
 		
-		$query = $this->CI->db->query($sql);
-		if($query->num_rows() == 1){
-			// Got data ok
-			#$row = $query->row();
-			return $query->row();
-		} else {
-			$this->lasterr = 'No results found!';
+		if($sql == NULL){
 			return FALSE;
+		} else {
+			$query = $this->CI->db->query($sql);
+			if($query->num_rows() == 1){
+				// Got data ok
+				#$row = $query->row();
+				return $query->row();
+			} else {
+				$this->lasterr = 'No results found!';
+				return FALSE;
+			}
 		}
 	}
 	
@@ -68,7 +91,7 @@ class Settings{
 		
 		switch($type){
 			case 'main': $table = 'settings-main'; break;
-			case 'auth': $table = 'settings-ldap';
+			case 'auth': $table = 'settings-auth'; break;
 			default: $this->lasterr = 'No valid type of data was specified.'; return FALSE; break;
 		}
 		

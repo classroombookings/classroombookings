@@ -10,8 +10,9 @@ $lang['AUTH_CHECK_NO_PID'] = 'Could not locate privilege ID for requested action
 $lang['AUTH_MUST_LOGIN'] = 'You are required to login to access this section.';
 $lang['AUTH_NO_PRIVS'] = 'You do not have the correct privileges to access this section.';
 
-$lang['CONF_MAIN_SAVEOK'] = 'Main settings were saved successfully.';
-$lang['CONF_AUTH_SAVEOK'] = 'Authentication settings were saved successfully.';
+$lang['CONF_MAIN_SAVE_OK'] = 'Main settings were saved successfully.';
+$lang['CONF_AUTH_SAVE_OK'] = 'Authentication settings were saved successfully.';
+$lang['CONF_AUTH_SAVE_FAIL'] = 'An error occured while saving the authentication settings.';
 
 $lang['SECURITY_USER_ADD_OK_ENABLED'] = 'The user was created successfully and can now log in using the password you set.';
 $lang['SECURITY_USER_ADD_OK_DISABLED'] = 'The user was created successfully, but they will not be able to log in until you enable their account.';

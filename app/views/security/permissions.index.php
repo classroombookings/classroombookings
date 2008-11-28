@@ -8,6 +8,12 @@
 
 <div class="tabber" id="tabs-permissions">
 
+	<?php
+	foreach($groups as $group){
+	
+	echo '<div class="tabbertab">';
+	//echo '<h2>' . $group['
+
 	<div class="tabbertab">
 		<h2>Guests</h2>
         <?php $this->load->view('security/permissions.matrix.php'); ?>

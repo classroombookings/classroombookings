@@ -34,10 +34,11 @@ class Permissions extends Controller {
 	function index(){
 		$icondata[0] = array('security/users', 'Manage users', 'user_orange.gif' );
 		$icondata[1] = array('security/groups', 'Manage groups', 'group.gif' );
+		$body['groups'] = $this->security->get_groups_dropdown();
 		$tpl['pretitle'] = $this->load->view('parts/iconbar', $icondata, TRUE);
 		$tpl['title'] = 'Permissions';
 		$tpl['pagetitle'] = 'Manage group permissions';
-		$tpl['body'] = $this->load->view('security/permissions.index.php', NULL, TRUE);
+		$tpl['body'] = $this->load->view('security/permissions.index.php', $body, TRUE);
 		$this->load->view($this->tpl, $tpl);
 	}
 	

@@ -1,5 +1,5 @@
 <?php
-echo form_open('configure/save_ldap', array('name' => 'form_confauth', 'id' => 'form_confauth'));
+echo form_open('configure/save_auth', array('name' => 'form_confauth', 'id' => 'form_confauth'));
 
 // Start tabindex
 $t = 1;
@@ -20,7 +20,7 @@ $t = 1;
 			unset($check);
 			$check['name'] = 'preauth';
 			$check['id'] = 'preauth';
-			$check['value'] = 'preauth';
+			$check['value'] = '1';
 			$check['checked'] = set_radio($check['name'], $check['value'], (!empty($auth->preauthkey)));
 			$check['tabindex'] = $t;
 			echo form_checkbox($check);
@@ -33,10 +33,10 @@ $t = 1;
 	<?php if(!empty($auth->preauthkey)){ ?>
 	<tr>
 		<td class="caption">
-			<label>Your pre-auth key</label>
+			<label title="Please read the documentation on how to properly use the pre-authentication key.">Pre-auth key</label>
 		</td>
 		<td class="field">
-			<label><?php echo $auth->preauthkey ?></label>
+			<?php echo $auth->preauthkey ?>
 		</td>
 	</tr>
 	<?php } ?>
@@ -51,7 +51,7 @@ $t = 1;
 			unset($check);
 			$check['name'] = 'ldap';
 			$check['id'] = 'ldap';
-			$check['value'] = 'ldap';
+			$check['value'] = '1';
 			$check['checked'] = set_radio($check['name'], $check['value'], ($auth->ldap == 1));
 			$check['tabindex'] = $t;
 			echo form_checkbox($check);
@@ -113,8 +113,7 @@ $t = 1;
 			$input['accesskey'] = 'D';
 			$input['name'] = 'ldapbase';
 			$input['id'] = 'ldapbase';
-			#$input['size'] = '60';
-			$input['maxlength'] = '5120';
+			$input['maxlength'] = '65536';
 			$input['tabindex'] = $t;
 			$input['rows'] = '6';
 			$input['cols'] = '60';
@@ -153,7 +152,7 @@ $t = 1;
 		</td>
 		<td class="field">
 			<?php
-			echo form_dropdown('ldapgroup_id', $groups, @set_select('ldapgroup_id', $auth->ldapgroup_id), array('tabindex' => $t));
+			echo form_dropdown('ldapgroup_id', $groups, set_value('ldapgroup_id', (isset($auth->ldapgroup_id)) ? $auth->ldapgroup_id : 0), array('tabindex' => $t));
 			$t++;
 			?>
 		</td>
