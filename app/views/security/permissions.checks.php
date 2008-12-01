@@ -7,11 +7,10 @@ foreach($options as $option){
 	<td width="10">
 	<?php
 		unset($check);
-		$check['name'] = 'permission[]';
+		$check['name'] = 'permissions[]';
 		$check['value'] = $option[0];
 		$check['id'] = "p_{$group_id}_{$option[0]}";
 		$check['class'] = 'c';
-		$check['value'] = NULL;
 		echo form_checkbox($check);
 	?>
 	</td>

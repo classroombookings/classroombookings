@@ -247,6 +247,54 @@ class Security extends Model{
 	
 	
 	
+	function get_group_permissions($group_id = NULL){
+		
+		if($group_id == NULL){
+			
+			// Getting permissions for all groups
+			$sql = 'SELECT group_id, permissions FROM groups ORDER BY group_id ASC';
+			$query = $this->db->query($sql);
+			if($query->num_rows() > 0){
+				$result = $query->result();
+				$permissions = array();
+				foreach($result as $row){
+					$permissions[$row->group_id] = unserialize($row->permissions);
+				}
+				return $permissions;
+			} else {
+				$lasterr = 'No groups to get permissions from.';
+				return FALSE;
+			}
+			
+		} else {
+			
+			if(!is_numeric($group_id)){
+				
+				$this->lasterr = 'Group ID given was not numeric.';
+				return FALSE;
+				
+			} else {
+				
+				// Getting permissions from one group
+				$sql = 'SELECT permissions FROM groups WHERE group_id = ?';
+				$query = $this->db->query($sql, array($group_id));
+				if($query->num_rows() == 1){
+					$row = $query->row();
+					return unserialize($row->permissions);
+				} else {
+					$this->lasterr = 'No group to get permissions from.';
+					return FALSE;
+				}
+				
+			}
+			
+		}
+		
+	}
+	
+	
+	
+	
 	/*function get_user($user_id = NULL){
 	
 		// Base query information

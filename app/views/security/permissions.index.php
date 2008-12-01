@@ -14,6 +14,7 @@
 		echo '<div class="tabbertab">';
 		echo '<h2>' . $group_name . '</h2>';
 		//$this->load->view('security/permissions.matrix.php', array('group_id' => $group_id));
+		echo form_open('security/permissions/save', NULL, array('group_id' => $group_id));
 	?>
 			
 			<table class="form a-t" cellpadding="0" cellspacing="0" border="0">
@@ -192,6 +193,7 @@
 					</td>
 				</tr>
 			</table>
+			</form>
 			
 	<?php
 		

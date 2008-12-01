@@ -27,6 +27,7 @@ class Permissions extends Controller {
 		parent::Controller();
 		$this->load->model('security');
 		$this->tpl = $this->config->item('template');
+		$this->output->enable_profiler(TRUE);
 	}
 	
 	
@@ -37,12 +38,26 @@ class Permissions extends Controller {
 		$icondata[1] = array('security/groups', 'Manage groups', 'group.gif' );
 		$body['groups'] = $this->security->get_groups_dropdown();
 		$body['permissions'] = $this->config->item('permissions');
+		$body['group_permissions'] = $this->security->get_group_permissions();
 		#print_r($body['permissions']);
 		$tpl['pretitle'] = $this->load->view('parts/iconbar', $icondata, TRUE);
 		$tpl['title'] = 'Permissions';
 		$tpl['pagetitle'] = 'Manage group permissions';
 		$tpl['body'] = $this->load->view('security/permissions.index.php', $body, TRUE);
 		$this->load->view($this->tpl, $tpl);
+	}
+	
+	
+	
+	
+	function save(){
+		$this->form_validation->set_rules('group_id', 'Group ID');
+		$this->form_validation->set_rules('permissions', 'Permissions');
+		$this->form_validation->set_error_delimiters('<li>', '</li>');
+		
+		/* echo "submitted!";
+		$serial = serialize($this->input->post('permissions'));
+		echo strlen($serial); */
 	}
 	
 	
