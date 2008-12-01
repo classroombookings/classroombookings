@@ -79,7 +79,7 @@ $autoload['plugin'] = array();
 |
 */
 
-$autoload['config'] = array('crbs');
+$autoload['config'] = array('crbs', 'permissions');
 
 
 /*

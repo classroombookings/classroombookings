@@ -208,7 +208,7 @@ class Security extends Model{
 	
 	
 	function get_groups_dropdown(){
-		$sql = 'SELECT group_id, name FROM groups';
+		$sql = 'SELECT group_id, name FROM groups ORDER BY name ASC';
 		$query = $this->db->query($sql);
 		if($query->num_rows() > 0){
 			$result = $query->result();

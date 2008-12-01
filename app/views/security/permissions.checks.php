@@ -5,16 +5,25 @@ foreach($options as $option){
 ?>
 <tr>
 	<td width="10">
-	<?php echo form_checkbox(array(
-		'name' => 'permission[]',
-		'value' => $option[0],
-		'id' => "p_{$option[0]}",
-		'class' => 'c',
-		'checked' => $option[3],
-	));
+	<?php
+		unset($check);
+		$check['name'] = 'permission[]';
+		$check['value'] = $option[0];
+		$check['id'] = "p_{$group_id}_{$option[0]}";
+		$check['class'] = 'c';
+		$check['value'] = NULL;
+		echo form_checkbox($check);
 	?>
 	</td>
-	<td><label for="p_<?php echo $option[0] ?>" <?php echo ($option[2] != NULL) ? 'title="'.$option[2].'"' : ''; ?>><?php echo $option[1] ?></label></td>
+	<td>
+		<?php
+		$label = '<label for="%s"%s>%s</label>';
+		echo sprintf($label,
+			"p_{$group_id}_{$option[0]}",
+			(isset($option[2])) ? 'title="' . $option[2] . '"' : '',
+			$option[1]
+		);
+		?></td>
 </tr>
 <?php
 }

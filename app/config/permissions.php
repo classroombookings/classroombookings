@@ -1,0 +1,57 @@
+<?php
+
+$permissions['general'][] = array('dashboard', 'Dashboard', 'View dashboard');
+$permissions['general'][]= array('dashboard.viewdept', 'Dashboard  - view department bookings');
+$permissions['general'][]= array('dashboard.viewown', 'Dashboard - view own bookings');
+$permissions['general'][]= array('myprofile', 'My Profile/Change password');
+
+$permissions['bookings'][] = array('bookings', 'View bookings page', 'View the main bookings page');
+$permissions['bookings'][] = array('bookings.create.one', 'Create their own one-time bookings', 'Booking days ahead and quota options still apply');
+$permissions['bookings'][] = array('bookings.create.recur', 'Create recurring bookings', 'Bookings that occur on every timetabled week');
+$permissions['bookings'][] = array('bookings.delete.one.own', 'Delete their own one-time bookings');
+$permissions['bookings'][] = array('bookings.delete.one.roomowner', 'Delete room one-time bookings if room owner');
+$permissions['bookings'][] = array('bookings.delete.recur.roomowner', 'Delete room recurring bookings if room owner', 'Allow room owners to delete others\' recurring bookings in their room');
+$permissions['bookings'][] = array('bookings.overwrite.one', 'Can overwrite other one-time bookings');
+$permissions['bookings'][] = array('bookings.overwrite.recur', 'Can overwrite other recurring bookings with one-time booking');
+$permissions['bookings'][] = array('bookings.overwrite.one.roomowner', 'Can overwrite other one-time bookings if room owner');
+$permissions['bookings'][] = array('bookings.overwrite.recur.roomowner', 'Can overwrite other recurring bookings if room owner');
+
+$permissions['rooms'][] = array('rooms', 'Rooms', 'Has access to the Rooms page');
+$permissions['rooms'][] = array('rooms.add', 'Add a room');
+$permissions['rooms'][] = array('rooms.edit', 'Edit room properties');
+$permissions['rooms'][] = array('rooms.delete', 'Delete a room');
+$permissions['rooms'][] = array('rooms.fields', 'Change fields');
+$permissions['rooms'][] = array('rooms.fields.values', 'Change field values');
+
+$permissions['periods'][] = array('periods', 'Periods', 'Has access to the periods page');
+$permissions['periods'][] = array('periods.add', 'Add a period');
+$permissions['periods'][] = array('periods.edit', 'Edit a period/change times');
+$permissions['periods'][] = array('periods.delete', 'Delete a period');
+
+$permissions['weeks'][] = array('weeks', 'Weeks', 'Has access to the Weeks page');
+$permissions['weeks'][] = array('weeks.add', 'Add a timetable week');
+$permissions['weeks'][] = array('weeks.edit', 'Edit a week and set its dates');
+$permissions['weeks'][] = array('weeks.delete', 'Delete a week');
+$permissions['weeks'][] = array('weeks.ayears.manage', 'Manage the academic year dates');
+$permissions['weeks'][] = array('weeks.ayears.set', 'Set the current academic year');
+
+$permissions['holidays'][] = array('holidays', 'Holidays');
+$permissions['holidays'][] = array('holidays.add', 'Add a holiday');
+$permissions['holidays'][] = array('holidays.edit', 'Edit school holidays');
+$permissions['holidays'][] = array('holidays.delete', 'Delete a holiday');
+
+$permissions['departments'][] = array('departments', 'Departments', 'Has access to the Departments page');
+$permissions['departments'][] = array('departments.add', 'Add a department');
+$permissions['departments'][] = array('departments.edit', 'Edit a department');
+$permissions['departments'][] = array('departments.delete', 'Delete a department');
+
+$permissions['reports'][] = array('reports', 'Reports');
+$permissions['reports'][] = array('reports.owndepartment', 'View reports for their own deparment');
+$permissions['reports'][] = array('reports.alldepartments', 'View reports on all departments');
+$permissions['reports'][] = array('reports.ownroom', 'View reports for their own room');
+$permissions['reports'][] = array('reports.allrooms', 'View reports on all rooms');
+$permissions['reports'][] = array('reports.other', 'View other reports');
+
+$config['permissions'] = $permissions;
+
+?>

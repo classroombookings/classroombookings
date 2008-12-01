@@ -1,22 +1,22 @@
 <table class="form a-t" cellpadding="0" cellspacing="0" border="0">
 
 	<tr>
-		<td width="300">
+		<td width="250">
 			<!-- GENERAL -->
 			<?php
-			unset($options);
-			$options[] = array('dashboard', 'Dashboard', NULL, TRUE);
-			$options[] = array('dashboard/viewdept', 'Dashboard - view department bookings', NULL, FALSE);
-			$options[] = array('dashboard/viewown', 'Dashboard - view own bookings', NULL, TRUE);
-			$options[] = array('myprofile', 'My Profile/change password', NULL, FALSE);
-			$this->load->view('security/permissions.checks.php', array('category' => 'General', 'options' => $options));
+			unset($checks);
+			$checks['options'] = $permissions['general'];
+			$checks['group_id'] = $group_id;
+			$checks['category'] = 'General';
+			$this->load->view('security/permissions.checks.php', $checks);
 			?>
 		</td>
 		<td width="50">&nbsp;</td>
-		<td width="300">
+		<td width="350">
 			<!-- BOOKINGS -->
 			<?php
 			unset($options);
+			unset($checks);
 			$options[] = array('bookings', 'View bookings page', 'View the main bookings page', TRUE);
 			$options[] = array('bookings/createone', 'Create their own one-time bookings', 'Booking days ahead and quota options still apply', FALSE);
 			$options[] = array('bookings/createrecur', 'Create recurring bookings', 'Bookings that occur on every timetabled week', TRUE);
@@ -27,13 +27,16 @@
 			$options[] = array('bookings/overwriterecur', 'Can overwrite other recurring bookings with one-time booking', NULL, FALSE);
 			$options[] = array('bookings/overwriteone/ifowner', 'Can overwrite other one-time bookings if room owner', NULL, FALSE);
 			$options[] = array('bookings/overwriterecur/ifowner', 'Can overwrite other recurring bookings if room owner', NULL, FALSE);
+			$checks['options'] = $options;
+			$checks['group_id'] = $group_id;
+			$checks['category'] = 'Room booking';
 			$this->load->view('security/permissions.checks.php', array('category' => 'Room booking', 'options' => $options));
 			?>
 		</td>
 	</tr>
 	
 	<tr>
-		<td width="300">
+		<td>
 			<!-- ROOMS -->
 			<?php
 			unset($options);
@@ -48,7 +51,7 @@
 			?>
 		</td>
 		<td width="50">&nbsp;</td>
-		<td width="300">
+		<td>
 			<!-- PERIODS -->
 			<?php
 			unset($options);
@@ -62,7 +65,7 @@
 	</tr>
 	
 	<tr>
-		<td width="300">
+		<td>
 			<!-- WEEKS -->
 			<?php
 			unset($options);
@@ -76,7 +79,7 @@
 			?>
 		</td>
 		<td width="50">&nbsp;</td>
-		<td width="300">
+		<td>
 			<!-- HOLIDAYS -->
 			<?php
 			unset($options);
@@ -90,7 +93,7 @@
 	</tr>
 	
 	<tr>
-		<td width="300">
+		<td>
 			<!-- DEPARTMENTS -->
 			<?php
 			unset($options);
@@ -102,7 +105,7 @@
 			?>
 		</td>
 		<td width="50">&nbsp;</td>
-		<td width="300">
+		<td>
 			<!-- REPORTS -->
 			<?php
 			unset($options);
@@ -124,17 +127,16 @@
 				<tr class="h"><td colspan="2">Other options</td></tr>
 				
 				<tr>
-					<td class="caption"><label for="schoolname" title="The number of days ahead users can create a booking. Enter 0 or leave blank to allow bookings at any time in the future.">Booking ahead</label></td>
+					<td class="caption"><label for="days-ahead" title="The number of days ahead users can create a booking. Leave blank to allow bookings at any time in the future.">Booking ahead</label></td>
 					<td class="field">
-					  <?php
-						#$ = @field($this->validation->username);
-						echo form_input(array(
-							'name' => 'book-ahead',
-							'id' => 'book-ahead',
-							'size' => '10',
-							'maxlenght' => '3',
-							'value' => '',
-						));
+						<?php
+					  	unset($input);
+						$input['name'] = 'days-ahead';
+						$input['id'] = "p_{$group_id}_days-ahead";
+						$input['size'] = '10';
+						$input['maxlength'] = '3';
+						$input['value'] = set_value('days-ahead', '');
+						echo form_input($input);
 						?>
 					</td>
 				</tr>

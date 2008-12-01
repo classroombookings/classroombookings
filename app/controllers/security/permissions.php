@@ -25,6 +25,7 @@ class Permissions extends Controller {
 
 	function Permissions(){
 		parent::Controller();
+		$this->load->model('security');
 		$this->tpl = $this->config->item('template');
 	}
 	
@@ -35,6 +36,8 @@ class Permissions extends Controller {
 		$icondata[0] = array('security/users', 'Manage users', 'user_orange.gif' );
 		$icondata[1] = array('security/groups', 'Manage groups', 'group.gif' );
 		$body['groups'] = $this->security->get_groups_dropdown();
+		$body['permissions'] = $this->config->item('permissions');
+		#print_r($body['permissions']);
 		$tpl['pretitle'] = $this->load->view('parts/iconbar', $icondata, TRUE);
 		$tpl['title'] = 'Permissions';
 		$tpl['pagetitle'] = 'Manage group permissions';
