@@ -27,7 +27,7 @@ class Users extends Controller {
 		parent::Controller();
 		$this->load->model('security');
 		$this->tpl = $this->config->item('template');
-		#$this->output->enable_profiler(TRUE);
+		$this->output->enable_profiler($this->session->userdata('debug'));
 	}
 	
 	

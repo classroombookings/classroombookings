@@ -15,13 +15,13 @@
 	var tabberOptions = {
 		'cookie':"crbstabber",
 		'onLoad':function(argsObj){
-			var t = argsObj.tabber;
-			var i;
-			if(t.id){t.cookie = t.id + t.cookie;}
+			//var t = argsObj.tabber;
+			//var i;
+			//if(t.id){t.cookie = t.id + t.cookie;}
 			/* If a cookie was previously set, restore the active tab */
-			i = parseInt(getCookie(t.cookie));
-			if (isNaN(i)) { return; }
-			t.tabShow(i);
+			//i = parseInt(getCookie(t.cookie));
+			//if (isNaN(i)) { return; }
+			//t.tabShow(i);
 		},
 		'onClick':function(argsObj){
 			var c = argsObj.tabber.cookie;
@@ -34,6 +34,7 @@
 	<script type="text/javascript" src="js/jquery.boxy.js"></script>
 	<script src="js/qTip.js" type="text/javascript"></script>
 	<script src="js/tabber-minimized.js" type="text/javascript"></script>
+	<script src="js/jquery.boxy.js" type="text/javascript"></script>
 </head>
 
 <body>

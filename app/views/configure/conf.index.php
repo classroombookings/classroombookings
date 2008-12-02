@@ -16,5 +16,10 @@ if($errors){
 		<h2>Authentication</h2>
 		<?php $this->load->view('configure/conf.auth.php', $conf); ?>
 	</div>
+	
+	<div class="tabbertab<?php echo ($tab == 'conf-ldap-groups') ? ' tabbertabdefault' : ''; ?>">
+		<h2>LDAP Groups</h2>
+		<?php $this->load->view('configure/conf.ldap-groups.php', $conf); ?>
+	</div>
 
 </div>

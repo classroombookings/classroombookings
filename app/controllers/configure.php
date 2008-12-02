@@ -27,7 +27,7 @@ class Configure extends Controller {
 		parent::Controller();
 		$this->load->model('security');
 		$this->tpl = $this->config->item('template');
-		$this->output->enable_profiler(TRUE);
+		$this->output->enable_profiler($this->config->item('profiler'));
 	}
 	
 	
@@ -72,7 +72,7 @@ class Configure extends Controller {
 			
 			$this->settings->save('main', $data);
 			
-			$this->session->set_flashdata('flash', $this->msg->info($this->lang->line('CONF_MAIN_SAVEOK')));
+			$this->session->set_flashdata('flash', $this->msg->info($this->lang->line('CONF_MAIN_SAVE_OK')));
 			$this->session->set_flashdata('tab', 'conf-main');
 			redirect('configure');
 			

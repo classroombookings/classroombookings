@@ -1,9 +1,10 @@
 <?php
 
 $permissions['general'][] = array('dashboard', 'Dashboard', 'View dashboard');
-$permissions['general'][]= array('dashboard.viewdept', 'Dashboard  - view department bookings');
-$permissions['general'][]= array('dashboard.viewown', 'Dashboard - view own bookings');
-$permissions['general'][]= array('myprofile', 'My Profile/Change password');
+$permissions['general'][] = array('dashboard.viewdept', 'Dashboard  - view department bookings');
+$permissions['general'][] = array('dashboard.viewown', 'Dashboard - view own bookings');
+$permissions['general'][] = array('myprofile', 'My Profile/Change password');
+$permissions['general'][] = array('configure', 'Configure Classroombookings');
 
 $permissions['bookings'][] = array('bookings', 'View bookings page', 'View the main bookings page');
 $permissions['bookings'][] = array('bookings.create.one', 'Create their own one-time bookings', 'Booking days ahead and quota options still apply');
@@ -25,12 +26,12 @@ $permissions['rooms'][] = array('rooms.fields.values', 'Change field values');
 
 $permissions['periods'][] = array('periods', 'Periods', 'Has access to the periods page');
 $permissions['periods'][] = array('periods.add', 'Add a period');
-$permissions['periods'][] = array('periods.edit', 'Edit a period/change times');
+$permissions['periods'][] = array('periods.edit', 'Edit periods/change times');
 $permissions['periods'][] = array('periods.delete', 'Delete a period');
 
 $permissions['weeks'][] = array('weeks', 'Weeks', 'Has access to the Weeks page');
 $permissions['weeks'][] = array('weeks.add', 'Add a timetable week');
-$permissions['weeks'][] = array('weeks.edit', 'Edit a week and set its dates');
+$permissions['weeks'][] = array('weeks.edit', 'Edit weeks and set dates');
 $permissions['weeks'][] = array('weeks.delete', 'Delete a week');
 $permissions['weeks'][] = array('weeks.ayears.manage', 'Manage the academic year dates');
 $permissions['weeks'][] = array('weeks.ayears.set', 'Set the current academic year');
@@ -42,7 +43,7 @@ $permissions['holidays'][] = array('holidays.delete', 'Delete a holiday');
 
 $permissions['departments'][] = array('departments', 'Departments', 'Has access to the Departments page');
 $permissions['departments'][] = array('departments.add', 'Add a department');
-$permissions['departments'][] = array('departments.edit', 'Edit a department');
+$permissions['departments'][] = array('departments.edit', 'Edit departments');
 $permissions['departments'][] = array('departments.delete', 'Delete a department');
 
 $permissions['reports'][] = array('reports', 'Reports');
@@ -51,6 +52,17 @@ $permissions['reports'][] = array('reports.alldepartments', 'View reports on all
 $permissions['reports'][] = array('reports.ownroom', 'View reports for their own room');
 $permissions['reports'][] = array('reports.allrooms', 'View reports on all rooms');
 $permissions['reports'][] = array('reports.other', 'View other reports');
+
+$permissions['users'][] = array('users', 'Users');
+$permissions['users'][] = array('users.add', 'Add a user');
+$permissions['users'][] = array('users.edit', 'Edit users');
+$permissions['users'][] = array('users.delete', 'Delete a user');
+$permissions['users'][] = array('users.import', 'Import users');
+
+$permissions['groups'][] = array('groups', 'Groups');
+$permissions['groups'][] = array('groups.add', 'Add a group');
+$permissions['groups'][] = array('groups.edit', 'Edit groups');
+$permissions['groups'][] = array('groups.delete', 'Delete a group');
 
 $config['permissions'] = $permissions;
 

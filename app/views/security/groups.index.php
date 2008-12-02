@@ -11,6 +11,8 @@ if($groups != 0){
 		<td class="h" title="Name">Group name</td>
 		<td class="h" title="Description">Description</td>
 		<td class="h" title="Usercount">Number of users</td>
+		<td class="h" title="Quota">Quota</td>
+		<td class="h" title="Ahead">Booking ahead</td>
 		<td class="h" title="X">&nbsp;</td>
 	</tr>
 	</thead>
@@ -19,11 +21,25 @@ if($groups != 0){
 	$i = 0;
 	foreach ($groups as $group) {
 	?>
-	<!-- <tr class="tr<?php echo ($i & 1) ?>">-->
 	<tr>
 		<td class="t"><?php echo anchor('security/groups/edit/'.$group->group_id, $group->name) ?></td>
-		<td class="m"><?php echo word_limiter($group->description, 5) ?>&nbsp;</td>
+		<td class="m"><span title="<?php echo $group->description ?>"><?php echo word_limiter($group->description, 5) ?>&nbsp;</span></td>
 		<td class="x"><?php echo $group->usercount ?>&nbsp;</td>
+		<td class="x"><?php
+		if($group->quota_type == NULL){
+			$q = 'Unlimited';
+		} else {
+			switch($group->quota_type){
+				case 'current': $q = '%d concurrent'; break;
+				case 'day': $q = '%d per day'; break;
+				case 'week': $q = '%d per week'; break;
+				case 'month': $q = '%d per month'; break;
+			}
+			$q = sprintf($q, $group->quota_num);
+		}
+		echo $q;
+		?></td>
+		<td class="x"><?php echo ($group->bookahead != 0) ? $group->bookahead . ' days' : '-';  ?></td>
 		<td class="il">
 		<?php
 		$actiondata[0] = array('security/users/ingroup/'.$group->group_id, 'View users', 'user_orange-sm.gif' );

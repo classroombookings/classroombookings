@@ -158,7 +158,7 @@ class Security extends Model{
 	function get_group($group_id = NULL, $page = NULL){
 		if ($group_id == NULL) {
 		
-			// Getting all groups
+			// Getting all groups and number of users in it
 			$this->db->select('
 				groups.*,
 				(
@@ -187,21 +187,43 @@ class Security extends Model{
 			
 		} else {
 			
-			if (!is_numeric($user_id)) {
+			if (!is_numeric($group_id)) {
 				return FALSE;
 			}
 			
 			// Getting one user
 			$sql = 'SELECT * FROM groups WHERE group_id = ? LIMIT 1';
-			$query = $this->db->query($sql, array($user_id));
+			$query = $this->db->query($sql, array($group_id));
 			
 			if($query->num_rows() == 1){
-				return $query->result();
+				return $query->row();
 			} else {
 				return FALSE;
 			}
 			
 		}
+	}
+	
+	
+	
+	
+	function add_group($data){
+		$data['created'] = date("Y-m-d");
+		$add = $this->db->insert('users', $data);
+		return $add;
+	}
+	
+	
+	
+	
+	function edit_group($group_id = NULL, $data){
+		if($group_id == NULL){
+			$this->lasterr = 'Cannot update a group without their ID.';
+			return FALSE;
+		}
+		$this->db->where('group_id', $group_id);
+		$edit = $this->db->update('groups', $data);
+		return $edit;
 	}
 	
 	
@@ -290,6 +312,71 @@ class Security extends Model{
 			
 		}
 		
+	}
+	
+	
+	
+	
+	function save_group_permissions($group_id, $permissions){
+		if($group_id === NULL || $group_id === FALSE || !is_numeric($group_id)){
+			$this->lasterr = "Group ID ($group_id) was not valid.";
+			return FALSE;
+		}
+		
+		/*if(!is_array($permissions) || ($permissions != NULL)){
+			$this->lasterr = 'Permissions was not supplied in valid format.';
+			return FALSE;
+		}*/
+		
+		$sql = 'UPDATE groups SET permissions = ? WHERE group_id = ? LIMIT 1';
+		$query = $this->db->query($sql, array(serialize($permissions), $group_id));
+		
+		return $query;
+	}
+	
+	
+	
+	
+	function get_user_permissions($user_id){
+		if(!is_numeric($user_id)){
+			$this->lasterr = 'User ID supplied was invalid.';
+			return FALSE;
+		}
+		
+		$sql = 'SELECT permissions 
+				FROM groups 
+				LEFT JOIN users ON groups.group_id = users.group_id
+				WHERE users.user_id = ?
+				LIMIT 1';
+		$query = $this->db->query($sql, array($user_id));
+		
+		if($query->num_rows() == 1){
+			$row = $query->row();
+			$group_permissions = unserialize($row->permissions);
+			//return $permissions;
+			$all_permissions = $this->config->item('permissions');
+			#print_r($all_permissions);
+			$effective = array();
+			foreach($all_permissions as $category){
+				foreach($category as $items){
+					#print_r($items);
+					foreach($group_permissions as $p){
+						#echo $items[0] . "\n\n";
+						#echo $p . "\n\n";
+						if($items[0] == $p){
+							#echo var_export($items[0], TRUE) . "\n\n\n";
+							$effective[] = $items;
+						}
+					}
+				}	
+			}
+			
+			#print_r($effective);
+			return $effective;
+		} else {
+			$this->lasterr = 'Could not find permissions';
+			return FALSE;
+		}
 	}
 	
 	

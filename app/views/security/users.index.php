@@ -21,8 +21,7 @@ if($users != 0){
 	$i = 0;
 	foreach ($users as $user) {
 	?>
-	<!-- <tr class="tr<?php echo ($i & 1) ?>">-->
-	<tr class="<?php echo ($i & 1); echo ($user->enabled == 0) ? ' disabled' : NULL; ?>">
+	<tr class="tr<?php echo ($i & 1); echo ($user->enabled == 0) ? ' disabled' : NULL; ?>">
 		<td class="t"><?php echo anchor('security/users/edit/'.$user->user_id, $user->username) ?></td>
 		<td class="m"><?php echo $user->displayname ?>&nbsp;</td>
 		<td class="m"><?php echo $user->groupname ?>&nbsp;</td>
@@ -30,9 +29,9 @@ if($users != 0){
 		<td class="m"><?php echo ($user->ldap == 1) ? 'LDAP' : 'Local'; ?></td>
 		<td class="il" width="270">
 		<?php
-		$actiondata[0] = array('security/users/view/'.$user->user_id, 'Report', 'magnifier_sm.gif' );
-		$actiondata[1] = array('security/permissions/effective/'.$user->user_id, 'View effective permissions', 'key-sm.gif' );
-		$actiondata[2] = array('security/users/delete/'.$user->user_id, 'Delete', 'cross_sm.gif' );
+		$actiondata[0] = array('security/users/view/'.$user->user_id, 'Report', 'magnifier_sm.gif');
+		$actiondata[1] = array('security/permissions/effective/'.$user->user_id, 'View effective permissions', 'key-sm.gif', 'boxy');
+		$actiondata[2] = array('security/users/delete/'.$user->user_id, 'Delete', 'cross_sm.gif');
 		$this->load->view('parts/listactions', $actiondata);
 		#$this->load->view('parts/delete', array('url' => 'security/users/delete/'.$user->user_id));
 		?></td>
@@ -40,6 +39,15 @@ if($users != 0){
 	<?php $i++; } ?>
 	</tbody>
 </table>
+
+<script type='text/javascript'>
+$(function(){
+	$('.boxy').click(function(){
+		Boxy.load($(this).attr("href") + "/ajax", {cache:'false', title: 'Effective Permissions'});
+		return false;
+	});
+});
+</script> 
 
 <?php
 } else {

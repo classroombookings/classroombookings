@@ -18,8 +18,16 @@ $lang['SECURITY_USER_ADD_OK_ENABLED'] = 'The user was created successfully and c
 $lang['SECURITY_USER_ADD_OK_DISABLED'] = 'The user was created successfully, but they will not be able to log in until you enable their account.';
 $lang['SECURITY_USER_ADD_FAIL'] = 'An error occured and the user could not be added (%s)';
 
-$lang['SECURITY_USER_EDIT_OK_ENABLED'] = 'The user was updated successfully.';
-$lang['SECURITY_USER_EDIT_OK_DISABLED'] = 'The user was updated successfully, but they will not be able to log in until you enable their account.';
-$lang['SECURITY_USER_ADD_FAIL'] = 'An error occured and the user could not be updated (%s)';
+$lang['SECURITY_USER_EDIT_OK_ENABLED'] = 'The user details were saved successfully.';
+$lang['SECURITY_USER_EDIT_OK_DISABLED'] = 'The user details were saved successfully, but they will not be able to log in until you enable their account.';
+$lang['SECURITY_USER_ADD_FAIL'] = 'An error occured and the user details could not be saved (%s)';
+
+$lang['SECURITY_GROUP_ADD_OK'] = 'The %s group was created successfully.';
+$lang['SECURITY_GROUP_ADD_FAIL'] = 'An error occured and the group could not be added (%s)';
+
+$lang['SECURITY_GROUP_EDIT_OK'] = 'The %s group details were saved successfully.';
+$lang['SECURITY_GROUP_EDIT_FAIL'] = 'An error occured and the group details could not be saved (%s)';
+
+$lang['PERMISSIONS_EFFECTIVE_USER_FAIL'] = 'Could not find the given user, or no user ID supplied.';
 
 ?>

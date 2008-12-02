@@ -71,7 +71,7 @@ CREATE TABLE `ci_sessions` (
 LOCK TABLES `ci_sessions` WRITE;
 /*!40000 ALTER TABLE `ci_sessions` DISABLE KEYS*/;
 INSERT INTO `ci_sessions` (`session_id`, `ip_address`, `user_agent`, `last_activity`, `user_data`) VALUES
-	('f27dbe4b15d6d9e0ecd60022a08cfb97','127.0.0.1','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv','1228149480','');
+	('12ab16ef00fe46d7071b8c1d7e9a5dfb','127.0.0.1','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv','1228233655','a:2:{s:3:\"uri\";s:9:\"/bookings\";s:5:\"debug\";s:5:\"FALSE\";}');
 /*!40000 ALTER TABLE `ci_sessions` ENABLE KEYS*/;
 UNLOCK TABLES;
 
@@ -111,10 +111,11 @@ CREATE TABLE `groups` (
   `quota_num` int(10) unsigned default NULL,
   `quota_type` enum('day','week','month','current') default NULL,
   `permissions` text,
+  `created` date NOT NULL,
   PRIMARY KEY  (`group_id`),
   UNIQUE KEY `group_id` (`group_id`),
   KEY `group_id_2` (`group_id`)
-) TYPE=InnoDB AUTO_INCREMENT=6 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Security groups'*/;
+) TYPE=InnoDB AUTO_INCREMENT=3 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Security groups'*/;
 
 
 
@@ -124,10 +125,10 @@ CREATE TABLE `groups` (
 
 LOCK TABLES `groups` WRITE;
 /*!40000 ALTER TABLE `groups` DISABLE KEYS*/;
-INSERT INTO `groups` (`group_id`, `name`, `description`, `bookahead`, `quota_num`, `quota_type`, `permissions`) VALUES
-	('1','Administrators','Default group for administrator users',NULL,NULL,NULL,NULL),
-	('2','Foo','Teachers from LDAP',NULL,NULL,NULL,NULL),
-	('5','Guests','Default group for guests',NULL,NULL,NULL,NULL);
+INSERT INTO `groups` (`group_id`, `name`, `description`, `bookahead`, `quota_num`, `quota_type`, `permissions`, `created`) VALUES
+	('0','Guests','Default group for guests',0,'1','current','a:1:{i:0;s:8:\"bookings\";}','0000-00-00'),
+	('1','Administrators','Default group for administrator users',0,NULL,NULL,'a:54:{i:0;s:9:\"dashboard\";i:1;s:18:\"dashboard.viewdept\";i:2;s:17:\"dashboard.viewown\";i:3;s:9:\"myprofile\";i:4;s:9:\"configure\";i:5;s:8:\"bookings\";i:6;s:19:\"bookings.create.one\";i:7;s:21:\"bookings.create.recur\";i:8;s:23:\"bookings.delete.one.own\";i:9;s:29:\"bookings.delete.one.roomowner\";i:10;s:31:\"bookings.delete.recur.roomowner\";i:11;s:22:\"bookings.overwrite.one\";i:12;s:24:\"bookings.overwrite.recur\";i:13;s:32:\"bookings.overwrite.one.roomowner\";i:14;s:34:\"bookings.overwrite.recur.roomowner\";i:15;s:5:\"rooms\";i:16;s:9:\"rooms.add\";i:17;s:10:\"rooms.edit\";i:18;s:12:\"rooms.delete\";i:19;s:12:\"rooms.fields\";i:20;s:19:\"rooms.fields.values\";i:21;s:7:\"periods\";i:22;s:11:\"periods.add\";i:23;s:12:\"periods.edit\";i:24;s:14:\"periods.delete\";i:25;s:5:\"weeks\";i:26;s:9:\"weeks.add\";i:27;s:10:\"weeks.edit\";i:28;s:12:\"weeks.delete\";i:29;s:19:\"weeks.ayears.manage\";i:30;s:16:\"weeks.ayears.set\";i:31;s:8:\"holidays\";i:32;s:12:\"holidays.add\";i:33;s:13:\"holidays.edit\";i:34;s:15:\"holidays.delete\";i:35;s:11:\"departments\";i:36;s:15:\"departments.add\";i:37;s:16:\"departments.edit\";i:38;s:18:\"departments.delete\";i:39;s:7:\"reports\";i:40;s:21:\"reports.owndepartment\";i:41;s:22:\"reports.alldepartments\";i:42;s:15:\"reports.ownroom\";i:43;s:16:\"reports.allrooms\";i:44;s:13:\"reports.other\";i:45;s:5:\"users\";i:46;s:9:\"users.add\";i:47;s:10:\"users.edit\";i:48;s:12:\"users.delete\";i:49;s:12:\"users.import\";i:50;s:6:\"groups\";i:51;s:10:\"groups.add\";i:52;s:11:\"groups.edit\";i:53;s:13:\"groups.delete\";}','0000-00-00'),
+	('2','Teaching Staff','Teachers from LDAP',14,'6','day','a:11:{i:0;s:9:\"dashboard\";i:1;s:9:\"myprofile\";i:2;s:8:\"bookings\";i:3;s:5:\"rooms\";i:4;s:7:\"periods\";i:5;s:5:\"weeks\";i:6;s:8:\"holidays\";i:7;s:11:\"departments\";i:8;s:7:\"reports\";i:9;s:5:\"users\";i:10;s:6:\"groups\";}','0000-00-00');
 /*!40000 ALTER TABLE `groups` ENABLE KEYS*/;
 UNLOCK TABLES;
 
@@ -456,7 +457,7 @@ CREATE TABLE `users` (
   `created` date NOT NULL,
   PRIMARY KEY  (`user_id`),
   KEY `ldap` (`ldap`)
-) TYPE=InnoDB AUTO_INCREMENT=8 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Main users table'*/;
+) TYPE=InnoDB AUTO_INCREMENT=9 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Main users table'*/;
 
 
 
@@ -467,10 +468,11 @@ CREATE TABLE `users` (
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS*/;
 INSERT INTO `users` (`user_id`, `group_id`, `department_id`, `enabled`, `username`, `firstname`, `lastname`, `email`, `password`, `displayname`, `ext`, `cookiekey`, `lastlogin`, `ldap`, `created`) VALUES
-	('1',1,'0',1,'admin',NULL,NULL,'craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8',NULL,NULL,NULL,'2008-11-28 11:43:13',0,'0000-00-00'),
+	('1',1,'0',1,'admin',NULL,NULL,'craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8',NULL,NULL,NULL,'2008-12-02 10:39:28',0,'0000-00-00'),
 	('2',1,'0',0,'craig.rodway',NULL,NULL,'craig.rodway@bishopbarrington.net','354c0efe3f189e6bb078399d9a75ee5cc402f8f8','Craig Rodway',NULL,NULL,'2008-11-27 17:32:10',0,'2008-11-23'),
 	('3',2,'0',1,'user1',NULL,NULL,'','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Foo Number 1',NULL,NULL,'0000-00-00 00:00:00',0,'2008-11-27'),
-	('4',0,'0',1,'adrian.staff',NULL,NULL,'','8843d7f92416211de9ebb963ff4ce28125932878','',NULL,NULL,'0000-00-00 00:00:00',0,'2008-11-27');
+	('4',1,'0',1,'adrian.staff',NULL,NULL,'','8843d7f92416211de9ebb963ff4ce28125932878','',NULL,NULL,'0000-00-00 00:00:00',0,'2008-11-27'),
+	('8',2,'0',1,'test.one',NULL,NULL,'test.one@bishopbarrington.net','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Mr T One',NULL,NULL,'0000-00-00 00:00:00',0,'2008-12-02');
 /*!40000 ALTER TABLE `users` ENABLE KEYS*/;
 UNLOCK TABLES;
 

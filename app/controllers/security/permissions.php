@@ -33,9 +33,10 @@ class Permissions extends Controller {
 	
 	
 	
-	function index(){
+	function index($tab = NULL){
 		$icondata[0] = array('security/users', 'Manage users', 'user_orange.gif' );
 		$icondata[1] = array('security/groups', 'Manage groups', 'group.gif' );
+		$body['tab'] = ($tab == NULL) ? $this->session->flashdata('tab') : $tab;
 		$body['groups'] = $this->security->get_groups_dropdown();
 		$body['permissions'] = $this->config->item('permissions');
 		$body['group_permissions'] = $this->security->get_group_permissions();
@@ -50,14 +51,70 @@ class Permissions extends Controller {
 	
 	
 	
+	function forgroup($group_id){
+		$this->index($group_id);
+	}
+	
+	
+	
+	
 	function save(){
 		$this->form_validation->set_rules('group_id', 'Group ID');
-		$this->form_validation->set_rules('permissions', 'Permissions');
+		$this->form_validation->set_rules('permissions[]', 'Permissions');
+		$this->form_validation->set_rules('daysahead', 'days ahead');
 		$this->form_validation->set_error_delimiters('<li>', '</li>');
 		
-		/* echo "submitted!";
-		$serial = serialize($this->input->post('permissions'));
-		echo strlen($serial); */
+		if($this->form_validation->run() == FALSE){
+			
+			// Validation failed - load required action depending on the state of user_id
+			$this->index($this->input->post('group_id'));
+			
+		} else {
+			
+			// Validation OK
+			$group_id = $this->input->post('group_id');
+			$group_permissions = $this->input->post("permissions_{$group_id}");
+			$save = $this->security->save_group_permissions($group_id, $group_permissions);
+			
+			if($save == FALSE){
+				$this->msg->add('err', $this->security->lasterr, 'Error saving details');
+			} else {
+				$this->msg->add('info', 'Saved successfully');
+			}
+			$this->session->set_flashdata('tab', $group_id);
+			
+			redirect('security/permissions');
+			
+		}
+
+	}
+	
+	
+	
+	
+	function effective($user_id = NULL, $ajax = FALSE){
+		
+		$tpl['title'] = 'Effective user permissions';
+		
+		if($user_id == NULL){
+			$tpl['pagetitle'] = $tpl['title'];
+			$tpl['body'] = $this->msg->err($this->lang->line('PERMISSIONS_EFFECTIVE_USER_FAIL'));
+		} else {
+			$user = $this->security->get_user($user_id);
+			$body['user_permissions'] = $this->security->get_user_permissions($user_id);
+			$tpl['pagetitle'] = 'Effective permissions for ' . $user->display2;
+			$tpl['body'] = $this->load->view('security/permissions.effective.php', $body, TRUE);
+		}
+		
+		if($ajax == FALSE){
+			$this->load->view($this->tpl, $tpl);
+		} else {
+			$this->output->enable_profiler(FALSE);
+			echo '<p style="text-align:left;">';
+			$this->load->view('security/permissions.effective.php', $body);
+			echo '</p>';
+		}
+		
 	}
 	
 	

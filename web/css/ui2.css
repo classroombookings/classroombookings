@@ -158,7 +158,7 @@ div#qTip{
 /* Content Region */
 
 .boxy-inner { background-color: white; padding: 0 }
-.boxy-content { padding: 15px; }
+.boxy-content { padding:0 0 0 1em; }
 
 /* Question Boxes */
 
@@ -391,7 +391,7 @@ table.list tr.heading td{
 	background:#D6DFF7;
 }
 table.a-t tr td{vertical-align:top;}
-
+table.list tr.disabled td, table.list tr.disabled td a{color:#aaa;font-weight:normal;}
 
 
 
@@ -464,12 +464,14 @@ p ul{
 	padding:0;
 	display:block;
 	clear:both;
+	text-align:left;
 }
 
 p ul li{
 	margin:0;
 	padding:0;
 	display:block;
+	text-align:left;
 }
 
 
