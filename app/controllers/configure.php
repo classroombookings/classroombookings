@@ -38,6 +38,7 @@ class Configure extends Controller {
 		$body['conf']['main'] = $this->settings->get_all('main');
 		$body['conf']['auth'] = $this->settings->get_all('auth');
 		$body['conf']['groups'] = $this->security->get_groups_dropdown();
+		$body['conf']['ldapgroups'] = $this->security->get_ldap_groups();
 		
 		$tpl['title'] = 'Configure';
 		$tpl['pagetitle'] = 'Configure classroombookings';
@@ -49,14 +50,14 @@ class Configure extends Controller {
 	
 	
 	function save_main(){
-	
-		#print_r($_POST);
+		
 		$this->form_validation->set_rules('schoolname', 'School name', 'required|max_length[100]|trim');
 		$this->form_validation->set_rules('schoolurl', 'Website address', 'max_length[255]|prep_url|trim');
 		$this->form_validation->set_rules('bd_mode', 'Booking display mode', 'required');
 		$this->form_validation->set_rules('bd_col', 'Booking display columns', 'required');
+		$this->form_validation->set_rules('room_order', 'Room display order', 'required');
 		$this->form_validation->set_error_delimiters('<li>', '</li>');
-
+		
 		if($this->form_validation->run() == FALSE){
 			
 			// Validation failed
@@ -64,11 +65,11 @@ class Configure extends Controller {
 			
 		} else {
 			
-			#$this->load->view('formsuccess');
 			$data['schoolname']		= $this->input->post('schoolname');
 			$data['schoolurl']		= $this->input->post('schoolurl');
 			$data['bd_mode'] 		= $this->input->post('bd_mode');
 			$data['bd_col']			= $this->input->post('bd_col');
+			$data['room_order']		= $this->input->post('room_order');
 			
 			$this->settings->save('main', $data);
 			
@@ -250,6 +251,111 @@ class Configure extends Controller {
 		}
 		$str .= "</ul>";
 		$this->_d($str);
+		
+	}
+	
+	
+	
+	
+	function get_ldap_groups(){
+		// Get auth settings
+		$auth = $this->settings->get_all('auth');
+		// Set the tab for when returning to config page
+		$this->session->set_flashdata('tab', 'conf-ldap-groups');
+		
+		$base = $this->input->post('ldapbase');
+		$user = $this->input->post('user');
+		$pass = $this->input->post('pass');
+		$clear = ($this->input->post('clear') == '1') ? TRUE : FALSE;
+		$ignorespecial = ($this->input->post('ignorespecial') == '1') ? TRUE : FALSE;
+		
+		$filter = '(&(objectCategory=group)(samaccounttype=268435456)(cn=*))';
+		$fields = array('samaccountname');
+		
+		// Connect to LDAP server
+		$connect = ldap_connect($auth->ldaphost, $auth->ldapport);
+		if(!$connect){
+			$this->msg->add('err', 'Could not connect to LDAP server.');
+			redirect('configure');
+		}
+		
+		// Now go through the supplied DNs and see if we can bind as the user in them
+		$dns = explode(";", $base);
+		$ldap_groups = array();
+		
+		// Loop through the DNs
+		foreach($dns as $dn){
+			$thisdn = trim($dn);
+			$bind = ldap_bind($connect, $user, $pass);
+			$search = ldap_search($connect, $dn, $filter, $fields);
+			$entries = ldap_get_entries($connect, $search);
+			for($i = 0; $i < $entries['count']; $i++){
+				array_push($ldap_groups, $entries[$i]['samaccountname'][0]);
+			}
+		}
+		
+		// Empty the table if necessary before fetching the 'existing' groups
+		if($clear == TRUE){
+			$this->db->empty_table('ldapgroups');
+		}
+		
+		// Fetch the groups we already have in our DB
+		$existing_groups = $this->security->get_ldap_groups();
+		
+		// Now find out if there are new groups to add
+		$groups_to_add = array();
+		foreach($ldap_groups as $ldap_group){
+			if(!in_array($ldap_group, $existing_groups)){
+				if($ignorespecial == TRUE){
+					if(preg_match('/^([-a-z0-9_-\s])+$/i', $ldap_group) !== 0){
+						array_push($groups_to_add, $ldap_group);
+					}
+				} else {
+					array_push($groups_to_add, $ldap_group);
+				}
+			}
+		}
+		
+		echo "Existing groups:\n\n";
+		#print_r($existing_groups);
+		
+		echo "\n\n\n\n";
+		
+		echo "LDAP groups:\n\n";
+		print_r($ldap_groups);
+		
+		echo "\n\n\n\n";
+		
+		echo "New groups to add to db:\n\n";
+		#print_r($groups_to_add);
+		
+		
+		// Check if we need to add any groups to begin with...
+		if(count($groups_to_add) > 0){
+			
+
+			
+			$sql = 'INSERT INTO ldapgroups (name) VALUES ';
+			foreach($groups_to_add as $group_to_add){
+				$sql .= "('$group_to_add'),";
+			}
+			// Remove last comma
+			$sql = preg_replace('/,$/', '', $sql);
+			$query = $this->db->query($sql);
+			
+			if($query == FALSE){
+				$this->msg->add('err', 'Could not insert LDAP groups into local database');
+			} else {
+				$this->msg->add('info', 'Groups were successfully imported.');
+			}
+			
+		} else {
+			
+			$this->msg->add('note', 'There were no new groups to add.');
+			
+		}
+		
+		redirect('configure');
 		
 	}
 	

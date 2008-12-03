@@ -374,20 +374,37 @@ class Auth{
 	
 	
 	
-	/**
-	 * Get a permission_id by it's name
-	 */
-	function get_permission_id($action){
-		if($action == NULL){ return FALSE; }
-		$sql = 'SELECT permission_id FROM permissions WHERE action = ? LIMIT 1';
-		$query = $this->CI->db->query($sql, array($action));
+	function get_ldap_groups($search = "*", $sorted = TRUE){
 		
-		if($query->num_rows() == 1){
-			$row = $query->row();
-			return $row->permission_id;
-		} else {
-			return NULL;
+		
+		
+		//perform the search and grab all their details
+		$filter = "(&(objectCategory=group)(samaccounttype=". ADLDAP_SECURITY_GLOBAL_GROUP .")(cn=".$search."))";
+		$fields=array("samaccountname","description");
+		$sr=ldap_search($this->_conn,$this->_base_dn,$filter,$fields);
+		$entries = ldap_get_entries($this->_conn, $sr);
+
+		$groups_array = array();		
+		for($i=0; $i<$entries["count"]; $i++)
+		{
+			if($include_desc && strlen($entries[$i]["description"][0]) > 0)
+			{
+				$groups_array[ $entries[$i]["samaccountname"][0] ] = $entries[$i]["description"][0];
+			}
+			elseif($include_desc)
+			{
+				$groups_array[ $entries[$i]["samaccountname"][0] ] = $entries[$i]["samaccountname"][0];
+			}
+			else
+			{
+				array_push($groups_array, $entries[$i]["samaccountname"][0]);
+			}
 		}
+		if($sorted)
+		{
+			asort($groups_array);
+		}
+		return ($groups_array);
 	}
 	
 	

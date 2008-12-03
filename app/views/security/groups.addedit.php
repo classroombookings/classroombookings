@@ -60,6 +60,25 @@ $t = 1;
 			?>
 		</td>
 	</tr>
+	
+	<?php if($this->settings->ldap() == TRUE){ ?>
+	<tr>
+		<td class="caption">
+			<label for="ldapgroups" class="r" accesskey="L" title="Users who belong to the selected LDAP group(s) will be put in this classroombookings group. The selected group(s) will not be available to assign to other groups as a user can only be a member of one group."><u>L</u>DAP Groups</label>
+		</td>
+		<td class="field">
+			<select name="ldapgroups[]" id="ldapgroups" size="20" tabindex="<?php echo $t ?>" multiple="multiple">
+			<option value="-1">(None)</option>
+			<?php
+			foreach($ldapgroups as $id => $name){
+				echo sprintf('<option value="%d">%s</option>', $id, $name);
+			}
+			$t++;
+			?>
+			</select>
+		</td>
+	</tr>
+	<?php } ?>
 
 	<tr class="h"><td colspan="2">Other options</td></tr>
 	

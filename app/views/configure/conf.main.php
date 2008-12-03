@@ -50,7 +50,7 @@ $t = 1;
 		</td>
 	</tr>
 	
-	<tr class="h"><td colspan="2">Booking settings</td></tr>
+	<tr class="h"><td colspan="2">Booking display settings</td></tr>
 	
 	<tr>
 		<td class="caption">
@@ -88,7 +88,7 @@ $t = 1;
 	
 	<tr>
 		<td class="caption">
-			<label for="booking-columns" class="r" accesskey="C" title="This controls what information is displayed in columns on your bookings table - the other option will be displayed in the rows."><u>C</u>olumn item</label>
+			<label class="r" accesskey="C" title="This controls what information is displayed in columns on your bookings table - the other option will be displayed in the rows."><u>C</u>olumn item</label>
 		</td>
 		<td class="field">
 			<label for="col_periods" class="check">
@@ -126,6 +126,38 @@ $t = 1;
 			echo form_radio($check);
 			$t++;
 			?>Rooms
+			</label>
+		</td>
+	</tr>
+	
+	<tr>
+		<td class="caption">
+			<label class="r" accesskey="O" title="Set which order rooms are displayed in - alphabetically by name or by the order that you set on each room.">Room <u>o</u>rder</label>
+		</td>
+		<td class="field">
+			<label for="order_alpha" class="check">
+			<?php
+			unset($check);
+			$check['name'] = 'room_order';
+			$check['id'] = 'order_alpha';
+			$check['value'] = 'alpha';
+			$check['checked'] = set_radio($check['name'], $check['value'], ($main->room_order == $check['value']));
+			$check['tabindex'] = $t;
+			echo form_radio($check);
+			$t++;
+			?>Alphabetically
+			</label>
+			<label for="order_order" class="check">
+			<?php
+			unset($check);
+			$check['name'] = 'room_order';
+			$check['id'] = 'order_order';
+			$check['value'] = 'order';
+			$check['checked'] = set_radio($check['name'], $check['value'], ($main->room_order == $check['value']));
+			$check['tabindex'] = $t;
+			echo form_radio($check);
+			$t++;
+			?>By order
 			</label>
 		</td>
 	</tr>

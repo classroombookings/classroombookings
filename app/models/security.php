@@ -230,6 +230,11 @@ class Security extends Model{
 	
 	
 	function delete_group($group_id){
+	
+		if($group_id == 0 OR $group_id == 1){
+			$this->lasterr = 'Cannot delete that default group.';
+			return FALSE;
+		}
 		
 		$sql = 'DELETE FROM groups WHERE group_id = ? LIMIT 1';
 		$query = $this->db->query($sql, array($group_id));
@@ -356,6 +361,31 @@ class Security extends Model{
 		$query = $this->db->query($sql, array(serialize($permissions), $group_id));
 		
 		return $query;
+	}
+	
+	
+	
+	
+	function get_ldap_groups(){
+		$existing_groups = array();
+		$sql = 'SELECT * FROM ldapgroups ORDER BY name ASC';
+		$query = $this->db->query($sql);
+		if($query->num_rows() > 0){
+			$results = $query->result();
+			foreach($results as $result){
+				$existing_groups[$result->ldapgroup_id] = $result->name;
+			}
+		}
+		return $existing_groups;
+	}
+	
+	
+	
+	
+	/**
+	 * Function to get LDAP groups _that have not already been set to map to CRBS groups_
+	 */
+	function get_ldap_groups_not_assigned(){
 	}
 	
 	

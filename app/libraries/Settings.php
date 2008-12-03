@@ -129,5 +129,23 @@ class Settings{
 	
 	
 	
+	/**
+	 * LDAP function - returns true/false if using LDAP or not
+	 */
+	function ldap(){
+		$sql = 'SELECT ldap FROM `settings-auth` LIMIT 1';
+		$query = $this->CI->db->query($sql);
+		if($query->num_rows() == 1){
+			$row = $query->row();
+			return ($row->ldap == 1) ? TRUE : FALSE;
+		} else {
+			$this->lasterr = 'Could not find auth settings at all!';
+			return FALSE;
+		}
+	}
+	
+	
+	
+	
 }
 ?>

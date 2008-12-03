@@ -12,7 +12,7 @@ FileFormat=0
 crbs2
 	+crbs2
 		+app
-			-config
+			+config
 				app\config\autoload.php
 				app\config\config.php
 				app\config\constants.php
@@ -55,8 +55,8 @@ crbs2
 			-hooks
 				app\hooks\AuthHook.php
 				app\hooks\index.html
-			-language
-				-english
+			+language
+				+english
 					app\language\english\crbs2_lang.php
 					app\language\english\index.html
 			-libraries
@@ -72,7 +72,7 @@ crbs2
 			+views
 				-account
 					app\views\account\login.php
-				-configure
+				+configure
 					app\views\configure\conf.auth.php
 					app\views\configure\conf.index.php
 					app\views\configure\conf.logo.php
@@ -86,7 +86,7 @@ crbs2
 					app\views\msg\note.php
 					app\views\msg\warn.php
 					app\views\msg\yes.php
-				-parts
+				+parts
 					app\views\parts\buttons.php
 					app\views\parts\delete.php
 					app\views\parts\deleteconfirm.php
@@ -98,9 +98,9 @@ crbs2
 					app\views\security\permissions.checks.php
 					app\views\security\permissions.index.php
 					app\views\security\permissions.matrix.php
-					app\views\security\users.addedit.php
+					app\views\security\groups.addedit.php
 					app\views\security\users.index.php
-				-template
+				+template
 					app\views\template\main.php
 					app\views\template\main2.php
 				app\views\index.html
@@ -271,8 +271,8 @@ crbs2
 					sys\scaffolding\views\view.php
 				sys\scaffolding\index.html
 				sys\scaffolding\Scaffolding.php
-		-web
-			-css
+		+web
+			+css
 				web\css\jquery-ui-theme.css
 				web\css\layout.css
 				web\css\layout2.css
@@ -375,7 +375,7 @@ crbs2
 					web\img\template\Thumbs.db
 					web\img\template\title.gif
 				-upload
-			-js
+			+js
 				web\js\cookie.js
 				web\js\jquery.boxy.js
 				web\js\jquery-1.2.6.min.js
@@ -392,28 +392,48 @@ crbs2
 [Open project files]
 0=app\controllers\security\permissions.php
 1=app\views\security\permissions.index.php
-2=app\models\security.php
-3=app\views\security\permissions.matrix.php
-4=app\views\security\permissions.checks.php
-5=app\controllers\security\users.php
+2=app\controllers\security\users.php
+3=app\views\security\groups.addedit.php
+4=app\views\security\users.index.php
+5=app\views\configure\conf.auth.php
+6=app\views\security\users.addedit.php
+7=app\controllers\security\groups.php
+8=app\models\security.php
+9=web\css\ui2.css
+10=app\views\security\groups.index.php
 [Selected Project Files]
 Main=
-Selected=app\controllers\security\permissions.php
+Selected=app\views\security\groups.index.php
 [app\controllers\security\permissions.php]
-TopLine=16
-Caret=65,56
+TopLine=19
+Caret=31,54
 [app\views\security\permissions.index.php]
-TopLine=87
-Caret=1,133
-[app\models\security.php]
-TopLine=245
-Caret=4,291
-[app\views\security\permissions.matrix.php]
 TopLine=1
-Caret=1,1
-[app\views\security\permissions.checks.php]
-TopLine=1
-Caret=30,4
+Caret=68,19
 [app\controllers\security\users.php]
-TopLine=103
-Caret=1,118
+TopLine=63
+Caret=1,116
+[app\views\security\groups.addedit.php]
+TopLine=68
+Caret=23,99
+[app\views\security\users.index.php]
+TopLine=1
+Caret=15,24
+[app\views\configure\conf.auth.php]
+TopLine=85
+Caret=6,1
+[app\views\security\users.addedit.php]
+TopLine=8
+Caret=1,22
+[app\controllers\security\groups.php]
+TopLine=78
+Caret=5,116
+[app\models\security.php]
+TopLine=194
+Caret=46,225
+[web\css\ui2.css]
+TopLine=353
+Caret=87,394
+[app\views\security\groups.index.php]
+TopLine=1
+Caret=1,26

@@ -26,15 +26,16 @@ class Groups extends Controller {
 	function Groups(){
 		parent::Controller();
 		$this->load->model('security');
+		$this->load->helper('text');
 		$this->tpl = $this->config->item('template');
 		$this->output->enable_profiler($this->config->item('profiler'));
-		$this->load->helper('text');
 	}
 	
 	
 	
 	
 	function index(){
+		$this->auth->check('groups');
 		$icondata[0] = array('security/groups/add', 'Add a new group', 'plus.gif' );
 		$icondata[1] = array('security/users', 'Manage users', 'user_orange.gif' );
 		$icondata[2] = array('security/permissions', 'Change group permissions', 'key2.gif');
@@ -58,9 +59,10 @@ class Groups extends Controller {
 	
 	
 	function add(){
+		$this->auth->check('groups.add');
 		$body['group'] = NULL;
 		$body['group_id'] = NULL;
-		#$body['groups'] = $this->security->get_groups_dropdown();
+		$body['ldapgroups'] = $this->security->get_ldap_groups();
 		$tpl['title'] = 'Add group';
 		$tpl['pagetitle'] = 'Add a new group';
 		$tpl['body'] = $this->load->view('security/groups.addedit.php', $body, TRUE);
@@ -71,9 +73,10 @@ class Groups extends Controller {
 	
 	
 	function edit($group_id){
+		$this->auth->check('groups.edit');
 		$body['group'] = $this->security->get_group($group_id);
 		$body['group_id'] = $group_id;
-		#$body['groups'] = $this->security->get_groups_dropdown();
+		$body['ldapgroups'] = $this->security->get_ldap_groups();
 		
 		$tpl['title'] = 'Edit group';
 		$tpl['pagetitle'] = 'Edit ' . $body['group']->name . ' group';
@@ -92,6 +95,7 @@ class Groups extends Controller {
 		$this->form_validation->set_rules('group_id', 'Group ID');
 		$this->form_validation->set_rules('name', 'Name', 'required|max_length[20]|trim');
 		$this->form_validation->set_rules('description', 'Description', 'max_length[255]|trim');
+		$this->form_validation->set_rules('ldapgroups[]', 'LDAP Groups');
 		$this->form_validation->set_rules('daysahead', 'Booking days ahead', 'max_length[3]|numeric');
 		$this->form_validation->set_rules('quota_num', 'Quota', 'max_length[5]|numeric');
 		$this->form_validation->set_rules('quota_type', 'Quota type');
@@ -107,6 +111,7 @@ class Groups extends Controller {
 			// Validation OK
 			$data['name'] = $this->input->post('name');
 			$data['description'] = $this->input->post('description');
+			$data['ldapgroups'] = ($this->input->post('ldapgroups')) ? $this->input->post('ldapgroups') : array();
 			$data['bookahead'] = $this->input->post('bookahead');
 			$data['quota_num'] = $this->input->post('quota_num');
 			$data['quota_type'] = $this->input->post('quota_type');
