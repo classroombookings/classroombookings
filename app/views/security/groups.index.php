@@ -44,7 +44,7 @@ if($groups != 0){
 		<?php
 		$actiondata[0] = array('security/users/ingroup/'.$group->group_id, 'View users', 'user_orange-sm.gif' );
 		$actiondata[1] = array('security/permissions/forgroup/'.$group->group_id, 'Edit permissions', 'key-sm.gif' );
-		$actiondata[2] = array('security/groups/delete', 'Delete', 'cross_sm.gif' );
+		$actiondata[2] = array('security/groups/delete/'.$group->group_id, 'Delete', 'cross_sm.gif' );
 		$this->load->view('parts/listactions', $actiondata);
 		#$this->load->view('parts/delete', array('url' => 'security/users/delete/'.$user->user_id));
 		?></td>

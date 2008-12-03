@@ -138,7 +138,7 @@ class Security extends Model{
 			$query = $this->db->query($sql, array($user_id));
 			if($query == FALSE){ $failed[] = 'bookings'; }*/
 			
-			$sql = 'UPDATE rooms SET user_id = NULL where user_id = ?';
+			$sql = 'UPDATE rooms SET user_id = NULL WHERE user_id = ?';
 			$query = $this->db->query($sql, array($user_id));
 			if($query == FALSE){ $failed[] = 'rooms'; }
 			
@@ -149,7 +149,7 @@ class Security extends Model{
 			return TRUE;
 			
 		}
-
+		
 	}
 	
 	
@@ -209,8 +209,8 @@ class Security extends Model{
 	
 	function add_group($data){
 		$data['created'] = date("Y-m-d");
-		$add = $this->db->insert('users', $data);
-		return $add;
+		$add = $this->db->insert('groups', $data);
+		return $this->db->insert_id();
 	}
 	
 	
@@ -224,6 +224,39 @@ class Security extends Model{
 		$this->db->where('group_id', $group_id);
 		$edit = $this->db->update('groups', $data);
 		return $edit;
+	}
+	
+	
+	
+	
+	function delete_group($group_id){
+		
+		$sql = 'DELETE FROM groups WHERE group_id = ? LIMIT 1';
+		$query = $this->db->query($sql, array($group_id));
+		
+		if($query == FALSE){
+			
+			$this->lasterr = 'Could not delete group. Do they exist?';
+			return FALSE;
+			
+		} else {
+			
+			/* $sql = 'DELETE FROM bookings WHERE user_id = ?';
+			$query = $this->db->query($sql, array($user_id));
+			if($query == FALSE){ $failed[] = 'bookings'; }*/
+			
+			$sql = 'UPDATE users SET group_id = 0 WHERE group_id = ?';
+			$query = $this->db->query($sql, array($group_id));
+			if($query == FALSE){ $failed[] = 'users'; }
+			
+			if(isset($failed)){
+				$this->lasterr = 'The group was deleted successfully, but an error occured while re-assigning its users to the default Guests group.';
+			}
+			
+			return TRUE;
+			
+		}
+		
 	}
 	
 	
@@ -271,7 +304,7 @@ class Security extends Model{
 	
 	function get_group_permissions($group_id = NULL){
 		
-		if($group_id == NULL){
+		if($group_id === NULL){
 			
 			// Getting permissions for all groups
 			$sql = 'SELECT group_id, permissions FROM groups ORDER BY group_id ASC';
@@ -290,24 +323,15 @@ class Security extends Model{
 			
 		} else {
 			
-			if(!is_numeric($group_id)){
-				
-				$this->lasterr = 'Group ID given was not numeric.';
-				return FALSE;
-				
+			// Getting permissions from one group
+			$sql = 'SELECT permissions FROM groups WHERE group_id=?';
+			$query = $this->db->query($sql, array($group_id));
+			if($query->num_rows() == 1){
+				$row = $query->row();
+				return unserialize($row->permissions);
 			} else {
-				
-				// Getting permissions from one group
-				$sql = 'SELECT permissions FROM groups WHERE group_id = ?';
-				$query = $this->db->query($sql, array($group_id));
-				if($query->num_rows() == 1){
-					$row = $query->row();
-					return unserialize($row->permissions);
-				} else {
-					$this->lasterr = 'No group to get permissions from.';
-					return FALSE;
-				}
-				
+				$this->lasterr = 'No group to get permissions from.';
+				return FALSE;
 			}
 			
 		}
@@ -379,61 +403,6 @@ class Security extends Model{
 		}
 	}
 	
-	
-	
-	
-	/*function get_user($user_id = NULL){
-	
-		// Base query information
-		$select =  'users.user_id, '
-							.'users.school_id, '
-							.'users.username, '
-							.'users.displayname, '
-							.'users.email, '
-							.'users.authlevel, '
-							.'users.lastlogin, '
-							.'users.enabled';
-		
-			
-		// Check for getting one record or all
-		if($user_id == NULL){
-			// All users
-			$select .= ', schools.name AS schoolname ';
-			$this->db->select($select);
-			$this->db->from('users');
-			$this->db->join('schools', 'users.school_id=schools.school_id', 'left');
-			if($school_id != NULL){
-				$this->db->where('schools.school_id', $school_id);
-			}
-			$this->db->orderby('authlevel asc, username asc');
-
-			// Run query
-			$query = $this->db->get();
-			if($query->num_rows() > 0){
-				// Got rows!
-				$return = $query->result();
-			} else {
-				// No rows :(
-				$return = false;
-			}
-		} else {
-			// One user
-			$this->db->select($select);
-			$this->db->from('users');
-			$this->db->where('users.user_id', $user_id);
-			$this->db->limit(1);
-			// Run query
-			$query = $this->db->get();
-			if($query->num_rows() == 1){
-				// Got one row exactly!
-				$return = $query->row();
-			} else {
-				// No rows :(
-				$return = false;
-			}
-		}
-		return $return;
-	}*/
 	
 	
 	

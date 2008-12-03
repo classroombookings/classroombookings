@@ -26,6 +26,7 @@ class Bookings extends Controller {
 	function Bookings(){
 		parent::Controller();
 		$this->tpl = $this->config->item('template');
+		$this->output->enable_profiler($this->config->item('profiler'));
 		
 	}
 	
@@ -33,8 +34,7 @@ class Bookings extends Controller {
 	
 	
 	function index(){
-	$this->output->enable_profiler(TRUE);
-		$this->auth->check('bookings/view');
+		$this->auth->check('bookings');
 		$tpl['title'] = 'Bookings';
 		$tpl['pagetitle'] = $tpl['title'];
 		$tpl['body'] = 'bookings';

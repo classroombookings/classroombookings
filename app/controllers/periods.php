@@ -26,6 +26,7 @@ class Periods extends Controller {
 	function Periods(){
 		parent::Controller();
 		$this->tpl = $this->config->item('template');
+		$this->output->enable_profiler($this->config->item('profiler'));
 	}
 	
 	

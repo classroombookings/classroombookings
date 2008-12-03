@@ -27,16 +27,17 @@ class Users extends Controller {
 		parent::Controller();
 		$this->load->model('security');
 		$this->tpl = $this->config->item('template');
-		$this->output->enable_profiler($this->session->userdata('debug'));
+		$this->output->enable_profiler($this->config->item('profiler'));
 	}
 	
 	
 	
 	
 	function index(){
-		$icondata[0] = array('security/users/add', 'Add a new user', 'plus.gif' );
-		$icondata[1] = array('security/users/import', 'Import from file', 'database-arr.gif' );
-		$icondata[2] = array('security/groups', 'Manage groups', 'group.gif' );
+		$this->auth->check('users');
+		$icondata[0] = array('security/users/add', 'Add a new user', 'plus.gif');
+		$icondata[1] = array('security/users/import', 'Import from file', 'database-arr.gif');
+		$icondata[2] = array('security/groups', 'Manage groups', 'group.gif');
 		$icondata[3] = array('security/permissions', 'Change group permissions', 'key2.gif');
 		$tpl['pretitle'] = $this->load->view('parts/iconbar', $icondata, TRUE);
 		
@@ -58,9 +59,10 @@ class Users extends Controller {
 	
 	
 	function ingroup($group_id){
-		$icondata[0] = array('security/users/add', 'Add a new user', 'plus.gif' );
-		$icondata[1] = array('security/users/import', 'Import', 'database-arr.gif' );
-		$icondata[2] = array('security/groups', 'Manage groups', 'group.gif' );
+		$this->auth->check('users');
+		$icondata[0] = array('security/users/add', 'Add a new user', 'plus.gif');
+		$icondata[1] = array('security/users/import', 'Import', 'database-arr.gif');
+		$icondata[2] = array('security/groups', 'Manage groups', 'group.gif');
 		$icondata[3] = array('security/permissions', 'Change group permissions', 'key2.gif');
 		$tpl['pretitle'] = $this->load->view('parts/iconbar', $icondata, TRUE);
 		
@@ -86,6 +88,7 @@ class Users extends Controller {
 	
 	
 	function add(){
+		$this->auth->check('users.add');
 		$body['user'] = NULL;
 		$body['user_id'] = NULL;
 		$body['groups'] = $this->security->get_groups_dropdown();
@@ -99,6 +102,7 @@ class Users extends Controller {
 	
 	
 	function edit($user_id){
+		$this->auth->check('users.edit');
 		$body['user'] = $this->security->get_user($user_id);
 		$body['user_id'] = $user_id;
 		$body['groups'] = $this->security->get_groups_dropdown();
@@ -114,7 +118,6 @@ class Users extends Controller {
 	
 	
 	function save(){
-		
 		$user_id = $this->input->post('user_id');
 		
 		$this->form_validation->set_rules('user_id', 'User ID');
@@ -188,7 +191,8 @@ class Users extends Controller {
 	
 	
 	function delete($user_id = NULL){
-	
+		$this->auth->check('users.delete');
+		
 		// Check if a form has been submitted; if not - show it to ask user confirmation
 		if($this->input->post('id')){
 		

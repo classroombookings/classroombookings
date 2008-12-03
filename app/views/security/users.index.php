@@ -41,12 +41,12 @@ if($users != 0){
 </table>
 
 <script type='text/javascript'>
-$(function(){
+/* $(function(){
 	$('.boxy').click(function(){
 		Boxy.load($(this).attr("href") + "/ajax", {cache:'false', title: 'Effective Permissions'});
 		return false;
 	});
-});
+}); */
 </script> 
 
 <?php

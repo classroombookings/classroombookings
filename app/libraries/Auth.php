@@ -1,4 +1,20 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+/*
+	This file is part of Classroombookings.
+
+	Classroombookings is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	Classroombookings is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with Classroombookings.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 
 class Auth{
@@ -17,8 +33,9 @@ class Auth{
 		// Load original CI object to global CI variable
 		$this->CI =& get_instance();
 		
-		// Load cookie helper as required by this library
+		// Load helpers/models required by the library
 		$this->CI->load->helper('cookie');
+		$this->CI->load->model('security');
 		
 		// Cookie salt for hash - can be any text string
 		$this->cookiesalt = 'CL455R00Mb00k1ng5';
@@ -38,156 +55,52 @@ class Auth{
 	
 	
 	
-	function check($action){
+	function check($action, $return = FALSE){
+		// Get group ID
+		$group_id = $this->CI->session->userdata('group_id');
+		// If no group, then guest group (always 0)
+		$group_id = (int)($group_id === FALSE) ? 0 : $group_id;
 		
-		// Get permission_id of the action
-		$p_id = $this->get_permission_id($action);
-		if($p_id == FALSE || $p_id == NULL){
-			$this->lasterr = sprintf($this->CI->lang->line('AUTH_CHECK_NO_PID'), $action);
-			$this->CI->msg->add('err', $this->lasterr);
-			redirect($this->errpage);
+		// Get the group permissions for the user's group
+		$group_permissions = $this->CI->security->get_group_permissions($group_id);
+		
+		// See if this action is in the permissions array for the user
+		if(is_array($group_permissions)){
+			$check = in_array($action, $group_permissions);
+		} else {
+			$check = FALSE;
 		}
 		
-		//echo $p_id;
-		
-		// Get the user's group ID from the session
-		$g_id = $this->CI->session->userdata('group_id');
-		$g_id = ($g_id === FALSE) ? 0 : $g_id;
-		
-		//echo $g_id;
-		
-		// Query to select the exact permission available for this user
-		$sql = 'SELECT p_id FROM permissions2groups WHERE p_id = ? AND g_id = ? OR g_id = 0 LIMIT 1';
-		$query_pid = $this->CI->db->query($sql, array($p_id, $g_id));
-		
-		$sql = 'SELECT g_id FROM permissions2groups WHERE p_id = ?';
-		$query_gids = $this->CI->db->query($sql, array($p_id));
-		
-		if($query_gids->num_rows() > 0){
-			foreach($query_gids->result_array() as $g_id){
-				$g_ids[] = $g_id['g_id'];
-			}
+		// Return true/false if we only want the return value
+		if($return == TRUE){
+			return ($check == FALSE) ? FALSE : TRUE;
 		}
-		
-		//echo $query->num_rows();
-		
-		// Return true if user has this permission assigned to their group
-		$check = ($query_pid->num_rows() == 1) ? TRUE : FALSE;
-		
-		
+		// Otherwise, error if failed check ...
 		
 		if($check == FALSE){
-		
-			$uri = $this->CI->uri->uri_string();
-			$this->CI->session->set_userdata('uri', $uri);
+			// User is not allowed for that action - do stuff
 			
+			// Get the URI string they requested so can redirect to it after successful login
+			$this->CI->session->set_userdata('uri', $this->CI->uri->uri_string());
+			
+			$this->CI->load->library('user_agent');
+			
+			// User logged in? If not then they must at least login.
+			// If yes, then they just don't have the necessary privileges.
 			if($this->logged_in() == FALSE){
 				$this->lasterr = $this->CI->lang->line('AUTH_MUST_LOGIN');
-				$uri = 'account/login';
+				$this->lasterr2 = anchor('account/login', 'Click here to login.');
 			} else {
 				$this->lasterr = $this->CI->lang->line('AUTH_NO_PRIVS');
-				$uri = $this->errpage;
+				$this->lasterr2 = anchor($this->CI->agent->referrer(), 'Click here to go back.');
 			}
 			
-			$this->CI->msg->add('err', $this->lasterr);
-			redirect($uri);
-		}
-		
-	}
-	
-	
-	
-	
-	/**
-	 * Check to see if our user (belonging to a group) can access this action
-	 */
-	/*function check($action){
-		// Get user's group_id. If empty, they're anonymous.
-		$group_id = $this->CI->session->userdata('group_id');
-		$group_id = ($group_id === FALSE) ? 0 : $group_id;
-		
-		// Permissions that the user is allowed to access (out in sessdata in the hook)
-		$permissions = $this->CI->session->userdata('permissions');
-		
-		// Get the permission action ID
-		$action_id = $this->get_permission_id_by_action($action);
-		
-		// Now we have group and action_id they're trying to access.
-		// Got to check if this ID is in the array of permission_ids that they can access
-		if(!in_array($action_id, $permissions0)){
-			redirect("account/login");
-		}
-		
-	}*/
-	
-	
-	
-	
-	function checklevel($required, $authlevel = NULL, $h = FALSE){
-		// If no auth configured for this section, allow.
-		#die(var_export($required,TRUE) . " - " . $authlevel);
-		
-		if(empty($authlevel)){ $authlevel = 'guest'; }
-		
-		
-		$arrcheck = explode("/", $required);
-		$offset = 0;
-		$arrchecks = array();
-		$arrposs = array();
-		while($offset = strpos($required.'/', '/', $offset + 1)){
-			$arrposs[] = $offset;
-			$arrchecks[] = substr($required, 0, $offset);
-		}
-		
-		#rsort($arrchecks);
-		if(empty($arrchecks)){ return TRUE; }
-		
-		foreach($arrchecks as $required){
-		
-			// Return true if there is no array key for this page
-			if( !array_key_exists($required, $this->levels) ){
-				return TRUE;
-			}
+			$error =& load_class('Exceptions');
+			echo $error->show_error($this->lasterr, $this->lasterr2);
+			exit;
 			
-			// Return true if empty array (all users) for this
-			if( isset($this->levels[$required]) && is_array($this->levels[$required]) && empty($this->levels[$required]) ){
-				return TRUE;
-			}
-			
-			
-			// Check to see if authconf array is set for this section
-			if(is_array($this->levels[$required]) && count($this->levels[$required]) > 0){
-	
-				// Yep, is set - now check the user's authlevel is actually in the array
-				#echo "looking for '$authlevel' in " . var_export($this->levels[$required], true) . " ..";
-			    $found = in_array($authlevel, $this->levels[$required]);
-			    #echo (int)$found;
-			    if($found){
-			        // Yep, user OK!
-			        return true;
-				} else {
-				    // Nope!
-					return false;
-				}
-	
-			} else {
-	
-				// No array!
-				return false;
-				
-			}
-		
 		}
 	}
-
-
-	/*
-	function checklevel($required = 0, $user = 0){
-		$required = (isset($required)) ? $required : 0;
-		$user = (isset($user)) ? $user : 0;
-		$ret = ($user >= $required) ? TRUE : FALSE;
-		return $ret;
-	}*/
 	
 	
 	
@@ -476,55 +389,6 @@ class Auth{
 			return NULL;
 		}
 	}
-	
-	
-	
-	
-	/**
-	 * Get permission IDs for group
-	 *
-	 * @param int ID of group to find
-	 * @return array Permission IDs that the group is allowed to access
-	 */
-	/*function get_group_permission_ids($group_id){
-		if(!is_numeric($group_id)){ return FALSE; }
-		
-		// Get all permission IDs
-		$sql = 'SELECT permission_id FROM permissions2groups WHERE group_id = ?';
-		$query = $this->CI->db->query($sql, array($group_id));
-		
-		if($query->num_rows() > 0){
-			// Put them in a simple 1D array
-			$permissions = array();
-			$result = $query->result();
-			foreach($result as $row){
-				$permissions[] = $row->permission_id;
-			}
-			return $permissions;
-		} else {
-			return FALSE;
-		}
-	}*/
-	
-	
-	
-	
-	
-	/*function get_permission_by_url($url){
-		if($url == NULL){ return FALSE; }
-		
-		$sql = 'SELECT permission_id, action, menuname, `admin-title`
-				FROM permissions WHERE url = ? LIMIT 1';
-		$query = $this->CI->db->query($sql, array($url));
-		
-		if($query->num_rows() == 1){
-			// OK!
-			$row = $query->row();
-			return $row;
-		} else {
-			return FALSE;
-		}
-	}*/
 	
 	
 	

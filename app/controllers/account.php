@@ -26,6 +26,7 @@ class Account extends Controller {
 	function Account(){
 		parent::Controller();
 		$this->tpl = $this->config->item('template');
+		$this->output->enable_profiler($this->config->item('profiler'));
 	}
 	
 	
@@ -76,7 +77,8 @@ class Account extends Controller {
 			
 				// Login successful, going to page
 				$this->session->set_flashdata('flash', $this->msg->note($this->lang->line('AUTH_OK')));
-				redirect("dashboard");
+				$uri = $this->session->userdata('uri');
+				redirect(($uri != NULL) ? $uri : 'dashboard');
 			
 			} else {
 				

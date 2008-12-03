@@ -26,6 +26,7 @@ class Departments extends Controller {
 	function Departments(){
 		parent::Controller();
 		$this->tpl = $this->config->item('template');
+		$this->output->enable_profiler($this->config->item('profiler'));
 	}
 	
 	

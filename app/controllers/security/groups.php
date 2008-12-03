@@ -27,6 +27,7 @@ class Groups extends Controller {
 		parent::Controller();
 		$this->load->model('security');
 		$this->tpl = $this->config->item('template');
+		$this->output->enable_profiler($this->config->item('profiler'));
 		$this->load->helper('text');
 	}
 	
@@ -121,6 +122,7 @@ class Groups extends Controller {
 				
 				if($add == TRUE){
 					$this->msg->add('info', sprintf($this->lang->line('SECURITY_GROUP_ADD_OK'), $data['name']));
+					$this->msg->add('note', 'You can now configure the permissions for this group by '.anchor('security/permissions/forgroup/'.$add, 'clicking here.'));
 				} else {
 					$this->msg->add('err', sprintf($this->lang->line('SECURITY_GROUP_ADD_FAIL', $this->security->lasterr)));
 				}
@@ -139,6 +141,75 @@ class Groups extends Controller {
 			
 			// All done, redirect!
 			redirect('security/groups');
+			
+		}
+		
+	}
+	
+	
+	
+	
+	function delete($group_id = NULL){
+		$this->auth->check('groups.delete');
+		
+		// Check if a form has been submitted; if not - show it to ask user confirmation
+		if($this->input->post('id')){
+		
+			// Form has been submitted (so the POST value exists)
+			// Call model function to delete user
+			$delete = $this->security->delete_group($this->input->post('id'));
+			if($delete == FALSE){
+				$this->msg->add('err', $this->security->lasterr, 'An error occured');
+			} else {
+				$this->msg->add('info', 'The group has been deleted.');
+			}
+			// Redirect
+			redirect('security/groups');
+			
+		} else {
+		
+			if( ($this->session->userdata('group_id')) && ($group_id == $this->session->userdata('group_id')) ){
+				$this->msg->add(
+					'warn',
+					base64_decode('WW91IGNhbm5vdCBkZWxldGUgdGhlIGdyb3VwIHRoYXQgeW91IGFyZSBhIG1lbWJlciBvZiwgdGhlIHVuaXZlcnNlIGlzIGxpa2VseSB0byBpbXBsb2RlLg=='),
+					base64_decode('RXJyb3IgSUQjMTBU')
+				);
+				redirect('security/groups');
+			}
+			
+			if($group_id == NULL){
+				
+				$tpl['title'] = 'Delete group';
+				$tpl['pagetitle'] = $tpl['title'];
+				$tpl['body'] = $this->msg->err('Cannot find the group or no group ID given.');
+				
+			} else {
+				
+				// Get user info so we can present the confirmation page with a dsplayname/username
+				$group = $this->security->get_group($group_id);
+				
+				if($group == FALSE){
+				
+					$tpl['title'] = 'Delete group';
+					$tpl['pagetitle'] = $tpl['title'];
+					$tpl['body'] = $this->msg->err('Could not find that group or no group ID given.');
+					
+				} else {
+					
+					// Initialise page
+					$body['action'] = 'security/groups/delete';
+					$body['id'] = $group_id;
+					$body['cancel'] = 'security/groups';
+					$body['text'] = 'If you delete this group, all of its users (if any) will be re-assigned to the Guests group.';
+					$tpl['title'] = 'Delete group';
+					$tpl['pagetitle'] = 'Delete ' . $group->name;
+					$tpl['body'] = $this->load->view('parts/deleteconfirm', $body, TRUE);
+					
+				}
+				
+			}
+			
+			$this->load->view($this->tpl, $tpl);
 			
 		}
 		

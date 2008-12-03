@@ -26,6 +26,7 @@ class Reports extends Controller {
 	function Reports(){
 		parent::Controller();
 		$this->tpl = $this->config->item('template');
+		$this->output->enable_profiler($this->config->item('profiler'));
 	}
 	
 	
