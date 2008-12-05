@@ -191,14 +191,35 @@ class Security extends Model{
 				return FALSE;
 			}
 			
-			// Getting one user
+			// Getting one group
 			$sql = 'SELECT * FROM groups WHERE group_id = ? LIMIT 1';
 			$query = $this->db->query($sql, array($group_id));
 			
 			if($query->num_rows() == 1){
-				return $query->row();
+				
+				// Got the group!
+				$group = $query->row();
+				$group->ldapgroups = array();
+				
+				// Fetch the LDAP groups that are mapped (if any)
+				$sql = 'SELECT ldapgroup_id FROM groups2ldapgroups WHERE group_id = ?';
+				$query = $this->db->query($sql, array($group_id));
+				if($query->num_rows() > 0){
+					$ldapgroups = array();
+					foreach($query->result() as $row){
+						array_push($ldapgroups, $row->ldapgroup_id);
+					}
+					// Assign array of LDAP groups to main group object that is to be returned
+					$group->ldapgroups = $ldapgroups;
+					unset($ldapgroups);
+				}
+				
+				return $group;
+				
 			} else {
+				
 				return FALSE;
+				
 			}
 			
 		}
@@ -208,21 +229,82 @@ class Security extends Model{
 	
 	
 	function add_group($data){
+		// Add created date to the array to be inserted into the DB
 		$data['created'] = date("Y-m-d");
+		
+		// If no LDAP groups, set empty array. Otherwise assign to new array for itself
+		if(in_array(-1, $data['ldapgroups'])){
+			$ldapgroups = array();
+		} else {
+			$ldapgroups = $data['ldapgroups'];
+		}
+		
+		// Remove ldapgroups from the main data array (no 'ldapgroups' column)
+		unset($data['ldapgroups']);
+		
+		// Add the user and get the ID
 		$add = $this->db->insert('groups', $data);
-		return $this->db->insert_id();
+		$group_id = $this->db->insert_id();
+		
+		// If LDAP groups were assigned then insert into DB now we have the group ID
+		if(count($ldapgroups) > 0){
+			$sql = 'INSERT INTO groups2ldapgroups (group_id, ldapgroup_id) VALUES ';
+			foreach($ldapgroups as $ldapgroup_id){
+				$sql .= sprintf("(%d,%d),", $group_id, $ldapgroup_id);
+			}
+			// Remove last comma
+			$sql = preg_replace('/,$/', '', $sql);
+			$query = $this->db->query($sql);
+			if($query == FALSE){
+				$this->lasterr = 'Could not assign LDAP groups';
+			}
+		}
+		
+		return $group_id;
 	}
 	
 	
 	
 	
 	function edit_group($group_id = NULL, $data){
+		// Gotta have an ID
 		if($group_id == NULL){
 			$this->lasterr = 'Cannot update a group without their ID.';
 			return FALSE;
 		}
+		
+		// If no LDAP groups, set empty array. Otherwise assign to new array for itself
+		if(in_array(-1, $data['ldapgroups'])){
+			$ldapgroups = array();
+		} else {
+			$ldapgroups = $data['ldapgroups'];
+		}
+		
+		unset($data['ldapgroups']);
+		
+		// Update group main details
 		$this->db->where('group_id', $group_id);
 		$edit = $this->db->update('groups', $data);
+		
+		// Now remove LDAP group assignments (don't panic - will now re-insert if they are specified)
+		$sql = 'DELETE FROM groups2ldapgroups WHERE group_id = ?';
+		$query = $this->db->query($sql, array($group_id));
+		
+		// If LDAP groups were assigned then insert into DB
+		if(count($ldapgroups) > 0){
+			$sql = 'INSERT INTO groups2ldapgroups (group_id, ldapgroup_id) VALUES ';
+			foreach($ldapgroups as $ldapgroup_id){
+				$sql .= sprintf("(%d,%d),", $group_id, $ldapgroup_id);
+			}
+			// Remove last comma
+			$sql = preg_replace('/,$/', '', $sql);
+			$query = $this->db->query($sql);
+			if($query == FALSE){
+				$this->lasterr = 'Could not assign LDAP groups';
+			}
+		}
+		
+		
 		return $edit;
 	}
 	
@@ -250,12 +332,28 @@ class Security extends Model{
 			$query = $this->db->query($sql, array($user_id));
 			if($query == FALSE){ $failed[] = 'bookings'; }*/
 			
+			// Remove LDAP group assignments so the LDAP groups can be assigned to another group
+			$sql = 'DELETE FROM groups2ldapgroups WHERE group_id = ?';
+			$query = $this->db->query($sql, array($group_id));
+			if($query == FALSE){
+				$failed['ldapgroups'] = 'Failed to remove LDAP group assignments';
+			}
+			
+			// Remove users in this group and put them into Guests
 			$sql = 'UPDATE users SET group_id = 0 WHERE group_id = ?';
 			$query = $this->db->query($sql, array($group_id));
-			if($query == FALSE){ $failed[] = 'users'; }
+			if($query == FALSE){
+				$failed['users'] = 'Failed to re-assign users in the group you deleted to the default Guests group';
+			}
 			
+			// Check if our sub-actions failed
 			if(isset($failed)){
-				$this->lasterr = 'The group was deleted successfully, but an error occured while re-assigning its users to the default Guests group.';
+				$this->lasterr = 'The group was deleted successfully, but other errors occured: <ul>';
+				foreach($failed as $k => $v){
+					$this->lasterr .= sprintf('<li>%s</li>', $v);
+				}
+				$this->lasterr .= '</ul>';
+				return FALSE;
 			}
 			
 			return TRUE;
@@ -384,8 +482,34 @@ class Security extends Model{
 	
 	/**
 	 * Function to get LDAP groups _that have not already been set to map to CRBS groups_
+	 * Specify a group ID to exlude it from the list:
+	 * 		- Useful on edit page to still show which LDAP groups are assigned, but not ones assigned to *other* groups
 	 */
-	function get_ldap_groups_not_assigned(){
+	function get_ldap_groups_unassigned($group_id = NULL){
+		$existing_groups = array();
+		$sql = 'SELECT * 
+				FROM ldapgroups 
+				WHERE ldapgroup_id NOT IN (
+					SELECT ldapgroup_id 
+					FROM groups2ldapgroups
+					%s
+				) ORDER BY name ASC';
+		// Is group_id specified? If so, we need to include these group mappings
+		if($group_id !== NULL && is_numeric($group_id)){
+			$sql2 = 'WHERE group_id != ?';
+			$sql = sprintf($sql, $sql2);
+			$query = $this->db->query($sql, array($group_id));
+		} else {
+			$sql = sprintf($sql, '');
+			$query = $this->db->query($sql);
+		}
+		if($query->num_rows() > 0){
+			$results = $query->result();
+			foreach($results as $result){
+				$existing_groups[$result->ldapgroup_id] = $result->name;
+			}
+		}
+		return $existing_groups;
 	}
 	
 	

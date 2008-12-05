@@ -297,6 +297,7 @@ class Configure extends Controller {
 		// Empty the table if necessary before fetching the 'existing' groups
 		if($clear == TRUE){
 			$this->db->empty_table('ldapgroups');
+			$this->db->empty_table('groups2ldapgroups');
 		}
 		
 		// Fetch the groups we already have in our DB

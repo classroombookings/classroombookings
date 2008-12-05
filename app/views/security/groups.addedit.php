@@ -71,7 +71,8 @@ $t = 1;
 			<option value="-1">(None)</option>
 			<?php
 			foreach($ldapgroups as $id => $name){
-				echo sprintf('<option value="%d">%s</option>', $id, $name);
+				$selected = (in_array($id, $group->ldapgroups)) ? ' selected="selected"' : '';
+				echo sprintf('<option value="%1$d"%3$s>%2$s</option>', $id, $name, $selected);
 			}
 			$t++;
 			?>

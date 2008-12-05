@@ -62,7 +62,7 @@ class Groups extends Controller {
 		$this->auth->check('groups.add');
 		$body['group'] = NULL;
 		$body['group_id'] = NULL;
-		$body['ldapgroups'] = $this->security->get_ldap_groups();
+		$body['ldapgroups'] = $this->security->get_ldap_groups_unassigned();
 		$tpl['title'] = 'Add group';
 		$tpl['pagetitle'] = 'Add a new group';
 		$tpl['body'] = $this->load->view('security/groups.addedit.php', $body, TRUE);
@@ -76,11 +76,17 @@ class Groups extends Controller {
 		$this->auth->check('groups.edit');
 		$body['group'] = $this->security->get_group($group_id);
 		$body['group_id'] = $group_id;
-		$body['ldapgroups'] = $this->security->get_ldap_groups();
+		$body['ldapgroups'] = $this->security->get_ldap_groups_unassigned($group_id);
 		
 		$tpl['title'] = 'Edit group';
-		$tpl['pagetitle'] = 'Edit ' . $body['group']->name . ' group';
-		$tpl['body'] = $this->load->view('security/groups.addedit.php', $body, TRUE);
+		
+		if($body['group'] != FALSE){
+			$tpl['pagetitle'] = 'Edit ' . $body['group']->name . ' group';
+			$tpl['body'] = $this->load->view('security/groups.addedit.php', $body, TRUE);
+		} else {
+			$tpl['pagetitle'] = 'Error getting group';
+			$tpl['body'] = $this->msg->err('Could not load the specified group. Please check the ID and try again.');
+		}
 		
 		$this->load->view($this->tpl, $tpl);
 	}
