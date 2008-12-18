@@ -30,7 +30,7 @@ if($users != 0){
 		<td class="il" width="270">
 		<?php
 		$actiondata[0] = array('security/users/view/'.$user->user_id, 'Report', 'magnifier_sm.gif');
-		$actiondata[1] = array('security/permissions/effective/'.$user->user_id, 'View effective permissions', 'key-sm.gif', 'boxy');
+		$actiondata[1] = array('security/permissions/effective/'.$user->user_id, 'View effective permissions', 'key-sm.gif', 'facebox');
 		$actiondata[2] = array('security/users/delete/'.$user->user_id, 'Delete', 'cross_sm.gif');
 		$this->load->view('parts/listactions', $actiondata);
 		#$this->load->view('parts/delete', array('url' => 'security/users/delete/'.$user->user_id));
@@ -41,6 +41,25 @@ if($users != 0){
 </table>
 
 <script type='text/javascript'>
+/*$(function(){
+	$('a[rel*=facebox]').click(function(){
+		jQuery.facebox(function($){
+			$.get($(this).attr("href") + "/ajax", function(data){ $.facebox(data); return false; });
+		});
+		return false;
+	});
+	return false;
+});*/
+
+/* jQuery.facebox(function($){
+	$.get('blah.html', function(data) { $.facebox(data) })
+}) */
+
+//$('a[rel*=facebox]').attr("href", $(this).attr("href") + "/ajax");
+jQuery(document).ready(function($){
+	$('a[class*=facebox]').facebox();
+});
+
 /* $(function(){
 	$('.boxy').click(function(){
 		Boxy.load($(this).attr("href") + "/ajax", {cache:'false', title: 'Effective Permissions'});

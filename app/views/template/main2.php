@@ -31,10 +31,9 @@
 	};
 	</script>
 	<script type="text/javascript" src="js/jquery-1.2.6.min.js"></script>
-	<script type="text/javascript" src="js/jquery.boxy.js"></script>
 	<script src="js/qTip.js" type="text/javascript"></script>
 	<script src="js/tabber-minimized.js" type="text/javascript"></script>
-	<script src="js/jquery.boxy.js" type="text/javascript"></script>
+	<script src="js/facebox.js" type="text/javascript"></script>
 </head>
 
 <body>
