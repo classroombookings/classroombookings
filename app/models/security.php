@@ -531,6 +531,11 @@ class Security extends Model{
 		if($query->num_rows() == 1){
 			$row = $query->row();
 			$group_permissions = unserialize($row->permissions);
+			// Check if there are actually any permissions configured for the group
+			if(!is_array($group_permissions)){
+				$this->lasterr = 'No permissions configured for the group.';
+				return FALSE;
+			}
 			//return $permissions;
 			$all_permissions = $this->config->item('permissions');
 			#print_r($all_permissions);

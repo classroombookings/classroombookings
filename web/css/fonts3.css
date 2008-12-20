@@ -1,0 +1,17 @@
+body{
+	font:0.9em Arial, Sans-serif;
+	text-align:center;
+}
+
+input,textarea,select{
+	font:100% Arial, Lucida Grande, Verdana, Sans-serif;
+}
+
+div#top{font-size:0.85em;}
+div#top-menu{font-size:1.1em;}
+
+div#content{font-size:0.75em;}
+
+div#sidebar{font-size:0.95em;}
+
+div#footer{font-size:0.8em;}

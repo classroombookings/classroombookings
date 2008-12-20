@@ -30,7 +30,7 @@ if($users != 0){
 		<td class="il" width="270">
 		<?php
 		$actiondata[0] = array('security/users/view/'.$user->user_id, 'Report', 'magnifier_sm.gif');
-		$actiondata[1] = array('security/permissions/effective/'.$user->user_id, 'View effective permissions', 'key-sm.gif', 'facebox');
+		$actiondata[1] = array('security/permissions/effective/'.$user->user_id, 'Effective permissions', 'key-sm.gif', 'facebox');
 		$actiondata[2] = array('security/users/delete/'.$user->user_id, 'Delete', 'cross_sm.gif');
 		$this->load->view('parts/listactions', $actiondata);
 		#$this->load->view('parts/delete', array('url' => 'security/users/delete/'.$user->user_id));

@@ -11,11 +11,10 @@ $t = 1;
 ?>
 
 <?php if($user_id == NULL){ ?>
-<p>Please fill in the required fields below to add a new user to the system.</p>
-<p>As you are using LDAP authentication, you do not need to create user accounts manually - they are automatically created if they don't already exist.</p>
+
 <?php } ?>
 
-<table class="form" cellpadding="6" cellspacing="0" border="0" width="50%">
+<table class="form" cellpadding="6" cellspacing="0" border="0" width="100%">
 	
 	<tr class="h"><td colspan="2">User details</td></tr>
 	

@@ -8,7 +8,7 @@ $t = 1;
 <p>Use this page to retrieve the user groups from your LDAP server so you can automatically assign LDAP users in their groups to a single group and multiple departments within Classroombookings. This only needs to be done on first configuration and if you change your LDAP groups.</p>
 <p>This will use the settings you configured in the <em>Authentication</em> tab, but you must supply a username and password here that has the appropriate permissions to retrieve all the groups.</p>
 
-<table class="form" cellpadding="6" cellspacing="0" border="0" width="50%">
+<table class="form" cellpadding="6" cellspacing="0" border="0" width="100%">
 	
 	<tr class="h"><td colspan="2">LDAP bind settings</td></tr>
 	

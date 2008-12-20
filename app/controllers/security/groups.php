@@ -36,10 +36,10 @@ class Groups extends Controller {
 	
 	function index(){
 		$this->auth->check('groups');
-		$icondata[0] = array('security/groups/add', 'Add a new group', 'plus.gif' );
-		$icondata[1] = array('security/users', 'Manage users', 'user_orange.gif' );
-		$icondata[2] = array('security/permissions', 'Change group permissions', 'key2.gif');
-		$tpl['pretitle'] = $this->load->view('parts/iconbar', $icondata, TRUE);
+		$links[0] = array('security/groups/add', 'Add a new group');
+		$links[1] = array('security/users', 'Manage users');
+		$links[2] = array('security/permissions', 'Change group permissions');
+		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
 		
 		// Get list of users
 		$body['groups'] = $this->security->get_group();
@@ -140,7 +140,7 @@ class Groups extends Controller {
 			
 			} else {
 			
-				// Updating existing user
+				// Updating existing group
 				$edit = $this->security->edit_group($group_id, $data);
 				if($edit == TRUE){
 					$this->msg->add('info', sprintf($this->lang->line('SECURITY_GROUP_EDIT_OK'), $data['name']));
@@ -232,4 +232,4 @@ class Groups extends Controller {
 }
 
 
-?>
+/* End of file controllers/security/groups.php */

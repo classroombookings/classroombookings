@@ -34,14 +34,14 @@ class Permissions extends Controller {
 	
 	
 	function index($tab = NULL){
-		$icondata[0] = array('security/users', 'Manage users', 'user_orange.gif' );
-		$icondata[1] = array('security/groups', 'Manage groups', 'group.gif' );
+		$links[0] = array('security/users', 'Manage users');
+		$links[1] = array('security/groups', 'Manage groups');
 		$body['tab'] = ($tab == NULL) ? $this->session->flashdata('tab') : $tab;
 		$body['groups'] = $this->security->get_groups_dropdown();
 		$body['permissions'] = $this->config->item('permissions');
 		$body['group_permissions'] = $this->security->get_group_permissions();
 		#print_r($body['permissions']);
-		$tpl['pretitle'] = $this->load->view('parts/iconbar', $icondata, TRUE);
+		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
 		$tpl['title'] = 'Permissions';
 		$tpl['pagetitle'] = 'Manage group permissions';
 		$tpl['body'] = $this->load->view('security/permissions.index.php', $body, TRUE);

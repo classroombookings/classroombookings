@@ -35,11 +35,11 @@ class Users extends Controller {
 	
 	function index(){
 		$this->auth->check('users');
-		$icondata[0] = array('security/users/add', 'Add a new user', 'plus.gif');
-		$icondata[1] = array('security/users/import', 'Import from file', 'database-arr.gif');
-		$icondata[2] = array('security/groups', 'Manage groups', 'group.gif');
-		$icondata[3] = array('security/permissions', 'Change group permissions', 'key2.gif');
-		$tpl['pretitle'] = $this->load->view('parts/iconbar', $icondata, TRUE);
+		$links[1] = array('security/users/add', 'Add a new user');
+		$links[2] = array('security/users/import', 'Import from file');
+		$links[3] = array('security/groups', 'Manage groups');
+		$links[4] = array('security/permissions', 'Change group permissions');
+		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
 		
 		// Get list of users
 		$body['users'] = $this->security->get_user();
@@ -92,6 +92,7 @@ class Users extends Controller {
 		$body['user'] = NULL;
 		$body['user_id'] = NULL;
 		$body['groups'] = $this->security->get_groups_dropdown();
+		$tpl['sidebar'] = "<p>Please fill in the required fields below to add a new user to the system.</p><p>As you are using LDAP authentication, you do not need to create user accounts manually - they are automatically created if they don't already exist.</p>";
 		$tpl['title'] = 'Add user';
 		$tpl['pagetitle'] = 'Add a new user';
 		$tpl['body'] = $this->load->view('security/users.addedit.php', $body, TRUE);
@@ -130,9 +131,9 @@ class Users extends Controller {
 		$this->form_validation->set_rules('enabled', 'Enabled', 'exact_length[1]');
 		$this->form_validation->set_rules('email', 'Email address', 'max_length[256]|valid_email|trim');
 		$this->form_validation->set_rules('displayname', 'Display name', 'max_length[64]|trim');
-		$this->form_validation->set_rules('department_id', 'Department', 'integer');
+		//$this->form_validation->set_rules('department_id', 'Department', 'integer');
 		$this->form_validation->set_error_delimiters('<li>', '</li>');
-
+		
 		if($this->form_validation->run() == FALSE){
 			
 			// Validation failed - load required action depending on the state of user_id
@@ -145,7 +146,7 @@ class Users extends Controller {
 			$data['displayname'] = $this->input->post('displayname');
 			$data['email'] = $this->input->post('email');
 			$data['group_id'] = $this->input->post('group_id');
-			$data['department_id'] = $this->input->post('department_id');
+			//$data['department_id'] = $this->input->post('department_id');
 			$data['enabled'] = ($this->input->post('enabled') == '1') ? 1 : 0;
 			// Only set password if supplied.
 			if($this->input->post('password1')){
@@ -262,4 +263,4 @@ class Users extends Controller {
 }
 
 
-?>
+/* End of file app/controllers/security/users.php */
