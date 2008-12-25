@@ -86,7 +86,7 @@ class Permissions extends Controller {
 			redirect('security/permissions');
 			
 		}
-
+		
 	}
 	
 	

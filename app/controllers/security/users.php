@@ -92,7 +92,7 @@ class Users extends Controller {
 		$body['user'] = NULL;
 		$body['user_id'] = NULL;
 		$body['groups'] = $this->security->get_groups_dropdown();
-		$tpl['sidebar'] = "<p>Please fill in the required fields below to add a new user to the system.</p><p>As you are using LDAP authentication, you do not need to create user accounts manually - they are automatically created if they don't already exist.</p>";
+		$tpl['sidebar'] = $this->load->view('security/users.addedit.side.php', NULL, TRUE);
 		$tpl['title'] = 'Add user';
 		$tpl['pagetitle'] = 'Add a new user';
 		$tpl['body'] = $this->load->view('security/users.addedit.php', $body, TRUE);

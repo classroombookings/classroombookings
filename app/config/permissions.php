@@ -29,6 +29,12 @@ $permissions['periods'][] = array('periods.add', 'Add a period');
 $permissions['periods'][] = array('periods.edit', 'Edit periods/change times');
 $permissions['periods'][] = array('periods.delete', 'Delete a period');
 
+$permissions['academic'][] = array('academic', 'Academic setup', 'Has access to the main academic setup page');
+$permissions['academic'][] = array('years', 'Academic years page');
+$permissions['academic'][] = array('years.add', 'Add an academic year');
+$permissions['academic'][] = array('years.edit', 'Edit academic years');
+$permissions['academic'][] = array('years.delete', 'Delete an academic year');
+
 $permissions['weeks'][] = array('weeks', 'Weeks', 'Has access to the Weeks page');
 $permissions['weeks'][] = array('weeks.add', 'Add a timetable week');
 $permissions['weeks'][] = array('weeks.edit', 'Edit weeks and set dates');

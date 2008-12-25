@@ -34,6 +34,7 @@ class Configure extends Controller {
 	
 	
 	function index($tab = 'conf-main'){
+		$this->auth->check('configure');
 		$body['tab'] = ($this->session->flashdata('tab')) ? $this->session->flashdata('tab') : $tab;
 		$body['conf']['main'] = $this->settings->get_all('main');
 		$body['conf']['auth'] = $this->settings->get_all('auth');

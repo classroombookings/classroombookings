@@ -13,7 +13,7 @@
     text-decoration:none;
     font-weight:bold;
     color:#565656;
-    cursor:pointer;
+    cursor:default;
     padding:5px 10px 6px 7px; /* Links */
 }
 .buttons button{
@@ -40,6 +40,7 @@ button:hover, .buttons a:hover{
     background-color:#dff4ff;
     border:1px solid #c2e1ef;
     color:#336699;
+	text-decoration:none;
 }
 .buttons a:active{
     background-color:#6299c5;

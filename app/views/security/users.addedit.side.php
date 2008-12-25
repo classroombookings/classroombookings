@@ -1,0 +1,1 @@
+<p class="bg-yellow">Please fill in the required fields below to add a new user to the system.<br /><br />If you are using LDAP authentication, you do not need to create user accounts manually as they are automatically created upon login.</p>

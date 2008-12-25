@@ -55,12 +55,12 @@ if($errors){
 				</td>
 				<td width="50">&nbsp;</td>
 				<td>
-					<!-- PERIODS -->
+					<!-- ACADEMIC -->
 					<?php
 					unset($checks);
-					$checks['options'] = $permissions['periods'];
+					$checks['options'] = $permissions['academic'];
 					$checks['group_id'] = $group_id;
-					$checks['category'] = 'Periods';
+					$checks['category'] = 'Academic setup';
 					$this->load->view('security/permissions.checks.php', $checks);
 					?>
 				</td>
@@ -68,25 +68,42 @@ if($errors){
 			
 			<tr>
 				<td>
+					<!-- PERIODS -->
+					<?php
+					unset($checks);
+					$checks['options'] = $permissions['periods'];
+					$checks['group_id'] = $group_id;
+					$checks['category'] = 'Academic - Periods';
+					$this->load->view('security/permissions.checks.php', $checks);
+					?>
+				</td>
+				<td width="50">&nbsp;</td>
+				<td>
 					<!-- WEEKS -->
 					<?php
 					unset($checks);
 					$checks['options'] = $permissions['weeks'];
 					$checks['group_id'] = $group_id;
-					$checks['category'] = 'Weeks / Academic year';
+					$checks['category'] = 'Academic - Weeks';
 					$this->load->view('security/permissions.checks.php', $checks);
 					?>
 				</td>
-				<td width="50">&nbsp;</td>
+			</tr>
+			
+			<tr>
 				<td>
 					<!-- HOLIDAYS -->
 					<?php
 					unset($checks);
 					$checks['options'] = $permissions['holidays'];
 					$checks['group_id'] = $group_id;
-					$checks['category'] = 'Holidays';
+					$checks['category'] = 'Academic - Holidays';
 					$this->load->view('security/permissions.checks.php', $checks);
 					?>
+				</td>
+				<td width="50">&nbsp;</td>
+				<td>
+					&nbsp;
 				</td>
 			</tr>
 			
@@ -97,7 +114,7 @@ if($errors){
 					unset($checks);
 					$checks['options'] = $permissions['departments'];
 					$checks['group_id'] = $group_id;
-					$checks['category'] = 'Departments';
+					$checks['category'] = 'Academic - Departments';
 					$this->load->view('security/permissions.checks.php', $checks);
 					?>
 				</td>

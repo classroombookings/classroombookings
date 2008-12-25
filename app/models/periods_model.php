@@ -17,36 +17,44 @@
 */
 
 
-class Departments_model extends Model{
+class Periods_model extends Model{
 
 
 	var $lasterr;
+	var $days;
 	
 	
-	function Departments_model(){
+	function Periods_model(){
 		parent::Model();
 		
+		$this->days[0] = 'Sunday';
+		$this->days[1] = 'Monday';
+		$this->days[2] = 'Tuesday';
+		$this->days[3] = 'Wednesday';
+		$this->days[4] = 'Thursday';
+		$this->days[5] = 'Friday';
+		$this->days[6] = 'Saturday';
 	}
 	
 	
 	
 	
 	/**
-	 * get one or more departments
+	 * get one or more periods
 	 *
-	 * @param int department_id
+	 * @param int period_id
 	 * @param arr pagination limit,start
 	 * @return mixed (object on success, false on failure)
 	 */
-	function get($department_id = NULL, $page = NULL){
+	function get($period_id = NULL, $page = NULL){
 		
-		if ($department_id == NULL) {
+		if ($period_id == NULL) {
 		
-			// Getting all departments
+			// Getting all periods
 			$this->db->select('*', FALSE);
-			$this->db->from('departments');
+			$this->db->from('periods');
 			
-			$this->db->orderby('name ASC');
+			$this->db->orderby('time_start ASC, time_end ASC');
 			
 			if (isset($page) && is_array($page)) {
 				$this->db->limit($page[0], $page[1]);
@@ -56,40 +64,26 @@ class Departments_model extends Model{
 			if ($query->num_rows() > 0){
 				return $query->result();
 			} else {
-				$this->lasterr = 'There are no departments.';
+				$this->lasterr = 'There are no periods.';
 				return 0;
 			}
 			
 		} else {
 			
-			if (!is_numeric($department_id)) {
+			if (!is_numeric($period_id)) {
 				return FALSE;
 			}
 			
-			// Getting one department
-			$sql = 'SELECT * FROM departments WHERE department_id = ? LIMIT 1';
-			$query = $this->db->query($sql, array($department_id));
+			// Getting one period
+			$sql = 'SELECT * FROM periods WHERE period_id = ? LIMIT 1';
+			$query = $this->db->query($sql, array($period_id));
 			
 			if($query->num_rows() == 1){
 				
-				// Got the department
-				$department = $query->row();
-				$department->ldapgroups = array();
+				// Got the period
+				$period = $query->row();
+				return $period;
 				
-				// Fetch the LDAP groups that are mapped (if any)
-				$sql = 'SELECT ldapgroup_id FROM departments2ldapgroups WHERE department_id = ?';
-				$query = $this->db->query($sql, array($department_id));
-				if($query->num_rows() > 0){
-					$ldapgroups = array();
-					foreach($query->result() as $row){
-						array_push($ldapgroups, $row->ldapgroup_id);
-					}
-					// Assign array of LDAP groups to main group object that is to be returned
-					$department->ldapgroups = $ldapgroups;
-					unset($ldapgroups);
-				}
-				
-				return $department;
 			} else {
 				return FALSE;
 			}
@@ -214,47 +208,6 @@ class Departments_model extends Model{
 	
 	
 	
-	
-	function get_groups_dropdown(){
-		$sql = 'SELECT group_id, name FROM groups ORDER BY name ASC';
-		$query = $this->db->query($sql);
-		if($query->num_rows() > 0){
-			$result = $query->result();
-			$groups = array();
-			foreach($result as $group){
-				$groups[$group->group_id] = $group->name;
-			}
-			return $groups;
-		} else {
-			$this->lasterr = 'No groups found';
-			return FALSE;
-		}
-	}
-	
-	
-	
-	
-	function get_department_name($department_id){
-		if($department_id == NULL || !is_numeric($department_id)){
-			$this->lasterr = 'No department ID given or invalid data type.';
-			return FALSE;
-		}
-		
-		$sql = 'SELECT name FROM departments WHERE department_id = ? LIMIT 1';
-		$query = $this->db->query($sql, array($department_id));
-		
-		if($query->num_rows() == 1){
-			$row = $query->row();
-			return $row->name;
-		} else {
-			$this->lasterr = sprintf('The department supplied (ID: %d) does not exist.', $department_id);
-			return FALSE;
-		}
-	}
-	
-	
-	
-	
 }
 
-/* End of file: app/models/departments_model.php */
+/* End of file: app/models/periods_model.php */

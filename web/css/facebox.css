@@ -16,6 +16,12 @@
 	position:relative;
 }
 
+/* CR 2008-12-23 */
+#facebox .content{
+	max-height:450px;
+	overflow:auto;
+}
+
 #facebox table{
 	border-collapse:collapse;
 }

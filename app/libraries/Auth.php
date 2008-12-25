@@ -61,8 +61,15 @@ class Auth{
 		// If no group, then guest group (always 0)
 		$group_id = (int)($group_id === FALSE) ? 0 : $group_id;
 		
-		// Get the group permissions for the user's group
-		$group_permissions = $this->CI->security->get_group_permissions($group_id);
+		// Hopefully speed up access by putting the group permissions into the session
+		// instead of additional DB lookups each time we run the check() function.
+		if(!$this->CI->session->userdata('group_permissions')){
+			// Get the group permissions for the user's group
+			$group_permissions = $this->CI->security->get_group_permissions($group_id);
+			$this->CI->session->set_userdata('group_permissions', $group_permissions);
+		} else {
+			$group_permissions = $this->CI->session->userdata('group_permissions');
+		}
 		
 		// See if this action is in the permissions array for the user
 		if(is_array($group_permissions)){
@@ -317,6 +324,7 @@ class Auth{
 		$sessdata['group_id'] = NULL;
 		$sessdata['username'] = NULL;
 		$sessdata['display'] = NULL;
+		$sessdata['group_permissions'] = NULL;
 		
 		// Set empty session data
 		$this->CI->session->unset_userdata($sessdata);

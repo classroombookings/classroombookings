@@ -1,0 +1,143 @@
+<?php
+$errors = validation_errors();
+if($errors){
+	echo $this->msg->err('<ul>' . $errors . '</ul>', 'Please check the following invalid item(s) and try again.');
+}
+
+echo form_open('periods/save', NULL, array('period_id' => $period_id));
+
+// Start tabindex
+$t = 1;
+?>
+
+<table class="form" cellpadding="6" cellspacing="0" border="0" width="100%">
+	
+	<!-- <tr class="h"><td colspan="2">Period details</td></tr> -->
+	
+	<tr>
+		<td class="caption">
+			<label for="name" class="r" accesskey="N"><u>N</u>ame</label>
+		</td>
+		<td class="field">
+			<?php
+			unset($input);
+			$input['accesskey'] = 'N';
+			$input['name'] = 'name';
+			$input['id'] = 'name';
+			$input['size'] = '20';
+			$input['maxlength'] = '20';
+			$input['tabindex'] = $t;
+			$input['value'] = @set_value('name', $period->name);
+			echo form_input($input);
+			$t++;
+			?>
+		</td>
+	</tr>
+	
+	
+	<tr>
+		<td class="caption">
+			<label for="time_start" class="r" accesskey="S"><u>S</u>tart Time</label>
+		</td>
+		<td class="field">
+			<?php
+			unset($input);
+			$input['accesskey'] = 'S';
+			$input['name'] = 'time_start';
+			$input['id'] = 'time_start';
+			$input['size'] = '10';
+			$input['maxlength'] = '5';
+			$input['tabindex'] = $t;
+			$input['value'] = @set_value($input['name'], $period->time_start);
+			echo form_input($input);
+			$t++;
+			?>
+		</td>
+	</tr>
+	
+	
+	<tr>
+		<td class="caption">
+			<label for="time_end" class="r" accesskey="E"><u>E</u>nd Time</label>
+		</td>
+		<td class="field">
+			<?php
+			unset($input);
+			$input['accesskey'] = 'E';
+			$input['name'] = 'end_start';
+			$input['id'] = 'end_start';
+			$input['size'] = '10';
+			$input['maxlength'] = '5';
+			$input['tabindex'] = $t;
+			$input['value'] = @set_value($input['name'], $period->time_end);
+			echo form_input($input);
+			$t++;
+			?>
+		</td>
+	</tr>
+	
+	
+	<tr>
+		<td class="caption">
+			<label for="days" class="r" accesskey="D"><u>D</u>ays</label>
+		</td>
+		<td class="field">
+			<?php
+			foreach($days as $num => $name){
+			?>
+			<label for="day_<?php echo $num ?>" class="check">
+			<?php
+			unset($check);
+			$check['name'] = 'days[]';
+			$check['id'] = 'day_' . $num;
+			$check['value'] = "$num";
+			$check['checked'] = set_checkbox('days[]', $num, (@in_array($num, $days)));
+			$check['tabindex'] = $t;
+			echo form_checkbox($check);
+			$t++;
+			echo $name;
+			?>
+			</label>
+			<?php
+			}
+			?>
+		</td>
+	</tr>
+	
+	
+	<tr>
+		<td class="caption">
+			<label for="bookable" accesskey="B" title="Can lessons be booked for this period?">Can be <u>b</u>ooked</label>
+		</td>
+		<td class="field">
+			<label for="bookable" class="check">
+			<?php
+			unset($check);
+			$check['name'] = 'bookable';
+			$check['id'] = 'bookable';
+			$check['value'] = '1';
+			$check['checked'] = @set_checkbox($check['name'], $check['value'], ($period->bookable == 1));
+			$check['tabindex'] = $t;
+			echo form_checkbox($check);
+			$t++;
+			?>Yes
+			</label>
+		</td>
+	</tr>
+	
+	
+	<?php
+	if($period_id == NULL){
+		$submittext = $this->lang->line('ACTION_ADD') . ' ' . strtolower($this->lang->line('W_PERIOD'));
+	} else {
+		$submittext = $this->lang->line('ACTION_SAVE') . ' ' . strtolower($this->lang->line('W_PERIOD'));
+	}
+	unset($buttons);
+	$buttons[] = array('submit', 'positive', $submittext, 'disk1.gif', $t);
+	$buttons[] = array('submit', '', 'Save and add another', 'plus.gif', $t+1);
+	$buttons[] = array('cancel', 'negative', $this->lang->line('ACTION_CANCEL'), 'arr-left.gif', $t+2, site_url('periods'));
+	$this->load->view('parts/buttons', array('buttons' => $buttons));
+	?>
+
+</table>
+</form>

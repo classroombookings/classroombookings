@@ -71,7 +71,7 @@ CREATE TABLE "ci_sessions" (
 LOCK TABLES "ci_sessions" WRITE;
 /*!40000 ALTER TABLE "ci_sessions" DISABLE KEYS;*/
 INSERT INTO "ci_sessions" ("session_id", "ip_address", "user_agent", "last_activity", "user_data") VALUES
-	('0a4d9102f116703c66f0abd0eca080b0','127.0.0.1','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv','1229731397','');
+	('ff479f6c0f78a3fcf9a457dd53534275','127.0.0.1','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv','1230222815','a:5:{s:17:"group_permissions";a:59:{i:0;s:9:"dashboard";i:1;s:18:"dashboard.viewdept";i:2;s:17:"dashboard.viewown";i:3;s:9:"myprofile";i:4;s:9:"configure";i:5;s:8:"bookings";i:6;s:19:"bookings.create.one";i:7;s:21:"bookings.create.recur";i:8;s:23:"bookings.delete.one.own";i:9;s:29:"bookings.delete.one.roomowner";i:10;s:31:"bookings.delete.recur.roomowner";i:11;s:22:"bookings.overwrite.one";i:12;s:24:"bookings.overwrite.recur";i:13;s:32:"bookings.overwrite.one.roomowner";i:14;s:34:"bookings.overwrite.recur.roomowner";i:15;s:5:"rooms";i:16;s:9:"rooms.add";i:17;s:10:"rooms.edit";i:18;s:12:"rooms.delete";i:19;s:12:"rooms.fields";i:20;s:19:"rooms.fields.values";i:21;s:8:"academic";i:22;s:5:"years";i:23;s:9:"years.add";i:24;s:10:"years.edit";i:25;s:12:"years.delete";i:26;s:7:"periods";i:27;s:11:"periods.add";i:28;s:12:"periods.edit";i:29;s:14:"periods.delete";i:30;s:5:"weeks";i:31;s:9:"weeks.add";i:32;s:10:"weeks.edit";i:33;s:12:"weeks.delete";i:34;s:19:"weeks.ayears.manage";i:35;s:16:"weeks.ayears.set";i:36;s:8:"holidays";i:37;s:12:"holidays.add";i:38;s:13:"holidays.edit";i:39;s:15:"holidays.delete";i:40;s:11:"departments";i:41;s:15:"departments.add";i:42;s:16:"departments.edit";i:43;s:18:"departments.delete";i:44;s:7:"reports";i:45;s:21:"reports.owndepartment";i:46;s:22:"reports.alldepartments";i:47;s:15:"reports.ownroom";i:48;s:16:"reports.allrooms";i:49;s:13:"reports.other";i:50;s:5:"users";i:51;s:9:"users.add";i:52;s:10:"users.edit";i:53;s:12:"users.delete";i:54;s:12:"users.import";i:55;s:6:"groups";i:56;s:10:"groups.add";i:57;s:11:"groups.edit";i:58;s:13:"groups.delete";}s:7:"user_id";s:1:"1";s:8:"group_id";s:1:"1";s:8:"username";s:5:"admin";s:7:"display";s:12:"Craig Rodway";}');
 /*!40000 ALTER TABLE "ci_sessions" ENABLE KEYS;*/
 UNLOCK TABLES;
 
@@ -110,7 +110,7 @@ INSERT INTO "departments" ("department_id", "name", "description", "colour", "cr
 INSERT INTO "departments" ("department_id", "name", "description", "colour", "created") VALUES
 	('5','Music','','#F57900','2008-12-19');
 INSERT INTO "departments" ("department_id", "name", "description", "colour", "created") VALUES
-	('6','History','','#C17D11','2008-12-19');
+	('6','History','','#8F5902','2008-12-19');
 INSERT INTO "departments" ("department_id", "name", "description", "colour", "created") VALUES
 	('7','Art','','#75507B','2008-12-19');
 INSERT INTO "departments" ("department_id", "name", "description", "colour", "created") VALUES
@@ -119,8 +119,6 @@ INSERT INTO "departments" ("department_id", "name", "description", "colour", "cr
 	('9','RE','','#EF2929','2008-12-19');
 INSERT INTO "departments" ("department_id", "name", "description", "colour", "created") VALUES
 	('10','Geography','','#AD7FA8','2008-12-19');
-INSERT INTO "departments" ("department_id", "name", "description", "colour", "created") VALUES
-	('11','test','','#EEEEEC','2008-12-19');
 /*!40000 ALTER TABLE "departments" ENABLE KEYS;*/
 UNLOCK TABLES;
 
@@ -172,6 +170,8 @@ INSERT INTO "departments2ldapgroups" ("department_id", "ldapgroup_id") VALUES
 	('10','861');
 INSERT INTO "departments2ldapgroups" ("department_id", "ldapgroup_id") VALUES
 	('10','872');
+INSERT INTO "departments2ldapgroups" ("department_id", "ldapgroup_id") VALUES
+	('6','844');
 /*!40000 ALTER TABLE "departments2ldapgroups" ENABLE KEYS;*/
 UNLOCK TABLES;
 
@@ -203,7 +203,7 @@ CREATE TABLE "groups" (
 LOCK TABLES "groups" WRITE;
 /*!40000 ALTER TABLE "groups" DISABLE KEYS;*/
 INSERT INTO "groups" ("group_id", "name", "description", "bookahead", "quota_num", "quota_type", "permissions", "created") VALUES
-	('1','Administrators','Default group for administrator users',0,NULL,NULL,'a:54:{i:0;s:9:"dashboard";i:1;s:18:"dashboard.viewdept";i:2;s:17:"dashboard.viewown";i:3;s:9:"myprofile";i:4;s:9:"configure";i:5;s:8:"bookings";i:6;s:19:"bookings.create.one";i:7;s:21:"bookings.create.recur";i:8;s:23:"bookings.delete.one.own";i:9;s:29:"bookings.delete.one.roomowner";i:10;s:31:"bookings.delete.recur.roomowner";i:11;s:22:"bookings.overwrite.one";i:12;s:24:"bookings.overwrite.recur";i:13;s:32:"bookings.overwrite.one.roomowner";i:14;s:34:"bookings.overwrite.recur.roomowner";i:15;s:5:"rooms";i:16;s:9:"rooms.add";i:17;s:10:"rooms.edit";i:18;s:12:"rooms.delete";i:19;s:12:"rooms.fields";i:20;s:19:"rooms.fields.values";i:21;s:7:"periods";i:22;s:11:"periods.add";i:23;s:12:"periods.edit";i:24;s:14:"periods.delete";i:25;s:5:"weeks";i:26;s:9:"weeks.add";i:27;s:10:"weeks.edit";i:28;s:12:"weeks.delete";i:29;s:19:"weeks.ayears.manage";i:30;s:16:"weeks.ayears.set";i:31;s:8:"holidays";i:32;s:12:"holidays.add";i:33;s:13:"holidays.edit";i:34;s:15:"holidays.delete";i:35;s:11:"departments";i:36;s:15:"departments.add";i:37;s:16:"departments.edit";i:38;s:18:"departments.delete";i:39;s:7:"reports";i:40;s:21:"reports.owndepartment";i:41;s:22:"reports.alldepartments";i:42;s:15:"reports.ownroom";i:43;s:16:"reports.allrooms";i:44;s:13:"reports.other";i:45;s:5:"users";i:46;s:9:"users.add";i:47;s:10:"users.edit";i:48;s:12:"users.delete";i:49;s:12:"users.import";i:50;s:6:"groups";i:51;s:10:"groups.add";i:52;s:11:"groups.edit";i:53;s:13:"groups.delete";}','0000-00-00');
+	('1','Administrators','Default group for administrator users',0,NULL,NULL,'a:59:{i:0;s:9:"dashboard";i:1;s:18:"dashboard.viewdept";i:2;s:17:"dashboard.viewown";i:3;s:9:"myprofile";i:4;s:9:"configure";i:5;s:8:"bookings";i:6;s:19:"bookings.create.one";i:7;s:21:"bookings.create.recur";i:8;s:23:"bookings.delete.one.own";i:9;s:29:"bookings.delete.one.roomowner";i:10;s:31:"bookings.delete.recur.roomowner";i:11;s:22:"bookings.overwrite.one";i:12;s:24:"bookings.overwrite.recur";i:13;s:32:"bookings.overwrite.one.roomowner";i:14;s:34:"bookings.overwrite.recur.roomowner";i:15;s:5:"rooms";i:16;s:9:"rooms.add";i:17;s:10:"rooms.edit";i:18;s:12:"rooms.delete";i:19;s:12:"rooms.fields";i:20;s:19:"rooms.fields.values";i:21;s:8:"academic";i:22;s:5:"years";i:23;s:9:"years.add";i:24;s:10:"years.edit";i:25;s:12:"years.delete";i:26;s:7:"periods";i:27;s:11:"periods.add";i:28;s:12:"periods.edit";i:29;s:14:"periods.delete";i:30;s:5:"weeks";i:31;s:9:"weeks.add";i:32;s:10:"weeks.edit";i:33;s:12:"weeks.delete";i:34;s:19:"weeks.ayears.manage";i:35;s:16:"weeks.ayears.set";i:36;s:8:"holidays";i:37;s:12:"holidays.add";i:38;s:13:"holidays.edit";i:39;s:15:"holidays.delete";i:40;s:11:"departments";i:41;s:15:"departments.add";i:42;s:16:"departments.edit";i:43;s:18:"departments.delete";i:44;s:7:"reports";i:45;s:21:"reports.owndepartment";i:46;s:22:"reports.alldepartments";i:47;s:15:"reports.ownroom";i:48;s:16:"reports.allrooms";i:49;s:13:"reports.other";i:50;s:5:"users";i:51;s:9:"users.add";i:52;s:10:"users.edit";i:53;s:12:"users.delete";i:54;s:12:"users.import";i:55;s:6:"groups";i:56;s:10:"groups.add";i:57;s:11:"groups.edit";i:58;s:13:"groups.delete";}','0000-00-00');
 INSERT INTO "groups" ("group_id", "name", "description", "bookahead", "quota_num", "quota_type", "permissions", "created") VALUES
 	('2','Teaching Staff','Teachers from LDAP',14,'6','day','a:7:{i:0;s:9:"dashboard";i:1;s:18:"dashboard.viewdept";i:2;s:17:"dashboard.viewown";i:3;s:9:"myprofile";i:4;s:8:"bookings";i:5;s:19:"bookings.create.one";i:6;s:23:"bookings.delete.one.own";}','0000-00-00');
 INSERT INTO "groups" ("group_id", "name", "description", "bookahead", "quota_num", "quota_type", "permissions", "created") VALUES
@@ -510,7 +510,7 @@ CREATE TABLE "periods" (
   "time_start" time NOT NULL,
   "time_end" time NOT NULL,
   "name" varchar(20) NOT NULL,
-  "days" int(2) unsigned NOT NULL COMMENT 'Bitmask of the days that this period is set on',
+  "days" varchar(255) NOT NULL COMMENT 'Serialize() of the days that this period is set on',
   "bookable" tinyint(1) NOT NULL COMMENT 'Boolean 1 or 0 if periods can be booked or not',
   PRIMARY KEY  ("period_id")
 ) /*!40100 DEFAULT CHARSET=latin1 COMMENT='Periods'*/;
@@ -719,7 +719,7 @@ CREATE TABLE "users" (
 LOCK TABLES "users" WRITE;
 /*!40000 ALTER TABLE "users" DISABLE KEYS;*/
 INSERT INTO "users" ("user_id", "group_id", "enabled", "username", "email", "password", "displayname", "cookiekey", "lastlogin", "ldap", "created") VALUES
-	('1',1,1,'admin','craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Craig Rodway',NULL,'2008-12-19 23:07:06',0,'0000-00-00');
+	('1',1,1,'admin','craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Craig Rodway',NULL,'2008-12-25 16:27:24',0,'0000-00-00');
 INSERT INTO "users" ("user_id", "group_id", "enabled", "username", "email", "password", "displayname", "cookiekey", "lastlogin", "ldap", "created") VALUES
 	('2',1,0,'craig.rodway','craig.rodway@bishopbarrington.net','354c0efe3f189e6bb078399d9a75ee5cc402f8f8','Craig Rodway',NULL,'2008-11-27 17:32:10',0,'2008-11-23');
 INSERT INTO "users" ("user_id", "group_id", "enabled", "username", "email", "password", "displayname", "cookiekey", "lastlogin", "ldap", "created") VALUES

@@ -34,4 +34,18 @@ $lang['DEPARTMENTS_EDIT_FAIL'] = 'An error occured and the department details co
 
 $lang['PERMISSIONS_EFFECTIVE_USER_FAIL'] = 'Could not find the given user, or no user ID supplied.';
 
+$lang['ADD_ANOTHER'] = 'and add another';
+
+$lang['W_PERIOD'] = 'Period';
+$lang['W_PERIODS'] = 'Periods';
+$lang['W_DEPARTMENT'] = 'Department';
+$lang['W_DEPARTMENTS'] = 'Departments';
+$lang['W_WEEK'] = 'Week';
+$lang['W_WEEKS'] = 'Weeks';
+
+$lang['ACTION_ADD'] = 'Add';
+$lang['ACTION_SAVE'] = 'Save';
+$lang['ACTION_DELETE'] = 'Delete';
+$lang['ACTION_CANCEL'] = 'Cancel';
+
 ?>

@@ -84,9 +84,9 @@
 					if($this->auth->check('myprofile', TRUE)){ echo '<li>'.anchor('account', 'My Profile').'</li>'; }
 					if($this->auth->check('configure', TRUE)){ echo '<li>'.anchor('configure', 'Configure').'</li>'; }
 					if($this->auth->check('rooms', TRUE)){ echo '<li>'.anchor('rooms', 'Rooms').'</li>'; }
-					if($this->auth->check('periods', TRUE)){ echo '<li>'.anchor('periods', 'Periods').'</li>'; }
-					if($this->auth->check('weeks', TRUE)){ echo '<li>'.anchor('weeks', 'Weeks').'</li>'; }
-					if($this->auth->check('holidays', TRUE)){ echo '<li>'.anchor('holidays', 'Holidays').'</li>'; }
+					#if($this->auth->check('periods', TRUE)){ echo '<li>'.anchor('periods', 'Periods').'</li>'; }
+					if($this->auth->check('academic', TRUE)){ echo '<li>'.anchor('academic/main', 'Academic Setup').'</li>'; }
+					#if($this->auth->check('holidays', TRUE)){ echo '<li>'.anchor('holidays', 'Holidays').'</li>'; }
 					if($this->auth->check('departments', TRUE)){ echo '<li>'.anchor('departments', 'Departments').'</li>'; }
 					if($this->auth->check('reports', TRUE)){ echo '<li>'.anchor('reports', 'Reports').'</li>'; }
 					if($this->auth->check('users', TRUE)){ echo '<li>'.anchor('security/users', 'Security').'</li>'; }

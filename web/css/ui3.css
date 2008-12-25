@@ -183,6 +183,18 @@ ul.iconbar li.ibl{
 
 
 
+dl {margin-top: 8px; background:#fff9d7;padding:0.5em}
+dt {font-weight: bold; margin-bottom: 2px;}
+dd {margin-bottom: 12px;}
+
+#sidebar dt {color: #55B10A;}
+#sidebar dt, #sidebar dd {line-height: 1.4; margin:0;}
+#sidebar dd {color: #333; margin:0 0 12px 0;}
+
+#sidebar dd span{background:#fff;}
+
+
+
 
 div#qTip{
 	padding:5px;
@@ -273,14 +285,14 @@ table.form td.caption{
 	text-align:right;
 	color:#666;
 	vertical-align:top;
-	background:transparent;
+	/*background:transparent;*/
 	font-weight:bold;
 }
 table.form td.caption label.r{
 	color:#000;	/*#991900;*/
 }
 table.form td.field{
-	background:transparent;
+	/*background:transparent;*/
 }
 table.form td.field input,
 table.form td.field select,
@@ -408,3 +420,5 @@ div.msg.yes{
 }
 
 
+
+p.bg-yellow{background:#fff9d7;padding:0.5em}

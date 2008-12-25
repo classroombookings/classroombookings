@@ -17,14 +17,15 @@
 */
 
 
-class Weeks extends Controller {
+class Years extends Controller {
 
 
 	var $tpl;
 	
 
-	function Weeks(){
+	function Years(){
 		parent::Controller();
+		$this->load->model('academic_model');
 		$this->tpl = $this->config->item('template');
 		$this->output->enable_profiler($this->config->item('profiler'));
 	}
@@ -32,8 +33,23 @@ class Weeks extends Controller {
 	
 	
 	
+	
 	function index(){
-		$tpl['title'] = 'Week Cycle';
+		$this->auth->check('years');
+		
+		$links[0] = array('academic/years/add', 'Add a new academic year');
+		$links[1] = array('academic/weeks', 'Weeks');
+		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
+		
+		// Get list of years
+		$body['years'] = $this->academic_model->get_years();
+		if($body['years'] == FALSE){
+			$tpl['body'] = $this->msg->err($this->academic_model->lasterr);
+		} else {
+			$tpl['body'] = $this->load->view('academic/years.index.php', $body, TRUE);
+		}
+		
+		$tpl['title'] = 'Academic years';
 		$tpl['pagetitle'] = $tpl['title'];
 		$this->load->view($this->tpl, $tpl);
 	}
@@ -44,4 +60,4 @@ class Weeks extends Controller {
 }
 
 
-?>
+/* End of file /controllers/academic/years.php */
