@@ -39,7 +39,7 @@ class Dashboard extends Controller {
 		if($this->auth->logged_in()){
 			$tpl['body'] = $this->load->view('dashboard/index', NULL, TRUE);
 		} else {
-			$tpl['body'] = 'You are not currently logged in.';
+			$tpl['body'] = 'You are not currently logged in. ' . anchor('account/login', 'Login now') . '.';
 		}
 		$this->load->view($this->tpl, $tpl);
 	}

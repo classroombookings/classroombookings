@@ -39,7 +39,7 @@ if($groups != 0){
 		}
 		echo $q;
 		?></td>
-		<td class="x"><?php echo ($group->bookahead != 0) ? $group->bookahead . ' days' : '-';  ?></td>
+		<td class="x"><?php echo ($group->bookahead != 0) ? $group->bookahead . ' days' : 'No Limit';  ?></td>
 		<td class="il">
 		<?php
 		$actiondata[0] = array('security/users/ingroup/'.$group->group_id, 'View users', 'user_orange-sm.gif' );

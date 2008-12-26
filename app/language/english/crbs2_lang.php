@@ -32,7 +32,17 @@ $lang['DEPARTMENTS_ADD_FAIL'] = 'An error occured and the department could not b
 $lang['DEPARTMENTS_EDIT_OK'] = 'The %s department details were saved successfully.';
 $lang['DEPARTMENTS_EDIT_FAIL'] = 'An error occured and the department details could not be saved (%s).';
 
+$lang['YEARS_ADD_OK'] = 'The academic year %s was added successfully.';
+$lang['YEARS_ADD_FAIL'] = 'An error occured and the academic year (%s) could not be added.';
+$lang['YEARS_EDIT_OK'] = 'The %s academic year details were saved successfully.';
+$lang['YEARS_EDIT_FAIL'] = 'An error occured and the academic year (%s) details could not be saved.';
+$lang['YEARS_ACTIVATE_OK'] = 'The academic year has been made active.';
+$lang['YEARS_ACTIVATE_FAIL'] = 'An error occured and the academic year could not be made active.';
+$lang['YEARS_ACTIVATE_NOID'] = 'You must supply a year ID to make it active.';
+
 $lang['PERMISSIONS_EFFECTIVE_USER_FAIL'] = 'Could not find the given user, or no user ID supplied.';
+
+$lang['FORM_ERRORS'] = 'Please check the following invalid item(s) and try again.';
 
 $lang['ADD_ANOTHER'] = 'and add another';
 

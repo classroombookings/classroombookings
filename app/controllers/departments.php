@@ -156,7 +156,7 @@ class Departments extends Controller {
 		if($this->input->post('id')){
 		
 			// Form has been submitted (so the POST value exists)
-			// Call model function to delete user
+			// Call model function to delete department
 			$delete = $this->departments_model->delete($this->input->post('id'));
 			if($delete == FALSE){
 				$this->msg->add('err', $this->departments_model->lasterr, 'An error occured');

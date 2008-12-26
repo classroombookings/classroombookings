@@ -37,11 +37,11 @@ class Years extends Controller {
 	function index(){
 		$this->auth->check('years');
 		
-		$links[0] = array('academic/years/add', 'Add a new academic year');
-		$links[1] = array('academic/main', 'Academic setup');
-		$links[2] = array('academic/weeks', 'Weeks');
-		$links[3] = array('academic/periods', 'Periods');
-		$links[4] = array('academic/holidays', 'Holidays');
+		$links[] = array('academic/years/add', 'Add a new academic year');
+		$links[] = array('academic/main', 'Academic setup');
+		$links[] = array('academic/weeks', 'Weeks');
+		$links[] = array('academic/periods', 'Periods');
+		$links[] = array('academic/holidays', 'Holidays');
 		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
 		
 		// Get list of years
@@ -77,7 +77,7 @@ class Years extends Controller {
 	function edit($year_id){
 		$this->auth->check('years.edit');
 		$body['year'] = $this->years_model->get($year_id);
-		$body['year_id'] = $department_id;
+		$body['year_id'] = $year_id;
 		
 		$tpl['title'] = 'Edit academic year';
 		
@@ -117,7 +117,9 @@ class Years extends Controller {
 			$data['name'] = $this->input->post('name');
 			$data['date_start'] = $this->input->post('date_start');
 			$data['date_end'] = $this->input->post('date_end');
-			$data['active'] = ($this->input->post('active') == '1') ? 1 : 0;
+			$data['active'] = ($this->input->post('active') == '1') ? 1 : NULL;
+			
+			print_r($data);
 			
 			if($year_id == NULL){
 			
@@ -148,6 +150,94 @@ class Years extends Controller {
 		
 	}
 	
+	
+	
+	
+	function delete($year_id = NULL){
+		$this->auth->check('years.delete');
+		
+		// Check if a form has been submitted; if not - show it to ask user confirmation
+		if($this->input->post('id')){
+		
+			// Form has been submitted (so the POST value exists)
+			// Call model function to delete year
+			$delete = $this->years_model->delete($this->input->post('id'));
+			if($delete == FALSE){
+				$this->msg->add('err', $this->years_model->lasterr, 'An error occured');
+			} else {
+				$this->msg->add('info', 'The year has been deleted.');
+			}
+			// Redirect
+			redirect('academic/years');
+			
+		} else {
+		
+			$tpl['title'] = 'Delete academic year';
+			$tpl['pagetitle'] = $tpl['title'];
+			
+			if($year_id == NULL){
+				
+				$tpl['title'] = 'Delete academic year';
+				$tpl['pagetitle'] = $tpl['title'];
+				$tpl['body'] = $this->msg->err('Cannot find the academic year or no year ID given.');
+				
+			} else {
+				
+				// Get year info so we can present the confirmation page with a name
+				$year = $this->years_model->get($year_id);
+				
+				if($year == FALSE){
+				
+					$tpl['body'] = $this->msg->err('Could not find that year or no year ID given.');
+					
+				} else {
+					
+					// Initialise page
+					$body['action'] = 'academic/years/delete';
+					$body['id'] = $year_id;
+					$body['cancel'] = 'academic/years';
+					$body['text'] = 'If you delete this academic year, the following associated items will also be removed:';
+					$body['text'] .= '<ul><li>Periods</li><li>Holidays</li><li>Weeks</li><li>Bookings</li></ul>';
+					$tpl['title'] = 'Delete academic year';
+					$tpl['pagetitle'] = 'Delete academic year ' . $year->name;
+					$tpl['body'] = $this->load->view('parts/deleteconfirm', $body, TRUE);
+					
+				}
+				
+			}
+			
+			$this->load->view($this->tpl, $tpl);
+			
+		}
+		
+	}
+	
+	
+	
+	
+	function activate($year_id = NULL){
+		
+		if($year_id == NULL){
+			
+			$tpl['title'] = 'Make year active';
+			$tpl['pagetitle'] = $tpl['title'];
+			$tpl['body'] = $this->msg->err($this->lang->line('YEARS_ACTIVATE_NOID'));
+			$this->load->view($this->tpl, $tpl);
+			
+		} else {
+			
+			$activate = $this->years_model->activate($year_id);
+			
+			if($activate == TRUE){
+				$this->msg->add('info', $this->lang->line('YEARS_ACTIVATE_OK'));
+				redirect('academic/years');
+			} else {
+				$this->msg->add('err', $this->years_model->lasterr);
+				redirect('academic/years');
+			}
+			
+		}
+	}
 	
 	
 	

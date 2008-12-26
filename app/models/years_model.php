@@ -62,7 +62,7 @@ class Years_model extends Model{
 			
 		} else {
 			
-			if (!is_numeric($week_id)) {
+			if (!is_numeric($year_id)) {
 				return FALSE;
 			}
 			
@@ -86,23 +86,49 @@ class Years_model extends Model{
 	
 	
 	function add($data){
+		
+		$active = FALSE;
+		// Use the proper function to make it active (to de-activate other years)
+		if($data['active'] == 1){
+			// Set flag to check to activate it later as we don't have the ID yet
+			$active = TRUE;
+		}
+		$data['active'] = NULL;
+		
 		$add = $this->db->insert('years', $data);
-		$week_id = $this->db->insert_id();
-		return $department_id;
+		$year_id = $this->db->insert_id();
+		
+		if($active == TRUE){
+			// Now we have the ID of the new year, and we need to make it active
+			$this->activate($year_id);
+		}
+		
+		return $year_id;
 	}
 	
 	
 	
 	
-	function edit($week_id = NULL, $data){
-		if($week_id == NULL){
-			$this->lasterr = 'Cannot update a week without its ID.';
+	function edit($year_id = NULL, $data){
+		if($year_id == NULL){
+			$this->lasterr = 'Cannot update a year without its ID.';
 			return FALSE;
-		} 
+		}
 		
-		// Update week info
-		$this->db->where('week_id', $week_id);
-		$edit = $this->db->update('weeks', $data);
+		$active = FALSE;
+		// Use the proper function to make it active (to de-activate other years)
+		if($data['active'] == 1){
+			$active = TRUE;
+		}
+		$data['active'] = NULL;
+		
+		// Update year info
+		$this->db->where('year_id', $year_id);
+		$edit = $this->db->update('years', $data);
+		
+		if($active == TRUE){
+			echo $this->activate($year_id);
+		}
 		
 		return $edit;
 	}
@@ -110,14 +136,14 @@ class Years_model extends Model{
 	
 	
 	
-	function delete($week_id){
+	function delete($year_id){
 		
-		$sql = 'DELETE FROM weeks WHERE week_id = ? LIMIT 1';
-		$query = $this->db->query($sql, array($week_id));
+		$sql = 'DELETE FROM years WHERE year_id = ? LIMIT 1';
+		$query = $this->db->query($sql, array($year_id));
 		
 		if($query == FALSE){
 			
-			$this->lasterr = 'Could not delete week. Does it exist?';
+			$this->lasterr = 'Could not delete year. Does it exist?';
 			return FALSE;
 			
 		} else {
@@ -138,6 +164,34 @@ class Years_model extends Model{
 			
 		}
 		
+	}
+	
+	
+	
+	
+	/* Activate
+	 *
+	 * Make a given year the active one
+	 */
+	function activate($year_id){
+		
+		// Check the year is valid first
+		$sql = 'SELECT year_id FROM years WHERE year_id = ?';
+		$query = $this->db->query($sql, array($year_id));
+		if($query->num_rows() != 1){
+			$this->lasterr = 'No year by that ID';
+			return FALSE;
+		}
+		
+		// Clear all other years making them inactive
+		$sql = 'UPDATE years SET active = NULL';
+		$query = $this->db->query($sql);
+		
+		// Now set the given year as the active one
+		$sql = 'UPDATE years SET active = 1 WHERE year_id = ? LIMIT 1';
+		$query = $this->db->query($sql, array($year_id));
+		
+		return $query;
 	}
 	
 	
