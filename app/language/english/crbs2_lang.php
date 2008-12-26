@@ -42,6 +42,8 @@ $lang['W_DEPARTMENT'] = 'Department';
 $lang['W_DEPARTMENTS'] = 'Departments';
 $lang['W_WEEK'] = 'Week';
 $lang['W_WEEKS'] = 'Weeks';
+$lang['W_YEAR'] = 'Year';
+$lang['W_YEARS'] = 'Years';
 
 $lang['ACTION_ADD'] = 'Add';
 $lang['ACTION_SAVE'] = 'Save';

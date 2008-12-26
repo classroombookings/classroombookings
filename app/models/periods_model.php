@@ -96,35 +96,10 @@ class Periods_model extends Model{
 	
 	
 	function add($data){
-		$data['created'] = date("Y-m-d");
 		
-		// If no LDAP groups, set empty array. Otherwise assign to new array for itself
-		if(in_array(-1, $data['ldapgroups'])){
-			$ldapgroups = array();
-		} else {
-			$ldapgroups = $data['ldapgroups'];
-		}
+		$add = $this->db->insert('periods', $data);
 		
-		// Remove ldapgroups from the main data array (no 'ldapgroups' column)
-		unset($data['ldapgroups']);
-		
-		$add = $this->db->insert('departments', $data);
-		
-		$department_id = $this->db->insert_id();
-		
-		// If LDAP groups were assigned then insert into DB now we have the group ID
-		if(count($ldapgroups) > 0){
-			$sql = 'INSERT INTO departments2ldapgroups (department_id, ldapgroup_id) VALUES ';
-			foreach($ldapgroups as $ldapgroup_id){
-				$sql .= sprintf("(%d,%d),", $department_id, $ldapgroup_id);
-			}
-			// Remove last comma
-			$sql = preg_replace('/,$/', '', $sql);
-			$query = $this->db->query($sql);
-			if($query == FALSE){
-				$this->lasterr = 'Could not assign LDAP groups to department';
-			}
-		}
+		$period_id = $this->db->insert_id();
 		
 		return $department_id;
 	}

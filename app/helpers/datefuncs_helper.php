@@ -7,3 +7,8 @@ function mysqlhuman($d, $f = "d/m/Y, H:i", $n = 'Never'){
 	}
 	return $r;
 }
+
+function todate($ymd){
+	$datearr = explode('-', $ymd);
+	return mktime(0, 0, 0, $datearr[1], $datearr[2], $datearr[0]);
+}

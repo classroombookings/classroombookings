@@ -60,4 +60,4 @@ class Weeks extends Controller {
 }
 
 
-/* End of file /controllers/academic/weeks.php */
+/* End of file app/controllers/academic/weeks.php */

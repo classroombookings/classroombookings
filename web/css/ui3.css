@@ -17,6 +17,8 @@
 @import "jcolour.css";
 @import "facebox.css";
 @import "tabs.css";
+@import "date_input.css";
+
 
 
 /*h1{font-size:200%;font-weight:bold;margin:0 0 10px 0;}*/
@@ -190,10 +192,10 @@ dd {margin-bottom: 12px;}
 #sidebar dt {color: #55B10A;}
 #sidebar dt, #sidebar dd {line-height: 1.4; margin:0;}
 #sidebar dd {color: #333; margin:0 0 12px 0;}
-
 #sidebar dd span{background:#fff;}
 
 
+div#content ul.normal li{line-height:200%}
 
 
 div#qTip{
@@ -202,7 +204,7 @@ div#qTip{
 	display:none;
 	background:#fff;	/*#B1DE98;	/*#D86B46;*/
 	color:#000;
-	font-size:normal;
+	/*font-size:normal;*/
 	width:300px;
 	text-align:left;
 	position:absolute;
@@ -270,6 +272,7 @@ table.list tr.disabled td, table.list tr.disabled td a{color:#aaa;font-weight:no
 
 
 
+
 /* Form table */
 table.form tr.h td, table.checks tr.h td{
 	/*background:#eee;color:#000;font-size:120%;font-weight:bold;padding:4px;*/
@@ -310,6 +313,8 @@ table.form td.actions input{
 /* Make subsequent buttons non-bold */
 table.form td.actions input+input{font-weight:normal;}
 table.form td.actions a{vertical-align:middle;}
+
+
 
 /* Tables within field cells */
 /*table.form td.field table td{padding:0px;}*/

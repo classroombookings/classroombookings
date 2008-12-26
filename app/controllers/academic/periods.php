@@ -36,7 +36,8 @@ class Periods extends Controller {
 	function index(){
 		$this->auth->check('periods');
 		
-		$links[0] = array('periods/add', 'Add a new period');
+		$links[0] = array('academic/periods/add', 'Add a new period');
+		$links[1] = array('academic/main', 'Academic setup');
 		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
 		
 		// Get list of periods
@@ -44,7 +45,7 @@ class Periods extends Controller {
 		if($body['periods'] == FALSE){
 			$tpl['body'] = $this->msg->err($this->periods_model->lasterr);
 		} else {
-			$tpl['body'] = $this->load->view('periods/index', $body, TRUE);
+			$tpl['body'] = $this->load->view('academic/periods/index', $body, TRUE);
 		}
 		
 		$tpl['title'] = 'Periods';
@@ -60,10 +61,10 @@ class Periods extends Controller {
 		$body['period'] = NULL;
 		$body['period_id'] = NULL;
 		$body['days'] = $this->periods_model->days;
-		$tpl['sidebar'] = $this->load->view('periods/addedit.sidebar.php', NULL, TRUE);
+		$tpl['sidebar'] = $this->load->view('academic/periods/addedit.sidebar.php', NULL, TRUE);
 		$tpl['title'] = 'Add period';
 		$tpl['pagetitle'] = 'Add a new period';
-		$tpl['body'] = $this->load->view('periods/addedit', $body, TRUE);
+		$tpl['body'] = $this->load->view('academic/periods/addedit', $body, TRUE);
 		$this->load->view($this->tpl, $tpl);
 	}
 	
@@ -195,4 +196,4 @@ class Periods extends Controller {
 }
 
 
-?>
+/* End of file app/controllers/academic/periods.php */

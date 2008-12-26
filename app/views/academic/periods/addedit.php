@@ -4,7 +4,7 @@ if($errors){
 	echo $this->msg->err('<ul>' . $errors . '</ul>', 'Please check the following invalid item(s) and try again.');
 }
 
-echo form_open('periods/save', NULL, array('period_id' => $period_id));
+echo form_open('academic/periods/save', NULL, array('period_id' => $period_id));
 
 // Start tabindex
 $t = 1;
@@ -135,7 +135,7 @@ $t = 1;
 	unset($buttons);
 	$buttons[] = array('submit', 'positive', $submittext, 'disk1.gif', $t);
 	$buttons[] = array('submit', '', 'Save and add another', 'plus.gif', $t+1);
-	$buttons[] = array('cancel', 'negative', $this->lang->line('ACTION_CANCEL'), 'arr-left.gif', $t+2, site_url('periods'));
+	$buttons[] = array('cancel', 'negative', $this->lang->line('ACTION_CANCEL'), 'arr-left.gif', $t+2, site_url('academic/periods'));
 	$this->load->view('parts/buttons', array('buttons' => $buttons));
 	?>
 

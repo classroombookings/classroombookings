@@ -10,7 +10,6 @@
 	<link rel="icon" type="image/x-icon" href="favicon2.ico" />
 	<link rel="stylesheet" type="text/css" media="screen" href="css/layout3.css" />
 	<link rel="stylesheet" type="text/css" media="screen" href="css/ui3.css" />
-	
 	<script type="text/javascript">
 	var tabberOptions = {
 		'cookie':"crbstabber",
@@ -31,10 +30,11 @@
 	};
 	</script>
 	<script type="text/javascript" src="js/jquery-1.2.6.min.js"></script>
-	<script src="js/qTip.js" type="text/javascript"></script>
-	<script src="js/tabber-minimized.js" type="text/javascript"></script>
-	<script src="js/facebox.js" type="text/javascript"></script>
-	<script src="js/syronex-colorpicker.js" type="text/javascript"></script>
+	<script type="text/javascript" src="js/qTip.js"></script>
+	<script type="text/javascript" src="js/tabber-minimized.js"></script>
+	<script type="text/javascript" src="js/facebox.js"></script>
+	<script type="text/javascript" src="js/syronex-colorpicker.js"></script>
+	<script type="text/javascript" src="js/jquery.date_input.min.js"></script>
 </head>
 
 <body>
@@ -65,7 +65,7 @@
 			<!-- user-utils -->
 			<div id="top-right"><?php
 				if($this->auth->logged_in()){
-					echo sprintf('<span>Logged in as %s</span>', anchor('account/edit', $this->session->userdata('display')));
+					echo sprintf('<span>Logged in as %s</span>', anchor('account', $this->session->userdata('display')));
 					echo sprintf('<span>%s</span>', anchor('account/bookings', sprintf('%d active bookings', 5)));
 					echo sprintf('<span>%s</span>', anchor('account/logout', 'Logout'));
 				} else {
@@ -84,9 +84,7 @@
 					if($this->auth->check('myprofile', TRUE)){ echo '<li>'.anchor('account', 'My Profile').'</li>'; }
 					if($this->auth->check('configure', TRUE)){ echo '<li>'.anchor('configure', 'Configure').'</li>'; }
 					if($this->auth->check('rooms', TRUE)){ echo '<li>'.anchor('rooms', 'Rooms').'</li>'; }
-					#if($this->auth->check('periods', TRUE)){ echo '<li>'.anchor('periods', 'Periods').'</li>'; }
 					if($this->auth->check('academic', TRUE)){ echo '<li>'.anchor('academic/main', 'Academic Setup').'</li>'; }
-					#if($this->auth->check('holidays', TRUE)){ echo '<li>'.anchor('holidays', 'Holidays').'</li>'; }
 					if($this->auth->check('departments', TRUE)){ echo '<li>'.anchor('departments', 'Departments').'</li>'; }
 					if($this->auth->check('reports', TRUE)){ echo '<li>'.anchor('reports', 'Reports').'</li>'; }
 					if($this->auth->check('users', TRUE)){ echo '<li>'.anchor('security/users', 'Security').'</li>'; }
