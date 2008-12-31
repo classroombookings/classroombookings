@@ -46,13 +46,18 @@ class Periods_model extends Model{
 	 * @param arr pagination limit,start
 	 * @return mixed (object on success, false on failure)
 	 */
-	function get($period_id = NULL, $page = NULL){
+	function get($period_id = NULL, $page = NULL, $year_id = NULL){
 		
 		if ($period_id == NULL) {
+		
+
 		
 			// Getting all periods
 			$this->db->select('*', FALSE);
 			$this->db->from('periods');
+			if($year_id != NULL){
+				$this->db->where('year_id', $year_id);
+			}
 			
 			$this->db->orderby('time_start ASC, time_end ASC');
 			
@@ -62,9 +67,13 @@ class Periods_model extends Model{
 			
 			$query = $this->db->get();
 			if ($query->num_rows() > 0){
+				$result = $query->result();
+				foreach($result as $r){
+					$r->days = unserialize($r->days);
+				}
 				return $query->result();
 			} else {
-				$this->lasterr = 'There are no periods.';
+				$this->lasterr = 'There are no periods defined.';
 				return 0;
 			}
 			
@@ -82,6 +91,7 @@ class Periods_model extends Model{
 				
 				// Got the period
 				$period = $query->row();
+				$period->days = unserialize($period->days);
 				return $period;
 				
 			} else {
@@ -97,52 +107,36 @@ class Periods_model extends Model{
 	
 	function add($data){
 		
+		if(!array_key_exists('year_id', $data)){
+			$this->lasterr = 'No Academic year ID specified.';
+			return FALSE;
+		}
+		
+		$data['days'] = serialize($data['days']);
 		$add = $this->db->insert('periods', $data);
-		
 		$period_id = $this->db->insert_id();
-		
-		return $department_id;
+		return $period_id;
 	}
 	
 	
 	
 	
-	function edit($department_id = NULL, $data){
-		if($department_id == NULL){
+	function edit($period_id = NULL, $data){
+		if($period_id == NULL){
 			$this->lasterr = 'Cannot update a department without its ID.';
 			return FALSE;
 		}
 		
-		// If no LDAP groups, set empty array. Otherwise assign to new array for itself
-		if(in_array(-1, $data['ldapgroups'])){
-			$ldapgroups = array();
-		} else {
-			$ldapgroups = $data['ldapgroups'];
+		if(!array_key_exists('year_id', $data)){
+			$this->lasterr = 'No Academic year ID was specified.';
+			return FALSE;
 		}
-		// Remove 'column' from data array
-		unset($data['ldapgroups']);
+		
+		$data['days'] = serialize($data['days']);
 		
 		// Update department info
-		$this->db->where('department_id', $department_id);
-		$edit = $this->db->update('departments', $data);
-		
-		// Now remove LDAP group assignments (don't panic - will now re-insert if they are specified)
-		$sql = 'DELETE FROM departments2ldapgroups WHERE department_id = ?';
-		$query = $this->db->query($sql, array($group_id));
-		
-		// If LDAP groups were assigned then insert into DB
-		if(count($ldapgroups) > 0){
-			$sql = 'INSERT INTO departments2ldapgroups (department_id, ldapgroup_id) VALUES ';
-			foreach($ldapgroups as $ldapgroup_id){
-				$sql .= sprintf("(%d,%d),", $department_id, $ldapgroup_id);
-			}
-			// Remove last comma
-			$sql = preg_replace('/,$/', '', $sql);
-			$query = $this->db->query($sql);
-			if($query == FALSE){
-				$this->lasterr = 'Could not assign LDAP groups';
-			}
-		}
+		$this->db->where('period_id', $period_id);
+		$edit = $this->db->update('periods', $data);
 		
 		return $edit;
 	}
@@ -150,14 +144,14 @@ class Periods_model extends Model{
 	
 	
 	
-	function delete($department_id){
+	function delete($period_id){
 		
-		$sql = 'DELETE FROM departments WHERE department_id = ? LIMIT 1';
-		$query = $this->db->query($sql, array($department_id));
+		$sql = 'DELETE FROM periods WHERE period_id = ? LIMIT 1';
+		$query = $this->db->query($sql, array($period_id));
 		
 		if($query == FALSE){
 			
-			$this->lasterr = 'Could not delete department. Does it exist?';
+			$this->lasterr = 'Could not delete period. Does it exist?';
 			return FALSE;
 			
 		} else {
@@ -177,6 +171,15 @@ class Periods_model extends Model{
 			return TRUE;
 			
 		}
+		
+	}
+	
+	
+	
+	
+	function copy($year_from, $year_to){
+		
+		// Do copy stuff here
 		
 	}
 	

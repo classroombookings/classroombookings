@@ -82,12 +82,12 @@ div#sidebar>div{
 
 
 /* Extra box at the bottom */
-div#extra{
+div.extra{
 	background:#C0DDB0;
 	padding:0;
 	margin:5px 0;
 }
-div#extra p{
+div.extra p{
 	margin:0;
 	padding:5px;
 }
@@ -426,4 +426,4 @@ div.msg.yes{
 
 
 
-p.bg-yellow{background:#fff9d7;padding:0.5em}
+.bg-yellow{background:#fff9d7;padding:0.5em}

@@ -197,6 +197,42 @@ class Years_model extends Model{
 	
 	
 	
+	function get_dropdown(){
+		$sql = 'SELECT year_id, name, active FROM years ORDER BY date_start ASC';
+		$query = $this->db->query($sql);
+		if($query->num_rows() > 0){
+			$result = $query->result();
+			$years = array();
+			foreach($result as $year){
+				$year->name = ($year->active == 1) ? $year->name . ' (active)' : $year->name;
+				$years[$year->year_id] = $year->name;
+			}
+			return $years;
+		} else {
+			$this->lasterr = 'No years found';
+			return FALSE;
+		}
+	}
+	
+	
+	
+	
+	function get_active_id(){
+		$sql = 'SELECT year_id FROM years WHERE active = 1 LIMIT 1';
+		$query = $this->db->query($sql);
+		if($query->num_rows() == 1){
+			$row = $query->row();
+			$year_id = $row->year_id;
+			return $year_id;
+		} else {
+			$this->lasterr = 'No active year defined.';
+			return FALSE;
+		}
+	}
+	
+	
+	
+	
 }
 
 

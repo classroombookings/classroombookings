@@ -5,6 +5,7 @@ $permissions['general'][] = array('dashboard.viewdept', 'Dashboard  - view depar
 $permissions['general'][] = array('dashboard.viewown', 'Dashboard - view own bookings');
 $permissions['general'][] = array('myprofile', 'My Profile/Change password');
 $permissions['general'][] = array('configure', 'Configure Classroombookings');
+$permissions['general'][] = array('changeyear', 'Change the working academic year');
 
 $permissions['bookings'][] = array('bookings', 'View bookings page', 'View the main bookings page');
 $permissions['bookings'][] = array('bookings.create.one', 'Create their own one-time bookings', 'Booking days ahead and quota options still apply');

@@ -134,6 +134,14 @@
 		</div>
 		<!-- // wrapper -->
 		
+		<div class="extra">
+		<?php if($this->auth->check('changeyear', TRUE)){
+			$years = $this->years_model->get_dropdown();
+			$this->load->view('template/set-year', array('years' => $years));
+		}
+		?>
+		</div>
+		
 		
 		<?php if(isset($extra)){ ?>
 		<!-- extra -->

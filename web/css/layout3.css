@@ -76,10 +76,11 @@ div#sidebar{
 }
 
 
-div#extra{
+div.extra{
 	clear:both;
 	width:100%;
 }
+div.extra div{padding:0.35em;}
 
 
 div#footer{

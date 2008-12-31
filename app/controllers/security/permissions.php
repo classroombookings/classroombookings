@@ -83,6 +83,11 @@ class Permissions extends Controller {
 			}
 			$this->session->set_flashdata('tab', $group_id);
 			
+			// Unset existing group permissions array in session - it will get re-filled on next page load
+			if($group_id == $this->session->userdata('group_id')){
+				$this->session->set_userdata('group_permissions', NULL);
+			}
+			
 			redirect('security/permissions');
 			
 		}

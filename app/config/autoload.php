@@ -108,7 +108,7 @@ $autoload['language'] = array('crbs2');
 |
 */
 
-$autoload['model'] = array();
+$autoload['model'] = array('years_model');
 
 
 /*

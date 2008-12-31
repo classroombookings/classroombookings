@@ -26,6 +26,7 @@ class Periods extends Controller {
 	function Periods(){
 		parent::Controller();
 		$this->load->model('periods_model');
+		$this->load->model('years_model');
 		$this->tpl = $this->config->item('template');
 		$this->output->enable_profiler($this->config->item('profiler'));
 	}
@@ -36,14 +37,20 @@ class Periods extends Controller {
 	function index(){
 		$this->auth->check('periods');
 		
-		$links[0] = array('academic/periods/add', 'Add a new period');
-		$links[1] = array('academic/main', 'Academic setup');
+		$links[] = array('academic/periods/add', 'Add a new period');
+		$links[] = array('academic/main', 'Academic setup');
+		$links[] = array('academic/years', 'Academic years');
+		$links[] = array('academic/weeks', 'Weeks');
+		$links[] = array('academic/holidays', 'Holidays');
 		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
+		$body['days'] = $this->periods_model->days;
+		$body['years'] = $this->years_model->get_dropdown();
 		
 		// Get list of periods
-		$body['periods'] = $this->periods_model->get();
+		$body['periods'] = $this->periods_model->get(NULL, NULL, $this->session->userdata('year_working'));
 		if($body['periods'] == FALSE){
 			$tpl['body'] = $this->msg->err($this->periods_model->lasterr);
+			$tpl['body'] .= $this->load->view('academic/periods/copy', $body, TRUE);
 		} else {
 			$tpl['body'] = $this->load->view('academic/periods/index', $body, TRUE);
 		}
@@ -65,6 +72,28 @@ class Periods extends Controller {
 		$tpl['title'] = 'Add period';
 		$tpl['pagetitle'] = 'Add a new period';
 		$tpl['body'] = $this->load->view('academic/periods/addedit', $body, TRUE);
+		$this->load->view($this->tpl, $tpl);
+	}
+	
+	
+	
+	
+	function edit($period_id){
+		$this->auth->check('periods.edit');
+		$body['period'] = $this->periods_model->get($period_id);
+		$body['period_id'] = $period_id;
+		$body['days'] = $this->periods_model->days;
+		
+		$tpl['title'] = 'Edit period';
+		
+		if($body['period'] != FALSE){
+			$tpl['pagetitle'] = 'Edit period: ' . $body['period']->name;
+			$tpl['body'] = $this->load->view('academic/periods/addedit', $body, TRUE);
+		} else {
+			$tpl['pagetitle'] = 'Error getting period details';
+			$tpl['body'] = $this->msg->err('Could not load the specified period. Please check the ID and try again.');
+		}
+		
 		$this->load->view($this->tpl, $tpl);
 	}
 	
@@ -93,16 +122,18 @@ class Periods extends Controller {
 			$data['name'] = $this->input->post('name');
 			$data['time_start'] = $this->input->post('time_start');
 			$data['time_end'] = $this->input->post('time_end');
-			$data['bookable'] = ($this->input->post('ldap') == '1') ? 1 : 0;
+			$data['days'] = $this->input->post('days');
+			$data['bookable'] = ($this->input->post('bookable') == '1') ? 1 : 0;
+			$data['year_id'] = $this->session->userdata('year_working');
 			
 			if($period_id == NULL){
-			
+				
 				$add = $this->periods_model->add($data);
 				
 				if($add == TRUE){
-					$this->msg->add('info', sprintf($this->lang->line('PERIODS_ADD_OK'), $data['name']));
+					$this->msg->add('info', $this->lang->line('PERIODS_ADD_OK'));
 				} else {
-					$this->msg->add('err', sprintf($this->lang->line('PERIODS_ADD_FAIL', $this->periods_model->lasterr)));
+					$this->msg->add('err', $this->lang->line('PERIODS_ADD_FAIL') . '. ' . $this->periods_model->lasterr);
 				}
 			
 			} else {
@@ -110,18 +141,104 @@ class Periods extends Controller {
 				// Updating existing period
 				$edit = $this->periods_model->edit($period_id, $data);
 				if($edit == TRUE){
-					$this->msg->add('info', sprintf($this->lang->line('PERIODS_EDIT_OK'), $data['name']));
+					$this->msg->add('info', $this->lang->line('PERIODS_EDIT_OK'));
 				} else {
-					$this->msg->add('err', sprintf($this->lang->line('PERIODS_EDIT_FAIL', $this->periods_model->lasterr)));
+					$this->msg->add('err', $this->lang->line('PERIODS_EDIT_FAIL') . '. ' . $this->periods_model->lasterr);
 				}
 				
 			}
 			
 			// All done, redirect!
-			redirect('periods');
+			redirect('academic/periods');
 			
 		}
 		
+	}
+	
+	
+	
+	
+	function delete($period_id = NULL){
+		$this->auth->check('periods.delete');
+		
+		// Check if a form has been submitted; if not - show it to ask user confirmation
+		if($this->input->post('id')){
+		
+			// Form has been submitted (so the POST value exists)
+			// Call model function to delete period
+			$delete = $this->periods_model->delete($this->input->post('id'));
+			if($delete == FALSE){
+				$this->msg->add('err', $this->periods_model->lasterr, 'An error occured');
+			} else {
+				$this->msg->add('info', 'The period has been deleted.');
+			}
+			// Redirect
+			redirect('academic/periods');
+			
+		} else {
+			
+			if($period_id == NULL){
+				
+				$tpl['title'] = 'Delete period';
+				$tpl['pagetitle'] = $tpl['title'];
+				$tpl['body'] = $this->msg->err('Cannot find the period or no period ID given.');
+				
+			} else {
+				
+				// Get period info so we can present the confirmation page with a name
+				$period = $this->periods_model->get($period_id);
+				
+				if($period == FALSE){
+				
+					$tpl['title'] = 'Delete period';
+					$tpl['pagetitle'] = $tpl['title'];
+					$tpl['body'] = $this->msg->err('Could not find that period or no period ID given.');
+					
+				} else {
+					
+					// Initialise page
+					$body['action'] = 'academic/periods/delete';
+					$body['id'] = $period_id;
+					$body['cancel'] = 'academic/periods';
+					//$body['text'] = 'If you delete this period, all people assigned to it will be removed.';
+					$tpl['title'] = 'Delete period';
+					$tpl['pagetitle'] = 'Delete ' . $period->name;
+					$tpl['body'] = $this->load->view('parts/deleteconfirm', $body, TRUE);
+					
+				}
+				
+			}
+			
+			$this->load->view($this->tpl, $tpl);
+			
+		}
+		
+	}
+	
+	
+	
+	
+	function copy(){
+		$year_id = $this->input->post('year_id');
+		
+		$this->form_validation->set_rules('year_id', 'Year ID', 'required');
+		
+		if($this->form_validation->run() === FALSE){
+			
+			$this->index();
+			
+		} else {
+			
+			// Got ID, attempty copy
+			$copy = $this->periods_model->copy($year_id, $this->session->userdata('year_working'));
+			if($copy == FALSE){
+				$this->msg->add('err', $this->periods_model->lasterr);
+			} else {
+				$this->msg->add('info', 'The periods were successfully copied');
+			}
+			redirect('academic/periods');
+			
+		}
 	}
 	
 	

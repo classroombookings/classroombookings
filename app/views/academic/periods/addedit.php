@@ -48,7 +48,7 @@ $t = 1;
 			$input['size'] = '10';
 			$input['maxlength'] = '5';
 			$input['tabindex'] = $t;
-			$input['value'] = @set_value($input['name'], $period->time_start);
+			$input['value'] = strftime('%H:%M', strtotime(@set_value($input['name'], $period->time_start)));
 			echo form_input($input);
 			$t++;
 			?>
@@ -64,12 +64,12 @@ $t = 1;
 			<?php
 			unset($input);
 			$input['accesskey'] = 'E';
-			$input['name'] = 'end_start';
-			$input['id'] = 'end_start';
+			$input['name'] = 'time_end';
+			$input['id'] = 'time_end';
 			$input['size'] = '10';
 			$input['maxlength'] = '5';
 			$input['tabindex'] = $t;
-			$input['value'] = @set_value($input['name'], $period->time_end);
+			$input['value'] = strftime('%H:%M', strtotime(@set_value($input['name'], $period->time_end)));
 			echo form_input($input);
 			$t++;
 			?>
@@ -91,7 +91,7 @@ $t = 1;
 			$check['name'] = 'days[]';
 			$check['id'] = 'day_' . $num;
 			$check['value'] = "$num";
-			$check['checked'] = set_checkbox('days[]', $num, (@in_array($num, $days)));
+			$check['checked'] = set_checkbox('days[]', $num, (@in_array($num, $period->days)));
 			$check['tabindex'] = $t;
 			echo form_checkbox($check);
 			$t++;

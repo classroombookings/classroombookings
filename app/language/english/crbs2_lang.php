@@ -32,6 +32,11 @@ $lang['DEPARTMENTS_ADD_FAIL'] = 'An error occured and the department could not b
 $lang['DEPARTMENTS_EDIT_OK'] = 'The %s department details were saved successfully.';
 $lang['DEPARTMENTS_EDIT_FAIL'] = 'An error occured and the department details could not be saved (%s).';
 
+$lang['PERIODS_ADD_OK'] = 'The period was added successfully.';
+$lang['PERIODS_ADD_FAIL'] = 'An error occured and the period could not be added.';
+$lang['PERIODS_EDIT_OK'] = 'The period details were saved successfully.';
+$lang['PERIODS_EDIT_FAIL'] = 'An error occured and the period details could not be saved.';
+
 $lang['YEARS_ADD_OK'] = 'The academic year %s was added successfully.';
 $lang['YEARS_ADD_FAIL'] = 'An error occured and the academic year (%s) could not be added.';
 $lang['YEARS_EDIT_OK'] = 'The %s academic year details were saved successfully.';

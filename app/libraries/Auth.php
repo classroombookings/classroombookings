@@ -252,6 +252,8 @@ class Auth{
 				$sessdata['group_id']		= $userinfo->group_id;
 				$sessdata['username']		= $userinfo->username;
 				$sessdata['display']		= ($userinfo->display == NULL) ? $userinfo->username : $userinfo->display;
+				$sessdata['year_active']	= $this->CI->years_model->get_active_id();
+				$sessdata['year_working']	= $sessdata['year_active'];
 				//$sessdata['authlevel']		= $userinfo->authlevel;
 				
 				// Set session 
@@ -459,4 +461,6 @@ class Auth{
 	
 	
 }
-?>
+
+
+/* End of file app/libraries/Auth.php */

@@ -216,6 +216,7 @@ class Years extends Controller {
 	
 	
 	function activate($year_id = NULL){
+		$this->auth->check('years.edit');
 		
 		if($year_id == NULL){
 			
@@ -230,6 +231,8 @@ class Years extends Controller {
 			
 			if($activate == TRUE){
 				$this->msg->add('info', $this->lang->line('YEARS_ACTIVATE_OK'));
+				$this->session->set_userdata('year_active', $this->years_model->get_active_id());
+				$this->session->set_userdata('year_working', $this->years_model->get_active_id());
 				redirect('academic/years');
 			} else {
 				$this->msg->add('err', $this->years_model->lasterr);
@@ -237,6 +240,17 @@ class Years extends Controller {
 			}
 			
 		}
+	}
+	
+	
+	
+	
+	function change_working(){
+		$this->load->library('user_agent');
+		$uri = $this->input->post('uri');
+		$year_id = $this->input->post('workingyear_id');
+		$this->session->set_userdata('year_working', $year_id);
+		redirect($uri);
 	}
 	
 	
