@@ -45,12 +45,14 @@ class Periods extends Controller {
 		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
 		$body['days'] = $this->periods_model->days;
 		$body['years'] = $this->years_model->get_dropdown();
-		
 		// Get list of periods
 		$body['periods'] = $this->periods_model->get(NULL, NULL, $this->session->userdata('year_working'));
+		
 		if($body['periods'] == FALSE){
 			$tpl['body'] = $this->msg->err($this->periods_model->lasterr);
-			$tpl['body'] .= $this->load->view('academic/periods/copy', $body, TRUE);
+			if($this->session->userdata('year_working') != NULL){
+				$tpl['body'] .= $this->load->view('academic/periods/copy', $body, TRUE);
+			}
 		} else {
 			$tpl['body'] = $this->load->view('academic/periods/index', $body, TRUE);
 		}
@@ -64,6 +66,10 @@ class Periods extends Controller {
 	
 	
 	function add(){
+		if($this->session->userdata('year_working') == NULL){
+			$this->msg->add('warn', 'You cannot add a period until an academic year has been made active or you have selected a working academic year.');
+			redirect('academic/periods');
+		}
 		$this->auth->check('periods.add');
 		$body['period'] = NULL;
 		$body['period_id'] = NULL;
@@ -80,7 +86,7 @@ class Periods extends Controller {
 	
 	function edit($period_id){
 		$this->auth->check('periods.edit');
-		$body['period'] = $this->periods_model->get($period_id);
+		$body['period'] = $this->periods_model->get($period_id, NULL, $this->session->userdata('year_working'));
 		$body['period_id'] = $period_id;
 		$body['days'] = $this->periods_model->days;
 		
@@ -186,7 +192,7 @@ class Periods extends Controller {
 			} else {
 				
 				// Get period info so we can present the confirmation page with a name
-				$period = $this->periods_model->get($period_id);
+				$period = $this->periods_model->get($period_id, NULL, $this->session->userdata('year_working'));
 				
 				if($period == FALSE){
 				
@@ -260,7 +266,7 @@ class Periods extends Controller {
 		if( ($times['data'] >= $times['am'] && $times['data'] <= $times['pm']) || !isset($times['data']) ){
 			$ret = true;
 		} else {
-			$this->validation->set_message('_is_valid_time', 'You entered an invalid time. It must be between 00:00 and 23:59.');
+			$this->form_validation->set_message('_is_valid_time', 'You entered an invalid time. It must be between 00:00 and 23:59.');
 			$ret = false;
 		}
 		return $ret;
@@ -285,7 +291,7 @@ class Periods extends Controller {
 		if( $end > $start ){
 			$ret = true;
 		} else {
-			$this->validation->set_message('_is_after', 'The end time must be equal to or greater than the start time of '.$this->_fix_time( $this->input->post( 'time_start' ) ).'.' );
+			$this->form_validation->set_message('_is_after', 'The end time must be equal to or greater than the start time of '.$this->_fix_time( $this->input->post( 'time_start' ) ).'.' );
 			$ret = false;
 		}
 		return $ret;

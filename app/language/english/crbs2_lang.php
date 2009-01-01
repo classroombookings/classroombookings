@@ -15,7 +15,7 @@ $lang['CONF_AUTH_SAVE_OK'] = 'Authentication settings were saved successfully.';
 $lang['CONF_AUTH_SAVE_FAIL'] = 'An error occured while saving the authentication settings.';
 
 $lang['SECURITY_USER_ADD_OK_ENABLED'] = 'The user was created successfully and can now log in using the password you set.';
-$lang['SECURITY_USER_ADD_OK_DISABLED'] = 'The user was created successfully, but they will not be able to log in until you enable their account.';
+$lang['SECURITY_USER_ADD_OK_DISABLED'] = 'The user was created successfully, but they will not be able to log in until their account is enabled.';
 $lang['SECURITY_USER_ADD_FAIL'] = 'An error occured and the user could not be added (%s)';
 
 $lang['SECURITY_USER_EDIT_OK_ENABLED'] = 'The user details were saved successfully.';

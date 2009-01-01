@@ -12,7 +12,7 @@ $t = 1;
 
 <table class="form" cellpadding="6" cellspacing="0" border="0" width="100%">
 	
-	<tr class="h"><td colspan="2">Copy periods from other academic year</td></tr>
+	<tr class="h"><td colspan="2">Copy periods from another academic year</td></tr>
 	
 	<tr>
 		<td class="caption">

@@ -18,6 +18,8 @@
 @import "facebox.css";
 @import "tabs.css";
 @import "date_input.css";
+@import "timepicker.css";
+
 
 
 
@@ -424,6 +426,5 @@ div.msg.yes{
 	border-color:#e2c822;
 }
 
-
-
+.bg-red{background:#FBE6F2;}
 .bg-yellow{background:#fff9d7;padding:0.5em}

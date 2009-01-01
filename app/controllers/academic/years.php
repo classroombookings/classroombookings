@@ -122,7 +122,7 @@ class Years extends Controller {
 			print_r($data);
 			
 			if($year_id == NULL){
-			
+				
 				$add = $this->years_model->add($data);
 				
 				if($add == TRUE){
@@ -130,11 +130,11 @@ class Years extends Controller {
 				} else {
 					$this->msg->add('err', sprintf($this->lang->line('YEARS_ADD_FAIL', $this->years_model->lasterr)));
 				}
-			
+				
 			} else {
-			
-				// Updating existing year
+				
 				$edit = $this->years_model->edit($year_id, $data);
+				
 				if($edit == TRUE){
 					$this->msg->add('info', sprintf($this->lang->line('YEARS_EDIT_OK'), $data['name']));
 				} else {

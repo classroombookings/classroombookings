@@ -35,6 +35,7 @@
 	<script type="text/javascript" src="js/facebox.js"></script>
 	<script type="text/javascript" src="js/syronex-colorpicker.js"></script>
 	<script type="text/javascript" src="js/jquery.date_input.min.js"></script>
+	<script type="text/javascript" src="js/timepicker.js"></script>
 </head>
 
 <body>

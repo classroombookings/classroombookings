@@ -33,10 +33,14 @@ if($periods != 0){
 			$now_img = '';
 		}
 		
+		$bookable_img = ($period->bookable == 1) ? 'f_yes.gif' : 'f_yes-grey.gif';
+		$bookable_title = ($period->bookable == 1) ? 'This period can be booked' : 'This period cannot be booked.';
+		
 	?>
 	<tr>
 		<td align="center" width="20"><?php echo $now_img; ?></td>
-		<td align="center" width="20"><?php if($period->bookable == 1){ ?><img src="img/ico/f_yes.gif" width="16" height="16" alt="Active" title="This period can be booked" /><?php } ?></td>
+		<!-- <td align="center" width="20"><?php if($period->bookable == 1){ ?><img src="img/ico/f_yes.gif" width="16" height="16" alt="Bookable" title="This period can be booked" /><?php } ?></td> -->
+		<td align="center" width="20"><img src="img/ico/<?php echo $bookable_img ?>" width="16" height="16" alt="Bookable" title="<?php echo $bookable_title ?>" /></td>
 		<td><?php echo anchor('academic/periods/edit/'.$period->period_id, $period->name) ?></td>
 		<td><?php echo strftime("%H:%M", $time_start) ?></td>
 		<td><?php echo strftime("%H:%M", $time_end) ?></td>

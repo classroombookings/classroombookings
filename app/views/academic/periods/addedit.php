@@ -42,13 +42,15 @@ $t = 1;
 		<td class="field">
 			<?php
 			unset($input);
+			unset($val);
 			$input['accesskey'] = 'S';
 			$input['name'] = 'time_start';
 			$input['id'] = 'time_start';
 			$input['size'] = '10';
 			$input['maxlength'] = '5';
 			$input['tabindex'] = $t;
-			$input['value'] = strftime('%H:%M', strtotime(@set_value($input['name'], $period->time_start)));
+			$val = strtotime(@set_value($input['name'], $period->time_start));
+			$input['value'] = ($val == FALSE) ? NULL : strftime('%H:%M', $val);
 			echo form_input($input);
 			$t++;
 			?>
@@ -63,13 +65,15 @@ $t = 1;
 		<td class="field">
 			<?php
 			unset($input);
+			unset($val);
 			$input['accesskey'] = 'E';
 			$input['name'] = 'time_end';
 			$input['id'] = 'time_end';
 			$input['size'] = '10';
 			$input['maxlength'] = '5';
 			$input['tabindex'] = $t;
-			$input['value'] = strftime('%H:%M', strtotime(@set_value($input['name'], $period->time_end)));
+			$val = strtotime(@set_value($input['name'], $period->time_end));
+			$input['value'] = ($val == FALSE) ? NULL : strftime('%H:%M', $val);
 			echo form_input($input);
 			$t++;
 			?>
@@ -141,3 +145,20 @@ $t = 1;
 
 </table>
 </form>
+
+
+<script type="text/javascript">
+$("#time_start, #time_end").timePicker({
+	step: 15,
+	startTime:new Date(0, 0, 0, 7, 0, 0),
+	endTime:new Date(0, 0, 0, 22, 0, 0)
+});
+
+$("#time_end").change(function(){
+	if($.timePicker("#time_start").getTime() > $.timePicker(this).getTime()){
+		$(this).addClass("bg-red");
+	} else {
+		$(this).removeClass("bg-red");
+	}
+});
+</script>

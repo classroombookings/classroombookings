@@ -47,11 +47,14 @@ class Periods_model extends Model{
 	 * @return mixed (object on success, false on failure)
 	 */
 	function get($period_id = NULL, $page = NULL, $year_id = NULL){
+	
+		if($year_id == NULL){
+			$this->lasterr = 'There is no active academic year or no working academic year has been selected.';
+			return FALSE;
+		}
 		
-		if ($period_id == NULL) {
-		
-
-		
+		if($period_id == NULL){
+			
 			// Getting all periods
 			$this->db->select('*', FALSE);
 			$this->db->from('periods');
@@ -178,8 +181,23 @@ class Periods_model extends Model{
 	
 	
 	function copy($year_from, $year_to){
+	
+		$sql = 'SELECT period_id FROM periods WHERE year_id = ?';
+		$query = $this->db->query($sql, array($year_from));
+		if($query->num_rows() == 0){
+			$this->lasterr = 'No periods found in the given academic year.';
+			return FALSE;
+		}
 		
-		// Do copy stuff here
+		$sql = 'INSERT INTO periods
+				(year_id, time_start, time_end, name, days, bookable)
+				SELECT ?, time_start, time_end, name, days, bookable
+				FROM periods 
+				WHERE year_id = ?';
+		
+		$query = $this->db->query($sql, array($year_to, $year_from));
+		
+		return $query;
 		
 	}
 	
