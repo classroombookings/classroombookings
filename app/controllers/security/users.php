@@ -35,10 +35,10 @@ class Users extends Controller {
 	
 	function index(){
 		$this->auth->check('users');
-		$links[1] = array('security/users/add', 'Add a new user');
-		$links[2] = array('security/users/import', 'Import from file');
-		$links[3] = array('security/groups', 'Manage groups');
-		$links[4] = array('security/permissions', 'Change group permissions');
+		$links[] = array('security/users/add', 'Add a new user');
+		$links[] = array('security/users/import', 'Import from file');
+		$links[] = array('security/groups', 'Manage groups');
+		$links[] = array('security/permissions', 'Change group permissions');
 		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
 		
 		// Get list of users
@@ -60,11 +60,11 @@ class Users extends Controller {
 	
 	function ingroup($group_id){
 		$this->auth->check('users');
-		$icondata[0] = array('security/users/add', 'Add a new user', 'plus.gif');
-		$icondata[1] = array('security/users/import', 'Import', 'database-arr.gif');
-		$icondata[2] = array('security/groups', 'Manage groups', 'group.gif');
-		$icondata[3] = array('security/permissions', 'Change group permissions', 'key2.gif');
-		$tpl['pretitle'] = $this->load->view('parts/iconbar', $icondata, TRUE);
+		$links[] = array('security/users/add', 'Add a new user');
+		$links[] = array('security/users/import', 'Import from file');
+		$links[] = array('security/groups', 'Manage groups');
+		$links[] = array('security/permissions', 'Change group permissions');
+		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
 		
 		$tpl['title'] = 'Users';
 		$groupname = $this->security->get_group_name($group_id);
