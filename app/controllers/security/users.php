@@ -122,7 +122,7 @@ class Users extends Controller {
 		$user_id = $this->input->post('user_id');
 		
 		$this->form_validation->set_rules('user_id', 'User ID');
-		$this->form_validation->set_rules('username', 'Username', 'required|max_length[64]|trim');
+		$this->form_validation->set_rules('username', 'Username', 'required|min_length[1]|max_length[64]|trim');
 		if(!$user_id){
 			$this->form_validation->set_rules('password1', 'Password', 'max_length[104]|required');
 			$this->form_validation->set_rules('password2', 'Password (confirmation)', 'max_length[104]|required|matches[password1]');
