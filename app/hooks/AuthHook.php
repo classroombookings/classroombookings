@@ -41,7 +41,7 @@ class AuthHook{
 	function cookiecheck(){
 		$this->CI->load->helper('cookie');
 		$cookie['crbs_key'] = get_cookie('crbs_key');
-		$cookie['user_id'] = get_cookie('user_id');
+		$cookie['user_id'] = get_cookie('crbs_user_id');
 		if($cookie['crbs_key'] != FALSE && !$this->CI->session->userdata('user_id')){
 			$this->CI->auth->cookielogin($cookie['crbs_key']);
 		}

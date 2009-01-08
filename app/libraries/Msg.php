@@ -77,5 +77,14 @@ class Msg{
 	}
 	
 	
+	
+	
+	function fail($title, $text = ''){
+		$error =& load_class('Exceptions');
+		echo $error->show_error($title, $text);
+		exit;
+	}
+	
+	
 }
 ?>

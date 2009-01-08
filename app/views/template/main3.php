@@ -135,13 +135,14 @@
 		</div>
 		<!-- // wrapper -->
 		
-		<div class="extra">
-		<?php if($this->auth->check('changeyear', TRUE)){
+		
+		<?php if($this->auth->logged_in() && $this->auth->check('changeyear', TRUE)){
+			echo '<div class="extra">';
 			$years = $this->years_model->get_dropdown();
 			$this->load->view('template/set-year', array('years' => $years));
+			echo '</div>';
 		}
 		?>
-		</div>
 		
 		
 		<?php if(isset($extra)){ ?>

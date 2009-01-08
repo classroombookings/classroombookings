@@ -140,7 +140,7 @@ class Users extends Controller {
 			($user_id == NULL) ? $this->add() : $this->edit($user_id);
 			
 		} else {
-		
+			
 			// Validation OK
 			$data['username'] = $this->input->post('username');
 			$data['displayname'] = $this->input->post('displayname');
@@ -154,7 +154,7 @@ class Users extends Controller {
 			}
 			
 			if($user_id == NULL){
-			
+				
 				// Adding user
 				$data['ldap'] = 0;
 				
@@ -167,9 +167,9 @@ class Users extends Controller {
 				} else {
 					$this->msg->add('err', sprintf($this->lang->line('SECURITY_USER_ADD_FAIL', $this->security->lasterr)));
 				}
-			
+				
 			} else {
-			
+				
 				// Updating existing user
 				$edit = $this->security->edit_user($user_id, $data);
 				if($edit == TRUE){
@@ -210,6 +210,7 @@ class Users extends Controller {
 			
 		} else {
 		
+			// Are we trying to delete ourself?
 			if( ($this->session->userdata('user_id')) && ($user_id == $this->session->userdata('user_id')) ){
 				$this->msg->add(
 					'warn',

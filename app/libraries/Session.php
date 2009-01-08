@@ -27,10 +27,12 @@
 
 
 class CI_Session {
-
+	
+	
 	var $session_id_ttl = 360; // session id time to live (TTL) in seconds
 	var $flash_key = 'flash'; // prefix for "flash" variables (eg. flash:new:message)
     
+	
 	function CI_Session(){
         log_message('debug', "Native_session Class Initialized");
         $this->_sess_run();
@@ -75,7 +77,7 @@ class CI_Session {
     /**
     * Destroys the session and erases session storage
     */
-    function destroy(){
+    function sess_destroy(){
         unset($_SESSION);
         if ( isset( $_COOKIE[session_name()] ) )
         {

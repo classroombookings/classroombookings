@@ -31,6 +31,9 @@ h1,h2,h3,h4{/*color:#60aa37;*/margin:0 0 20px 0;}
 
 .nomargin{margin:0;}
 
+/* Remove margin from forms */
+form{margin:0;padding:0;}
+
 /** TOP AREA **/
 div#top{background:url('../img/template/dots-h.gif') bottom left repeat-x transparent;}
 div#top-left{text-align:left;line-height:65%;}
@@ -136,6 +139,7 @@ ul.linkbar li a{
 ul.linkbar li a:hover{
 	color:#fff;
 	background:#468ed8;
+	text-decoration:none;
 }
 ul.linkbar li.ibl{
 	/*background:url(../img/template/sep.gif) top right no-repeat;*/

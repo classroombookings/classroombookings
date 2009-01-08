@@ -41,6 +41,7 @@ ul.tabbernav li a:visited{ color: #667; }*/
 ul.tabbernav li a:hover{
 	/*color: #000;
 	border-color: #227;*/
+	text-decoration:none;
 }
 
 ul.tabbernav li.tabberactive a{

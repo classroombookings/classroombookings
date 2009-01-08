@@ -36,6 +36,8 @@ class Auth{
 		// Load helpers/models required by the library
 		$this->CI->load->helper('cookie');
 		$this->CI->load->model('security');
+		$this->CI->load->library('user_agent');
+		$this->CI->load->library('msg');
 		
 		// Cookie salt for hash - can be any text string
 		$this->cookiesalt = 'CL455R00Mb00k1ng5';
@@ -136,7 +138,7 @@ class Auth{
 			if(strlen($key) != 40){
 				
 				// Is not valid key
-				$this->lasterr = $this->CI->load->view('msg/err', 'Cookie key has incorrect length.', TRUE);
+				$this->lasterr = $this->CI->msg->err('Cookie is not the correct length.');
 				$ret = FALSE;
 				
 			} else {
@@ -163,6 +165,7 @@ class Auth{
 						$userinfo->user_id, 
 						$userinfo->username,
 						$userinfo->lastlogin,
+						$this->CI->agent->agent_string(),
 					)));
 					
 					// Compare hash
@@ -173,17 +176,17 @@ class Auth{
 						$ret = $login;
 						
 					} else {
-					
+						
 						// Did not match!
-						$this->lasterr = $this->CI->load->view('msg/err', 'Invalid cookie (did not match database entry). Did you log in from another computer?<br />Compare '.$cookiekey.' to '.$key.'.', TRUE);
+						$this->lasterr = $this->CI->msg->err("Invalid cookie (did not match database entry). Did you log in from another computer?");	//<br />Compare $cookiekey to $key.");
 						$ret = FALSE;
-					
+						
 					}
 					
 				} else {
-				
+					
 					// No rows returned from the DB with that cookie key
-					$lasterr = $this->CI->load->view('msg/err', 'Could not find your cookie in the database. Did you log in from another computer?', TRUE);
+					$this->lasterr = $this->CI->msg->err('Could not find your cookie in the database. Did you log in from another computer?');
 					$ret = FALSE;
 					
 				}		// End of num_rows() check
@@ -192,11 +195,24 @@ class Auth{
 			
 		}		// End of key == NULL check
 		
-		$this->CI->session->set_flashdata('msg', $this->lasterr);
+		#$this->CI->session->set_flashdata('msg', $this->lasterr);
+		
 		if($ret == FALSE){
-			redirect($this->errpage);
+			
+			//redirect($this->errpage);
+			
+			// Remove cookies
+			delete_cookie("crbs_key");
+			delete_cookie("crbs_user_id");
+			
+			// Generate and show error with link to login page
+			$this->lasterr .= '<br />' . anchor('account/login', 'Click here to login using your username and password.');
+			$error =& load_class('Exceptions');
+			echo $error->show_error("Cannot login via cookie", $this->lasterr);
+			exit;
+			
 		}
-					
+		
 	}
 	
 	
@@ -269,14 +285,15 @@ class Auth{
 						$userinfo->user_id, 
 						$userinfo->username,
 						$timestamp,
+						$this->CI->agent->agent_string(),
 					)));
 					// Set cookie data
 					$cookie['expire'] = 60 * 60 * 24 * 14;		// 14 days
 					
-					$cookie['name'] = 'key';
+					$cookie['name'] = 'crbs_key';
 					$cookie['value'] = $cookiekey;
 					set_cookie($cookie);
-					$cookie['name'] = 'user_id';
+					$cookie['name'] = 'crbs_user_id';
 					$cookie['value'] = $userinfo->user_id;
 					set_cookie($cookie);
 					
@@ -284,7 +301,7 @@ class Auth{
 					$sql = 'UPDATE users 
 							SET cookiekey = ? 
 							WHERE user_id = ?';
-					$query = $this->CI->db->query($sql, array($cookiekey, $userinfo->uid));
+					$query = $this->CI->db->query($sql, array($cookiekey, $userinfo->user_id));
 				}
 				
 				// Return value
@@ -321,6 +338,8 @@ class Auth{
 	 */	 	
 	function logout(){
 		
+		$user_id = $this->CI->session->userdata('user_id');
+		
 		// Set session data to NULL (include all fields!)
 		$sessdata['user_id'] = NULL;
 		$sessdata['group_id'] = NULL;
@@ -335,11 +354,65 @@ class Auth{
 		$this->CI->session->sess_destroy();
 		
 		// Remove cookies too
-		delete_cookie("key");
-		delete_cookie("user_id");
+		delete_cookie("crbs_key");
+		delete_cookie("crbs_user_id");
+		
+		// NULLify the cookie key in the DB
+		$sql = 'UPDATE users SET cookiekey = NULL WHERE user_id = ?';
+		$query = $this->CI->db->query($sql, array($user_id));
 		
 		// Verify session has been destroyed by retrieving info 
 		return ($this->CI->session->userdata('user_id') == FALSE) ? TRUE : FALSE;
+		
+	}
+	
+	
+	
+	
+	/**
+	 * Pre-authentication handling feature
+	 *
+	 * @param array Data array. Must contain keys and values of: username, timestamp, preauth
+	 */
+	function preauth($data){
+		
+		// Check for username
+		if(!isset($data['username'])){
+			$this->lasterr = 'No username supplied.';
+			return FALSE;
+		}
+		if(!isset($data['timestamp'])){
+			$this->lasterr = 'No timestamp supplied.';
+			return FALSE;
+		}
+		if(!isset($data['preauth'])){
+			$this->lasterr = 'No computed preauth supplied.';
+			return FALSE;
+		}
+		
+		// Work out current time and the tolerances/threshold
+		$timestamp = now();
+		$time_lower = strtotime("-5 minutes");
+		$time_upper = strtotime("+5 minutes");
+		
+		// Check if the supplied timestamp is within the allowed threshold
+		if( ($data['timestamp'] < $time_lower) OR ($data['timestamp'] > $time_upper) ){
+			$this->lasterr = 'Given timestamp falls outside of the allowed threshold of 5 minutes.';
+			return FALSE;
+		}
+		
+		// Get the current key from the database
+		$preauthkey = $this->CI->settings->get('preauthkey', 'auth');
+		
+		// Work out what we *should* get based on their info + our preauthkey
+		$expected_final = sha1("{$data['username']}|{$data['timestamp']}|{$preauthkey}");
+		
+		// Finally we compare our correct result with their result
+		$compare = ($expected_final == $data['preauth']);
+		
+		if($compare == FALSE){ $this->lasterr = 'Key did not match the expected value.'; }
+		
+		return $compare;
 		
 	}
 	
@@ -427,7 +500,7 @@ class Auth{
 	 * @return bool
 	 */
 	function userexists($username){
-		$sql = 'SELECT uid FROM userinfo WHERE username = ? LIMIT 1';
+		$sql = 'SELECT user_id FROM users WHERE username = ? LIMIT 1';
 		$query = $this->CI->db->query($sql, array($username));
 		return ($query->num_rows() == 1) ? TRUE : FALSE;
 	}
