@@ -144,6 +144,8 @@ class Departments_model extends Model{
 			return FALSE;
 		}
 		
+		
+		
 		// If no LDAP groups, set empty array. Otherwise assign to new array for itself
 		if(in_array(-1, $data['ldapgroups'])){
 			$ldapgroups = array();
@@ -153,15 +155,19 @@ class Departments_model extends Model{
 		// Remove 'column' from data array
 		unset($data['ldapgroups']);
 		
+		#die(print_r($ldapgroups));
+		#die();
+		
 		// Update department info
 		$this->db->where('department_id', $department_id);
 		$edit = $this->db->update('departments', $data);
 		
 		// Now remove LDAP group assignments (don't panic - will now re-insert if they are specified)
 		$sql = 'DELETE FROM departments2ldapgroups WHERE department_id = ?';
-		$query = $this->db->query($sql, array($group_id));
+		$query = $this->db->query($sql, array($department_id));
 		
 		// If LDAP groups were assigned then insert into DB
+		#die(count($ldapgroups));
 		if(count($ldapgroups) > 0){
 			$sql = 'INSERT INTO departments2ldapgroups (department_id, ldapgroup_id) VALUES ';
 			foreach($ldapgroups as $ldapgroup_id){

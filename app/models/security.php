@@ -102,7 +102,15 @@ class Security extends Model{
 	
 	function add_user($data){
 		$data['created'] = date("Y-m-d");
+		
+		$departments = $data['departments'];
+		unset($data['departments']);
+		
 		$add = $this->db->insert('users', $data);
+		$user_id = $this->db->insert_id();
+		
+		$this->update_user_departments($user_id, $departments);
+		
 		return $add;
 	}
 	
@@ -114,9 +122,39 @@ class Security extends Model{
 			$this->lasterr = 'Cannot update a user without their ID.';
 			return FALSE;
 		}
+		
+		$departments = $data['departments'];
+		unset($data['departments']);
+		
 		$this->db->where('user_id', $user_id);
 		$edit = $this->db->update('users', $data);
+		
+		$this->update_user_departments($user_id, $departments);
+		
 		return $edit;
+	}
+	
+	
+	
+	
+	function update_user_departments($user_id, $departments = array()){
+		// Remove LDAP department assignments (don't panic - will re-insert if they are specified)
+		$sql = 'DELETE FROM users2departments WHERE user_id = ?';
+		$query = $this->db->query($sql, array($user_id));
+		
+		// If LDAP groups were assigned then insert into DB
+		if(count($departments) > 0){
+			$sql = 'INSERT INTO users2departments (user_id, department_id) VALUES ';
+			foreach($departments as $department_id){
+				$sql .= sprintf("(%d,%d),", $user_id, $department_id);
+			}
+			// Remove last comma
+			$sql = preg_replace('/,$/', '', $sql);
+			$query = $this->db->query($sql);
+			if($query == FALSE){
+				$this->lasterr = 'Could not assign departments to user.';
+			}
+		}
 	}
 	
 	
@@ -510,6 +548,79 @@ class Security extends Model{
 			}
 		}
 		return $existing_groups;
+	}
+	
+	
+	
+	
+	/**
+	 * Transform an LDAP group name into a local CRBS group_id
+	 *
+	 * Used for finding out which group a new LDAP user should be assigned to
+	 *
+	 * @param string Name of group to attempt to map to local group ID
+	 * @return Local group ID or FALSE
+	 */
+	function ldap_groupname_to_group($ldapgroupname){
+		$sql = 'SELECT group_id
+				FROM groups2ldapgroups AS g2l
+				LEFT JOIN ldapgroups ON g2l.ldapgroup_id = ldapgroups.ldapgroup_id
+				WHERE ldapgroups.name = ?
+				LIMIT 1';
+		$query = $this->db->query($sql, array($ldapgroupname));
+		#echo $this->db->last_query() . "\n\n\n";
+		if($query->num_rows() == 1){
+			$row = $query->row();
+			$group_id = $row->group_id;
+			return $group_id;
+		} else {
+			$this->lasterr = 'No groups found';
+			return FALSE;
+		}
+	}
+	
+	
+	
+	
+	/**
+	 * Look up an array of LDAP group names and find which deparments are mapped to them
+	 *
+	 * @param array ldap group names
+	 * @return array Department IDs
+	 */
+	function ldap_groupnames_to_departments($ldapgroupnames){
+		
+		// Create initial array of department IDs
+		$departments = array();
+		
+		// Main SQL query string
+		$sql = 'SELECT department_id
+				FROM departments2ldapgroups AS d2l
+				LEFT JOIN ldapgroups ON d2l.ldapgroup_id = ldapgroups.ldapgroup_id
+				WHERE ldapgroups.name = ?';
+		
+		// Loop all group names in the supplied array
+		foreach($ldapgroupnames as $ldapgroupname){
+			// Run query with this group name
+			$query = $this->db->query($sql, array($ldapgroupname));
+			if($query->num_rows() > 0){
+				// Got some results, add the department_id(s) to the array
+				$result = $query->result();
+				foreach($result as $row){
+					//$deparments[] = $row->department_id;
+					array_push($departments, $row->department_id);
+				}
+			}
+		}
+		
+		// Check if any departments were found
+		if(count($departments) > 0){
+			return $departments;
+		} else {
+			$this->lasterr = 'No departments are associated with the supplied LDAP groups.';
+			return $departments;
+		}
+		
 	}
 	
 	

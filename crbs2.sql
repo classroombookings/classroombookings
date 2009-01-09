@@ -63,7 +63,7 @@ CREATE TABLE `departments` (
   `colour` char(7) default NULL COMMENT 'Hex colour value',
   `created` date default NULL,
   PRIMARY KEY  (`department_id`)
-) TYPE=InnoDB AUTO_INCREMENT=11 /*!40100 DEFAULT CHARSET=latin1 COMMENT='School departments'*/;
+) TYPE=InnoDB AUTO_INCREMENT=14 /*!40100 DEFAULT CHARSET=latin1 COMMENT='School departments'*/;
 
 
 
@@ -74,15 +74,18 @@ CREATE TABLE `departments` (
 LOCK TABLES `departments` WRITE;
 /*!40000 ALTER TABLE `departments` DISABLE KEYS*/;
 INSERT INTO `departments` (`department_id`, `name`, `description`, `colour`, `created`) VALUES
-	('1','English','','#4E9A06','2008-12-19'),
-	('2','Maths','','#EDD400','2008-12-19'),
-	('3','Science','','#3465A4','2008-12-19'),
+	('1','English','','#204A87','2008-12-19'),
+	('2','Maths','','#C4A000','2008-12-19'),
+	('3','Science','','#729FCF','2008-12-19'),
 	('4','ICT','','#BABDB6','2008-12-19'),
 	('5','Music','','#F57900','2008-12-19'),
 	('6','History','','#8F5902','2008-12-19'),
 	('7','Art','','#A40000','2008-12-19'),
 	('9','RE','','#EF2929','2008-12-19'),
-	('10','Geography','','#AD7FA8','2008-12-19');
+	('10','Geography','','#8AE234','2008-12-19'),
+	('11','Languages','','#AD7FA8','2009-01-09'),
+	('12','PE','','#2E3436','2009-01-09'),
+	('13','Technology','','#FCE94F','2009-01-09');
 /*!40000 ALTER TABLE `departments` ENABLE KEYS*/;
 UNLOCK TABLES;
 
@@ -105,24 +108,24 @@ CREATE TABLE `departments2ldapgroups` (
 LOCK TABLES `departments2ldapgroups` WRITE;
 /*!40000 ALTER TABLE `departments2ldapgroups` DISABLE KEYS*/;
 INSERT INTO `departments2ldapgroups` (`department_id`, `ldapgroup_id`) VALUES
-	('8','887'),
-	('8','860'),
-	('7','832'),
-	('1','839'),
-	('6','844'),
-	('4','831'),
-	('2','858'),
-	('2','836'),
-	('5','840'),
-	('9','868'),
-	('9','845'),
-	('3','846'),
-	('3','829'),
-	('10','861'),
-	('10','872'),
-	('6','844'),
-	('7','832'),
-	('7','832');
+	('7','1150'),
+	('1','1157'),
+	('4','1149'),
+	('11','1156'),
+	('2','1176'),
+	('2','1154'),
+	('5','1158'),
+	('12','1199'),
+	('12','1159'),
+	('9','1186'),
+	('9','1163'),
+	('3','1164'),
+	('3','1147'),
+	('13','1144'),
+	('10','1179'),
+	('10','1190'),
+	('6','1162'),
+	('6','1190');
 /*!40000 ALTER TABLE `departments2ldapgroups` ENABLE KEYS*/;
 UNLOCK TABLES;
 
@@ -175,13 +178,8 @@ CREATE TABLE `groups2ldapgroups` (
 # Dumping data for table 'groups2ldapgroups'
 #
 
-LOCK TABLES `groups2ldapgroups` WRITE;
-/*!40000 ALTER TABLE `groups2ldapgroups` DISABLE KEYS*/;
-INSERT INTO `groups2ldapgroups` (`group_id`, `ldapgroup_id`) VALUES
-	('2','802'),
-	('4','800');
-/*!40000 ALTER TABLE `groups2ldapgroups` ENABLE KEYS*/;
-UNLOCK TABLES;
+# (No data found.)
+
 
 
 #
@@ -216,7 +214,7 @@ CREATE TABLE `ldapgroups` (
   `name` varchar(104) NOT NULL COMMENT 'Name of LDAP group (not full DN, just name part)',
   PRIMARY KEY  (`ldapgroup_id`),
   UNIQUE KEY `ldapgroup_id` (`ldapgroup_id`,`name`)
-) TYPE=InnoDB AUTO_INCREMENT=904 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Group names retrieved from LDAP; InnoDB free: 9216 kB'*/;
+) TYPE=InnoDB AUTO_INCREMENT=1222 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Group names retrieved from LDAP; InnoDB free: 9216 kB'*/;
 
 
 
@@ -227,112 +225,112 @@ CREATE TABLE `ldapgroups` (
 LOCK TABLES `ldapgroups` WRITE;
 /*!40000 ALTER TABLE `ldapgroups` DISABLE KEYS*/;
 INSERT INTO `ldapgroups` (`ldapgroup_id`, `name`) VALUES
-	('798','BBS Print Operators'),
-	('799','BBS Staff Print Operators'),
-	('800','BBS Non-Teach Staff'),
-	('801','BBS Students'),
-	('802','BBS Teaching Staff'),
-	('803','BBS Accessibility'),
-	('804','BBS Internet Disabled'),
-	('805','BBS Guest {UT}'),
-	('806','BBS RM Explorer {UT}'),
-	('807','BBS Restricted {UT}'),
-	('808','BBS Standard {UT}'),
-	('809','BBS Advanced {UT}'),
-	('810','BBS Staff {UT}'),
-	('811','BBS Advanced Staff {UT}'),
-	('812','BBS Advanced {SS}'),
-	('813','BBS Standard {SS}'),
-	('814','BBS No {SS}'),
-	('815','BBS Shared LT {ST}'),
-	('816','BBS Managed Stations'),
-	('817','BBS Authorised {MT}'),
-	('818','BBS Delegate {MT}'),
-	('819','BBS Shared {ST}'),
-	('820','BBS Personal {ST}'),
-	('821','BBS Cyber {ST}'),
-	('822','BBS EasyLink'),
-	('823','BBS Education Mgmt {UR}'),
-	('824','BBS Legacy Apps {UR}'),
-	('825','BBS Management Information System'),
-	('826','BBS Technology {tch}'),
-	('827','BBS Local Administrators'),
-	('828','BBS Station Setup'),
-	('829','BBS Science {tch}'),
-	('830','BBS Leisure ~1 {tch}'),
-	('831','BBS ICT {tch}'),
-	('832','BBS Art {tch}'),
-	('833','BBS CD Burning'),
-	('834','BBS Textiles {tch}'),
-	('835','BBS PowerDVD'),
-	('836','BBS Maths {tch}'),
-	('837','BBS Food Tec~1 {tch}'),
-	('838','BBS MFL {tch}'),
-	('839','BBS English {tch}'),
-	('840','BBS Music {tch}'),
-	('841','BBS Physical~1 {tch}'),
-	('842','BBS Performi~1 {tch}'),
-	('843','BBS Media St~1 {tch}'),
-	('844','BBS History {tch}'),
-	('845','BBS Religiou~1 {tch}'),
-	('846','BBS Science'),
-	('847','BBS RMMC {AR}'),
-	('848','BBS User Controller {MT}'),
-	('849','BBS EDI System'),
-	('850','BBS Finance System'),
-	('851','BBS Library System'),
-	('852','BBS MIS Manager'),
-	('853','BBS Network {MT}'),
-	('854','BBS Sleuth Users'),
-	('855','BBS Staff Absences'),
-	('856','BBS School Income'),
-	('857','BBS RMSecurenet'),
-	('858','BBS Maths'),
-	('859','BBS Science Exam'),
-	('860','BBS Admin Users'),
-	('861','BBS Geography {tch}'),
-	('862','BBS No GPO Security'),
-	('863','BBS Associates'),
-	('864','BBS Science year 11'),
-	('865','BBS Science year 10'),
-	('866','BBS Science Review'),
-	('867','BBS Careers Teacher'),
-	('868','BBS RE Teachers'),
-	('869','BBS Detention DB U~1'),
-	('870','BBS Eregistration'),
-	('871','BBS Interactive Wh~1'),
-	('872','BBS Humanities'),
-	('873','BBS Science year 9'),
-	('874','BBS Legal Team'),
-	('875','BBS Leisure and To~1'),
-	('876','BBS QuarkXPress Us~1'),
-	('877','BBS Quizdom'),
-	('878','BBS BKSB'),
-	('879','BBS Staff DAP {UT}'),
-	('880','BBS Design Teachers'),
-	('881','BBS PE Teachers'),
-	('882','BBS Exam Users'),
-	('883','Terminal Services Users'),
-	('884','BBS Shared De~1 {ST}'),
-	('885','BBS SecureNet'),
-	('886','BBS Exam Officer'),
-	('887','BBS Admin Staff {UT}'),
-	('888','BBS AnyComms Users'),
-	('889','BBS Careers {tch}'),
-	('890','BBS BKSB Manager'),
-	('891','BBS Copy of A~1 {UT}'),
-	('892','BBS SEN Teachers'),
-	('893','BBS SEN Students'),
-	('894','BBS Childcare'),
-	('895','BBS Truancy Call'),
-	('896','BBS SSP'),
-	('897','BBS Email disabled'),
-	('898','BBS School Fund Of~1'),
-	('899','BBS IT author~1 {UT}'),
-	('900','BBS Copy of R~1 {UT}'),
-	('901','BBS Encrypted Folder'),
-	('902','BBS Guest 2 {UT}'),
-	('903','BBS HSS Finance');
+	('1116','BBS Print Operators'),
+	('1117','BBS Staff Print Operators'),
+	('1118','BBS Non-Teaching Staff'),
+	('1119','BBS Students'),
+	('1120','BBS Teaching Staff'),
+	('1121','BBS Accessibility'),
+	('1122','BBS Internet Disabled'),
+	('1123','BBS Guest UserType'),
+	('1124','BBS RM Explorer UserType'),
+	('1125','BBS Restricted UserType'),
+	('1126','BBS Standard UserType'),
+	('1127','BBS Advanced UserType'),
+	('1128','BBS Staff UserType'),
+	('1129','BBS Advanced Staff UserType'),
+	('1130','BBS Advanced Station Security'),
+	('1131','BBS Standard Station Security'),
+	('1132','BBS No Station Security'),
+	('1133','BBS Shared Laptop StationType'),
+	('1134','BBS Managed Stations'),
+	('1135','BBS Authorised ManagerType'),
+	('1136','BBS Delegate ManagerType'),
+	('1137','BBS Shared Desktop StationType'),
+	('1138','BBS Personal StationType'),
+	('1139','BBS CyberCafe StationType'),
+	('1140','BBS EasyLink'),
+	('1141','BBS Education Management System'),
+	('1142','BBS Legacy Application Users'),
+	('1143','BBS Management Information System'),
+	('1144','BBS Technology Teachers'),
+	('1145','BBS Local Administrators'),
+	('1146','BBS Station Setup'),
+	('1147','BBS Science Teachers'),
+	('1148','BBS Leisure and Tourism Teachers'),
+	('1149','BBS ICT Teachers'),
+	('1150','BBS Art Teachers'),
+	('1151','BBS CD Burning'),
+	('1152','BBS Textiles Teachers'),
+	('1153','BBS PowerDVD'),
+	('1154','BBS Maths Teachers'),
+	('1155','BBS Food Technology Teachers'),
+	('1156','BBS MFL Teachers'),
+	('1157','BBS English Teachers'),
+	('1158','BBS Music Teachers'),
+	('1159','BBS Physical Education Teachers'),
+	('1160','BBS Performing Arts Teachers'),
+	('1161','BBS Media Studies Teachers'),
+	('1162','BBS History Teachers'),
+	('1163','BBS Religious Education Teachers'),
+	('1164','BBS Science'),
+	('1165','BBS RMMC AccessRight'),
+	('1166','BBS User Controller ManagerType'),
+	('1167','BBS EDI System'),
+	('1168','BBS Finance System'),
+	('1169','BBS Library System'),
+	('1170','BBS MIS Manager'),
+	('1171','BBS Network ManagerType'),
+	('1172','BBS Sleuth Users'),
+	('1173','BBS Staff Absences'),
+	('1174','BBS School Income'),
+	('1175','BBS RMSecurenet'),
+	('1176','BBS Maths'),
+	('1177','BBS Science Exam'),
+	('1178','BBS Admin Users'),
+	('1179','BBS Geography Teachers'),
+	('1180','BBS No GPO Security'),
+	('1181','BBS Associates'),
+	('1182','BBS Science year 11'),
+	('1183','BBS Science year 10'),
+	('1184','BBS Science Review'),
+	('1185','BBS Careers Teacher'),
+	('1186','BBS RE Teachers'),
+	('1187','BBS Detention DB Users'),
+	('1188','BBS Eregistration'),
+	('1189','BBS Interactive Whiteboard'),
+	('1190','BBS Humanities'),
+	('1191','BBS Science year 9'),
+	('1192','BBS Legal Team'),
+	('1193','BBS Leisure and Tourism'),
+	('1194','BBS QuarkXPress Users'),
+	('1195','BBS Quizdom'),
+	('1196','BBS BKSB'),
+	('1197','BBS Staff DAP UserType'),
+	('1198','BBS Design Teachers'),
+	('1199','BBS PE Teachers'),
+	('1200','BBS Exam Users'),
+	('1201','Terminal Services Users'),
+	('1202','BBS Shared Desktop 1280 StationType'),
+	('1203','BBS SecureNet'),
+	('1204','BBS Exam Officer'),
+	('1205','BBS Admin Staff UserType'),
+	('1206','BBS AnyComms Users'),
+	('1207','BBS Careers Teachers'),
+	('1208','BBS BKSB Manager'),
+	('1209','BBS Copy of Advanced UserType'),
+	('1210','BBS SEN Teachers'),
+	('1211','BBS SEN Students'),
+	('1212','BBS Childcare'),
+	('1213','BBS Truancy Call'),
+	('1214','BBS SSP'),
+	('1215','BBS Email disabled'),
+	('1216','BBS School Fund Officer'),
+	('1217','BBS IT authorised UserType'),
+	('1218','BBS Copy of Restricted UserType'),
+	('1219','BBS Encrypted Folder'),
+	('1220','BBS Guest 2 UserType'),
+	('1221','BBS HSS Finance');
 /*!40000 ALTER TABLE `ldapgroups` ENABLE KEYS*/;
 UNLOCK TABLES;
 
@@ -350,7 +348,7 @@ CREATE TABLE `periods` (
   `days` varchar(255) NOT NULL COMMENT 'Serialize() of the days that this period is set on',
   `bookable` tinyint(1) NOT NULL COMMENT 'Boolean 1 or 0 if periods can be booked or not',
   PRIMARY KEY  (`period_id`)
-) TYPE=InnoDB AUTO_INCREMENT=59 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Periods'*/;
+) TYPE=InnoDB AUTO_INCREMENT=50 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Periods'*/;
 
 
 
@@ -490,12 +488,14 @@ CREATE TABLE `rooms` (
 
 CREATE TABLE `settings-auth` (
   `preauthkey` char(40) default NULL COMMENT 'SHA1 hash to be used as preauth key',
+  `preauthgroup_id` int(10) unsigned default NULL COMMENT 'Default group for accounts created automatically via preauth',
+  `preauthemail` varchar(50) default NULL,
   `ldap` tinyint(1) unsigned NOT NULL default '0' COMMENT 'Boolean 1 or 0 for LDAP auth status',
   `ldaphost` varchar(50) default NULL COMMENT 'LDAP server hostname',
   `ldapport` int(5) unsigned default NULL COMMENT 'LDAP server TCP port',
   `ldapbase` text COMMENT 'Base DNs to search in LDAP',
   `ldapfilter` text COMMENT 'LDAP search query filter',
-  `ldapgroup_id` int(10) unsigned default NULL
+  `ldapgroup_id` int(10) unsigned default NULL COMMENT 'Default group for LDAP accounts'
 ) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='LDAP configuration'*/;
 
 
@@ -506,8 +506,8 @@ CREATE TABLE `settings-auth` (
 
 LOCK TABLES `settings-auth` WRITE;
 /*!40000 ALTER TABLE `settings-auth` DISABLE KEYS*/;
-INSERT INTO `settings-auth` (`preauthkey`, `ldap`, `ldaphost`, `ldapport`, `ldapbase`, `ldapfilter`, `ldapgroup_id`) VALUES
-	('d1ae873270604d2d2ea3221a4e632b96b1d3a914',1,'bbs-svr-001','389','ou=teaching staff, ou=bbs, ou=establishments, dc=bbarrington, dc=internal; ou=system administrators, ou=bbs, ou=establishments, dc=bbarrington, dc=internal','(& (| (!(displayname=Administrator*)) (!(displayname=Admin*)) ) (cn=%u) )','1');
+INSERT INTO `settings-auth` (`preauthkey`, `preauthgroup_id`, `preauthemail`, `ldap`, `ldaphost`, `ldapport`, `ldapbase`, `ldapfilter`, `ldapgroup_id`) VALUES
+	('14ba16efe8ce9786aaa9ca15297f9dc802855476','2','bishopbarrington.net',1,'bbs-svr-001','389','ou=teaching staff, ou=bbs, ou=establishments, dc=bbarrington, dc=internal; ou=system administrators, ou=bbs, ou=establishments, dc=bbarrington, dc=internal','(& (| (!(displayname=Administrator*)) (!(displayname=Admin*)) ) (cn=%u) )','2');
 /*!40000 ALTER TABLE `settings-auth` ENABLE KEYS*/;
 UNLOCK TABLES;
 
@@ -548,15 +548,16 @@ CREATE TABLE `users` (
   `enabled` tinyint(1) NOT NULL default '0' COMMENT 'Boolean 1 or 0',
   `username` varchar(104) NOT NULL,
   `email` varchar(255) default NULL,
-  `password` char(40) NOT NULL COMMENT 'SHA1 hash of password',
+  `password` char(40) default NULL COMMENT 'SHA1 hash of password',
   `displayname` varchar(64) default NULL,
   `cookiekey` char(40) default NULL COMMENT 'SHA1 hash if a cookie is required',
   `lastlogin` timestamp NOT NULL default '0000-00-00 00:00:00' COMMENT 'Date the user last logged in',
   `ldap` tinyint(1) unsigned NOT NULL default '0' COMMENT 'Boolean 1 or 0 if user should authenticate via LDAP',
   `created` date NOT NULL COMMENT 'Date the user was created',
   PRIMARY KEY  (`user_id`),
+  UNIQUE KEY `username` (`username`),
   KEY `ldap` (`ldap`)
-) TYPE=InnoDB AUTO_INCREMENT=10 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Main users table'*/;
+) TYPE=InnoDB AUTO_INCREMENT=14 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Main users table'*/;
 
 
 
@@ -567,12 +568,11 @@ CREATE TABLE `users` (
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS*/;
 INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `password`, `displayname`, `cookiekey`, `lastlogin`, `ldap`, `created`) VALUES
-	('1',1,1,'admin','craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Craig Rodway',NULL,'2009-01-08 16:29:01',0,'0000-00-00'),
-	('2',1,0,'craig.rodway','craig.rodway@bishopbarrington.net','354c0efe3f189e6bb078399d9a75ee5cc402f8f8','Craig Rodway',NULL,'2008-11-27 17:32:10',0,'2008-11-23'),
+	('1',1,1,'admin','craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Craig Rodway',NULL,'2009-01-09 16:19:44',0,'0000-00-00'),
 	('3',4,1,'user1','','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Foo Number 1',NULL,'2008-12-19 23:06:20',0,'2008-11-27'),
-	('4',1,1,'adrian.staff','','8843d7f92416211de9ebb963ff4ce28125932878','',NULL,'0000-00-00 00:00:00',0,'2008-11-27'),
-	('8',2,1,'test.one','test.one@bishopbarrington.net','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Mr T One',NULL,'2009-01-08 15:58:21',0,'2008-12-02'),
-	('9',1,0,'carlo98','','7d6706dde2c115b1dcbc66d5674d95246620bba4','',NULL,'2008-12-28 18:05:10',0,'2008-12-28');
+	('9',1,0,'carlo98','','7d6706dde2c115b1dcbc66d5674d95246620bba4','',NULL,'2008-12-28 18:05:10',0,'2008-12-28'),
+	('12',2,1,'craig.rodway','craig.rodway@bishopbarrington.net',NULL,'Mr Rodway',NULL,'2009-01-09 16:12:48',1,'2009-01-09'),
+	('13',2,1,'test.one','test.one@bishopbarrington.net',NULL,'Mr T One',NULL,'2009-01-09 16:19:55',1,'2009-01-09');
 /*!40000 ALTER TABLE `users` ENABLE KEYS*/;
 UNLOCK TABLES;
 
@@ -593,8 +593,35 @@ CREATE TABLE `users2departments` (
 # Dumping data for table 'users2departments'
 #
 
-# (No data found.)
-
+LOCK TABLES `users2departments` WRITE;
+/*!40000 ALTER TABLE `users2departments` DISABLE KEYS*/;
+INSERT INTO `users2departments` (`user_id`, `department_id`) VALUES
+	('8','2'),
+	('8','2'),
+	('10','1'),
+	('10','2'),
+	('10','2'),
+	('10','3'),
+	('10','9'),
+	('10','9'),
+	('10','11'),
+	('10','12'),
+	('10','12'),
+	('10','13'),
+	('11','1'),
+	('11','2'),
+	('11','2'),
+	('11','3'),
+	('11','9'),
+	('11','9'),
+	('11','11'),
+	('11','12'),
+	('11','12'),
+	('11','13'),
+	('13','2'),
+	('13','2');
+/*!40000 ALTER TABLE `users2departments` ENABLE KEYS*/;
+UNLOCK TABLES;
 
 
 #

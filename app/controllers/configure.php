@@ -89,14 +89,18 @@ class Configure extends Controller {
 	
 		$this->form_validation->set_rules('preauth', 'Pre-authentication enable');
 		$this->form_validation->set_rules('ldap', 'LDAP enable');
-		if($this->input->post('ldap') == '1'){
-			// LDAP validation (only required if LDAP box is ticked)
+		if($this->input->post('ldap') == '1' && $this->input->post('ldapfirst') == '0'){
+			// LDAP validation (only required if LDAP box is ticked & is not the first time it's being ticked)
 			$this->form_validation->set_rules('ldaphost', 'LDAP host', 'required|max_length[50]|trim');
 			$this->form_validation->set_rules('ldapport', 'LDAP TCP port', 'required|max_length[5]|integer|callback__port_check');
 			$this->form_validation->set_rules('ldapbase', 'LDAP Base DN', 'required|max_length[65536]');
 			$this->form_validation->set_rules('ldapfilter', 'LDAP filter', 'required|max_length[65536]');
-			$this->form_validation->set_rules('ldapgroup_id', 'LDAP group', 'require|integer');
+			$this->form_validation->set_rules('ldapgroup_id', 'LDAP group', 'required|integer');
 			$this->form_validation->set_rules('ldaptestuser', 'LDAP test username');
+		}
+		if($this->input->post('preauth') == '1' && $this->input->post('preauthfirst') == '0'){
+			$this->form_validation->set_rules('preauthgroup_id', 'Preauth group', 'required|integer');
+			$this->form_validation->set_rules('preauthemail', 'Preauth email domain', 'required|max_length[50]');
 		}
 		$this->form_validation->set_error_delimiters('<li>', '</li>');
 		
@@ -112,6 +116,12 @@ class Configure extends Controller {
 			$preauth = ($this->input->post('preauth') == '1') ? TRUE : FALSE;
 			$preauthkey = ($this->input->post('preauthkey')) ? $this->input->post('preauthkey') : FALSE;
 			
+			if($preauth == TRUE && $preauthkey == TRUE){
+				// Has been enabled, we have a key, so we should really have a group ID and email domain now
+				$data['preauthgroup_id'] = $this->input->post('preauthgroup_id');
+				$data['preauthemail'] = str_replace('@', '', $this->input->post('preauthemail'));
+			}
+			
 			// No existing preauthkey, and enabling it for the first time - generate one
 			if($preauthkey == FALSE && $preauth == TRUE){
 				// Make a new preauth key
@@ -122,11 +132,13 @@ class Configure extends Controller {
 				$data['preauthkey'] = NULL;
 			}
 			$data['ldap'] = ($this->input->post('ldap') == '1') ? 1 : 0;
-			$data['ldaphost'] = $this->input->post('ldaphost');
-			$data['ldapport'] = $this->input->post('ldapport');
-			$data['ldapbase'] = $this->input->post('ldapbase');
-			$data['ldapfilter'] = $this->input->post('ldapfilter');
-			$data['ldapgroup_id'] = $this->input->post('ldapgroup_id');
+			if($this->input->post('ldapfirst') == '0'){
+				$data['ldaphost'] = $this->input->post('ldaphost');
+				$data['ldapport'] = $this->input->post('ldapport');
+				$data['ldapbase'] = $this->input->post('ldapbase');
+				$data['ldapfilter'] = $this->input->post('ldapfilter');
+				$data['ldapgroup_id'] = $this->input->post('ldapgroup_id');
+			}
 			
 			$save = $this->settings->save('auth', $data);
 			
@@ -238,6 +250,7 @@ class Configure extends Controller {
 		}
 		 
 		$info = ldap_get_entries($connect, $search); 
+		print_r($info);
 		$user['displayname'] = $info[0]['displayname'][0];
 		$user['email'] = $info[0]['mail'][0];
 		$user['memberof'] = $info[0]['memberof'];
@@ -291,14 +304,21 @@ class Configure extends Controller {
 			$search = ldap_search($connect, $dn, $filter, $fields);
 			$entries = ldap_get_entries($connect, $search);
 			for($i = 0; $i < $entries['count']; $i++){
-				array_push($ldap_groups, $entries[$i]['samaccountname'][0]);
+				//array_push($ldap_groups, $entries[$i]['samaccountname'][0]);
+				$dn = $entries[$i]['dn'];
+				$dnarray = explode(',', $dn);
+				array_push($ldap_groups, str_replace('CN=', '', $dnarray[0]));
+				unset($dnarray);
 			}
 		}
+		
+		#die(print_r($ldap_groups));
 		
 		// Empty the table if necessary before fetching the 'existing' groups
 		if($clear == TRUE){
 			$this->db->empty_table('ldapgroups');
 			$this->db->empty_table('groups2ldapgroups');
+			$this->db->empty_table('departments2ldapgroups');
 		}
 		
 		// Fetch the groups we already have in our DB

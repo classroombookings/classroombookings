@@ -86,7 +86,7 @@ class Account extends Controller {
 				
 				// Login failed
 				//print $this->msg->err($this->lang->line('AUTH_FAIL_USERPASS'));
-				$this->session->set_flashdata('flash', $this->msg->err($this->lang->line('AUTH_FAIL_USERPASS'), 'Authentication failure'));
+				$this->session->set_flashdata('flash', $this->msg->err($this->auth->lasterr, 'Authentication failure'));
 				redirect("account/login");
 				
 			}
@@ -152,14 +152,14 @@ class Account extends Controller {
 					$password = $row->password;
 					
 					// Attempt login with the password
-					$login = $this->auth->login($data['username'], $password, FALSE);
+					$login = $this->auth->login($data['username'], $password, FALSE, TRUE);
 					
 					if($login == TRUE){
 						// Login is successful, redirect to dashboard
 						redirect('dashboard');
 					} else {
 						// Can't login. Most likely reason is that their account is disabled
-						$this->msg->fail($errtitle, 'Could not login with the supplied username. Account disabled?');
+						$this->msg->fail($errtitle, 'Could not login with the supplied username. Account disabled?' . $this->auth->lasterr);
 					}
 				} else {
 					// No results from database for that user. Very odd, considering userexists() returned TRUE
@@ -169,8 +169,17 @@ class Account extends Controller {
 				
 			} elseif( $create == TRUE ){
 				
+				// Going to create user
 				
 				die("That user doesn't exist, but you asked for them to be created.");
+				
+				$user['username'] = $data['username'];
+				$data['displayname'] = $this->auth->ldap_get_displayname($data['username']);
+				$data['group_id'] = $this->input->post('group_id');
+				//$data['department_id'] = $this->input->post('department_id');
+				$data['enabled'] = ($this->input->post('enabled') == '1') ? 1 : 0;
+				
+				// TODO: Waiting to complete LDAP auth part
 				
 			} else {
 				// User doesn't exist, and they don't want accounts to be created automatically

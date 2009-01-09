@@ -227,32 +227,74 @@ class Auth{
 	 * @param	bool	remember	Whether or not to set the remember cookie (default is false)
 	 * @return	bool
 	 */
-	function login($username, $password, $remember = FALSE){
-	
-		if($username != NULL && $password != NULL){
+	function login($username, $password, $remember = FALSE, $is_sha1 = FALSE){
 		
-			// SHA1 password if not already (passwords are <= 30chars, SHA1 is == 40chars)
-			if(strlen($password) != 40){
-				$password = sha1($password);
+		// Retrieve auth settings
+		$auth = $this->CI->settings->get_all('auth');
+		$ldap = ($auth->ldap == 1);
+		
+		if($username != NULL){	// && $password != NULL){
+		
+			$trylocal = TRUE;
+			
+			// Check if we are using LDAP/AD auth or not
+			if($ldap == TRUE){
+				
+				// Don't try local auth unless this fails
+				$trylocal = FALSE;
+				
+				// We are using LDAP. First, send the supplied user and password to the ldap function
+				$ldapauth = $this->ldap_auth($username, $password);
+				
+				if($ldapauth == TRUE){
+					// Succeeded!
+					$sql_ldap = 'SELECT user_id, group_id, username, displayname AS display
+							FROM users
+							WHERE username = ? 
+							AND ldap = 1
+							AND enabled = 1 
+							LIMIT 1';
+							
+					$query_ldap = $this->CI->db->query($sql_ldap, array($username));
+					
+					$rows = $query_ldap->num_rows();
+					$query = $query_ldap;
+					
+					// This LDAP one failed, try local DB instead
+					/* if($query_ldap->num_rows() != 1){
+						$trylocal = TRUE;
+					}*/
+				} else {
+					// Fail if the LDAP auth function failed (lasterr is already set by that function)
+					$trylocal = TRUE;
+				}
+				
+				
+				
 			}
 			
-			// Query to pick the user
-			$sql = 'SELECT user_id, group_id, username, displayname AS display
-					FROM users
-					WHERE username = ? 
-					AND password = ? 
-					AND enabled = 1 
-					LIMIT 1';
+			// Not using LDAP or LDAP auth failed, so we look up a local user in the DB
 			
-			// Run query
-			$query = $this->CI->db->query($sql, array($username, $password));
+			if($trylocal == TRUE){
+				if($is_sha1 == FALSE){
+					$password = sha1($password);
+				}
+				$sql_local = 'SELECT user_id, group_id, username, displayname AS display
+						FROM users
+						WHERE username = ? 
+						AND password = ? 
+						AND enabled = 1 
+						AND ldap = 0
+						LIMIT 1';
+				$query_local = $this->CI->db->query($sql_local, array($username, $password));
+				$rows = $query_local->num_rows();
+				$query = $query_local;
+			}
 			
-			// Number of rows returned from the query - 1 row success, 0 rows failure
-			$rows = $query->num_rows();
 			
 			// Now to check if username and password matched
 			if($rows == 1){
-			
+				
 				// Username/password combination matched - first get user info
 				$userinfo = $query->row();
 				
@@ -419,6 +461,177 @@ class Auth{
 	
 	
 	
+	/**
+	 * LDAP authenticate function
+	 *
+	 * Returns the local user_id if the function succeeds or FALSE on failure
+	 */
+	function ldap_auth($username, $password){
+		
+		if(!function_exists('ldap_bind')){
+			$this->lasterr = 'It appears that the PHP LDAP module is not installed - cannot continue.';
+			return FALSE;
+		}
+		
+		// Retrieve settings
+		$auth = $this->CI->settings->get_all('auth');
+		
+		// Set values
+		$ldaphost = $auth->ldaphost;
+		$ldapport = $auth->ldapport;
+		$ldapbase = $auth->ldapbase;
+		$ldapfilter = str_replace("%u", $username, $auth->ldapfilter);
+		$ldapusername = 'cn=' . $username;
+		
+		// Attempt connection to server
+		$connect = ldap_connect($ldaphost, $ldapport);
+		if(!$connect){
+			$this->lasterr = sprintf('Failed to connect to LDAP server %s on port %d.', $ldaphost, $ldapport);
+			return FALSE;
+		}
+		
+		// Now go through the DNs and see if we can bind as the user in them
+		$dns = explode(";", $ldapbase);
+		$found = FALSE;
+		foreach($dns as $dn){
+			if($found == FALSE){
+				$thisdn = trim($dn);
+				$bind = @ldap_bind($connect, "$ldapusername,$thisdn", $password);
+				if($bind){ 
+					$correctdn = $thisdn;
+					$found = TRUE;
+				}
+			}
+		}
+		
+		// Check if user in a DN has been found
+		if($found == FALSE){
+			$this->lasterr = 'Failed to bind with the given user in any of the supplied base DNs';
+			return FALSE;
+		}
+		
+		// Search for details
+		$search = ldap_search($connect, $correctdn, $ldapfilter);
+		if(!$search){
+			$this->lasterr = "Could not find the user's details - the query filter is probably incorrect.";
+			return FALSE;
+		}
+		
+		// Get info
+		$info = ldap_get_entries($connect, $search); 
+		#die(print_r($info));
+		$user['username'] = $username;
+		$user['displayname'] = $info[0]['displayname'][0];
+		$user['email'] = $info[0]['mail'][0];
+		$user['memberof'] = $info[0]['memberof'];
+		$user['group_ids'] = array();
+		
+		
+		// Find groups
+		unset($info[0]['memberof']['count']);
+		foreach($info[0]['memberof'] as $group){
+			
+			// We only need the CN= part
+			$grouparray = explode(',', $group);
+			$group = str_replace('CN=', '', $grouparray[0]);
+			$id = $this->CI->security->ldap_groupname_to_group($group);
+			if($id){
+				//$user['group_ids'][] = $id;
+				array_push($user['group_ids'], $id);
+			}
+			
+			// Make new temporary array to hold just the names of the groups of this user
+			$groups[] = $group;
+			unset($grouparray);
+		}
+		
+		#die(print_r($user));
+		
+		
+		// Find departments
+		$user['department_ids'] = $this->CI->security->ldap_groupnames_to_departments($groups);
+		
+		// Clear temporary arrays and unnecessary info
+		unset($user['memberof']);
+		unset($groups);
+		
+		
+		// Now the array of info for the user adding function
+		$data['username'] = $user['username'];
+		$data['displayname'] = (isset($user['displayname']) OR $user['displayname'] != '') ? $user['displayname'] : $user['username'];
+		$data['email'] = $user['email'];
+		$data['ldap'] = 1;
+		$data['password'] = NULL;
+		
+		/*	Find the group we need to assign to the user, either by 
+			looking for LDAP group assignments or the default one */
+		if(!empty($user['group_ids'])){
+			// Only one result returned from looking up the LDAP group name to local ID - great!
+			$data['group_id'] = $user['group_ids'][0];
+		} else {
+			/*
+				Counted more than one group (or none at all) when trying to find a CRBS group to match the LDAP group name.
+				This might mean that the user belongs to LDAP groups that have been assigned to different CRBS groups.
+				Predicament - which CRBS group do we put the user in?
+				We don't know - so stick them in the default LDAP group
+			*/
+			$data['group_id'] = $auth->ldapgroup_id;
+		}
+		
+		// Find departments we should assign the user to
+		$data['departments'] = $user['department_ids'];
+		
+		#die(print_r($data));
+		
+		
+		/* At this stage we have taken the supplied username and password, validated it against the 
+			LDAP database, and retrieved the basic details. Next: does the user already exist?
+			If yes, then update the local table with latest info then return TRUE as they have been authenticated and our job here is done.
+			If no, then we need to create them and assign their departments/groups.
+		*/
+		
+		
+		$sql = 'SELECT user_id FROM users WHERE username = ? LIMIT 1';
+		$query = $this->CI->db->query($sql, array($user['username']));
+		if($query->num_rows() == 1){
+			$row = $query->row();
+			$user_id = $row->user_id;
+			$userexists = TRUE;
+		} else {
+			$userexists = FALSE;
+		}
+		
+		
+		/*	At this point, we have authenticated and we also know if they already exist.
+			Now it's just a case of either adding the user or updating the user details */
+		
+		if($userexists == TRUE){
+			
+			$edit = $this->CI->security->edit_user($user_id, $data);
+			if($edit == FALSE){
+				$this->lasterr = $this->CI->security->lasterr;
+				return FALSE;
+			}
+			
+		} else {
+			
+			$data['enabled'] = 1;
+			$add = $this->CI->security->add_user($data);
+			if($add == FALSE){
+				$this->lasterr = $this->CI->security->lasterr;
+				return FALSE;
+			}
+			
+		}
+		
+		return TRUE;
+		
+		
+	}
+	
+	
+	
+	/*
 	function ldap_auth($username, $password){
 		//$servername = "ldap://bbs-svr-001";  //IP/Name to the LDAP server
 		//$ldaprdn  = 'cn='.$username.',ou=teaching Staff,ou=bbs,ou=establishments,dc=bbarrington,dc=internal';
@@ -488,7 +701,7 @@ class Auth{
 			asort($groups_array);
 		}
 		return ($groups_array);
-	}
+	} */
 	
 	
 	

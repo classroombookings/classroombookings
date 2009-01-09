@@ -7,7 +7,7 @@ $t = 1;
 
 <table class="form" cellpadding="6" cellspacing="0" border="0" width="100%">
 	
-	<tr class="h"><td colspan="2">Authentication options</td></tr>
+	<tr class="h"><td colspan="2">Pre-authentication</td></tr>
 	
 	<tr>
 		<td class="caption">
@@ -30,16 +30,58 @@ $t = 1;
 		</td>
 	</tr>
 	
-	<?php if(!empty($auth->preauthkey)){ ?>
-	<tr>
+	<?php
+	if(!empty($auth->preauthkey)){
+		echo form_hidden('preauthfirst', '0');
+	?>
+	<tr class="preauth">
 		<td class="caption">
-			<label title="Please read the documentation on how to properly use the pre-authentication key.">Pre-auth key</label>
+			<label for="preauthgroup_id" class="r" accesskey="U" title="Choose a group that users created automatically via preauth will belong to.">Default gro<u>u</u>p</label>
+		</td>
+		<td class="field">
+			<?php
+			echo form_dropdown('preauthgroup_id', $groups, set_value('preauthgroup_id', (isset($auth->preauthgroup_id)) ? $auth->preauthgroup_id : 0), array('tabindex' => $t));
+			$t++;
+			?>
+		</td>
+	</tr>
+	<tr class="preauth">
+		<td class="caption">
+			<label for="preauthemail" class="r" accesskey="E" title="Default email address domain applied to users created via preauthentication."><u>E</u>mail domain</label>
+		</td>
+		<td class="field">
+			<?php
+			unset($input);
+			$input['accesskey'] = 'E';
+			$input['name'] = 'preauthemail';
+			$input['id'] = 'preauthemail';
+			$input['size'] = '50';
+			$input['maxlength'] = '100';
+			$input['tabindex'] = $t;
+			$input['value'] = @set_value('preauthemail', $auth->preauthemail);
+			echo form_input($input);
+			$t++;
+			?>
+		</td>
+	</tr>
+	<tr class="preauth">
+		<td class="caption">
+			<label title="Please read the documentation on how to use the pre-authentication key.">Pre-auth key</label>
 		</td>
 		<td class="field">
 			<?php echo $auth->preauthkey ?>
 		</td>
 	</tr>
-	<?php } ?>
+	<?php
+	} else {
+		echo form_hidden('preauthfirst', '1');
+	}
+	?>
+	
+
+	
+	
+	<tr class="h"><td colspan="2">LDAP/Active Directory</td></tr>
 	
 	<tr>
 		<td class="caption">
@@ -61,9 +103,14 @@ $t = 1;
 		</td>
 	</tr>
 	
-	<tr class="h"><td colspan="2">LDAP settings</td></tr>
 	
-	<tr>
+	<?php
+	if($auth->ldap == 1){
+		echo form_hidden('ldapfirst', '0');
+	?>
+	
+	
+	<tr class="ldap">
 		<td class="caption">
 			<label for="ldaphost" class="r" accesskey="H" title="The LDAP hostname or IP address. If specifying a hostname, please ensure that the server can resolve it via DNS."><u>H</u>ostname</label>
 		</td>
@@ -83,7 +130,7 @@ $t = 1;
 		</td>
 	</tr>
 	
-	<tr>
+	<tr class="ldap">
 		<td class="caption">
 			<label for="ldapport" class="r" accesskey="C" title="TCP port used to communicate with the LDAP port on, use 389 if unsure.">T<u>C</u>P Port</label>
 		</td>
@@ -103,7 +150,7 @@ $t = 1;
 		</td>
 	</tr>
 	
-	<tr>
+	<tr class="ldap">
 		<td class="caption">
 			<label for="ldapbase" class="r" accesskey="D" title="Separate multiple DNs to search with a semicolon">Base <u>D</u>Ns</label>
 		</td>
@@ -124,7 +171,7 @@ $t = 1;
 		</td>
 	</tr>
 	
-	<tr>
+	<tr class="ldap">
 		<td class="caption">
 			<label for="ldapfilter" class="r" accesskey="F" title="LDAP query filter. %u is where the supplied username will be replaced. Leave as default if unsure.">LDAP query filter</label>
 		</td>
@@ -146,7 +193,7 @@ $t = 1;
 		</td>
 	</tr>
 	
-	<tr>
+	<tr class="ldap">
 		<td class="caption">
 			<label for="ldapgroup_id" class="r" accesskey="G" title="This is the group that users who authenticate via LDAP will become members of automatically.">Default CRBS group</label>
 		</td>
@@ -158,7 +205,7 @@ $t = 1;
 		</td>
 	</tr>
 	
-	<tr>
+	<tr class="ldap">
 		<td class="caption">
 			<label for="ldaptestuser" accesskey="U" title="Enter a username to test the LDAP settings with, and click Test LDAP.">Test username</label>
 		</td>
@@ -179,7 +226,7 @@ $t = 1;
 		</td>
 	</tr>
 	
-	<tr>
+	<tr class="ldap">
 		<td class="caption">
 			<label for="ldaptestpass" accesskey="W">Test password</label>
 		</td>
@@ -199,6 +246,12 @@ $t = 1;
 			?>
 		</td>
 	</tr>
+	<?php
+	} else {
+		echo form_hidden('ldapfirst', '1');
+	}
+	?>
+	
 	
 	<?php
 	unset($buttons);
@@ -206,6 +259,7 @@ $t = 1;
 	$buttons[] = array('other', 'positive', 'Test LDAP', 'control-double.gif', $t+1);
 	$this->load->view('parts/buttons', array('buttons' => $buttons));
 	?>
+	
 
 </table>
 
@@ -222,4 +276,9 @@ $("#test-ldap").bind("click", function(e){
 	$("#form_confauth").attr("action",oldaction);
 	$("#form_confauth").attr("target",oldtarget);
 });
+
+/* 
+function togglefields(cat, visibility){
+	$(".preauth").addClass("hidden");
+} */
 </script>
