@@ -205,6 +205,26 @@ $t = 1;
 		</td>
 	</tr>
 	
+	<tr>
+		<td class="caption">
+			<label for="ldap" accesskey="T" title="If this option is enabled, the user details (display name, group and department membership) will be updated with their LDAP info every time they login; potentially un-doing any customisations you made to the user.">Upda<u>t</u>e details on login</label>
+		</td>
+		<td class="field">
+			<label for="ldap" class="check">
+			<?php
+			unset($check);
+			$check['name'] = 'ldaploginupdate';
+			$check['id'] = 'ldaploginupdate';
+			$check['value'] = '1';
+			$check['checked'] = set_radio($check['name'], $check['value'], ($auth->ldaploginupdate == 1));
+			$check['tabindex'] = $t;
+			echo form_checkbox($check);
+			$t++;
+			?>Yes
+			</label>
+		</td>
+	</tr>
+	
 	<tr class="ldap">
 		<td class="caption">
 			<label for="ldaptestuser" accesskey="U" title="Enter a username to test the LDAP settings with, and click Test LDAP.">Test username</label>

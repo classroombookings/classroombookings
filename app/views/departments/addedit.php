@@ -74,13 +74,15 @@ $t = 1;
 			$t++;
 			?>
 			<div id="cp"></div>
-			<script type="text/javascript">
-			$('#cp').colorPicker({
-				activeColour: '<?php echo $input['value'] ?>',
-				click: function(c){$('#colour').val(c);},
+			<script type="text/javascript"><!--
+			$(document).ready(function(){
+				$('#cp').colorPicker({
+					activeColour: '<?php echo $input['value'] ?>',
+					click: function(c){$('#colour').val(c);}
+				});
+				$('#colour').css("display", "none");
 			});
-			$('#colour').css("display", "none");
-			</script>
+			// --></script>
 		</td>
 	</tr>
 	
@@ -95,7 +97,7 @@ $t = 1;
 			<option value="-1">(None)</option>
 			<?php
 			foreach($ldapgroups as $id => $name){
-				$selected = (in_array($id, $department->ldapgroups)) ? ' selected="selected"' : '';
+				$selected = (@in_array($id, $department->ldapgroups)) ? ' selected="selected"' : '';
 				echo sprintf('<option value="%1$d"%3$s>%2$s</option>', $id, $name, $selected);
 			}
 			$t++;
@@ -122,3 +124,7 @@ $t = 1;
 
 </table>
 </form>
+
+
+
+

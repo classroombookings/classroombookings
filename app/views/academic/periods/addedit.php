@@ -80,6 +80,9 @@ $t = 1;
 		</td>
 	</tr>
 	
+
+
+	
 	
 	<tr>
 		<td class="caption">
@@ -147,12 +150,17 @@ $t = 1;
 </form>
 
 
+
+
+
 <script type="text/javascript">
-$("#time_start, #time_end").timePicker({
-	step: 15,
-	startTime:new Date(0, 0, 0, 7, 0, 0),
-	endTime:new Date(0, 0, 0, 22, 0, 0)
-});
+window.onload = function(){
+	$("#time_start, #time_end").timePicker({
+		step: 15,
+		startTime:new Date(0, 0, 0, 7, 0, 0),
+		endTime:new Date(0, 0, 0, 22, 0, 0)
+	});
+}
 
 $("#time_end").change(function(){
 	if($.timePicker("#time_start").getTime() > $.timePicker(this).getTime()){

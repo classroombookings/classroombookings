@@ -51,12 +51,18 @@ class Auth{
 		#$this->settings['ldap'] = $this->CI->settings->getldap();
 		
 		
-
+		
 	}
 	
 	
 	
 	
+	/**
+	 * Auth check function to see if a user has the appropriate privileges
+	 *
+	 * @param action The action the user is wanting to perform
+	 * @param return TRUE: Just return the boolean answer. FALSE: Redirect/show error page/stop execution
+	 */
 	function check($action, $return = FALSE){
 		// Get group ID
 		$group_id = $this->CI->session->userdata('group_id');
@@ -87,6 +93,7 @@ class Auth{
 		// Otherwise, error if failed check ...
 		
 		if($check == FALSE){
+			
 			// User is not allowed for that action - do stuff
 			
 			// Get the URI string they requested so can redirect to it after successful login
@@ -159,7 +166,7 @@ class Auth{
 					
 					#echo var_export($userinfo);
 					
-					// Generate original cookie key hash to compare to
+					// Generate original cookie key hash (what we *expect* it to be if valid) to compare to
 					$cookiekey = sha1(implode("", array(
 						$this->cookiesalt,
 						$userinfo->user_id, 
@@ -237,8 +244,20 @@ class Auth{
 		
 			$trylocal = TRUE;
 			
+			// See if user we're trying to authenticate is local or LDAP
+			$sql = 'SELECT ldap FROM users WHERE username = ? LIMIT 1';
+			$query = $this->CI->db->query($sql, array($username));
+			if($query->num_rows() == 1){
+				$row = $query->row();
+				$userldap = $row->ldap;
+				$tryldap = ($userldap == 1) ? TRUE : FALSE;
+			} else {
+				// User doesn't exist at all!
+				$tryldap = TRUE;
+			}
+			
 			// Check if we are using LDAP/AD auth or not
-			if($ldap == TRUE){
+			if($ldap == TRUE && $tryldap == TRUE){
 				
 				// Don't try local auth unless this fails
 				$trylocal = FALSE;
@@ -247,6 +266,7 @@ class Auth{
 				$ldapauth = $this->ldap_auth($username, $password);
 				
 				if($ldapauth == TRUE){
+					
 					// Succeeded!
 					$sql_ldap = 'SELECT user_id, group_id, username, displayname AS display
 							FROM users
@@ -260,13 +280,11 @@ class Auth{
 					$rows = $query_ldap->num_rows();
 					$query = $query_ldap;
 					
-					// This LDAP one failed, try local DB instead
-					/* if($query_ldap->num_rows() != 1){
-						$trylocal = TRUE;
-					}*/
 				} else {
+					
 					// Fail if the LDAP auth function failed (lasterr is already set by that function)
 					$trylocal = TRUE;
+					
 				}
 				
 				
@@ -276,6 +294,8 @@ class Auth{
 			// Not using LDAP or LDAP auth failed, so we look up a local user in the DB
 			
 			if($trylocal == TRUE){
+			
+				// Check if we need to SHA1 the supplied password
 				if($is_sha1 == FALSE){
 					$password = sha1($password);
 				}
@@ -289,6 +309,7 @@ class Auth{
 				$query_local = $this->CI->db->query($sql_local, array($username, $password));
 				$rows = $query_local->num_rows();
 				$query = $query_local;
+				
 			}
 			
 			
@@ -347,21 +368,21 @@ class Auth{
 				}
 				
 				// Return value
-				$ret = TRUE;
-			
+				return TRUE;
+				
 			} else {
-			
+				
 				// Username/password combination didnt match = wrong password
-				$this->lasterr = "Incorrect username and/or password";
-				$ret = FALSE;
+				$this->lasterr = (isset($this->lasterr)) ? $this->lasterr : "Incorrect username and/or password";
+				return FALSE;
 				
 			}
 			
 		} else {
-		
+			
 			// No username and password supplied
 			$this->lasterr = "No username and/or password supplied to Auth library.";
-			$ret = FALSE;
+			return FALSE;
 			
 		}
 		
@@ -481,6 +502,7 @@ class Auth{
 		$ldapport = $auth->ldapport;
 		$ldapbase = $auth->ldapbase;
 		$ldapfilter = str_replace("%u", $username, $auth->ldapfilter);
+		$ldaploginupdate = $auth->ldaploginupdate;
 		$ldapusername = 'cn=' . $username;
 		
 		// Attempt connection to server
@@ -628,80 +650,6 @@ class Auth{
 		
 		
 	}
-	
-	
-	
-	/*
-	function ldap_auth($username, $password){
-		//$servername = "ldap://bbs-svr-001";  //IP/Name to the LDAP server
-		//$ldaprdn  = 'cn='.$username.',ou=teaching Staff,ou=bbs,ou=establishments,dc=bbarrington,dc=internal';
-		
-		$ldapconn = ldap_connect($servername);
-
-		// Check connection first
-		if($ldapconn){
-		
-			$ldapauth = FALSE;
-			
-			// Connection OK - loop through our possible DNs
-			foreach($ldaprdns as $rdn){
-				$ldapbind = ldap_bind($ldapconn, $rdn, $pass);// may have multiple bind statements depending on the tree structure of the LDAP OU
-				if ($ldapbind){
-					$ldapauth = TRUE;
-				}
-			}
-			
-			if($ldapauth == TRUE){
-				$ret = TRUE;
-			} else {
-				$ret = FALSE;
-				$this->err = "LDAP server rejected username and/or password";
-			}
-
-		} else {
-			$ret = FALSE;
-			$this->err = "LDAP connection failed";
-		}
-		
-		return $ret;
-		
-	}
-	
-	
-	
-	
-	function get_ldap_groups($search = "*", $sorted = TRUE){
-		
-		
-		
-		//perform the search and grab all their details
-		$filter = "(&(objectCategory=group)(samaccounttype=". ADLDAP_SECURITY_GLOBAL_GROUP .")(cn=".$search."))";
-		$fields=array("samaccountname","description");
-		$sr=ldap_search($this->_conn,$this->_base_dn,$filter,$fields);
-		$entries = ldap_get_entries($this->_conn, $sr);
-
-		$groups_array = array();		
-		for($i=0; $i<$entries["count"]; $i++)
-		{
-			if($include_desc && strlen($entries[$i]["description"][0]) > 0)
-			{
-				$groups_array[ $entries[$i]["samaccountname"][0] ] = $entries[$i]["description"][0];
-			}
-			elseif($include_desc)
-			{
-				$groups_array[ $entries[$i]["samaccountname"][0] ] = $entries[$i]["samaccountname"][0];
-			}
-			else
-			{
-				array_push($groups_array, $entries[$i]["samaccountname"][0]);
-			}
-		}
-		if($sorted)
-		{
-			asort($groups_array);
-		}
-		return ($groups_array);
-	} */
 	
 	
 	
