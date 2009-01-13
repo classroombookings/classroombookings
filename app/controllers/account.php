@@ -142,49 +142,65 @@ class Account extends Controller {
 			
 			// See if user exists
 			if($this->auth->userexists($data['username'])){
+
+				// Attempt login. As the user is logging in via preauth, no password is submitted.
+				// username,no password,don't remember
+				$login = $this->auth->login($data['username'], NULL, FALSE);
 				
-				// User exists - retrieve their password to login with
-				$sql = 'SELECT password FROM users WHERE username = ? LIMIT 1';
-				$query = $this->db->query($sql, array($data['username']));
-				if($query->num_rows() == 1){
-					// Got password
-					$row = $query->row();
-					$password = $row->password;
-					
-					// Attempt login with the password
-					$login = $this->auth->login($data['username'], $password, FALSE, TRUE);
-					
-					if($login == TRUE){
-						// Login is successful, redirect to dashboard
-						redirect('dashboard');
-					} else {
-						// Can't login. Most likely reason is that their account is disabled
-						$this->msg->fail($errtitle, 'Could not login with the supplied username. Account disabled?' . $this->auth->lasterr);
-					}
+				if($login == TRUE){
+					// Login is successful, redirect to dashboard
+					redirect('dashboard');
 				} else {
-					// No results from database for that user. Very odd, considering userexists() returned TRUE
-					#die("Fail. Can't find that user in the DB even though they exist. Hmmmm.... ?");
-					$this->msg->fail($errtitle, 'Could not find that username in the database even though they appear to exist.');
+					// Can't login. Most likely reason is that their account is disabled
+					$this->msg->fail($errtitle, 'Could not login with the supplied username. Account disabled? <br />' . $this->auth->lasterr);
 				}
 				
-			} elseif( $create == TRUE ){
-				
-				// Going to create user
-				
-				die("That user doesn't exist, but you asked for them to be created.");
-				
-				$user['username'] = $data['username'];
-				$data['displayname'] = $this->auth->ldap_get_displayname($data['username']);
-				$data['group_id'] = $this->input->post('group_id');
-				//$data['department_id'] = $this->input->post('department_id');
-				$data['enabled'] = ($this->input->post('enabled') == '1') ? 1 : 0;
-				
-				// TODO: Waiting to complete LDAP auth part
-				
 			} else {
-				// User doesn't exist, and they don't want accounts to be created automatically
-				#die("Fail. That user doesn't even exist");
-				$this->msg->fail($errtitle, 'The username does not exist.');
+				
+				// User does not exist!
+				// Now we have two possibilities - we create them (thus allowing them access), or we don't.
+				
+				if($create == TRUE){
+				
+					// Going to create user
+					
+					/*	Is LDAP auth configured? If yes, we need to try and pull their details
+						as if we are authing via LDAP for the first time and creating a new account.
+						... can't do this as there is no password supplied here, so it is impossible
+						to pull the details.
+						
+						Set users.ldap=1
+						Set users.password=NULL
+						
+						--
+						
+						Otherwise we just create the user.
+						
+						Set users.ldap=0
+						Set users.password=NULL
+						THIS MEANS THAT USERS MUST ALWAYS LOGIN VIA PREAUTH AS NO PASSWORD IS SET
+					*/
+					
+					die("That user doesn't exist, but you asked for them to be created.");
+					
+					$user['username'] = $data['username'];
+					$data['displayname'] = $this->auth->ldap_get_displayname($data['username']);
+					$data['group_id'] = $this->input->post('group_id');
+					//$data['department_id'] = $this->input->post('department_id');
+					$data['enabled'] = ($this->input->post('enabled') == '1') ? 1 : 0;
+					
+					// TODO: Waiting to complete LDAP auth part [cant remember why im waiting for this bit??]
+					
+				} else {
+					
+					// User doesn't exist, and they don't want accounts to be created automatically
+					// This means the username we're preauthing with does not exist!
+					
+					#die("Fail. That user doesn't even exist");
+					$this->msg->fail($errtitle, 'The username does not exist.');
+					
+				}
+				
 			}
 			
 		} else {

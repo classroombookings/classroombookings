@@ -151,7 +151,7 @@ class Auth{
 			} else {
 				
 				// Got cookie key! hopefully should be in the DB
-				$sql = 'SELECT user_id,username,password,lastlogin 
+				$sql = 'SELECT user_id, username, lastlogin 
 						FROM users 
 						WHERE cookiekey = ? 
 						LIMIT 1';
@@ -160,18 +160,16 @@ class Auth{
 				
 				// Check to see how many rows we got from selecting via the cookie key
 				if($query->num_rows() == 1){
-				
+					
 					// Ok, got user!
-					$userinfo = $query->row();
+					$user = $query->row();
 					
-					#echo var_export($userinfo);
-					
-					// Generate original cookie key hash (what we *expect* it to be if valid) to compare to
+					// Generate original cookie key hash (what we *expect* it to be, if valid) to compare to
 					$cookiekey = sha1(implode("", array(
 						$this->cookiesalt,
-						$userinfo->user_id, 
-						$userinfo->username,
-						$userinfo->lastlogin,
+						$user->user_id, 
+						$user->username,
+						$user->lastlogin,
 						$this->CI->agent->agent_string(),
 					)));
 					
@@ -179,7 +177,8 @@ class Auth{
 					if($cookiekey == $key){
 						
 						// Matched! We can now log the user in and set the remember-me option again
-						$login = $this->login($userinfo->username, $userinfo->password, TRUE);
+						//$login = $this->login($userinfo->username, $userinfo->password, TRUE);
+						$login = $this->session_create($user->username, TRUE);
 						$ret = $login;
 						
 					} else {
@@ -202,21 +201,26 @@ class Auth{
 			
 		}		// End of key == NULL check
 		
-		#$this->CI->session->set_flashdata('msg', $this->lasterr);
-		
+		// Check the return value
 		if($ret == FALSE){
 			
-			//redirect($this->errpage);
-			
-			// Remove cookies
+			// Remove cookies - they're useless now
+			// If we kept them, CRBS would keep using them to login and we would be in an endless loop...
 			delete_cookie("crbs_key");
 			delete_cookie("crbs_user_id");
 			
-			// Generate and show error with link to login page
-			$this->lasterr .= '<br />' . anchor('account/login', 'Click here to login using your username and password.');
-			$error =& load_class('Exceptions');
+			// This code has now been moved to the Msg library
+			/* $error =& load_class('Exceptions');
 			echo $error->show_error("Cannot login via cookie", $this->lasterr);
-			exit;
+			exit; */
+			
+			// Generate and show error with link to login page
+			$this->lasterr .= '<br />' . anchor('account/login', 'Click here to login using your username and password.');			
+			$this->CI->msg->fail('Cannot login via cookie', $this->lasterr);
+			
+		} else {
+			
+			return $ret;
 			
 		}
 		
@@ -232,6 +236,7 @@ class Auth{
 	 * @param	string	username	Username
 	 * @param	string	password	Password in either sha1 or plaintext
 	 * @param	bool	remember	Whether or not to set the remember cookie (default is false)
+	 * @param	bool	is_sha1		Is password already sha1
 	 * @return	bool
 	 */
 	function login($username, $password, $remember = FALSE, $is_sha1 = FALSE){
@@ -241,7 +246,7 @@ class Auth{
 		$ldap = ($auth->ldap == 1);
 		
 		if($username != NULL){	// && $password != NULL){
-		
+			
 			$trylocal = TRUE;
 			
 			// See if user we're trying to authenticate is local or LDAP
@@ -294,18 +299,27 @@ class Auth{
 			// Not using LDAP or LDAP auth failed, so we look up a local user in the DB
 			
 			if($trylocal == TRUE){
-			
-				// Check if we need to SHA1 the supplied password
-				if($is_sha1 == FALSE){
-					$password = sha1($password);
-				}
+				
 				$sql_local = 'SELECT user_id, group_id, username, displayname AS display
 						FROM users
 						WHERE username = ? 
-						AND password = ? 
+						%s 
 						AND enabled = 1 
 						AND ldap = 0
 						LIMIT 1';
+				
+				// Modify query
+				if($password != NULL){
+					$sql_local = sprintf($sql_local, 'AND password = ?');
+				} else {
+					$sql_local = str_replace('%s', '', $sql_local);
+				}
+				
+				// Check if we need to SHA1 the supplied password
+				if($password != NULL && $is_sha1 == FALSE){
+					$password = sha1($password);
+				}
+				
 				$query_local = $this->CI->db->query($sql_local, array($username, $password));
 				$rows = $query_local->num_rows();
 				$query = $query_local;
@@ -395,6 +409,93 @@ class Auth{
 	
 	
 	/**
+	 * Create login session
+	 *
+	 * This function should only be called once the user has been validated via ldap/local/preauth.
+	 * The user MUST exist.
+	 *
+	 * @param string username
+	 * @return bool
+	 */
+	function session_create($username, $remember = FALSE){
+		
+		$sql = 'SELECT user_id, group_id, username, displayname AS display
+				FROM users
+				WHERE username = ? 
+				AND enabled = 1 
+				LIMIT 1';
+		$query = $this->db->query($sql, array($username));
+		
+		if($query->num_rows() == 1){
+			
+			// Cool, got the user we wanted
+			
+			$user = $query->row();
+			
+			// Update the DB's last login time (now)..
+			$timestamp = mdate('%Y-%m-%d %H:%i:%s');
+			$sql = 'UPDATE users 
+					SET lastlogin = ? 
+					WHERE user_id = ?';
+			$this->CI->db->query($sql, array($timestamp, $user->user_id));
+			
+			// Create session data array
+			$sessdata['user_id']		= $user->user_id;
+			$sessdata['group_id']		= $user->group_id;
+			$sessdata['username']		= $user->username;
+			$sessdata['display']		= ($user->display == NULL) ? $user->username : $user->display;
+			$sessdata['year_active']	= $this->CI->years_model->get_active_id();
+			$sessdata['year_working']	= $sessdata['year_active'];
+			
+			// Set session data
+			$this->CI->session->set_userdata($sessdata);
+			
+			// Now set remember-me cookie if requested
+			if($remember == TRUE){
+				// Generate hash using details we just retrieved
+				$cookiekey = sha1(implode("", array(
+					$this->cookiesalt,
+					$user->user_id, 
+					$user->username,
+					$timestamp,
+					$this->CI->agent->agent_string(),
+				)));
+				
+				// Set cookie data
+				$cookie['expire'] = 60 * 60 * 24 * 14;		// 14 days
+				
+				$cookie['name'] = 'crbs_key';
+				$cookie['value'] = $cookiekey;
+				set_cookie($cookie);
+				$cookie['name'] = 'crbs_user_id';
+				$cookie['value'] = $user->user_id;
+				set_cookie($cookie);
+				
+				// Update DB table with the hash that we will later check on return visit
+				$sql = 'UPDATE users 
+						SET cookiekey = ? 
+						WHERE user_id = ?';
+				$query = $this->CI->db->query($sql, array($cookiekey, $user->user_id));
+			}
+			
+			// Done all we needed to do.
+			// TODO: Should we check the session data has actually been set before returning success?
+			return TRUE;
+			
+		} else {
+			
+			// FAIL!
+			$this->lasterr = 'Failed to login that user even though they should already exist.';
+			return FALSE;
+			
+		}
+		
+	}
+	
+	
+	
+	
+	/**
 	 * Logout function that clears all the session data and destroys it
 	 *
 	 * @return	bool
@@ -460,7 +561,7 @@ class Auth{
 		
 		// Check if the supplied timestamp is within the allowed threshold
 		if( ($data['timestamp'] < $time_lower) OR ($data['timestamp'] > $time_upper) ){
-			$this->lasterr = 'Given timestamp falls outside of the allowed threshold of 5 minutes.';
+			$this->lasterr = 'Supplied timestamp falls outside of the allowed threshold of 5 minutes.';
 			return FALSE;
 		}
 		
@@ -483,26 +584,79 @@ class Auth{
 	
 	
 	/**
+	 * Local authentication function
+	 *
+	 * Simply checks if a local user's password is valid
+	 *
+	 * @param	string	username
+	 * @param	string	password
+	 * @param	bool	is_sha1		Specifies whether the password is already an SHA1 hash
+	 * @return	bool
+	 */
+	function auth_local($username, $password, $is_sha1 = FALSE){
+		
+		// Check if we need to SHA1 the supplied password
+		$password = ($is_sha1 == FALSE) ? sha1($password) : $password;
+		
+		$sql = 'SELECT user_id, username
+				FROM users
+				WHERE username = ?
+				AND password = ?
+				AND enabled = 1
+				AND ldap = 0
+				LIMIT 1';
+				
+		
+		$query = $this->CI->db->query($sql, array($username, $password));
+		
+		if($query->num_rows() == 1){
+			
+			// Success
+			return TRUE;
+			
+		} else {
+			
+			// Fail
+			$this->lasterr = 'Local authentication failure. Incorrect username and/or password.';
+			
+		}
+		
+	}
+	
+	
+	
+	
+	/**
 	 * LDAP authenticate function
 	 *
-	 * Returns the local user_id if the function succeeds or FALSE on failure
+	 * Checks the configured LDAP server for valid supplied credentiales.
+	 * Optionally will update local DB with LDAP display/email info.
+	 * This should not be called for users who authenticate locally.
+	 *
+	 * @param	string	username
+	 * @param	string	password
+	 * @param	bool	updateinfo		Update the local DB with info from LDAP or not
+	 * @return	mixed	local user_id on success, FALSE on failure
 	 */
-	function ldap_auth($username, $password){
+	function auth_ldap($username, $password){
 		
 		if(!function_exists('ldap_bind')){
 			$this->lasterr = 'It appears that the PHP LDAP module is not installed - cannot continue.';
 			return FALSE;
 		}
 		
-		// Retrieve settings
+		// Retrieve auth settings
 		$auth = $this->CI->settings->get_all('auth');
+		
+		// See if the user exists at all
+		$userexists = $this->userexists($username);
 		
 		// Set values
 		$ldaphost = $auth->ldaphost;
 		$ldapport = $auth->ldapport;
 		$ldapbase = $auth->ldapbase;
 		$ldapfilter = str_replace("%u", $username, $auth->ldapfilter);
-		$ldaploginupdate = $auth->ldaploginupdate;
+		$ldaploginupdate = ($auth->ldaploginupdate == 1) ? TRUE : FALSE;
 		$ldapusername = 'cn=' . $username;
 		
 		// Attempt connection to server
@@ -532,7 +686,7 @@ class Auth{
 			return FALSE;
 		}
 		
-		// Search for details
+		// search for details
 		$search = ldap_search($connect, $correctdn, $ldapfilter);
 		if(!$search){
 			$this->lasterr = "Could not find the user's details - the query filter is probably incorrect.";
@@ -541,18 +695,29 @@ class Auth{
 		
 		// Get info
 		$info = ldap_get_entries($connect, $search); 
-		#die(print_r($info));
 		$user['username'] = $username;
 		$user['displayname'] = $info[0]['displayname'][0];
 		$user['email'] = $info[0]['mail'][0];
 		$user['memberof'] = $info[0]['memberof'];
 		$user['group_ids'] = array();
 		
+		// Succeeded with all info
 		
-		// Find groups
+		// If user already exists and we don't want to update at login, complete the auth now.
+		if($userexists == TRUE && $ldaploginupdate == FALSE){
+			return TRUE;
+		}
+		
+		
+		/*
+			... otherwise, add if they dont exist; and update if they do.
+			... either way, we need to fetch some data. Do that now...
+		*/
+		
+		
+		// LDAP-TO-LOCAL: Find groups
 		unset($info[0]['memberof']['count']);
 		foreach($info[0]['memberof'] as $group){
-			
 			// We only need the CN= part
 			$grouparray = explode(',', $group);
 			$group = str_replace('CN=', '', $grouparray[0]);
@@ -562,31 +727,14 @@ class Auth{
 				array_push($user['group_ids'], $id);
 			}
 			
-			// Make new temporary array to hold just the names of the groups of this user
+			// Make new array to hold just the names of the groups of this user
 			$groups[] = $group;
 			unset($grouparray);
 		}
 		
-		#die(print_r($user));
-		
-		
-		// Find departments
-		$user['department_ids'] = $this->CI->security->ldap_groupnames_to_departments($groups);
-		
-		// Clear temporary arrays and unnecessary info
-		unset($user['memberof']);
-		unset($groups);
-		
-		
-		// Now the array of info for the user adding function
-		$data['username'] = $user['username'];
-		$data['displayname'] = (isset($user['displayname']) OR $user['displayname'] != '') ? $user['displayname'] : $user['username'];
-		$data['email'] = $user['email'];
-		$data['ldap'] = 1;
-		$data['password'] = NULL;
-		
+
 		/*	Find the group we need to assign to the user, either by 
-			looking for LDAP group assignments or the default one */
+			looking for LDAP group assignments or choosing the default one for all ldap users */
 		if(!empty($user['group_ids'])){
 			// Only one result returned from looking up the LDAP group name to local ID - great!
 			$data['group_id'] = $user['group_ids'][0];
@@ -600,43 +748,43 @@ class Auth{
 			$data['group_id'] = $auth->ldapgroup_id;
 		}
 		
+		// LDAP-TO-LOCAL: Find departments
+		$user['department_ids'] = $this->CI->security->ldap_groupnames_to_departments($groups);
+		
+		// Clear temporary arrays and unnecessary info
+		unset($user['memberof']);
+		unset($groups);
+		
 		// Find departments we should assign the user to
-		$data['departments'] = $user['department_ids'];
+		$data['departments'] = $user['department_ids'];		
+		// Now the array of info for the user adding function
+		$data['username'] = $user['username'];
+		$data['displayname'] = (isset($user['displayname']) OR $user['displayname'] != '') ? $user['displayname'] : $user['username'];
+		$data['email'] = $user['email'];
+		$data['ldap'] = 1;
+		$data['password'] = NULL;
 		
-		#die(print_r($data));
 		
-		
-		/* At this stage we have taken the supplied username and password, validated it against the 
-			LDAP database, and retrieved the basic details. Next: does the user already exist?
-			If yes, then update the local table with latest info then return TRUE as they have been authenticated and our job here is done.
-			If no, then we need to create them and assign their departments/groups.
+		/*
+			At this point, we have authenticated and we need to know if we should update
+			user details or add them as a new user.
 		*/
-		
-		
-		$sql = 'SELECT user_id FROM users WHERE username = ? LIMIT 1';
-		$query = $this->CI->db->query($sql, array($user['username']));
-		if($query->num_rows() == 1){
-			$row = $query->row();
-			$user_id = $row->user_id;
-			$userexists = TRUE;
-		} else {
-			$userexists = FALSE;
-		}
-		
-		
-		/*	At this point, we have authenticated and we also know if they already exist.
-			Now it's just a case of either adding the user or updating the user details */
 		
 		if($userexists == TRUE){
 			
-			$edit = $this->CI->security->edit_user($user_id, $data);
-			if($edit == FALSE){
-				$this->lasterr = $this->CI->security->lasterr;
-				return FALSE;
+			// Already in
+			// We should only get here if this line is true anyway, but here goes...
+			if($ldaploginupdate == TRUE){
+				$edit = $this->CI->security->edit_user($user_id, $data);
+				if($edit == FALSE){
+					$this->lasterr = $this->CI->security->lasterr;
+					return FALSE;
+				}
 			}
 			
-		} else {
+		} elseif($userexists == FALSE){
 			
+			// Add
 			$data['enabled'] = 1;
 			$add = $this->CI->security->add_user($data);
 			if($add == FALSE){
@@ -647,7 +795,6 @@ class Auth{
 		}
 		
 		return TRUE;
-		
 		
 	}
 	
@@ -695,6 +842,8 @@ class Auth{
 	
 	
 }
+
+
 
 
 /* End of file app/libraries/Auth.php */

@@ -411,4 +411,5 @@ class Configure extends Controller {
 }
 
 
-?>
+
+/* End of file app/controllers/configure.php */
