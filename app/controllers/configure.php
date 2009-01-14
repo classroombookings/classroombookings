@@ -89,6 +89,7 @@ class Configure extends Controller {
 	
 		$this->form_validation->set_rules('preauth', 'Pre-authentication enable');
 		$this->form_validation->set_rules('ldap', 'LDAP enable');
+		$this->form_validation->set_rules('ldaploginupdate', 'LDAP login update');
 		if($this->input->post('ldap') == '1' && $this->input->post('ldapfirst') == '0'){
 			// LDAP validation (only required if LDAP box is ticked & is not the first time it's being ticked)
 			$this->form_validation->set_rules('ldaphost', 'LDAP host', 'required|max_length[50]|trim');
@@ -138,6 +139,7 @@ class Configure extends Controller {
 				$data['ldapbase'] = $this->input->post('ldapbase');
 				$data['ldapfilter'] = $this->input->post('ldapfilter');
 				$data['ldapgroup_id'] = $this->input->post('ldapgroup_id');
+				$data['ldaploginupdate'] = ($this->input->post('ldaploginupdate') == '1') ? 1 : 0;
 			}
 			
 			$save = $this->settings->save('auth', $data);

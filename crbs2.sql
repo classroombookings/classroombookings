@@ -155,7 +155,7 @@ CREATE TABLE `groups` (
 LOCK TABLES `groups` WRITE;
 /*!40000 ALTER TABLE `groups` DISABLE KEYS*/;
 INSERT INTO `groups` (`group_id`, `name`, `description`, `bookahead`, `quota_num`, `quota_type`, `permissions`, `created`) VALUES
-	('1','Administrators','Default group for administrator users',0,NULL,NULL,'a:60:{i:0;s:9:\"dashboard\";i:1;s:18:\"dashboard.viewdept\";i:2;s:17:\"dashboard.viewown\";i:3;s:9:\"myprofile\";i:4;s:9:\"configure\";i:5;s:10:\"changeyear\";i:6;s:8:\"bookings\";i:7;s:19:\"bookings.create.one\";i:8;s:21:\"bookings.create.recur\";i:9;s:23:\"bookings.delete.one.own\";i:10;s:29:\"bookings.delete.one.roomowner\";i:11;s:31:\"bookings.delete.recur.roomowner\";i:12;s:22:\"bookings.overwrite.one\";i:13;s:24:\"bookings.overwrite.recur\";i:14;s:32:\"bookings.overwrite.one.roomowner\";i:15;s:34:\"bookings.overwrite.recur.roomowner\";i:16;s:5:\"rooms\";i:17;s:9:\"rooms.add\";i:18;s:10:\"rooms.edit\";i:19;s:12:\"rooms.delete\";i:20;s:12:\"rooms.fields\";i:21;s:19:\"rooms.fields.values\";i:22;s:8:\"academic\";i:23;s:5:\"years\";i:24;s:9:\"years.add\";i:25;s:10:\"years.edit\";i:26;s:12:\"years.delete\";i:27;s:7:\"periods\";i:28;s:11:\"periods.add\";i:29;s:12:\"periods.edit\";i:30;s:14:\"periods.delete\";i:31;s:5:\"weeks\";i:32;s:9:\"weeks.add\";i:33;s:10:\"weeks.edit\";i:34;s:12:\"weeks.delete\";i:35;s:19:\"weeks.ayears.manage\";i:36;s:16:\"weeks.ayears.set\";i:37;s:8:\"holidays\";i:38;s:12:\"holidays.add\";i:39;s:13:\"holidays.edit\";i:40;s:15:\"holidays.delete\";i:41;s:11:\"departments\";i:42;s:15:\"departments.add\";i:43;s:16:\"departments.edit\";i:44;s:18:\"departments.delete\";i:45;s:7:\"reports\";i:46;s:21:\"reports.owndepartment\";i:47;s:22:\"reports.alldepartments\";i:48;s:15:\"reports.ownroom\";i:49;s:16:\"reports.allrooms\";i:50;s:13:\"reports.other\";i:51;s:5:\"users\";i:52;s:9:\"users.add\";i:53;s:10:\"users.edit\";i:54;s:12:\"users.delete\";i:55;s:12:\"users.import\";i:56;s:6:\"groups\";i:57;s:10:\"groups.add\";i:58;s:11:\"groups.edit\";i:59;s:13:\"groups.delete\";}','0000-00-00'),
+	('1','Administrators','Default group for administrator users',0,NULL,NULL,'a:60:{i:0;s:9:\"dashboard\";i:1;s:18:\"dashboard.viewdept\";i:2;s:17:\"dashboard.viewown\";i:3;s:9:\"myprofile\";i:4;s:9:\"configure\";i:5;s:10:\"changeyear\";i:6;s:8:\"bookings\";i:7;s:19:\"bookings.create.one\";i:8;s:21:\"bookings.create.recur\";i:9;s:23:\"bookings.delete.one.own\";i:10;s:29:\"bookings.delete.one.roomowner\";i:11;s:31:\"bookings.delete.recur.roomowner\";i:12;s:22:\"bookings.overwrite.one\";i:13;s:24:\"bookings.overwrite.recur\";i:14;s:32:\"bookings.overwrite.one.roomowner\";i:15;s:34:\"bookings.overwrite.recur.roomowner\";i:16;s:5:\"rooms\";i:17;s:9:\"rooms.add\";i:18;s:10:\"rooms.edit\";i:19;s:12:\"rooms.delete\";i:20;s:12:\"rooms.fields\";i:21;s:19:\"rooms.fields.values\";i:22;s:8:\"academic\";i:23;s:5:\"years\";i:24;s:9:\"years.add\";i:25;s:10:\"years.edit\";i:26;s:12:\"years.delete\";i:27;s:7:\"periods\";i:28;s:11:\"periods.add\";i:29;s:12:\"periods.edit\";i:30;s:14:\"periods.delete\";i:31;s:5:\"weeks\";i:32;s:9:\"weeks.add\";i:33;s:10:\"weeks.edit\";i:34;s:12:\"weeks.delete\";i:35;s:19:\"weeks.ayears.manage\";i:36;s:16:\"weeks.ayears.set\";i:37;s:5:\"terms\";i:38;s:9:\"terms.add\";i:39;s:10:\"terms.edit\";i:40;s:12:\"terms.delete\";i:41;s:11:\"departments\";i:42;s:15:\"departments.add\";i:43;s:16:\"departments.edit\";i:44;s:18:\"departments.delete\";i:45;s:7:\"reports\";i:46;s:21:\"reports.owndepartment\";i:47;s:22:\"reports.alldepartments\";i:48;s:15:\"reports.ownroom\";i:49;s:16:\"reports.allrooms\";i:50;s:13:\"reports.other\";i:51;s:5:\"users\";i:52;s:9:\"users.add\";i:53;s:10:\"users.edit\";i:54;s:12:\"users.delete\";i:55;s:12:\"users.import\";i:56;s:6:\"groups\";i:57;s:10:\"groups.add\";i:58;s:11:\"groups.edit\";i:59;s:13:\"groups.delete\";}','0000-00-00'),
 	('2','Teaching Staff','Teachers from LDAP',14,'6','day','a:7:{i:0;s:9:\"dashboard\";i:1;s:18:\"dashboard.viewdept\";i:2;s:17:\"dashboard.viewown\";i:3;s:9:\"myprofile\";i:4;s:8:\"bookings\";i:5;s:19:\"bookings.create.one\";i:6;s:23:\"bookings.delete.one.own\";}','0000-00-00'),
 	('4','Support staff','',14,'6','current','a:7:{i:0;s:9:\"dashboard\";i:1;s:18:\"dashboard.viewdept\";i:2;s:17:\"dashboard.viewown\";i:3;s:9:\"myprofile\";i:4;s:8:\"bookings\";i:5;s:19:\"bookings.create.one\";i:6;s:23:\"bookings.delete.one.own\";}','2008-12-02'),
 	('7','Guests','Default group for guests',0,'1','current','a:1:{i:0;s:8:\"bookings\";}','0000-00-00');
@@ -178,8 +178,13 @@ CREATE TABLE `groups2ldapgroups` (
 # Dumping data for table 'groups2ldapgroups'
 #
 
-# (No data found.)
-
+LOCK TABLES `groups2ldapgroups` WRITE;
+/*!40000 ALTER TABLE `groups2ldapgroups` DISABLE KEYS*/;
+INSERT INTO `groups2ldapgroups` (`group_id`, `ldapgroup_id`) VALUES
+	('2','1120'),
+	('4','1118');
+/*!40000 ALTER TABLE `groups2ldapgroups` ENABLE KEYS*/;
+UNLOCK TABLES;
 
 
 #
@@ -508,7 +513,7 @@ CREATE TABLE `settings-auth` (
 LOCK TABLES `settings-auth` WRITE;
 /*!40000 ALTER TABLE `settings-auth` DISABLE KEYS*/;
 INSERT INTO `settings-auth` (`preauthkey`, `preauthgroup_id`, `preauthemail`, `ldap`, `ldaphost`, `ldapport`, `ldapbase`, `ldapfilter`, `ldapgroup_id`, `ldaploginupdate`) VALUES
-	('14ba16efe8ce9786aaa9ca15297f9dc802855476','2','bishopbarrington.net',1,'bbs-svr-001','389','ou=teaching staff, ou=bbs, ou=establishments, dc=bbarrington, dc=internal; ou=system administrators, ou=bbs, ou=establishments, dc=bbarrington, dc=internal','(& (| (!(displayname=Administrator*)) (!(displayname=Admin*)) ) (cn=%u) )','2',NULL);
+	('14ba16efe8ce9786aaa9ca15297f9dc802855476','4','bishopbarrington.net',1,'bbs-svr-001','389','ou=teaching staff, ou=bbs, ou=establishments, dc=bbarrington, dc=internal; ou=system administrators, ou=bbs, ou=establishments, dc=bbarrington, dc=internal','(& (| (!(displayname=Administrator*)) (!(displayname=Admin*)) ) (cn=%u) )','7',1);
 /*!40000 ALTER TABLE `settings-auth` ENABLE KEYS*/;
 UNLOCK TABLES;
 
@@ -540,6 +545,33 @@ UNLOCK TABLES;
 
 
 #
+# Table structure for table 'terms'
+#
+
+CREATE TABLE `terms` (
+  `term_id` int(10) unsigned NOT NULL auto_increment,
+  `year_id` int(10) unsigned NOT NULL COMMENT 'The academic year that this term belongs to',
+  `date_start` date NOT NULL COMMENT 'Start date of the term',
+  `date_end` date NOT NULL COMMENT 'End date of the term',
+  `name` varchar(40) NOT NULL COMMENT 'Name of the term',
+  PRIMARY KEY  (`term_id`)
+) TYPE=InnoDB AUTO_INCREMENT=2 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Term dates'*/;
+
+
+
+#
+# Dumping data for table 'terms'
+#
+
+LOCK TABLES `terms` WRITE;
+/*!40000 ALTER TABLE `terms` DISABLE KEYS*/;
+INSERT INTO `terms` (`term_id`, `year_id`, `date_start`, `date_end`, `name`) VALUES
+	('1','1','2009-09-09','2009-10-24','Autumn');
+/*!40000 ALTER TABLE `terms` ENABLE KEYS*/;
+UNLOCK TABLES;
+
+
+#
 # Table structure for table 'users'
 #
 
@@ -558,7 +590,7 @@ CREATE TABLE `users` (
   PRIMARY KEY  (`user_id`),
   UNIQUE KEY `username` (`username`),
   KEY `ldap` (`ldap`)
-) TYPE=InnoDB AUTO_INCREMENT=15 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Main users table'*/;
+) TYPE=InnoDB AUTO_INCREMENT=24 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Main users table'*/;
 
 
 
@@ -569,11 +601,11 @@ CREATE TABLE `users` (
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS*/;
 INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `password`, `displayname`, `cookiekey`, `lastlogin`, `ldap`, `created`) VALUES
-	('1',1,1,'admin','craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Craig Rodway',NULL,'2009-01-12 11:45:50',0,'0000-00-00'),
+	('1',1,1,'admin','craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Craig Rodway',NULL,'2009-01-14 14:14:10',0,'0000-00-00'),
 	('3',4,1,'user1','','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Foo Number 1',NULL,'2008-12-19 23:06:20',0,'2008-11-27'),
-	('9',1,0,'carlo98','','7d6706dde2c115b1dcbc66d5674d95246620bba4','',NULL,'2008-12-28 18:05:10',0,'2008-12-28'),
 	('12',2,1,'craig.rodway','craig.rodway@bishopbarrington.net',NULL,'Mr Rodway',NULL,'2009-01-09 16:12:48',1,'2009-01-09'),
-	('13',2,1,'test.one','test.one@bishopbarrington.net',NULL,'Mr T One',NULL,'2009-01-09 16:19:55',1,'2009-01-09');
+	('19',2,1,'test.one','test.one@bishopbarrington.net',NULL,'Mr T One',NULL,'2009-01-14 11:17:50',1,'2009-01-14'),
+	('22',2,1,'test.three','test.three@bishopbarrington.net',NULL,'Mr T Three',NULL,'2009-01-14 10:56:57',1,'2009-01-14');
 /*!40000 ALTER TABLE `users` ENABLE KEYS*/;
 UNLOCK TABLES;
 
@@ -620,8 +652,54 @@ INSERT INTO `users2departments` (`user_id`, `department_id`) VALUES
 	('11','12'),
 	('11','13'),
 	('13','2'),
-	('13','2');
+	('13','2'),
+	('19','13'),
+	('21','1'),
+	('21','2'),
+	('21','2'),
+	('21','3'),
+	('21','9'),
+	('21','9'),
+	('21','11'),
+	('21','12'),
+	('21','12'),
+	('21','13'),
+	('22','1'),
+	('22','2'),
+	('22','2'),
+	('22','3'),
+	('22','9'),
+	('22','9'),
+	('22','11'),
+	('22','12'),
+	('22','12'),
+	('22','13');
 /*!40000 ALTER TABLE `users2departments` ENABLE KEYS*/;
+UNLOCK TABLES;
+
+
+#
+# Table structure for table 'usersactive'
+#
+
+CREATE TABLE `usersactive` (
+  `user_id` int(10) unsigned NOT NULL,
+  `timestamp` int(11) unsigned NOT NULL,
+  UNIQUE KEY `user_id` (`user_id`),
+  KEY `user_id_2` (`user_id`)
+) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Keep track of current active users'*/;
+
+
+
+#
+# Dumping data for table 'usersactive'
+#
+
+LOCK TABLES `usersactive` WRITE;
+/*!40000 ALTER TABLE `usersactive` DISABLE KEYS*/;
+INSERT INTO `usersactive` (`user_id`, `timestamp`) VALUES
+	('1','1231948738');
+/*!40000 ALTER TABLE `usersactive` ENABLE KEYS*/;
 UNLOCK TABLES;
 
 

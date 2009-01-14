@@ -92,12 +92,12 @@ if($errors){
 			
 			<tr>
 				<td>
-					<!-- HOLIDAYS -->
+					<!-- TERM DATES -->
 					<?php
 					unset($checks);
-					$checks['options'] = $permissions['holidays'];
+					$checks['options'] = $permissions['terms'];
 					$checks['group_id'] = $group_id;
-					$checks['category'] = 'Academic - Holidays';
+					$checks['category'] = 'Academic - Term dates';
 					$this->load->view('security/permissions.checks.php', $checks);
 					?>
 				</td>

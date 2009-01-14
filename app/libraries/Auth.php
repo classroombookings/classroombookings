@@ -30,6 +30,7 @@ class Auth{
 
 
 	function Auth(){
+		
 		// Load original CI object to global CI variable
 		$this->CI =& get_instance();
 		
@@ -41,16 +42,6 @@ class Auth{
 		
 		// Cookie salt for hash - can be any text string
 		$this->cookiesalt = 'CL455R00Mb00k1ng5';
-		
-		// Redirect to this error page
-		$this->errpage = 'dashboard/error';
-		
-		// Get LDAP settings
-		#$this->CI->load->library('settings');	//
-		
-		#$this->settings['ldap'] = $this->CI->settings->getldap();
-		
-		
 		
 	}
 	
@@ -245,7 +236,7 @@ class Auth{
 		$auth = $this->CI->settings->get_all('auth');
 		$ldap = ($auth->ldap == 1);
 		
-		if($username != NULL){	// && $password != NULL){
+		if($username != NULL && $password != NULL){
 			
 			$trylocal = TRUE;
 			
@@ -253,142 +244,51 @@ class Auth{
 			$sql = 'SELECT ldap FROM users WHERE username = ? LIMIT 1';
 			$query = $this->CI->db->query($sql, array($username));
 			if($query->num_rows() == 1){
+				// Found the user, so we know they exist.
 				$row = $query->row();
 				$userldap = $row->ldap;
-				$tryldap = ($userldap == 1) ? TRUE : FALSE;
+				$tryldap = ($userldap == 1);
 			} else {
-				// User doesn't exist at all!
+				// User doesn't exist at all! Try LDAP as that will create accounts automatically
 				$tryldap = TRUE;
 			}
 			
-			// Check if we are using LDAP/AD auth or not
+			
+			// Check if we are using LDAP/AD auth or not and also if we should try authing this user via ldap
 			if($ldap == TRUE && $tryldap == TRUE){
 				
 				// Don't try local auth unless this fails
 				$trylocal = FALSE;
 				
 				// We are using LDAP. First, send the supplied user and password to the ldap function
-				$ldapauth = $this->ldap_auth($username, $password);
+				$ldapauth = $this->auth_ldap($username, $password);
 				
 				if($ldapauth == TRUE){
-					
-					// Succeeded!
-					$sql_ldap = 'SELECT user_id, group_id, username, displayname AS display
-							FROM users
-							WHERE username = ? 
-							AND ldap = 1
-							AND enabled = 1 
-							LIMIT 1';
-							
-					$query_ldap = $this->CI->db->query($sql_ldap, array($username));
-					
-					$rows = $query_ldap->num_rows();
-					$query = $query_ldap;
-					
+					return $this->session_create($username, $remember);
 				} else {
-					
 					// Fail if the LDAP auth function failed (lasterr is already set by that function)
-					$trylocal = TRUE;
-					
+					#$trylocal = TRUE;
+					return FALSE;
 				}
 				
+			} elseif($ldap == FALSE && $tryldap == TRUE){
 				
+				$this->lasterr = 'User authenticates via LDAP but system is not configured to use LDAP.';
+				return FALSE;
 				
 			}
 			
-			// Not using LDAP or LDAP auth failed, so we look up a local user in the DB
+			// Not using LDAP or LDAP auth failed, so we look up a local user in the DB (trylocal should be TRUE now)
 			
 			if($trylocal == TRUE){
 				
-				$sql_local = 'SELECT user_id, group_id, username, displayname AS display
-						FROM users
-						WHERE username = ? 
-						%s 
-						AND enabled = 1 
-						AND ldap = 0
-						LIMIT 1';
+				$localauth = $this->auth_local($username, $password, $is_sha1);
 				
-				// Modify query
-				if($password != NULL){
-					$sql_local = sprintf($sql_local, 'AND password = ?');
+				if($localauth == TRUE){
+					return $this->session_create($username, $remember);
 				} else {
-					$sql_local = str_replace('%s', '', $sql_local);
+					$this->lasterr = (isset($this->lasterr)) ? $this->lasterr : "Incorrect username and/or password";
 				}
-				
-				// Check if we need to SHA1 the supplied password
-				if($password != NULL && $is_sha1 == FALSE){
-					$password = sha1($password);
-				}
-				
-				$query_local = $this->CI->db->query($sql_local, array($username, $password));
-				$rows = $query_local->num_rows();
-				$query = $query_local;
-				
-			}
-			
-			
-			// Now to check if username and password matched
-			if($rows == 1){
-				
-				// Username/password combination matched - first get user info
-				$userinfo = $query->row();
-				
-				// Update the DB's last login time (now)..
-				$timestamp = mdate('%Y-%m-%d %H:%i:%s');
-				$sql = 'UPDATE users 
-						SET lastlogin = ? 
-						WHERE user_id = ?';
-				$this->CI->db->query($sql, array($timestamp, $userinfo->user_id));
-				
-				// Create session data array
-				$sessdata['user_id']		= $userinfo->user_id;
-				$sessdata['group_id']		= $userinfo->group_id;
-				$sessdata['username']		= $userinfo->username;
-				$sessdata['display']		= ($userinfo->display == NULL) ? $userinfo->username : $userinfo->display;
-				$sessdata['year_active']	= $this->CI->years_model->get_active_id();
-				$sessdata['year_working']	= $sessdata['year_active'];
-				//$sessdata['authlevel']		= $userinfo->authlevel;
-				
-				// Set session 
-				#$this->CI->session->set_userdata(array());
-				#$this->CI->session->destroy();
-				$this->CI->session->set_userdata($sessdata);
-				
-				// Now set remember-me cookie if we need to
-				if($remember == TRUE){
-					// Generate hash
-					$cookiekey = sha1(implode("", array(
-						$this->cookiesalt,
-						$userinfo->user_id, 
-						$userinfo->username,
-						$timestamp,
-						$this->CI->agent->agent_string(),
-					)));
-					// Set cookie data
-					$cookie['expire'] = 60 * 60 * 24 * 14;		// 14 days
-					
-					$cookie['name'] = 'crbs_key';
-					$cookie['value'] = $cookiekey;
-					set_cookie($cookie);
-					$cookie['name'] = 'crbs_user_id';
-					$cookie['value'] = $userinfo->user_id;
-					set_cookie($cookie);
-					
-					// Update DB table with the hash that we check on return visit
-					$sql = 'UPDATE users 
-							SET cookiekey = ? 
-							WHERE user_id = ?';
-					$query = $this->CI->db->query($sql, array($cookiekey, $userinfo->user_id));
-				}
-				
-				// Return value
-				return TRUE;
-				
-			} else {
-				
-				// Username/password combination didnt match = wrong password
-				$this->lasterr = (isset($this->lasterr)) ? $this->lasterr : "Incorrect username and/or password";
-				return FALSE;
 				
 			}
 			
@@ -399,9 +299,6 @@ class Auth{
 			return FALSE;
 			
 		}
-		
-		// End of function, return value
-		return $ret;
 		
 	}
 	
@@ -419,17 +316,20 @@ class Auth{
 	 */
 	function session_create($username, $remember = FALSE){
 		
+		/*
+			We need to check of the enabled=1 at this stage because we dont want 
+			preauth/ldap/local to override this
+		*/
 		$sql = 'SELECT user_id, group_id, username, displayname AS display
 				FROM users
 				WHERE username = ? 
 				AND enabled = 1 
 				LIMIT 1';
-		$query = $this->db->query($sql, array($username));
+		$query = $this->CI->db->query($sql, array($username));
 		
 		if($query->num_rows() == 1){
 			
 			// Cool, got the user we wanted
-			
 			$user = $query->row();
 			
 			// Update the DB's last login time (now)..
@@ -503,6 +403,9 @@ class Auth{
 	function logout(){
 		
 		$user_id = $this->CI->session->userdata('user_id');
+		
+		$sql = 'DELETE FROM usersactive WHERE user_id = ?';
+		$query = $this->CI->db->query($sql, array($user_id));
 		
 		// Set session data to NULL (include all fields!)
 		$sessdata['user_id'] = NULL;
@@ -714,47 +617,36 @@ class Auth{
 			... either way, we need to fetch some data. Do that now...
 		*/
 		
-		
-		// LDAP-TO-LOCAL: Find groups
+		// Get group mappings
 		unset($info[0]['memberof']['count']);
+		// Mapping of ldapgroupnames => localgroupid
+		$groupmap = $this->CI->security->ldap_groupname_to_group();
+		// Make new array to hold the group names that the user belongs to
+		$groups = array();		
+		
+		// iterate the groups they are member of to find potential local group
 		foreach($info[0]['memberof'] as $group){
 			// We only need the CN= part
 			$grouparray = explode(',', $group);
 			$group = str_replace('CN=', '', $grouparray[0]);
-			$id = $this->CI->security->ldap_groupname_to_group($group);
-			if($id){
-				//$user['group_ids'][] = $id;
-				array_push($user['group_ids'], $id);
+			if(array_key_exists($group, $groupmap)){
+				// Put possible group IDs into an array
+				array_push($user['group_ids'], $groupmap[$group]);
 			}
-			
-			// Make new array to hold just the names of the groups of this user
-			$groups[] = $group;
-			unset($grouparray);
+			// Stick this group into the group array
+			array_push($groups, $group);
 		}
 		
-
-		/*	Find the group we need to assign to the user, either by 
-			looking for LDAP group assignments or choosing the default one for all ldap users */
-		if(!empty($user['group_ids'])){
-			// Only one result returned from looking up the LDAP group name to local ID - great!
-			$data['group_id'] = $user['group_ids'][0];
-		} else {
-			/*
-				Counted more than one group (or none at all) when trying to find a CRBS group to match the LDAP group name.
-				This might mean that the user belongs to LDAP groups that have been assigned to different CRBS groups.
-				Predicament - which CRBS group do we put the user in?
-				We don't know - so stick them in the default LDAP group
-			*/
-			$data['group_id'] = $auth->ldapgroup_id;
-		}
+		// Remove any duplicates (not sure this actually has a purpose as they should all be unique anyway)
+		$user['group_ids'] = array_unique($user['group_ids']);	#, SORT_NUMERIC);
 		
-		// LDAP-TO-LOCAL: Find departments
+		// LDAP-TO-LOCAL: Find departments (using the previously-populated array)
 		$user['department_ids'] = $this->CI->security->ldap_groupnames_to_departments($groups);
 		
-		// Clear temporary arrays and unnecessary info
-		unset($user['memberof']);
-		unset($groups);
+		// Now the data array that has all correct info for sending to the DB
 		
+		// Set group ID of user (to the ldap mapping if unique, otherwise the default)
+		$data['group_id'] = (count($user['group_ids']) == 1) ? $user['group_ids'][0] : $auth->ldapgroup_id;
 		// Find departments we should assign the user to
 		$data['departments'] = $user['department_ids'];		
 		// Now the array of info for the user adding function
@@ -773,13 +665,22 @@ class Auth{
 		if($userexists == TRUE){
 			
 			// Already in
-			// We should only get here if this line is true anyway, but here goes...
+			
+			$sql = 'SELECT user_id FROM users WHERE username = ? LIMIT 1';
+			$query = $this->CI->db->query($sql, array($username));
+			$row = $query->row();
+			$user_id = $row->user_id;
+			
+			// We should only get here if loginupdate is true anyway, but here goes...
 			if($ldaploginupdate == TRUE){
 				$edit = $this->CI->security->edit_user($user_id, $data);
 				if($edit == FALSE){
 					$this->lasterr = $this->CI->security->lasterr;
 					return FALSE;
 				}
+			} else {
+				$this->lasterr = 'Expected ldaploginupdate to be TRUE but got FALSE instead';
+				return FALSE;
 			}
 			
 		} elseif($userexists == FALSE){
@@ -836,6 +737,29 @@ class Auth{
 	 */
 	function logged_in(){
 		return ($this->CI->session->userdata('user_id') && $this->CI->session->userdata('username'));
+	}
+	
+	
+	
+	
+	function active_users(){
+		
+		$sql = 'SELECT users.user_id, users.username, users.displayname, usersactive.timestamp
+				FROM users
+				RIGHT JOIN usersactive ON users.user_id = usersactive.user_id';
+		$query = $this->CI->db->query($sql);
+		
+		$result = $query->result();
+		$activeusers = array();
+		
+		foreach($result as $user){
+			$display = ($user->displayname != '' OR $user->displayname != NULL) ? $user->displayname : $user->username;
+			//array_push($activeusers, $display);
+			$activeusers[$user->user_id] = $display;
+		}
+		
+		return $activeusers;
+		
 	}
 	
 	

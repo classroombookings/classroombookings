@@ -30,6 +30,10 @@ class AuthHook{
 		
 		// Load cookie helper as required by this library
 		$this->CI->load->helper('cookie');
+		
+		// Timeout in minutes of an 'active' logged in user.
+		$this->timeout = 10;
+		
     }
 	
 	
@@ -50,81 +54,33 @@ class AuthHook{
 	
 	
 	
-	/*function check($action_name = NULL){
-	
-		#$sessdata['permissions'] = array(1,5,6,7,9);
-		
-		// Get username. We need this to find out if user is logged in or not.
-		$username = $this->CI->session->userdata('username');
-		
-		// Get our user's group_id fro msession. If empty, they're anonymous (Group ID 0)
-		$group_id = $this->CI->session->userdata('group_id');
-		$sessdata['group_id'] = ($group_id === FALSE) ? 0 : $group_id;
-		
-		// Ok, now we need to get the permissions allowed for this group (eg. what the user IS allowed to do)
-		$permissions = $this->CI->session->userdata('permissions');
-		if(is_array($permissions) && !empty($permissions)){
-			// Permissions in session is OK!
-		} else {
-			$sessdata['permissions'] = $this->CI->auth->get_group_permission_ids($group_id);
+	/**
+	 * Update timestamp for user activity.
+	 * Remove expired users
+	 */
+	function activeuser(){
+		if($this->CI->auth->logged_in() == TRUE){
+			
+			$user_id = $this->CI->session->userdata('user_id');
+			$now = time();
+			
+			$sql = 'REPLACE INTO usersactive VALUES(?, ?)';
+			$query = $this->CI->db->query($sql, array($user_id, $now));
+			
+			$expiretime = strtotime("-{$this->timeout} minutes");
+			$sql = 'DELETE FROM usersactive WHERE timestamp < ?';
+			$query = $this->CI->db->query($sql, array($expiretime));
+			
 		}
 		
-		// Now put the required stuff in the session
-		if(isset($sessdata) && is_array($sessdata)){
-			$this->CI->session->set_userdata($sessdata);
-		}
-		
-		// Check for current action. If not, we need to find it!
-		/* if($action_name == NULL){
-			
-			// Get it from the URI
-			$request = implode('/', $this->CI->uri->rsegments);
-			$request = str_replace('/index', '', $request);
-			
-			$segs = array();
-			$ls = "";
-			foreach($this->CI->uri->rsegments as $segment){
-				$thisone = "$ls$segment";
-				$segs[] = $thisone;
-				$ls = "$thisone/";
-			}
-	
-			
-			#die(var_dump($this->CI));
-			$permission = $this->CI->auth->get_permission_by_url($segs);
-			die(var_export($permission));
-			
-		} */
-		
-		// OK, now go to the Auth library and check if the group has permissions on the action
-		#$return = $this->CI->auth->check($action_name, $group);
-		
-		// Get what permissions this group has
-		#$arrperms = $this->CI->auth->get_group_permissions($group_id);
-	#}*/
-	
-	
-	
-	
-	/*function checklevel(){
-
-		$user = $this->CI->session->userdata('authlevel');
-		$request = $this->CI->uri->uri_string();
-		$request = preg_replace('/^\/|\/$/e', '', $request);
-		die($request);
-		
-		if(!$this->CI->auth->checklevel($request, $user, TRUE)){
-			$msg = $this->CI->load->view('msg/err', 'You are required to login to access this area.', TRUE);
-			$this->CI->session->set_flashdata('msg', $msg);
-			$this->CI->session->set_userdata('uri', $this->CI->uri->uri_string());
-			redirect('account/login');
-		}
 	}
 	
-	*/
-    
 	
 	
 	
 }
-?>
+
+
+
+
+/* End of file app/hooks/AuthHook.php */

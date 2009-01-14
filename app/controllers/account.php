@@ -100,54 +100,33 @@ class Account extends Controller {
 	
 	function preauth(){
 		
-		/* $preauthkey = $this->settings->get('preauthkey', 'auth');
+		// Retrive authentication settings
+		$auth = $this->settings->get_all('auth');
+		$ldap = ($auth->ldap == 1);
 		
-		$uri['username'] = $this->uri->segment(3);
-		$uri['timestamp'] = $this->uri->segment(4);
-		$uri['finalpreauth'] = $this->uri->segment(5);
-		
-		
-		if(in_array(FALSE, $uri)){
-			die("Fail. One or more values not present.");
-		}
-		
-		$timestamp = now();
-		$time_5before = strtotime("-5 minutes");
-		$time_5after = strtotime("+5 minutes");
-		
-		if( ($uri['timestamp'] < $time_5before) OR ($uri['timestamp'] > $time_5after) ){
-			die("Fail. Timestamp falls outside of 5 minutes.");
-		}
-		
-		$expected_final = "{$uri['username']}|{$uri['timestamp']}|{$preauthkey}";
-		$expected_final = sha1($expected_final);
-		$compare = ($expected_final == $uri['finalpreauth']); */
-		
-		// Create data array for the preauth function
-		$data['username'] = $this->uri->segment(3);
-		$data['timestamp'] = $this->uri->segment(4);
-		$data['preauth'] = $this->uri->segment(5);
+		// Create data array for the preauth function from URL data
+		$url['username'] = $this->uri->segment(3);
+		$url['timestamp'] = $this->uri->segment(4);
+		$url['preauth'] = $this->uri->segment(5);
 		
 		// Do we create the user aswell?
 		$create = ($this->uri->segment(6) == 'create') ? TRUE : FALSE;
 		
 		// Run preauth function
-		$compare = $this->auth->preauth($data);
+		$compare = $this->auth->preauth($url);
 		
-		$errtitle = sprintf("Pre-authentication failure for %s", $data['username']);
+		$errtitle = sprintf("Pre-authentication failure for %s", $url['username']);
 		
 		if($compare == TRUE){
 			
 			// Comparison is true, preauth is legitimate
 			
 			// See if user exists
-			if($this->auth->userexists($data['username'])){
-
-				// Attempt login. As the user is logging in via preauth, no password is submitted.
-				// username,no password,don't remember
-				$login = $this->auth->login($data['username'], NULL, FALSE);
+			if($this->auth->userexists($url['username'])){
 				
-				if($login == TRUE){
+				$session = $this->auth->session_create($url['username'], FALSE);
+				
+				if($session == TRUE){
 					// Login is successful, redirect to dashboard
 					redirect('dashboard');
 				} else {
@@ -161,42 +140,45 @@ class Account extends Controller {
 				// Now we have two possibilities - we create them (thus allowing them access), or we don't.
 				
 				if($create == TRUE){
-				
+					
 					// Going to create user
 					
-					/*	Is LDAP auth configured? If yes, we need to try and pull their details
-						as if we are authing via LDAP for the first time and creating a new account.
-						... can't do this as there is no password supplied here, so it is impossible
-						to pull the details.
-						
-						Set users.ldap=1
-						Set users.password=NULL
-						
-						--
-						
-						Otherwise we just create the user.
-						
-						Set users.ldap=0
-						Set users.password=NULL
-						THIS MEANS THAT USERS MUST ALWAYS LOGIN VIA PREAUTH AS NO PASSWORD IS SET
-					*/
+					#die("That user doesn't exist, but you asked for them to be created.");
+					$data = array();
+					$data['username'] = $url['username'];
+					$data['displayname'] = $url['username'];
+					$data['group_id'] = $auth->preauthgroup_id;
+					$data['enabled'] = 1;
+					$data['ldap'] = $auth->ldap;
+					$data['password'] = NULL;
 					
-					die("That user doesn't exist, but you asked for them to be created.");
+					// Add user
+					$add = $this->security->add_user($data);
 					
-					$user['username'] = $data['username'];
-					$data['displayname'] = $this->auth->ldap_get_displayname($data['username']);
-					$data['group_id'] = $this->input->post('group_id');
-					//$data['department_id'] = $this->input->post('department_id');
-					$data['enabled'] = ($this->input->post('enabled') == '1') ? 1 : 0;
-					
-					// TODO: Waiting to complete LDAP auth part [cant remember why im waiting for this bit??]
+					if($add == TRUE){
+						
+						// Added the user, now we can log them in
+						$session = $this->auth->session_create($data['username'], FALSE);
+						if($session == TRUE){
+							// Login is successful, redirect to dashboard
+							redirect('dashboard');
+						} else {
+							// Can't login. Most likely reason is that their account is disabled
+							$this->msg->fail($errtitle, 'Could not login with the supplied username. Account disabled? <br />' . $this->auth->lasterr);
+						}
+						
+					} else {
+						
+						// Failed to add the user
+						$this->lasterr = $this->CI->security->lasterr;
+						return FALSE;
+						
+					}
 					
 				} else {
 					
 					// User doesn't exist, and they don't want accounts to be created automatically
-					// This means the username we're preauthing with does not exist!
-					
-					#die("Fail. That user doesn't even exist");
+					// This means the username we're preauthing with does not exist
 					$this->msg->fail($errtitle, 'The username does not exist.');
 					
 				}
@@ -255,4 +237,6 @@ class Account extends Controller {
 }
 
 
-?>
+
+
+/* End of file app/controllers/account.php */

@@ -207,10 +207,10 @@ $t = 1;
 	
 	<tr>
 		<td class="caption">
-			<label for="ldap" accesskey="T" title="If this option is enabled, the user details (display name, group and department membership) will be updated with their LDAP info every time they login; potentially un-doing any customisations you made to the user.">Upda<u>t</u>e details on login</label>
+			<label for="ldaploginupdate" accesskey="T" title="If this option is enabled, the user details (display name, group and department membership) will be updated with their LDAP info every time they login; potentially un-doing any customisations you made to the user.">Upda<u>t</u>e details on login</label>
 		</td>
 		<td class="field">
-			<label for="ldap" class="check">
+			<label for="ldaploginupdate" class="check">
 			<?php
 			unset($check);
 			$check['name'] = 'ldaploginupdate';

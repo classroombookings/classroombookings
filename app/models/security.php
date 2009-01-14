@@ -556,26 +556,50 @@ class Security extends Model{
 	/**
 	 * Transform an LDAP group name into a local CRBS group_id
 	 *
-	 * Used for finding out which group a new LDAP user should be assigned to
+	 * Used for finding out which group a new LDAP user should be assigned to.
+	 * Use no parameters to get an array of ldapgroupname => local group id
 	 *
-	 * @param string Name of group to attempt to map to local group ID
-	 * @return Local group ID or FALSE
+	 * @param	string	ldapgroupname		Name of group to attempt to map to local group ID
+	 * @return	mixed						Array of groups=>ids, Local group ID, or FALSE
 	 */
-	function ldap_groupname_to_group($ldapgroupname){
-		$sql = 'SELECT group_id
-				FROM groups2ldapgroups AS g2l
-				LEFT JOIN ldapgroups ON g2l.ldapgroup_id = ldapgroups.ldapgroup_id
-				WHERE ldapgroups.name = ?
-				LIMIT 1';
-		$query = $this->db->query($sql, array($ldapgroupname));
-		#echo $this->db->last_query() . "\n\n\n";
-		if($query->num_rows() == 1){
-			$row = $query->row();
-			$group_id = $row->group_id;
-			return $group_id;
+	function ldap_groupname_to_group($ldapgroupname = NULL){
+		
+		if($ldapgroupname == NULL){
+			
+			$sql = 'SELECT g2l.group_id, lg.name
+					FROM groups2ldapgroups AS g2l
+					LEFT JOIN ldapgroups AS lg ON g2l.ldapgroup_id = lg.ldapgroup_id';
+			$query = $this->db->query($sql);
+			
+			if($query->num_rows() > 0){
+				$result = $query->result();
+				foreach($result as $row){
+					$groups[$row->name] = $row->group_id;
+				}
+				return $groups;
+			} else {
+				$this->lasterr = 'No LDAP group mappings found.';
+				return FALSE;
+			}
+			
 		} else {
-			$this->lasterr = 'No groups found';
-			return FALSE;
+			
+			$sql = 'SELECT group_id
+					FROM groups2ldapgroups AS g2l
+					LEFT JOIN ldapgroups ON g2l.ldapgroup_id = ldapgroups.ldapgroup_id
+					WHERE ldapgroups.name = ?
+					LIMIT 1';
+			$query = $this->db->query($sql, array($ldapgroupname));
+			#echo $this->db->last_query() . "\n\n\n";
+			if($query->num_rows() == 1){
+				$row = $query->row();
+				$group_id = $row->group_id;
+				return $group_id;
+			} else {
+				$this->lasterr = 'No groups found';
+				return FALSE;
+			}
+			
 		}
 	}
 	

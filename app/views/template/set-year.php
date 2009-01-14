@@ -5,7 +5,7 @@
 	) ?>
 <div>
 	<label for="workingyear_id" title="Change the working academic year for this session, allowing you to configure items for other academic years without affecting the running of the system.">Change working academic year:</label>
-	<select name="workingyear_id" id="workingyear_id">
+	<select name="workingyear_id" id="workingyear_id" onchange="this.form.submit()" >
 	<?php
 	$w = FALSE;
 	foreach($years as $id => $name){

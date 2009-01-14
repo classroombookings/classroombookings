@@ -18,13 +18,15 @@ $hook['post_controller_constructor'][] = array(
                                 'filepath' => 'hooks',
                                 );
 
-/*
-$hook['post_controller_constructor'][] = array(
-							'class'			=> 'AuthHook',
-							'function'		=> 'check',
-							'filename'		=> 'AuthHook.php',
-							'filepath'		=> 'hooks',
-						);
-*/
 
-?>
+$hook['post_controller_constructor'][] = array(
+								'class'	=> 'AuthHook',
+								'function' => 'activeuser',
+								'filename' => 'AuthHook.php',
+								'filepath' => 'hooks',
+								);
+
+
+
+
+/* End of file app/config/hooks.php */
