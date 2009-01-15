@@ -23,7 +23,7 @@
 			
 			<td align="center" width="20"><?php
 			unset($check);
-			$check['name'] = "delete[{$term->term_id}]";
+			$check['name'] = "term[][delete]";
 			$check['id'] = "delete_{$term->term_id}";
 			$check['value'] = '1';
 			$check['tabindex'] = $t;
@@ -33,7 +33,7 @@
 			
 			<td class="field"><?php
 			unset($input);
-			$input['name'] = "name[{$term->term_id}]";
+			$input['name'] = "term[][name]";
 			$input['id'] = "name_{$term->term_id}";
 			$input['value'] = $term->name;
 			$input['size'] = 25;
@@ -45,7 +45,7 @@
 			
 			<td class="field"><?php
 			unset($input);
-			$input['name'] = "date_start[{$term->term_id}]";
+			$input['name'] = "term[][date_start]";
 			$input['id'] = "date_start_{$term->term_id}}";
 			$input['value'] = $term->date_start;	#date("l jS F Y", todate($term->date_start));
 			$input['size'] = 15;
@@ -58,7 +58,7 @@
 			
 			<td class="field"><?php
 			unset($input);
-			$input['name'] = "date_end[{$term->term_id}]";
+			$input['name'] = "term[][date_end]";
 			$input['id'] = "date_end_{$term->term_id}}";
 			$input['value'] = $term->date_end;	#date("l jS F Y", todate($term->date_start));
 			$input['size'] = 15;
@@ -88,8 +88,8 @@
 		
 		<td class="field"><?php
 		unset($input);
-		$input['name'] = "name[-1]";
-		$input['id'] = 'name[-1]';
+		$input['name'] = "newterm[name]";
+		$input['id'] = 'new_name';
 		$input['value'] = '';
 		$input['size'] = 25;
 		$input['maxlength'] = 50;
@@ -100,8 +100,8 @@
 		
 		<td class="field"><?php
 		unset($input);
-		$input['name'] = "date_start[-1]";
-		$input['id'] = 'date_start[-1]';
+		$input['name'] = "newterm[date_start]";
+		$input['id'] = 'new_date_start';
 		$input['value'] = "";
 		$input['size'] = 15;
 		$input['maxlength'] = 10;
@@ -113,8 +113,8 @@
 		
 		<td class="field"><?php
 		unset($input);
-		$input['name'] = "date_end[-1]";
-		$input['id'] = 'date_end[-1]';
+		$input['name'] = "newterm[date_end]";
+		$input['id'] = 'new_date_end';
 		$input['value'] = "";
 		$input['size'] = 15;
 		$input['maxlength'] = 10;

@@ -51,7 +51,7 @@ class Terms_model extends Model{
 			$this->db->select('*', FALSE);
 			$this->db->from('terms');
 			if($year_id != NULL){
-				$this->db->where('term_id', $year_id);
+				$this->db->where('year_id', $year_id);
 			}
 			
 			$this->db->orderby('date_start ASC');
@@ -70,7 +70,7 @@ class Terms_model extends Model{
 			
 		} else {
 			
-			if (!is_numeric($term_id)) {
+			if(!is_numeric($term_id)){
 				return FALSE;
 			}
 			
