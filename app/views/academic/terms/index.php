@@ -1,3 +1,10 @@
+<?php
+$errors = validation_errors();
+if($errors){
+	echo $this->msg->err('<ul>' . $errors . '</ul>', $this->lang->line('FORM_ERRORS'));
+}
+?>
+
 <table class="list form" width="100%" cellpadding="0" cellspacing="0" border="0">
 	<col /><col /><col />
 	<thead>
@@ -18,12 +25,17 @@
 	
 	if($terms != 0){
 		foreach($terms as $term){
+		
+		echo form_hidden('term_ids[]]', $term->term_id);
+		
+		echo form_hidden("term[{$term->term_id}][term_id]", $term->term_id);
+		
 		?>
 		<tr>
 			
 			<td align="center" width="20"><?php
 			unset($check);
-			$check['name'] = "term[][delete]";
+			$check['name'] = "term[{$term->term_id}][delete]";
 			$check['id'] = "delete_{$term->term_id}";
 			$check['value'] = '1';
 			$check['tabindex'] = $t;
@@ -33,7 +45,7 @@
 			
 			<td class="field"><?php
 			unset($input);
-			$input['name'] = "term[][name]";
+			$input['name'] = "term[{$term->term_id}][name]";
 			$input['id'] = "name_{$term->term_id}";
 			$input['value'] = $term->name;
 			$input['size'] = 25;
@@ -45,7 +57,7 @@
 			
 			<td class="field"><?php
 			unset($input);
-			$input['name'] = "term[][date_start]";
+			$input['name'] = "term[{$term->term_id}][date_start]";
 			$input['id'] = "date_start_{$term->term_id}}";
 			$input['value'] = $term->date_start;	#date("l jS F Y", todate($term->date_start));
 			$input['size'] = 15;
@@ -58,7 +70,7 @@
 			
 			<td class="field"><?php
 			unset($input);
-			$input['name'] = "term[][date_end]";
+			$input['name'] = "term[{$term->term_id}][date_end]";
 			$input['id'] = "date_end_{$term->term_id}}";
 			$input['value'] = $term->date_end;	#date("l jS F Y", todate($term->date_start));
 			$input['size'] = 15;
@@ -90,7 +102,7 @@
 		unset($input);
 		$input['name'] = "newterm[name]";
 		$input['id'] = 'new_name';
-		$input['value'] = '';
+		$input['value'] = set_value('newterm[name]');
 		$input['size'] = 25;
 		$input['maxlength'] = 50;
 		$input['tabindex'] = $t;
@@ -102,7 +114,7 @@
 		unset($input);
 		$input['name'] = "newterm[date_start]";
 		$input['id'] = 'new_date_start';
-		$input['value'] = "";
+		$input['value'] = set_value('newterm[date_start]');
 		$input['size'] = 15;
 		$input['maxlength'] = 10;
 		$input['class'] = 'date';
@@ -115,7 +127,7 @@
 		unset($input);
 		$input['name'] = "newterm[date_end]";
 		$input['id'] = 'new_date_end';
-		$input['value'] = "";
+		$input['value'] = set_value('newterm[date_end]');
 		$input['size'] = 15;
 		$input['maxlength'] = 10;
 		$input['class'] = 'date';

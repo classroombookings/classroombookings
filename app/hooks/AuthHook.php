@@ -61,7 +61,7 @@ class AuthHook{
 	function activeuser(){
 		if($this->CI->auth->logged_in() == TRUE){
 			
-			$user_id = $this->CI->session->userdata('user_id');
+			$user_id = (int)$this->CI->session->userdata('user_id');
 			$now = time();
 			
 			$sql = 'REPLACE INTO usersactive VALUES(?, ?)';

@@ -555,7 +555,7 @@ CREATE TABLE `terms` (
   `date_end` date NOT NULL COMMENT 'End date of the term',
   `name` varchar(40) NOT NULL COMMENT 'Name of the term',
   PRIMARY KEY  (`term_id`)
-) TYPE=InnoDB AUTO_INCREMENT=2 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Term dates'*/;
+) TYPE=InnoDB AUTO_INCREMENT=3 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Term dates'*/;
 
 
 
@@ -566,7 +566,8 @@ CREATE TABLE `terms` (
 LOCK TABLES `terms` WRITE;
 /*!40000 ALTER TABLE `terms` DISABLE KEYS*/;
 INSERT INTO `terms` (`term_id`, `year_id`, `date_start`, `date_end`, `name`) VALUES
-	('1','1','2009-09-09','2009-10-24','Autumn');
+	('1','1','2008-09-08','2008-10-24','Autumn'),
+	('2','1','2009-01-05','2009-02-13','Spring 1');
 /*!40000 ALTER TABLE `terms` ENABLE KEYS*/;
 UNLOCK TABLES;
 
@@ -601,7 +602,7 @@ CREATE TABLE `users` (
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS*/;
 INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `password`, `displayname`, `cookiekey`, `lastlogin`, `ldap`, `created`) VALUES
-	('1',1,1,'admin','craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Craig Rodway',NULL,'2009-01-14 14:14:10',0,'0000-00-00'),
+	('1',1,1,'admin','craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Craig Rodway',NULL,'2009-01-16 09:50:39',0,'0000-00-00'),
 	('3',4,1,'user1','','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Foo Number 1',NULL,'2008-12-19 23:06:20',0,'2008-11-27'),
 	('12',2,1,'craig.rodway','craig.rodway@bishopbarrington.net',NULL,'Mr Rodway',NULL,'2009-01-09 16:12:48',1,'2009-01-09'),
 	('19',2,1,'test.one','test.one@bishopbarrington.net',NULL,'Mr T One',NULL,'2009-01-14 11:17:50',1,'2009-01-14'),
@@ -698,7 +699,7 @@ CREATE TABLE `usersactive` (
 LOCK TABLES `usersactive` WRITE;
 /*!40000 ALTER TABLE `usersactive` DISABLE KEYS*/;
 INSERT INTO `usersactive` (`user_id`, `timestamp`) VALUES
-	('1','1231948738');
+	('1','1232107194');
 /*!40000 ALTER TABLE `usersactive` ENABLE KEYS*/;
 UNLOCK TABLES;
 

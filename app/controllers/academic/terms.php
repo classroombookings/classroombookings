@@ -58,24 +58,35 @@ class Terms extends Controller {
 	function save(){
 		$period_id = $this->input->post('period_id');
 		
-		// Set validation rules 
-		/* if(in_array(-1, $this->input->post('term_id'))){
-			$this->form_validation->set_rules('name[-1]', 'Name', 'required|max_length[50]|trim');
-			$this->form_validation->set_rules('date_start[-1]', 'required|Start date', 'exact_length[10]|trim|callback__is_valid_date');
-			$this->form_validation->set_rules('date_end[-1]', 'End date', 'required|exact_length[10]|trim|callback__is_valid_date|callback__is_after[date_start]');
+		$this->form_validation->set_rules('newterm[name]', 'Name', 'max_length[50]|trim');
+		
+		if($this->input->post('term_ids')){
+			foreach($this->input->post('term_ids') as $term_id){
+				$this->form_validation->set_rules("term[{$term_id}][name]", 'Name', 'max_length[50]|trim');
+				$this->form_validation->set_rules("term[{$term_id}][date_start]", 'Start date', 'required|exact_length[10]|trim|callback__is_valid_date');
+				$this->form_validation->set_rules("term[{$term_id}][date_end]", 'End date', "required|exact_length[10]|trim|callback__is_valid_date");
+				$this->form_validation->set_rules("term[{$term_id}][term_id]", "Term ID", "callback__datecheck");
+			}
 		} else {
-			$this->form_validation->set_rules('term_id[]', 'Term ID');
-			$this->form_validation->set_rules('name[]', 'Name', 'required|max_length[50]|trim');
-			$this->form_validation->set_rules('date_start[]', 'required|Start date', 'exact_length[10]|trim|callback__is_valid_date');
-			$this->form_validation->set_rules('date_end[]', 'End date', 'required|exact_length[10]|trim|callback__is_valid_date|callback__is_after[date_start]');
-		} */
-		$this->form_validation->set_rules('term[][name]', 'Name', 'required|min_length[0]|trim');
+			$this->form_validation->set_rules('newterm[name]', 'Name', 'required|max_length[50]|trim');
+		}
+		
+		$newterm = $this->input->post('newterm');
+		
+		if(!empty($newterm['name'])){
+			$this->form_validation->set_rules('newterm[date_start]', 'Start date', 'required|exact_length[10]|trim|callback__is_valid_date');
+			$this->form_validation->set_rules('newterm[date_end]', 'End date', 'required|exact_length[10]|trim|callback__is_valid_date|callback__is_after');
+		}
+		
+		
+		
 		$this->form_validation->set_error_delimiters('<li>', '</li>');
 		
 		
 		if($this->form_validation->run() == FALSE){
 			
-			echo("didn't work");
+			// Re-show form with validation errors
+			$this->index();
 			
 		} else {
 			
@@ -136,26 +147,64 @@ class Terms extends Controller {
 	
 	
 	/**
-	 * VALIDATION	_is_after
+	 * VALIDATION	_datecheck
 	 * 
-	 * Check that the date entered (date_end) is greater than the start date
+	 * Checks if end date on supplied term is valid (after the start date).
+	 * It works this way because of the way the form is created (and only used when editing/updating)
 	 * 
-	 * @param		string		$date		Date
-	 * @return		bool on success	 
-	 *
+	 * @param	int		term_id		ID of the term we are looking up
+	 * @return	bool on success	 
 	 */	 	 	 	 	 	 
-	function _is_after($date){
-		$start = $this->input->post('date_start');
+	function _datecheck($term_id){
+		// Get array of terms submitted
+		$terms = $this->input->post("term");
+		
+		// Get start + end dates from the form data
+		$start = $terms[$term_id]['date_start'];
+		$end = $terms[$term_id]['date_end'];
+		// Also pick up the name as something to reference it to if it doesn't validate
+		$name = $terms[$term_id]['name'];
+		
+		// Convert dates into datatype we can easily work with
 		$startarr = explode('-', $start);
 		$startint = mktime(0, 0, 0, $startarr[1], $startarr[2], $startarr[0]);
 		
-		$endarr = explode('-', $date);
+		$endarr = explode('-', $end);
+		$endint = mktime(0, 0, 0, $endarr[1], $endarr[2], $endarr[0]);
+		
+		// Check if end date is greater than start date
+		if($endint > $startint){
+			return TRUE;
+		} else {
+			$this->form_validation->set_message('_datecheck', "The end date for {$name} must be after its start date ({$start})");
+			return FALSE;
+		}
+	}
+	
+	
+	
+	
+	/**
+	 * Basic date checking to ensure end date is after the start date.
+	 * Only used when adding a new term.
+	 *
+	 * @param	int		end		End date
+	 * @return	bool
+	 */
+	function _is_after($end){
+		$newterm =  $this->input->post('newterm');
+		$start = $newterm['date_start'];
+		
+		$startarr = explode('-', $start);
+		$startint = mktime(0, 0, 0, $startarr[1], $startarr[2], $startarr[0]);
+		
+		$endarr = explode('-', $end);
 		$endint = mktime(0, 0, 0, $endarr[1], $endarr[2], $endarr[0]);
 		
 		if($endint > $startint){
 			return TRUE;
 		} else {
-			$this->form_validation->set_message('_is_after', 'The end date must be after the start date (' . $start . '.)');
+			$this->form_validation->set_message('_is_after', "The end date must be after the new term's start date ({$start})");
 			return FALSE;
 		}
 	}
@@ -166,4 +215,6 @@ class Terms extends Controller {
 }
 
 
-/* End of file app/controllers/academic/terms.php */
+
+
+/* End of file: app/controllers/academic/terms.php */
