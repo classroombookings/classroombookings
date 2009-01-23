@@ -56,20 +56,43 @@ class Terms extends Controller {
 	
 	
 	function save(){
+	
+		/*
+			Lots of validation stuff happening here.
+			We need to see what we're actually doing so we validate the right stuff
+		*/
+		
+		
 		$period_id = $this->input->post('period_id');
 		
 		$this->form_validation->set_rules('newterm[name]', 'Name', 'max_length[50]|trim');
 		
 		if($this->input->post('term_ids')){
+			
+			$terms = $this->input->post('term');
+			$to_delete = array();
+			
 			foreach($this->input->post('term_ids') as $term_id){
 				$this->form_validation->set_rules("term[{$term_id}][name]", 'Name', 'max_length[50]|trim');
 				$this->form_validation->set_rules("term[{$term_id}][date_start]", 'Start date', 'required|exact_length[10]|trim|callback__is_valid_date');
 				$this->form_validation->set_rules("term[{$term_id}][date_end]", 'End date', "required|exact_length[10]|trim|callback__is_valid_date");
 				$this->form_validation->set_rules("term[{$term_id}][term_id]", "Term ID", "callback__datecheck");
+				if(isset($terms[$term_id]['delete'])){ array_push($to_delete, $term_id); }
 			}
+			
+			// If we were asked to delete selected terms, do that and nothing else.
+			if($this->input->post('btn_delete') == 'delete'){
+				$this->_delete_multiple($to_delete);
+			}
+			
 		} else {
+			
 			$this->form_validation->set_rules('newterm[name]', 'Name', 'required|max_length[50]|trim');
+			
 		}
+		
+		
+		
 		
 		$newterm = $this->input->post('newterm');
 		
@@ -77,8 +100,6 @@ class Terms extends Controller {
 			$this->form_validation->set_rules('newterm[date_start]', 'Start date', 'required|exact_length[10]|trim|callback__is_valid_date');
 			$this->form_validation->set_rules('newterm[date_end]', 'End date', 'required|exact_length[10]|trim|callback__is_valid_date|callback__is_after');
 		}
-		
-		
 		
 		$this->form_validation->set_error_delimiters('<li>', '</li>');
 		
@@ -90,33 +111,141 @@ class Terms extends Controller {
 			
 		} else {
 			
-			/* $terms = array();
-			
-			foreach($this->input->post('name') as $term_id => $name){
-				if(!empty($name)){ $terms[$term_id]['name'] = $name; }
-			}
-			foreach($this->input->post('date_start') as $term_id => $date_start){
-				if(!empty($date_start)){ $terms[$term_id]['date_start'] = $date_start; }
-			}
-			foreach($this->input->post('date_end') as $term_id => $date_end){
-				if(!empty($date_end)){ $terms[$term_id]['date_end'] = $date_end; }
+			// Do we have any existing terms to update?
+			if(!empty($terms)){
+				
+				// Update existing ones
+				$edit = $this->terms_model->edit($terms);
+				
+				if($edit == FALSE){
+					#$this->lasterr = 'Could not update the existing terms';
+					$this->msg->add('err', $this->terms_model->lasterr);
+				} else {
+					$this->msg->add('info', 'Terms have been updated.');
+				}
+				
 			}
 			
 			// Get our new term to add if it exists
-			if(array_key_exists(-1, $terms)){
+			if(!empty($newterm['name'])){
+				
 				// New one to add
-				// ...
-				$data = $terms[-1];
+				
+				$data['name'] = $newterm['name'];
+				$data['date_start'] = $newterm['date_start'];
+				$data['date_end'] = $newterm['date_end'];
 				$data['year_id'] = $this->session->userdata('year_working');
+				
 				$add = $this->terms_model->add($data);
-			} */
+				
+				if($add == FALSE){
+					#$this->lasterr = $this->terms_model->lasterr;
+					$this->msg->add('err', $this->terms_model->lasterr);
+				} else {
+					$this->msg->add('info', 'The new term has been added successfully.');
+				}
+				
+			}
 			
 			unset($data);
+			
+			$this->index();
+			#redirect('academic/terms');
 			
 			#print_r($term);
 			
 		}
 		
+	}
+	
+	
+	
+	
+	function delete($term_id = NULL){
+		
+		$this->auth->check('terms.delete');
+		
+		// Check if a form has been submitted; if not - show it to ask user confirmation
+		if($this->input->post('id')){
+			
+			// Form has been submitted (so the POST value exists)
+			// Call model function to delete term
+			$delete = $this->terms_model->delete($this->input->post('id'));
+			if($delete == FALSE){
+				$this->msg->add('err', $this->terms_model->lasterr, 'An error occured');
+			} else {
+				$this->msg->add('info', 'The term has been deleted.');
+			}
+			// Redirect
+			redirect('academic/terms');
+			
+		} else {
+			
+			$tpl['title'] = 'Delete term';
+			$tpl['pagetitle'] = $tpl['title'];
+			
+			if($term_id == NULL){
+				
+				$tpl['title'] = 'Delete term';
+				$tpl['pagetitle'] = $tpl['title'];
+				$tpl['body'] = $this->msg->err('Could not find that term or no term ID given.');
+				
+			} else {
+				
+				// Get term info so we can present the confirmation page with a name
+				$term = $this->terms_model->get($term_id, NULL, $this->session->userdata('year_working'));
+				
+				if($term == FALSE){
+				
+					$tpl['body'] = $this->msg->err('Could not find that term or no term ID given.');
+					
+				} else {
+					
+					// Initialise page
+					$body['action'] = 'academic/terms/delete';
+					$body['id'] = $term_id;
+					$body['cancel'] = 'academic/terms';
+					$body['text'] = 'If you delete this term, the following associated items will also be removed:';
+					$body['text'] .= '<ul><li>Bookings</li><li>Holidays</li></ul>';
+					$tpl['title'] = 'Delete term';
+					$tpl['pagetitle'] = 'Delete term ' . $term->name;
+					$tpl['body'] = $this->load->view('parts/deleteconfirm', $body, TRUE);
+					
+				}
+				
+			}
+			
+			$this->load->view($this->tpl, $tpl);
+			
+		}
+		
+	}
+	
+	
+	
+	
+	function _delete_multiple($terms){
+		$this->auth->check('terms.delete');
+		
+		if(empty($terms)){
+			$this->msg->add('err', 'No terms were selected for deletion.');
+		} else {
+		
+			$str = implode(',', $terms);
+			$str = preg_replace('/,$/', '', $str);
+			
+			$sql = sprintf('DELETE FROM terms WHERE term_id IN (%s)', $str);
+			$query = $this->db->query($sql);
+			
+			if($query == TRUE){
+				$this->msg->add('info', 'The terms have been deleted successfully.');
+			} else {
+				$this->msg->add('err', 'An error occured when trying to delete the terms.');
+			}
+			
+		}
+		
+		redirect('academic/terms');
 	}
 	
 	

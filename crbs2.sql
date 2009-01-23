@@ -96,7 +96,10 @@ UNLOCK TABLES;
 
 CREATE TABLE `departments2ldapgroups` (
   `department_id` int(10) unsigned NOT NULL,
-  `ldapgroup_id` int(10) unsigned NOT NULL
+  `ldapgroup_id` int(10) unsigned NOT NULL,
+  UNIQUE KEY `unique` (`department_id`,`ldapgroup_id`),
+  KEY `department_id` (`department_id`),
+  KEY `ldapgroup_id` (`ldapgroup_id`)
 ) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1*/;
 
 
@@ -108,24 +111,24 @@ CREATE TABLE `departments2ldapgroups` (
 LOCK TABLES `departments2ldapgroups` WRITE;
 /*!40000 ALTER TABLE `departments2ldapgroups` DISABLE KEYS*/;
 INSERT INTO `departments2ldapgroups` (`department_id`, `ldapgroup_id`) VALUES
-	('7','1150'),
 	('1','1157'),
-	('4','1149'),
-	('11','1156'),
-	('2','1176'),
 	('2','1154'),
-	('5','1158'),
-	('12','1199'),
-	('12','1159'),
-	('9','1186'),
-	('9','1163'),
-	('3','1164'),
+	('2','1176'),
 	('3','1147'),
-	('13','1144'),
+	('3','1164'),
+	('4','1149'),
+	('5','1158'),
+	('6','1162'),
+	('6','1190'),
+	('7','1150'),
+	('9','1163'),
+	('9','1186'),
 	('10','1179'),
 	('10','1190'),
-	('6','1162'),
-	('6','1190');
+	('11','1156'),
+	('12','1159'),
+	('12','1199'),
+	('13','1144');
 /*!40000 ALTER TABLE `departments2ldapgroups` ENABLE KEYS*/;
 UNLOCK TABLES;
 
@@ -144,7 +147,7 @@ CREATE TABLE `groups` (
   `permissions` text COMMENT 'A PHP-serialize()''d chunk of data',
   `created` date NOT NULL COMMENT 'Date the group was created',
   PRIMARY KEY  (`group_id`)
-) TYPE=InnoDB AUTO_INCREMENT=8 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Groups table with settings and permiss; InnoDB free: 9216 kB'*/;
+) TYPE=InnoDB AUTO_INCREMENT=10 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Groups table with settings and permiss; InnoDB free: 9216 kB'*/;
 
 
 
@@ -158,7 +161,8 @@ INSERT INTO `groups` (`group_id`, `name`, `description`, `bookahead`, `quota_num
 	('1','Administrators','Default group for administrator users',0,NULL,NULL,'a:60:{i:0;s:9:\"dashboard\";i:1;s:18:\"dashboard.viewdept\";i:2;s:17:\"dashboard.viewown\";i:3;s:9:\"myprofile\";i:4;s:9:\"configure\";i:5;s:10:\"changeyear\";i:6;s:8:\"bookings\";i:7;s:19:\"bookings.create.one\";i:8;s:21:\"bookings.create.recur\";i:9;s:23:\"bookings.delete.one.own\";i:10;s:29:\"bookings.delete.one.roomowner\";i:11;s:31:\"bookings.delete.recur.roomowner\";i:12;s:22:\"bookings.overwrite.one\";i:13;s:24:\"bookings.overwrite.recur\";i:14;s:32:\"bookings.overwrite.one.roomowner\";i:15;s:34:\"bookings.overwrite.recur.roomowner\";i:16;s:5:\"rooms\";i:17;s:9:\"rooms.add\";i:18;s:10:\"rooms.edit\";i:19;s:12:\"rooms.delete\";i:20;s:12:\"rooms.fields\";i:21;s:19:\"rooms.fields.values\";i:22;s:8:\"academic\";i:23;s:5:\"years\";i:24;s:9:\"years.add\";i:25;s:10:\"years.edit\";i:26;s:12:\"years.delete\";i:27;s:7:\"periods\";i:28;s:11:\"periods.add\";i:29;s:12:\"periods.edit\";i:30;s:14:\"periods.delete\";i:31;s:5:\"weeks\";i:32;s:9:\"weeks.add\";i:33;s:10:\"weeks.edit\";i:34;s:12:\"weeks.delete\";i:35;s:19:\"weeks.ayears.manage\";i:36;s:16:\"weeks.ayears.set\";i:37;s:5:\"terms\";i:38;s:9:\"terms.add\";i:39;s:10:\"terms.edit\";i:40;s:12:\"terms.delete\";i:41;s:11:\"departments\";i:42;s:15:\"departments.add\";i:43;s:16:\"departments.edit\";i:44;s:18:\"departments.delete\";i:45;s:7:\"reports\";i:46;s:21:\"reports.owndepartment\";i:47;s:22:\"reports.alldepartments\";i:48;s:15:\"reports.ownroom\";i:49;s:16:\"reports.allrooms\";i:50;s:13:\"reports.other\";i:51;s:5:\"users\";i:52;s:9:\"users.add\";i:53;s:10:\"users.edit\";i:54;s:12:\"users.delete\";i:55;s:12:\"users.import\";i:56;s:6:\"groups\";i:57;s:10:\"groups.add\";i:58;s:11:\"groups.edit\";i:59;s:13:\"groups.delete\";}','0000-00-00'),
 	('2','Teaching Staff','Teachers from LDAP',14,'6','day','a:7:{i:0;s:9:\"dashboard\";i:1;s:18:\"dashboard.viewdept\";i:2;s:17:\"dashboard.viewown\";i:3;s:9:\"myprofile\";i:4;s:8:\"bookings\";i:5;s:19:\"bookings.create.one\";i:6;s:23:\"bookings.delete.one.own\";}','0000-00-00'),
 	('4','Support staff','',14,'6','current','a:7:{i:0;s:9:\"dashboard\";i:1;s:18:\"dashboard.viewdept\";i:2;s:17:\"dashboard.viewown\";i:3;s:9:\"myprofile\";i:4;s:8:\"bookings\";i:5;s:19:\"bookings.create.one\";i:6;s:23:\"bookings.delete.one.own\";}','2008-12-02'),
-	('7','Guests','Default group for guests',0,'1','current','a:1:{i:0;s:8:\"bookings\";}','0000-00-00');
+	('7','Guests','Default group for guests',0,'1','current','a:1:{i:0;s:8:\"bookings\";}','0000-00-00'),
+	('9','Foo','',0,NULL,NULL,NULL,'2009-01-23');
 /*!40000 ALTER TABLE `groups` ENABLE KEYS*/;
 UNLOCK TABLES;
 
@@ -169,7 +173,11 @@ UNLOCK TABLES;
 
 CREATE TABLE `groups2ldapgroups` (
   `group_id` int(10) unsigned NOT NULL,
-  `ldapgroup_id` int(10) unsigned NOT NULL
+  `ldapgroup_id` int(10) unsigned NOT NULL,
+  UNIQUE KEY `ldapgroup_id` (`ldapgroup_id`),
+  KEY `group_id` (`group_id`),
+  CONSTRAINT `groups2ldapgroups_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`) ON DELETE CASCADE,
+  CONSTRAINT `groups2ldapgroups_ibfk_2` FOREIGN KEY (`ldapgroup_id`) REFERENCES `ldapgroups` (`ldapgroup_id`) ON DELETE CASCADE
 ) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Maps 1+ LDAp groups to 1 CRBS group'*/;
 
 
@@ -197,7 +205,9 @@ CREATE TABLE `holidays` (
   `date_start` date NOT NULL,
   `date_end` date NOT NULL,
   `name` varchar(20) default NULL,
-  PRIMARY KEY  (`holiday_id`)
+  PRIMARY KEY  (`holiday_id`),
+  KEY `year_id` (`year_id`),
+  CONSTRAINT `holidays_ibfk_1` FOREIGN KEY (`year_id`) REFERENCES `years` (`year_id`) ON DELETE CASCADE
 ) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='School holidays'*/;
 
 
@@ -346,14 +356,16 @@ UNLOCK TABLES;
 
 CREATE TABLE `periods` (
   `period_id` int(10) unsigned NOT NULL auto_increment,
-  `year_id` int(10) unsigned default NULL,
+  `year_id` int(10) unsigned NOT NULL,
   `time_start` time NOT NULL,
   `time_end` time NOT NULL,
   `name` varchar(20) NOT NULL,
   `days` varchar(255) NOT NULL COMMENT 'Serialize() of the days that this period is set on',
   `bookable` tinyint(1) NOT NULL COMMENT 'Boolean 1 or 0 if periods can be booked or not',
-  PRIMARY KEY  (`period_id`)
-) TYPE=InnoDB AUTO_INCREMENT=50 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Periods'*/;
+  PRIMARY KEY  (`period_id`),
+  KEY `year_id` (`year_id`),
+  CONSTRAINT `periods_ibfk_1` FOREIGN KEY (`year_id`) REFERENCES `years` (`year_id`) ON DELETE CASCADE
+) TYPE=InnoDB AUTO_INCREMENT=59 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Periods'*/;
 
 
 
@@ -384,7 +396,8 @@ UNLOCK TABLES;
 CREATE TABLE `quota` (
   `user_id` int(10) unsigned NOT NULL,
   `quota_num` int(10) unsigned NOT NULL,
-  UNIQUE KEY `user_id` (`user_id`)
+  UNIQUE KEY `user_id` (`user_id`),
+  CONSTRAINT `quota_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
 ) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Quota details'*/;
 
 
@@ -554,8 +567,13 @@ CREATE TABLE `terms` (
   `date_start` date NOT NULL COMMENT 'Start date of the term',
   `date_end` date NOT NULL COMMENT 'End date of the term',
   `name` varchar(40) NOT NULL COMMENT 'Name of the term',
-  PRIMARY KEY  (`term_id`)
-) TYPE=InnoDB AUTO_INCREMENT=3 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Term dates'*/;
+  PRIMARY KEY  (`term_id`),
+  UNIQUE KEY `uniquedates` (`date_start`,`date_end`),
+  UNIQUE KEY `date_start` (`date_start`),
+  UNIQUE KEY `date_end` (`date_end`),
+  KEY `year_id` (`year_id`),
+  CONSTRAINT `terms_ibfk_1` FOREIGN KEY (`year_id`) REFERENCES `years` (`year_id`) ON DELETE CASCADE
+) TYPE=InnoDB AUTO_INCREMENT=11 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Term dates'*/;
 
 
 
@@ -567,7 +585,8 @@ LOCK TABLES `terms` WRITE;
 /*!40000 ALTER TABLE `terms` DISABLE KEYS*/;
 INSERT INTO `terms` (`term_id`, `year_id`, `date_start`, `date_end`, `name`) VALUES
 	('1','1','2008-09-08','2008-10-24','Autumn'),
-	('2','1','2009-01-05','2009-02-13','Spring 1');
+	('2','1','2009-01-05','2009-02-13','Spring A'),
+	('10','1','2009-04-09','2009-05-16','Foo');
 /*!40000 ALTER TABLE `terms` ENABLE KEYS*/;
 UNLOCK TABLES;
 
@@ -578,7 +597,7 @@ UNLOCK TABLES;
 
 CREATE TABLE `users` (
   `user_id` int(10) unsigned NOT NULL auto_increment,
-  `group_id` int(10) NOT NULL COMMENT 'Group that the user is a member of',
+  `group_id` int(10) unsigned NOT NULL COMMENT 'Group that the user is a member of',
   `enabled` tinyint(1) NOT NULL default '0' COMMENT 'Boolean 1 or 0',
   `username` varchar(104) NOT NULL,
   `email` varchar(255) default NULL,
@@ -590,8 +609,10 @@ CREATE TABLE `users` (
   `created` date NOT NULL COMMENT 'Date the user was created',
   PRIMARY KEY  (`user_id`),
   UNIQUE KEY `username` (`username`),
-  KEY `ldap` (`ldap`)
-) TYPE=InnoDB AUTO_INCREMENT=24 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Main users table'*/;
+  KEY `ldap` (`ldap`),
+  KEY `group_id` (`group_id`),
+  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`)
+) TYPE=InnoDB AUTO_INCREMENT=23 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Main users table'*/;
 
 
 
@@ -602,11 +623,11 @@ CREATE TABLE `users` (
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS*/;
 INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `password`, `displayname`, `cookiekey`, `lastlogin`, `ldap`, `created`) VALUES
-	('1',1,1,'admin','craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Craig Rodway',NULL,'2009-01-16 09:50:39',0,'0000-00-00'),
-	('3',4,1,'user1','','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Foo Number 1',NULL,'2008-12-19 23:06:20',0,'2008-11-27'),
-	('12',2,1,'craig.rodway','craig.rodway@bishopbarrington.net',NULL,'Mr Rodway',NULL,'2009-01-09 16:12:48',1,'2009-01-09'),
-	('19',2,1,'test.one','test.one@bishopbarrington.net',NULL,'Mr T One',NULL,'2009-01-14 11:17:50',1,'2009-01-14'),
-	('22',2,1,'test.three','test.three@bishopbarrington.net',NULL,'Mr T Three',NULL,'2009-01-14 10:56:57',1,'2009-01-14');
+	('1','1',1,'admin','craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Craig Rodway',NULL,'2009-01-23 14:35:35',0,'0000-00-00'),
+	('3','9',1,'user1','','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Foo Number 1',NULL,'2008-12-19 23:06:20',0,'2008-11-27'),
+	('12','2',1,'craig.rodway','craig.rodway@bishopbarrington.net',NULL,'Mr Rodway',NULL,'2009-01-09 16:12:48',1,'2009-01-09'),
+	('19','2',1,'test.one','test.one@bishopbarrington.net',NULL,'Mr T One',NULL,'2009-01-14 11:17:50',1,'2009-01-14'),
+	('22','2',1,'test.three','test.three@bishopbarrington.net',NULL,'Mr T Three',NULL,'2009-01-14 10:56:57',1,'2009-01-14');
 /*!40000 ALTER TABLE `users` ENABLE KEYS*/;
 UNLOCK TABLES;
 
@@ -618,7 +639,11 @@ UNLOCK TABLES;
 CREATE TABLE `users2departments` (
   `user_id` int(10) unsigned NOT NULL,
   `department_id` int(10) unsigned NOT NULL,
-  KEY `user_id` (`user_id`,`department_id`)
+  KEY `department_id` (`department_id`),
+  KEY `assignment` (`user_id`,`department_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `users2departments_ibfk_3` FOREIGN KEY (`department_id`) REFERENCES `departments` (`department_id`) ON DELETE CASCADE,
+  CONSTRAINT `users2departments_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
 ) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Maps a user to multiple departments'*/;
 
 
@@ -627,56 +652,8 @@ CREATE TABLE `users2departments` (
 # Dumping data for table 'users2departments'
 #
 
-LOCK TABLES `users2departments` WRITE;
-/*!40000 ALTER TABLE `users2departments` DISABLE KEYS*/;
-INSERT INTO `users2departments` (`user_id`, `department_id`) VALUES
-	('8','2'),
-	('8','2'),
-	('10','1'),
-	('10','2'),
-	('10','2'),
-	('10','3'),
-	('10','9'),
-	('10','9'),
-	('10','11'),
-	('10','12'),
-	('10','12'),
-	('10','13'),
-	('11','1'),
-	('11','2'),
-	('11','2'),
-	('11','3'),
-	('11','9'),
-	('11','9'),
-	('11','11'),
-	('11','12'),
-	('11','12'),
-	('11','13'),
-	('13','2'),
-	('13','2'),
-	('19','13'),
-	('21','1'),
-	('21','2'),
-	('21','2'),
-	('21','3'),
-	('21','9'),
-	('21','9'),
-	('21','11'),
-	('21','12'),
-	('21','12'),
-	('21','13'),
-	('22','1'),
-	('22','2'),
-	('22','2'),
-	('22','3'),
-	('22','9'),
-	('22','9'),
-	('22','11'),
-	('22','12'),
-	('22','12'),
-	('22','13');
-/*!40000 ALTER TABLE `users2departments` ENABLE KEYS*/;
-UNLOCK TABLES;
+# (No data found.)
+
 
 
 #
@@ -686,8 +663,7 @@ UNLOCK TABLES;
 CREATE TABLE `usersactive` (
   `user_id` int(10) unsigned NOT NULL,
   `timestamp` int(11) unsigned NOT NULL,
-  UNIQUE KEY `user_id` (`user_id`),
-  KEY `user_id_2` (`user_id`)
+  UNIQUE KEY `user_id` (`user_id`)
 ) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Keep track of current active users'*/;
 
 
@@ -699,7 +675,7 @@ CREATE TABLE `usersactive` (
 LOCK TABLES `usersactive` WRITE;
 /*!40000 ALTER TABLE `usersactive` DISABLE KEYS*/;
 INSERT INTO `usersactive` (`user_id`, `timestamp`) VALUES
-	('1','1232107194');
+	('1','1232726353');
 /*!40000 ALTER TABLE `usersactive` ENABLE KEYS*/;
 UNLOCK TABLES;
 
@@ -711,7 +687,8 @@ UNLOCK TABLES;
 CREATE TABLE `weekdates` (
   `week_id` int(10) unsigned NOT NULL,
   `date` date NOT NULL,
-  KEY `week_id` (`week_id`)
+  KEY `week_id` (`week_id`),
+  CONSTRAINT `weekdates_ibfk_1` FOREIGN KEY (`week_id`) REFERENCES `weeks` (`week_id`) ON DELETE CASCADE
 ) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Start-dates of weeks for timetable'*/;
 
 
@@ -730,11 +707,12 @@ CREATE TABLE `weekdates` (
 
 CREATE TABLE `weeks` (
   `week_id` int(10) unsigned NOT NULL auto_increment,
-  `ayear_id` int(10) unsigned default NULL,
+  `year_id` int(10) unsigned NOT NULL,
   `name` varchar(20) NOT NULL,
-  `fgcol` char(6) NOT NULL,
-  `bgcol` char(6) NOT NULL,
-  PRIMARY KEY  (`week_id`)
+  `colour` char(7) default NULL COMMENT 'Hex colour value including hash',
+  PRIMARY KEY  (`week_id`),
+  KEY `year_id` (`year_id`),
+  CONSTRAINT `weeks_ibfk_1` FOREIGN KEY (`year_id`) REFERENCES `years` (`year_id`) ON DELETE CASCADE
 ) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Week definitions for timetable weeks'*/;
 
 
@@ -759,7 +737,7 @@ CREATE TABLE `years` (
   `active` tinyint(1) unsigned default '0',
   PRIMARY KEY  (`year_id`),
   UNIQUE KEY `active` (`active`)
-) TYPE=InnoDB AUTO_INCREMENT=6 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Academic year definitions'*/;
+) TYPE=InnoDB AUTO_INCREMENT=7 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Academic year definitions'*/;
 
 
 
@@ -771,8 +749,8 @@ LOCK TABLES `years` WRITE;
 /*!40000 ALTER TABLE `years` DISABLE KEYS*/;
 INSERT INTO `years` (`year_id`, `date_start`, `date_end`, `name`, `active`) VALUES
 	('1','2008-09-08','2009-07-23','2008 - 2009',1),
-	('2','2007-09-03','2008-07-23','2007 - 2008',NULL),
-	('5','2009-09-07','2010-07-23','2009 - 2010',NULL);
+	('5','2009-09-07','2010-07-23','2009 - 2010',NULL),
+	('6','2007-09-01','2008-07-24','2007 - 2008',NULL);
 /*!40000 ALTER TABLE `years` ENABLE KEYS*/;
 UNLOCK TABLES;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS*/;

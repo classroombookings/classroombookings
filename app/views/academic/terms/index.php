@@ -21,7 +21,7 @@ if($errors){
 	echo form_open('academic/terms/save');
 	
 	$i = 0;
-	$t = 0;
+	$t = 1;
 	
 	if($terms != 0){
 		foreach($terms as $term){
@@ -39,6 +39,7 @@ if($errors){
 			$check['id'] = "delete_{$term->term_id}";
 			$check['value'] = '1';
 			$check['tabindex'] = $t;
+			$check['title'] = 'Tick this box to allow deletion of multiple terms at once.';
 			$t++;
 			echo form_checkbox($check);
 			?></td>

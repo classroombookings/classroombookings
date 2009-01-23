@@ -96,6 +96,7 @@ class Weeks_model extends Model{
 	
 	
 	function edit($week_id = NULL, $data){
+		
 		if($week_id == NULL){
 			$this->lasterr = 'Cannot update a week without its ID.';
 			return FALSE;
@@ -106,6 +107,7 @@ class Weeks_model extends Model{
 		$edit = $this->db->update('weeks', $data);
 		
 		return $edit;
+		
 	}
 	
 	
@@ -139,6 +141,90 @@ class Weeks_model extends Model{
 			
 		}
 		
+	}
+	
+	
+	
+	/**
+	 * Show calendar so user can select dates for the week
+	 *
+	 * @param	int		week_id		ID of the editing week so we can highlight it
+	 * @param	int		year_id		ID of the working acadmic year
+	 */
+	function calendar($week_id = NULL, $year_id){
+		
+		$CI =& get_instance();
+		
+		$prefs['start_day'] = 'monday';
+		$prefs['month_type'] = 'long';
+		$prefs['day_type'] = 'long';
+		$this->load->library('calendar', $prefs);
+		
+		$CI->load->model('years_model');
+		$year = $CI->years_model->get($year_id);
+
+		$start['ts'] = strtotime($year->date_start);
+		$start['m'] = date('m', $start['ts']);
+		$start['y'] = date('Y', $start['ts']);
+		
+		$end['ts'] = strtotime($year->date_end);
+		$end['m'] = date('m', $end['ts']);
+		$end['y'] = date('Y', $end['ts']);
+		
+		#echo "Year {$year_id} starts in {$start['m']} of {$start['y']} and ends in {$end['m']} of {$end['y']}.";
+		
+		// Months for calendar
+		$months = $this->get_months($year->date_start, $year->date_end);
+		$html = "";
+		
+		foreach($months as $month){
+			$html .= $this->calendar->generate($month[0], $month[1]);
+		}
+		
+		return($html);
+		
+	}
+	
+	
+	
+	
+	function get_months($date_start, $date_end){
+		
+		$start = strtotime($date_start);
+		$end = strtotime($date_end);
+		
+		$my = date('mY', $end);
+		
+		$months = array();
+		array_push($months, array(date('Y', $start), date('m', $start)));
+		
+		$f = ''; 
+		
+		while($start < $end){
+			
+			$start = strtotime( date( 'Y-m-d', $start ).' next month'); 
+			
+			if(date('F', $start) != $f){
+				$f = date('F', $start); 
+				if(date('mY', $start) != $my && ($start < $end)){
+					#$months[] = date('F', $start);
+					array_push($months, array(date('Y', $start), date('m', $start)));
+				}
+			}
+			
+		}
+		
+		// End one
+		array_push($months, array(date('Y', $end), date('m', $end)));
+		
+		return $months;
+	}
+	
+	
+	
+	
+	function css(){
+		return "OK";
 	}
 	
 	

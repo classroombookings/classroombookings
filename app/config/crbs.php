@@ -10,6 +10,6 @@ $config['index_page'] = "index.php";
 // Template
 $config['template'] = 'template/main3';
 
-$config['profiler'] = TRUE;
+$config['profiler'] = FALSE;
 
 ?>

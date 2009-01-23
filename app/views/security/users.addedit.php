@@ -10,10 +10,6 @@ echo form_open('security/users/save', NULL, array('user_id' => $user_id));
 $t = 1;
 ?>
 
-<?php if($user_id == NULL){ ?>
-
-<?php } ?>
-
 <table class="form" cellpadding="6" cellspacing="0" border="0" width="100%">
 	
 	<tr class="h"><td colspan="2">User details</td></tr>

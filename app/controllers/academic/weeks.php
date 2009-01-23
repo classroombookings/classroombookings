@@ -57,6 +57,23 @@ class Weeks extends Controller {
 	
 	
 	
+	function add(){
+		$this->auth->check('weeks.add');
+		
+		$body['week'] = NULL;
+		$body['week_id'] = NULL;
+		$tpl['title'] = 'Add week';
+		$tpl['pagetitle'] = 'Add a new week';
+		
+		$body['calendar'] = $this->weeks_model->calendar(NULL, $this->session->userdata('year_working'));
+		$tpl['body'] = $this->load->view('academic/weeks/addedit', $body, TRUE);
+		
+		$this->load->view($this->tpl, $tpl);
+	}
+	
+	
+	
+	
 }
 
 

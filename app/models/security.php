@@ -705,4 +705,4 @@ class Security extends Model{
 
 
 
-/* End of file app/models/security.php */
+/* End of file: app/models/security.php */

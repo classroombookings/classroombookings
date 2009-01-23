@@ -98,6 +98,10 @@ class Terms_model extends Model{
 		$add = $this->db->insert('terms', $data);
 		$term_id = $this->db->insert_id();
 		
+		if($term_id == FALSE){
+			$this->lasterr = 'An error was encountered when trying to add the new term.';
+		}
+		
 		return $term_id;
 		
 	}
@@ -105,7 +109,53 @@ class Terms_model extends Model{
 	
 	
 	
-	function edit($term_id = NULL, $data){
+	function edit($terms = array()){
+		
+		print_r($terms);
+		if(empty($terms)){
+			$this->lasterr = 'No terms to update.';
+			return FALSE;
+		}
+		
+		$failed = array();
+		
+		foreach($terms as $term){
+			
+			$sql = 'UPDATE terms SET 
+					name = ?,
+					date_start = ?,
+					date_end = ?
+					WHERE term_id = ?';
+			
+			$query = $this->db->query($sql, array(
+				$term['name'], 
+				$term['date_start'], 
+				$term['date_end'], 
+				$term['term_id'],
+			));
+			
+			if($query == FALSE){
+				array_push($failed, $term['name']);
+			}
+			
+		}
+		
+		if(!empty($failed)){
+			
+			$this->lasterr = 'Failed to update one or more terms.';
+			$terms = implode(', ', $failed);
+			return FALSE;
+			
+		}
+		
+		return TRUE;
+		
+	}
+	
+	
+	
+	
+	/* function edit($term_id = NULL, $data){
 		
 		if($term_id == NULL){
 			$this->lasterr = 'Cannot update a term without its ID.';
@@ -117,7 +167,7 @@ class Terms_model extends Model{
 		
 		return $edit;
 		
-	}
+	} */
 	
 	
 	
