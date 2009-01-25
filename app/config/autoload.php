@@ -51,7 +51,7 @@ $autoload['libraries'] = array('settings','database','session','auth','form_vali
 |	$autoload['helper'] = array('url', 'file');
 */
 
-$autoload['helper'] = array('url','form','field','date','datefuncs');
+$autoload['helper'] = array('url','form','field','date','datefuncs','misc');
 
 
 /*
@@ -108,7 +108,7 @@ $autoload['language'] = array('crbs2');
 |
 */
 
-$autoload['model'] = array('years_model');
+$autoload['model'] = array('years_model', 'weeks_model');
 
 
 /*

@@ -84,6 +84,7 @@ div#top-menu ul li a:hover{
 div#sidebar>div{
 	margin:0 10px;
 }
+div#sidebar p{margin:0;}
 
 
 /* Extra box at the bottom */
@@ -347,6 +348,38 @@ label.check input{
 
 
 
+table#cc tr td{
+	text-align:center;
+	padding:1em;
+	/*border:1px solid red;*/
+}
+table.ccmonth{
+	margin:0 auto;
+	border:1px solid #dfdfdf;
+}
+table.ccmonth th.heading{
+	padding:0.3em;
+	background:#dfdfdf;
+}
+table.ccmonth tr td{
+	/*padding:0.5em !important;*/
+	padding:0 !important;
+	margin:0;
+}
+table.ccmonth tr td label, table.ccmonth tr td span{
+	margin:0em;
+	padding:0.5em;
+	display:block;
+	border:0px solid blue;
+}
+table.ccmonth tr.wr td{
+	padding:0.5em !important;
+}
+
+
+
+
+
 
 p ul{
 	margin:0;
@@ -376,6 +409,9 @@ div.msg.err ul li{
 	margin:3px 0;
 }
 
+
+
+div#codeigniter_profiler{text-align:left;font-size:90%}
 
 
 

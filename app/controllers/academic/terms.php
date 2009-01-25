@@ -39,7 +39,8 @@ class Terms extends Controller {
 		
 		$links[] = array('academic/main', 'Academic setup');
 		$links[] = array('academic/years', 'Years');
-		$links[] = array('academic/weeks', 'Weeks');
+		$links[] = array('academic/terms', 'Term dates', TRUE);
+		$links[] = array('academic/weeks', 'Timetable weeks');
 		$links[] = array('academic/periods', 'Periods');
 		$links[] = array('academic/holidays', 'Holidays');
 		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
@@ -56,19 +57,22 @@ class Terms extends Controller {
 	
 	
 	function save(){
-	
+		
 		/*
 			Lots of validation stuff happening here.
-			We need to see what we're actually doing so we validate the right stuff
+			We need to see what we're actually doing so we validate the right stuff.
+			By that, I mean just editing, just adding, or both?
 		*/
 		
+		// TODO: create a comparable SHA1 hash of the items fetched from DB to see if we actually need to update any items
 		
-		$period_id = $this->input->post('period_id');
+		#$period_id = $this->input->post('period_id');
 		
 		$this->form_validation->set_rules('newterm[name]', 'Name', 'max_length[50]|trim');
 		
 		if($this->input->post('term_ids')){
 			
+			// Existing terms were submitted, could be editing
 			$terms = $this->input->post('term');
 			$to_delete = array();
 			
@@ -91,9 +95,6 @@ class Terms extends Controller {
 			
 		}
 		
-		
-		
-		
 		$newterm = $this->input->post('newterm');
 		
 		if(!empty($newterm['name'])){
@@ -102,7 +103,6 @@ class Terms extends Controller {
 		}
 		
 		$this->form_validation->set_error_delimiters('<li>', '</li>');
-		
 		
 		if($this->form_validation->run() == FALSE){
 			
@@ -149,8 +149,8 @@ class Terms extends Controller {
 			
 			unset($data);
 			
-			$this->index();
-			#redirect('academic/terms');
+			#$this->index();
+			redirect('academic/terms');
 			
 			#print_r($term);
 			
@@ -225,12 +225,15 @@ class Terms extends Controller {
 	
 	
 	function _delete_multiple($terms){
+		
 		$this->auth->check('terms.delete');
 		
 		if(empty($terms)){
+			
 			$this->msg->add('err', 'No terms were selected for deletion.');
+			
 		} else {
-		
+			
 			$str = implode(',', $terms);
 			$str = preg_replace('/,$/', '', $str);
 			
@@ -246,6 +249,7 @@ class Terms extends Controller {
 		}
 		
 		redirect('academic/terms');
+		
 	}
 	
 	
@@ -285,6 +289,7 @@ class Terms extends Controller {
 	 * @return	bool on success	 
 	 */	 	 	 	 	 	 
 	function _datecheck($term_id){
+		
 		// Get array of terms submitted
 		$terms = $this->input->post("term");
 		
@@ -308,6 +313,7 @@ class Terms extends Controller {
 			$this->form_validation->set_message('_datecheck', "The end date for {$name} must be after its start date ({$start})");
 			return FALSE;
 		}
+		
 	}
 	
 	

@@ -10,6 +10,19 @@
 	<link rel="icon" type="image/x-icon" href="favicon2.ico" />
 	<link rel="stylesheet" type="text/css" media="screen" href="css/layout3.css" />
 	<link rel="stylesheet" type="text/css" media="screen" href="css/ui3.css" />
+	<style type="text/css">
+	<?php
+	$weeks = $this->weeks_model->get();
+	foreach($weeks as $week){
+		$cssarr[] = 'table tr.week_%1$d td{background:%2$s;color:%3$s}';
+		$cssarr[] = '.week_%1$d{background:%2$s;color:%3$s}';
+		$css = implode("\n", $cssarr);
+		unset($cssarr);
+		echo sprintf($css, $week->week_id, $week->colour, (isdark($week->colour)) ? '#fff' : '#000');
+		echo "\n";
+	}
+	?>
+	</style>
 	<script type="text/javascript">
 	var tabberOptions = {
 		'cookie':"crbstabber",
@@ -52,12 +65,11 @@
 					<img src="img/template/title.gif" alt="Classroombookings" />
 				</a><br />
 				<span><?php
-					$schoolname = $this->settings->get('schoolname');
-					$schoolurl = $this->settings->get('schoolurl');
-					if($schoolurl != FALSE){
-						echo '<a href="'.$schoolurl.'">'.$schoolname.'</a>';
+					$settings = $this->settings->get_all('main');
+					if($settings->schoolurl != FALSE){
+						echo '<a href="'.$settings->schoolurl.'">'.$settings->schoolname.'</a>';
 					} else {
-						echo $schoolname;
+						echo $settings->schoolname;
 					}
 				?></span>
 			</div>
@@ -107,16 +119,18 @@
 		
 		<!-- wrapper -->
 		<div id="wrapper">
-			
-			
-			<!-- content -->
-			<div id="content"<?php if(!isset($sidebar)){ echo ' class="solo"'; } ?>>
-				<?php
+		
+		<?php
 				$h1class = (isset($links)) ? 'class="nomargin"' : '';
 				echo $this->session->flashdata('flash');
 				echo (isset($pretitle)) ? $pretitle : '';
 				echo (isset($pagetitle)) ? '<h1 ' . $h1class . '>' . $pagetitle . '</h1>' : '';
 				echo (isset($links)) ? $links : '';
+			?>
+			<!-- content -->
+			<div id="content"<?php if(!isset($sidebar)){ echo ' class="solo"'; } ?>>
+				<?php
+
 				echo (isset($body)) ? $body : 'Nothing to display.';
 				?>
 			</div>

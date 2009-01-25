@@ -39,7 +39,9 @@ class Years extends Controller {
 		
 		$links[] = array('academic/years/add', 'Add a new academic year');
 		$links[] = array('academic/main', 'Academic setup');
-		$links[] = array('academic/weeks', 'Weeks');
+		$links[] = array('academic/years', 'Years', TRUE);
+		$links[] = array('academic/terms', 'Term dates');
+		$links[] = array('academic/weeks', 'Timetable weeks');
 		$links[] = array('academic/periods', 'Periods');
 		$links[] = array('academic/holidays', 'Holidays');
 		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);

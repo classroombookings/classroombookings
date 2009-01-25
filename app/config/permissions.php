@@ -43,10 +43,10 @@ $permissions['weeks'][] = array('weeks.delete', 'Delete a week');
 $permissions['weeks'][] = array('weeks.ayears.manage', 'Manage the academic year dates');
 $permissions['weeks'][] = array('weeks.ayears.set', 'Set the current academic year');
 
-/* $permissions['holidays'][] = array('holidays', 'Holidays');
+$permissions['holidays'][] = array('holidays', 'Holidays');
 $permissions['holidays'][] = array('holidays.add', 'Add a holiday');
 $permissions['holidays'][] = array('holidays.edit', 'Edit school holidays');
-$permissions['holidays'][] = array('holidays.delete', 'Delete a holiday'); */
+$permissions['holidays'][] = array('holidays.delete', 'Delete a holiday');
 
 $permissions['terms'][] = array('terms', 'Term dates');
 $permissions['terms'][] = array('terms.add', 'Add a term date');

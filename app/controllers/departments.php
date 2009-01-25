@@ -81,7 +81,7 @@ class Departments extends Controller {
 		
 		if($body['department'] != FALSE){
 			$tpl['pagetitle'] = 'Edit department: ' . $body['department']->name;
-			$tpl['body'] = $this->load->view('departments/addedit.php', $body, TRUE);
+			$tpl['body'] = $this->load->view('departments/addedit', $body, TRUE);
 		} else {
 			$tpl['pagetitle'] = 'Error getting department';
 			$tpl['body'] = $this->msg->err('Could not load the specified department. Please check the ID and try again.');

@@ -103,7 +103,14 @@ if($errors){
 				</td>
 				<td width="50">&nbsp;</td>
 				<td>
-					&nbsp;
+					<!-- HOLIDAYS -->
+					<?php
+					unset($checks);
+					$checks['options'] = $permissions['holidays'];
+					$checks['group_id'] = $group_id;
+					$checks['category'] = 'Academic - Holidays';
+					$this->load->view('security/permissions.checks.php', $checks);
+					?>
 				</td>
 			</tr>
 			

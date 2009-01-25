@@ -38,13 +38,16 @@ class Weeks_model extends Model{
 	 * @param arr pagination limit,start
 	 * @return mixed (object on success, false on failure)
 	 */
-	function get($week_id = NULL, $page = NULL){
+	function get($week_id = NULL, $page = NULL, $year_id = NULL){
 		
 		if ($week_id == NULL) {
 		
 			// Getting all departments
 			$this->db->select('*', FALSE);
 			$this->db->from('weeks');
+			if($year_id != NULL){
+				$this->db->where('year_id', $year_id);
+			}
 			
 			$this->db->orderby('name ASC');
 			
@@ -86,10 +89,23 @@ class Weeks_model extends Model{
 	
 	
 	function add($data){
+		
+		$dates = $data['dates'];
+		unset($data['dates']);
+		
 		$data['created'] = date("Y-m-d");
+		
 		$add = $this->db->insert('weeks', $data);
 		$week_id = $this->db->insert_id();
-		return $department_id;
+		
+		$update = $this->update_dates($week_id, $data['year_id'], $dates);
+		
+		if($update == FALSE){
+			$this->lasterr = 'Could not update week dates.';
+			return FALSE;
+		}
+		
+		return $week_id;
 	}
 	
 	
@@ -100,11 +116,16 @@ class Weeks_model extends Model{
 		if($week_id == NULL){
 			$this->lasterr = 'Cannot update a week without its ID.';
 			return FALSE;
-		} 
+		}
+		
+		$dates = $data['dates'];
+		unset($data['dates']);
 		
 		// Update week info
 		$this->db->where('week_id', $week_id);
 		$edit = $this->db->update('weeks', $data);
+		
+		$update = $this->update_dates($week_id, $data['year_id'], $dates);
 		
 		return $edit;
 		
@@ -145,6 +166,113 @@ class Weeks_model extends Model{
 	
 	
 	
+	
+	/**
+	 * Update the dates for a given week
+	 *
+	 * @param	week_id		ID of the week whose dates we want to update
+	 * @param	year_id		ID of the academic year it will belong to
+	 * @param	array		1-dimensional array of dates
+	 * @return	bool
+	 */
+	function update_dates($week_id, $year_id, $dates){
+		
+		$str = implode(',', $dates);
+		$str = preg_replace('/,$/', '', $str);
+		
+		$datesql = '';
+		foreach($dates as $date){
+			$datesql .= "($week_id, $year_id, '$date'),";
+		}
+		$datesql = preg_replace('/,$/', '', $datesql);
+		
+		// Remove current entries for this week ID (incase user has de-selected some dates)
+		$sql = 'DELETE FROM weekdates WHERE week_id = ? AND year_id = ?';
+		$query = $this->db->query($sql, array($week_id, $year_id));
+		
+		// Now insert new dates
+		$sql = 'INSERT INTO weekdates (week_id, year_id, date) 
+				VALUES %s
+				ON DUPLICATE KEY UPDATE week_id = %d';
+		$sql = sprintf($sql, $datesql, $week_id);
+		$query = $this->db->query($sql, array($week_id));
+		
+		return $query;
+		
+	}
+	
+	
+	
+	
+	function get_dates($week_id = NULL, $year_id, $array_key = 'week_id'){
+		
+		$dates = array();
+		
+		if($week_id == NULL){
+			
+			$sql = 'SELECT week_id, date 
+					FROM weekdates 
+					WHERE year_id = ? 
+					ORDER BY week_id ASC, date ASC';
+			$query = $this->db->query($sql, array($year_id));
+			
+			if($query->num_rows() > 0){
+				
+				$result = $query->result();
+				
+				switch($array_key){
+					case 'week_id':
+					foreach($result as $row){
+						if(!isset($dates[$row->week_id])){ $dates[$row->week_id] = array(); }
+						array_push($dates[$row->week_id], $row->date);
+					}
+					break;
+					
+					case 'date':
+					foreach($result as $row){
+						$dates["{$row->date}"] = $row->week_id;
+					}
+					break;
+				}
+				
+				return $dates;
+				
+			} else {
+				
+				$this->lasterr = 'No dates found.';
+				return FALSE;
+				
+			}
+			
+		} else {
+			
+			$sql = 'SELECT date FROM weekdates 
+					WHERE week_id = ?
+					AND year_id = ?
+					ORDER BY date ASC';
+			$query = $this->db->query($sql, array($week_id, $year_id));
+			
+			if($query->num_rows() > 0){
+				
+				$result = $query->result();
+				foreach($result as $row){
+					array_push($dates, $row->date);
+				}
+				return $dates;
+				
+			} else {
+				
+				$this->lasterr = 'No dates found for given week.';
+				return FALSE;
+				
+			}
+			
+		}
+		
+	}
+	
+	
+	
 	/**
 	 * Show calendar so user can select dates for the week
 	 *
@@ -153,15 +281,19 @@ class Weeks_model extends Model{
 	 */
 	function calendar($week_id = NULL, $year_id){
 		
-		$CI =& get_instance();
-		
+		// Calendar preferences (+ load template from a view file)
 		$prefs['start_day'] = 'monday';
 		$prefs['month_type'] = 'long';
-		$prefs['day_type'] = 'long';
+		$prefs['day_type'] = 'short';
+		$prefs['template'] = $this->load->view('academic/weeks/caltemplate', NULL, TRUE);
 		$this->load->library('calendar', $prefs);
 		
-		$CI->load->model('years_model');
-		$year = $CI->years_model->get($year_id);
+		// Get all week dates
+		$dates = $this->get_dates(NULL, $year_id, 'date');
+		#die(print_r($dates));
+		
+		$this->load->model('years_model');
+		$year = $this->years_model->get($year_id);
 
 		$start['ts'] = strtotime($year->date_start);
 		$start['m'] = date('m', $start['ts']);
@@ -175,11 +307,22 @@ class Weeks_model extends Model{
 		
 		// Months for calendar
 		$months = $this->get_months($year->date_start, $year->date_end);
-		$html = "";
 		
+		$html = '<table width="100%" id="cc">';
+		$cols = 3;
+		$c = 0;
+		
+		// Loop through months in this academic year and print the calendar
 		foreach($months as $month){
-			$html .= $this->calendar->generate($month[0], $month[1]);
+			if($c == 0){ $html .= '<tr>'; }
+			$html .= '<td valign="top">';
+			$html .= $this->calendar->generate($month[0], $month[1], NULL, $dates,  $week_id);
+			$html .= '</td>';
+			$c++;
+			if($c == $cols){ $html .= '</tr>'; $c = 0; }
 		}
+		
+		$html .= '</table>';
 		
 		return($html);
 		
@@ -188,6 +331,13 @@ class Weeks_model extends Model{
 	
 	
 	
+	/**
+	 * Get the months in a given date range (academic year)
+	 *
+	 * @param	date_start		Start date in YYYY-MM-DD format
+	 * @param	date_end		End date in YYYY-MM-DD format
+	 * @return	array			[0] = array(YYYY, MM)
+	 */
 	function get_months($date_start, $date_end){
 		
 		$start = strtotime($date_start);
@@ -195,6 +345,7 @@ class Weeks_model extends Model{
 		
 		$my = date('mY', $end);
 		
+		// Initialise array and add first month (start date of the year)
 		$months = array();
 		array_push($months, array(date('Y', $start), date('m', $start)));
 		
@@ -202,22 +353,23 @@ class Weeks_model extends Model{
 		
 		while($start < $end){
 			
+			// Next month from start year
 			$start = strtotime( date( 'Y-m-d', $start ).' next month'); 
 			
 			if(date('F', $start) != $f){
 				$f = date('F', $start); 
 				if(date('mY', $start) != $my && ($start < $end)){
-					#$months[] = date('F', $start);
 					array_push($months, array(date('Y', $start), date('m', $start)));
 				}
 			}
 			
 		}
 		
-		// End one
+		// Last month
 		array_push($months, array(date('Y', $end), date('m', $end)));
 		
 		return $months;
+		
 	}
 	
 	
@@ -231,5 +383,6 @@ class Weeks_model extends Model{
 	
 	
 }
+
 
 /* End of file: app/models/weeks_model.php */

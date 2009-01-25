@@ -67,11 +67,9 @@ $t = 1;
 	<tr class="h"><td colspan="2">Week dates</td></tr>
 	
 	<tr>
-		<td colspan="2">
 		<?php
 		echo $calendar;
 		?>
-		</td>
 	</tr>
 	
 	

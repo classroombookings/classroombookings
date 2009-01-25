@@ -17,13 +17,13 @@
 */
 
 
-class Terms_model extends Model{
+class Holidays_model extends Model{
 
 
 	var $lasterr;
 	
 	
-	function Terms_model(){
+	function Holidays_model(){
 		parent::Model();
 		
 	}
@@ -32,24 +32,24 @@ class Terms_model extends Model{
 	
 	
 	/**
-	 * get one or more terms
+	 * get one or more holidays
 	 *
-	 * @param int term_id
+	 * @param int holiday_id
 	 * @param arr pagination limit,start
 	 * @return mixed (object on success, false on failure)
 	 */
-	function get($term_id = NULL, $page = NULL, $year_id = NULL){
+	function get($holiday_id = NULL, $page = NULL, $year_id = NULL){
 		
 		if($year_id == NULL){
 			$this->lasterr = 'There is no active academic year or no working academic year has been selected.';
 			return FALSE;
 		}
 		
-		if($term_id == NULL){
+		if($holiday_id == NULL){
 			
 			// Getting all years
 			$this->db->select('*', FALSE);
-			$this->db->from('terms');
+			$this->db->from('holidays');
 			if($year_id != NULL){
 				$this->db->where('year_id', $year_id);
 			}
@@ -64,19 +64,19 @@ class Terms_model extends Model{
 			if ($query->num_rows() > 0){
 				return $query->result();
 			} else {
-				$this->lasterr = 'There are no terms defined.';
+				$this->lasterr = 'There are no holidays defined.';
 				return 0;
 			}
 			
 		} else {
 			
-			if(!is_numeric($term_id)){
+			if(!is_numeric($year_id)){
 				return FALSE;
 			}
 			
-			// Getting one term
-			$sql = 'SELECT * FROM terms WHERE term_id = ? LIMIT 1';
-			$query = $this->db->query($sql, array($term_id));
+			// Getting one holiday
+			$sql = 'SELECT * FROM holidays WHERE holiday_id = ? LIMIT 1';
+			$query = $this->db->query($sql, array($holiday_id));
 			
 			if($query->num_rows() == 1){
 				// Got the year
@@ -95,54 +95,54 @@ class Terms_model extends Model{
 	
 	function add($data){
 		
-		$add = $this->db->insert('terms', $data);
-		$term_id = $this->db->insert_id();
+		$add = $this->db->insert('holidays', $data);
+		$holiday_id = $this->db->insert_id();
 		
-		if($term_id == FALSE){
-			$this->lasterr = 'An error was encountered when trying to add the new term.';
+		if($holiday_id == FALSE){
+			$this->lasterr = 'An error was encountered when trying to add the new holiday.';
 		}
 		
-		return $term_id;
+		return $holiday_id;
 		
 	}
 	
 	
 	
 	
-	function edit($terms = array()){
+	function edit($holidays = array()){
 		
-		print_r($terms);
-		if(empty($terms)){
-			$this->lasterr = 'No terms to update.';
+		print_r($holidays);
+		if(empty($holidays)){
+			$this->lasterr = 'No holidays to update.';
 			return FALSE;
 		}
 		
 		$failed = array();
 		
-		foreach($terms as $term){
+		foreach($holidays as $holiday){
 			
-			$sql = 'UPDATE terms SET 
+			$sql = 'UPDATE holidays SET 
 					name = ?,
 					date_start = ?,
 					date_end = ?
-					WHERE term_id = ?';
+					WHERE holiday_id = ?';
 			
 			$query = $this->db->query($sql, array(
-				$term['name'], 
-				$term['date_start'], 
-				$term['date_end'], 
-				$term['term_id'],
+				$holiday['name'], 
+				$holiday['date_start'], 
+				$holiday['date_end'], 
+				$holiday['term_id'],
 			));
 			
 			if($query == FALSE){
-				array_push($failed, $term['name']);
+				array_push($failed, $holiday['name']);
 			}
 			
 		}
 		
 		if(!empty($failed)){
 			
-			$this->lasterr = 'Failed to update one or more terms.';
+			$this->lasterr = 'Failed to update one or more holidays.';
 			$terms = implode(', ', $failed);
 			return FALSE;
 			
@@ -172,14 +172,14 @@ class Terms_model extends Model{
 	
 	
 	
-	function delete($term_id){
+	function delete($holiday_id){
 		
-		$sql = 'DELETE FROM terms WHERE term_id = ? LIMIT 1';
-		$query = $this->db->query($sql, array($term_id));
+		$sql = 'DELETE FROM holidays WHERE holiday_id = ? LIMIT 1';
+		$query = $this->db->query($sql, array($holiday_id));
 		
 		if($query == FALSE){
 			
-			$this->lasterr = 'Could not delete term. Does it exist?';
+			$this->lasterr = 'Could not delete holiday. Does it exist?';
 			return FALSE;
 			
 		} else {
@@ -211,4 +211,4 @@ class Terms_model extends Model{
 
 
 
-/* End of file: app/models/terms_model.php */
+/* End of file: app/models/holidays_model.php */

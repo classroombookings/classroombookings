@@ -10,9 +10,9 @@ input,textarea,select{
 div#top{font-size:0.85em;}
 div#top-menu{font-size:1.1em;}
 
-div#content{font-size:0.75em;}
-div#content ul.normal li{font-size:1.35em;}
+div#wrapper{font-size:0.75em;}
+div#wrapper ul.normal li{font-size:1.35em;}
 
-div#sidebar{font-size:0.95em;}
+div#sidebar{font-size:1.3em;}
 
 div#footer{font-size:0.8em;}

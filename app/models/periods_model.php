@@ -91,12 +91,10 @@ class Periods_model extends Model{
 			$query = $this->db->query($sql, array($period_id));
 			
 			if($query->num_rows() == 1){
-				
 				// Got the period
 				$period = $query->row();
 				$period->days = unserialize($period->days);
 				return $period;
-				
 			} else {
 				return FALSE;
 			}

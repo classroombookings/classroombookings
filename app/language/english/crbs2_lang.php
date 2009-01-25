@@ -27,7 +27,7 @@ $lang['SECURITY_GROUP_ADD_FAIL'] = 'An error occured and the group could not be 
 $lang['SECURITY_GROUP_EDIT_OK'] = 'The %s group details were saved successfully.';
 $lang['SECURITY_GROUP_EDIT_FAIL'] = 'An error occured and the group details could not be saved (%s).';
 
-$lang['DEPARTMENTS_ADD_OK'] = 'The %s department was created successfully.';
+$lang['DEPARTMENTS_ADD_OK'] = 'The %s department was added successfully.';
 $lang['DEPARTMENTS_ADD_FAIL'] = 'An error occured and the department could not be added (%s).';
 $lang['DEPARTMENTS_EDIT_OK'] = 'The %s department details were saved successfully.';
 $lang['DEPARTMENTS_EDIT_FAIL'] = 'An error occured and the department details could not be saved (%s).';
@@ -36,6 +36,11 @@ $lang['PERIODS_ADD_OK'] = 'The period was added successfully.';
 $lang['PERIODS_ADD_FAIL'] = 'An error occured and the period could not be added.';
 $lang['PERIODS_EDIT_OK'] = 'The period details were saved successfully.';
 $lang['PERIODS_EDIT_FAIL'] = 'An error occured and the period details could not be saved.';
+
+$lang['WEEKS_ADD_OK'] = '%s was added successfully.';
+$lang['WEEKS_ADD_FAIL'] = 'An error occured and the week could not be added (%s).';
+$lang['WEEKS_EDIT_OK'] = 'The %s details were saved successfully.';
+$lang['WEEKS_EDIT_FAIL'] = 'An error occured and the week details could not be saved (%s).';
 
 $lang['YEARS_ADD_OK'] = 'The academic year %s was added successfully.';
 $lang['YEARS_ADD_FAIL'] = 'An error occured and the academic year (%s) could not be added.';

@@ -39,8 +39,10 @@ class Periods extends Controller {
 		
 		$links[] = array('academic/periods/add', 'Add a new period');
 		$links[] = array('academic/main', 'Academic setup');
-		$links[] = array('academic/years', 'Academic years');
-		$links[] = array('academic/weeks', 'Weeks');
+		$links[] = array('academic/years', 'Years');
+		$links[] = array('academic/terms', 'Term dates');
+		$links[] = array('academic/weeks', 'Timetable weeks');
+		$links[] = array('academic/periods', 'Periods', TRUE);
 		$links[] = array('academic/holidays', 'Holidays');
 		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
 		$body['days'] = $this->periods_model->days;
