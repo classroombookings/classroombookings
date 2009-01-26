@@ -21,6 +21,7 @@ class Users extends Controller {
 
 
 	var $tpl;
+	var $lasterr;
 	
 	
 	function Users(){
@@ -183,6 +184,100 @@ class Users extends Controller {
 			
 			// All done, redirect!
 			redirect('security/users');
+			
+		}
+		
+	}
+	
+	
+	
+	
+	function import($stage = 0){
+		
+		// Find the stage from the post vars
+		//$poststage = $this->input->post('stage');
+		//echo $poststage;
+		
+		if($stage == 0){
+			
+			$this->auth->check('users.add');
+			
+			$links[] = array('security/users/import', 'Start import again');
+			$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
+			
+			$body['groups'] = $this->security->get_groups_dropdown();
+			$tpl['title'] = 'Import users';
+			$tpl['pagetitle'] = 'Import users';
+			
+			$tpl['body'] = $this->lasterr;
+			$tpl['body'] .= $this->load->view('security/users.import.1.php', $body, TRUE);
+			$this->load->view($this->tpl, $tpl);
+			
+		} else {
+			
+			switch($stage){
+				case 1:	$this->_import_1(); break;
+				case 2: $this->_import_2(); break;
+			}
+			
+		}
+		
+	}
+	
+	
+	
+	/**
+	 * Import stage 1 - user has uploaded a file and hopefully set some default values
+	 */
+	function _import_1(){
+		
+		$config['upload_path'] = 'temp';
+		$config['allowed_types'] = 'csv|txt';
+		$config['encrypt_name'] = TRUE;
+		$this->load->library('upload', $config);
+		
+		$upload = $this->upload->do_upload();
+		
+		if($upload == FALSE){
+			
+			$this->lasterr = $this->msg->err(strip_tags($this->upload->display_errors()), 'File upload error');
+			$this->import(0);
+			
+		} else {
+			
+			// File OK
+			$default_password = $this->input->post('default_password');
+			$default_group_id = $this->input->post('default_group_id');
+			$default_enabled = ($this->input->post('default_enabled') == '1') ? 1 : 0;
+			$default_emaildomain = $this->input->post('default_emaildomain');
+			
+			$links[] = array('security/users/import', 'Start import again');
+			$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
+			
+			#$body['groups'] = $this->security->get_groups_dropdown();
+			
+			$csv = $this->upload->data();
+			$this->session->set_userdata('csvimport', $csv);
+			
+			$fhandle = fopen($csv['full_path'], 'r');
+			
+			if($fhandle == FALSE){
+				$this->lasterr = $this->msg->err("Could not open uploaded file {$csv['full_path']}.");
+				$this->import(0);
+			}
+			
+			#$fread = fread($fhandle, filesize($csv['full_path']));
+			
+			$body['csv'] = $csv;
+			$body['fhandle'] = $fhandle;
+			#$body['csvdata'] = fgetcsv($fhandle, filesize($csv['full_path']), ',');
+			
+			$tpl['title'] = 'Import users';
+			$tpl['pagetitle'] = "Import users (stage 2) - {$csv['orig_name']}.";
+			$tpl['body'] = $this->lasterr;
+			$tpl['body'] .= $this->load->view('security/users.import.2.php', $body, TRUE);
+			$this->load->view($this->tpl, $tpl);
+			
 			
 		}
 		

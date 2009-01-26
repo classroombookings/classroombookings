@@ -389,7 +389,7 @@ class Configure extends Controller {
 	function _d($message, $br = TRUE){
 		echo $message;
 		echo ($br == TRUE) ? '<br /><br />' : '';
-		ob_flush();
+		@ob_flush();
 	}
 	
 	

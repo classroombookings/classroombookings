@@ -119,18 +119,16 @@
 		
 		<!-- wrapper -->
 		<div id="wrapper">
-		
-		<?php
-				$h1class = (isset($links)) ? 'class="nomargin"' : '';
-				echo $this->session->flashdata('flash');
-				echo (isset($pretitle)) ? $pretitle : '';
-				echo (isset($pagetitle)) ? '<h1 ' . $h1class . '>' . $pagetitle . '</h1>' : '';
-				echo (isset($links)) ? $links : '';
+			<?php
+			$h1class = (isset($links)) ? 'class="nomargin"' : '';
+			echo $this->session->flashdata('flash');
+			echo (isset($pretitle)) ? $pretitle : '';
+			echo (isset($pagetitle)) ? '<h1 ' . $h1class . '>' . $pagetitle . '</h1>' : '';
+			echo (isset($links)) ? $links : '';
 			?>
 			<!-- content -->
 			<div id="content"<?php if(!isset($sidebar)){ echo ' class="solo"'; } ?>>
 				<?php
-
 				echo (isset($body)) ? $body : 'Nothing to display.';
 				?>
 			</div>
