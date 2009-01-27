@@ -38,7 +38,7 @@ $t = 1;
 	
 	<tr>
 		<td class="caption">
-			<label for="default_password" class="r" accesskey="P"><u>P</u>assword</label>
+			<label for="default_password" accesskey="P"><u>P</u>assword</label>
 		</td>
 		<td class="field">
 			<?php

@@ -192,6 +192,9 @@ class Users extends Controller {
 	
 	
 	
+	/**
+	 * User import main function
+	 */
 	function import($stage = 0){
 		
 		// Find the stage from the post vars
@@ -231,54 +234,107 @@ class Users extends Controller {
 	 */
 	function _import_1(){
 		
-		$config['upload_path'] = 'temp';
-		$config['allowed_types'] = 'csv|txt';
-		$config['encrypt_name'] = TRUE;
-		$this->load->library('upload', $config);
+		// Check where we are getting the CSV data from
+		if($this->input->post('stage') == 1){
+			
+			// Do upload if it was submitted
+			$config['upload_path'] = 'temp';
+			$config['allowed_types'] = 'csv|txt';
+			$config['encrypt_name'] = TRUE;
+			$this->load->library('upload', $config);
+			
+			$upload = $this->upload->do_upload();
+			
+		} elseif(is_array($this->session->userdata('csvimport'))){
+			
+			// Otherwise fetch CSV data from 
+			$upload = TRUE;
+			$csv = $this->session->userdata('csvimport');
+			
+		} else {
+			
+			$this->lasterr = $this->msg->err('Expected CSV data via form upload or session, but none was found');
+			$this->import(0);
+		}
 		
-		$upload = $this->upload->do_upload();
-		
+		// Test for valid data
 		if($upload == FALSE){
 			
+			// Upload failed
 			$this->lasterr = $this->msg->err(strip_tags($this->upload->display_errors()), 'File upload error');
 			$this->import(0);
 			
 		} else {
 			
-			// File OK
-			$default_password = $this->input->post('default_password');
-			$default_group_id = $this->input->post('default_group_id');
-			$default_enabled = ($this->input->post('default_enabled') == '1') ? 1 : 0;
-			$default_emaildomain = $this->input->post('default_emaildomain');
+			// File/data OK
+			$defaults['password'] = $this->input->post('default_password');
+			$defaults['group_id'] = $this->input->post('default_group_id');
+			$defaults['enabled'] = ($this->input->post('default_enabled') == '1') ? 1 : 0;
+			$defaults['emaildomain'] = $this->input->post('default_emaildomain');
 			
+			// Store defaults in session to retrieve later
+			$this->session->set_userdata('import_defaults', $defaults);
+			
+			// Elements to show on the page
 			$links[] = array('security/users/import', 'Start import again');
 			$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
 			
-			#$body['groups'] = $this->security->get_groups_dropdown();
+			// Obtain the CSV data either from upload, or from session (if returning to here from an error)
+			$csv = (!isset($csv)) ? $this->upload->data() : $csv;
 			
-			$csv = $this->upload->data();
+			// $csv now contains the array of the file upload info
+			
+			// Store it in session for use later
 			$this->session->set_userdata('csvimport', $csv);
 			
+			// Open the CSV file for reading
 			$fhandle = fopen($csv['full_path'], 'r');
 			
 			if($fhandle == FALSE){
+				// Check we can actually open the file
 				$this->lasterr = $this->msg->err("Could not open uploaded file {$csv['full_path']}.");
 				$this->import(0);
 			}
 			
 			#$fread = fread($fhandle, filesize($csv['full_path']));
 			
+			// Supply the CSV details to the view so it can open and then parse it
 			$body['csv'] = $csv;
 			$body['fhandle'] = $fhandle;
+			
 			#$body['csvdata'] = fgetcsv($fhandle, filesize($csv['full_path']), ',');
 			
+			// Load page
 			$tpl['title'] = 'Import users';
 			$tpl['pagetitle'] = "Import users (stage 2) - {$csv['orig_name']}.";
 			$tpl['body'] = $this->lasterr;
 			$tpl['body'] .= $this->load->view('security/users.import.2.php', $body, TRUE);
 			$this->load->view($this->tpl, $tpl);
 			
-			
+		}
+		
+	}
+	
+	
+	
+	
+	/**
+	 * Stage 2 of the import process
+	 */
+	function _import_2(){
+		
+		$col = $this->input->post('col');
+		
+		$defaults = $this->session->userdata('import_defaults');
+		
+		if(!in_array('username', $col)){
+			$this->lasterr = $this->msg->err('You have not chosen a column that contains the username.', 'Required column not selected');
+			$this->import(1);
+		}
+		
+		if(empty($defaults['password']) && !in_array('password', $col)){
+			$this->lasterr = $this->msg->err('You have not chosen a column that contains the password.', 'Required column not selected');
+			$this->import(1);
 		}
 		
 	}
