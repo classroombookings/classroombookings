@@ -111,7 +111,7 @@ class Terms_model extends Model{
 	
 	function edit($terms = array()){
 		
-		print_r($terms);
+		#print_r($terms);
 		if(empty($terms)){
 			$this->lasterr = 'No terms to update.';
 			return FALSE;

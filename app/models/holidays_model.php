@@ -111,7 +111,7 @@ class Holidays_model extends Model{
 	
 	function edit($holidays = array()){
 		
-		print_r($holidays);
+		#print_r($holidays);
 		if(empty($holidays)){
 			$this->lasterr = 'No holidays to update.';
 			return FALSE;

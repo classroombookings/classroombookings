@@ -103,7 +103,7 @@ class Security extends Model{
 	function add_user($data){
 		$data['created'] = date("Y-m-d");
 		
-		$departments = $data['departments'];
+		$departments = (isset($data['departments'])) ? $data['departments'] : array();
 		unset($data['departments']);
 		
 		$add = $this->db->insert('users', $data);
