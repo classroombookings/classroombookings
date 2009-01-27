@@ -1,4 +1,9 @@
-<p>Choose the appropriate heading for each column you want to import.</p>
+<p>Choose the appropriate heading for each column you want to import. Untick the rows that you do not want to import.</p>
+
+<p>
+	(<a href="#" onclick="$('.check').attr('checked', 'checked'); return false;">Tick all rows</a> | 
+	<a href="#" onclick="$('.check').attr('checked', false); return false;">Untick all rows</a>)
+</p>
 
 <div style="overflow:scroll;height:500px;">
 
@@ -40,13 +45,17 @@
 			$check['id'] = "row[{$row}][enable]";
 			$check['value'] = 1;
 			$check['enabled'] = TRUE;
+			$check['class'] = 'check';
 			
 			echo '<td>' . form_checkbox($check) . '</td>';
 			
 			$col = 0;
 			foreach($csvdata as $coldata){
 				
-				echo "<td>" . form_hidden("row[{$row}][$col]", $coldata) . "$coldata</td>";
+				echo '<td>';
+				echo form_hidden("row[{$row}][$col]", $coldata);
+				echo '<label for="row['.$row.'][enable]">'.$coldata.'</label>';
+				echo '</td>';
 				$col++;
 				
 			}
@@ -61,3 +70,7 @@
 	</table>
 
 </div>
+
+<script type="text/javascript">
+$('.check').attr('checked', 'checked');
+</script>

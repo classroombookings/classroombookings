@@ -123,6 +123,10 @@ class Account extends Controller {
 			
 			// See if user exists
 			if($this->auth->userexists($url['username'])){
+			
+				if($this->auth->loggedin() == TRUE){
+					$this->auth->logout();
+				}
 				
 				$session = $this->auth->session_create($url['username'], FALSE);
 				

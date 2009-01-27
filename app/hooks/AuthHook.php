@@ -31,6 +31,8 @@ class AuthHook{
 		// Load cookie helper as required by this library
 		$this->CI->load->helper('cookie');
 		
+		#$this->CI->config->set_item('cookie_prefix', $_SERVER['SERVER_NAME']);
+		
 		// Timeout in minutes of an 'active' logged in user.
 		$this->timeout = 10;
 		

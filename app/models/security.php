@@ -123,7 +123,7 @@ class Security extends Model{
 			return FALSE;
 		}
 		
-		$departments = $data['departments'];
+		$departments = (isset($data['departments'])) ? $data['departments'] : array();
 		unset($data['departments']);
 		
 		$this->db->where('user_id', $user_id);

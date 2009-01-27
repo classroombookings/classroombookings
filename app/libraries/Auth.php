@@ -40,6 +40,8 @@ class Auth{
 		$this->CI->load->library('user_agent');
 		$this->CI->load->library('msg');
 		
+		#$this->CI->config->set_item('cookie_prefix', $_SERVER['SERVER_NAME']);
+		
 		// Cookie salt for hash - can be any text string
 		$this->cookiesalt = 'CL455R00Mb00k1ng5';
 		

@@ -131,7 +131,7 @@ class Holidays_model extends Model{
 				$holiday['name'], 
 				$holiday['date_start'], 
 				$holiday['date_end'], 
-				$holiday['term_id'],
+				$holiday['holiday_id'],
 			));
 			
 			if($query == FALSE){
