@@ -25,7 +25,7 @@ $t = 1;
 		<tr class="heading">
 			<td class="h" width="16" title="Import/Not">&nbsp;</td>
 			<?php
-			$options['0'] = '(Ignore)';
+			$options['ignore'] = '(Ignore)';
 			$options['username'] = 'Username';
 			$options['password'] = 'Password';
 			$options['display'] = 'Display name';
@@ -53,8 +53,8 @@ $t = 1;
 			echo '<tr>';
 			
 			unset($check);
-			$check['name'] = "row[{$row}][enable]";
-			$check['id'] = "row[{$row}][enable]";
+			$check['name'] = "row[{$row}][import]";
+			$check['id'] = "row[{$row}][import]";
 			$check['value'] = 1;
 			$check['enabled'] = TRUE;
 			$check['class'] = 'check';
@@ -67,7 +67,7 @@ $t = 1;
 				
 				echo '<td>';
 				echo form_hidden("row[{$row}][$col]", $coldata);
-				echo '<label for="row['.$row.'][enable]">'.$coldata.'</label>';
+				echo '<label for="row['.$row.'][import]">'.$coldata.'</label>';
 				echo '</td>';
 				$col++;
 				
@@ -85,9 +85,7 @@ $t = 1;
 
 </div>
 
-
 <p>Total rows in the file: <?php echo $row + 1; ?></p>
-
 
 <?php
 unset($buttons);
@@ -96,6 +94,7 @@ $buttons[] = array('cancel', 'negative', 'Cancel', 'arr-left.gif', $t+1, site_ur
 $this->load->view('parts/buttons', array('buttons' => $buttons));
 ?>
 
+</form>
 
 <script type="text/javascript">
 $('.check').attr('checked', 'checked');

@@ -234,6 +234,8 @@ class Users extends Controller {
 	 */
 	function _import_1(){
 		
+
+		
 		// Check where we are getting the CSV data from
 		if($this->input->post('stage') == 1){
 			
@@ -245,6 +247,15 @@ class Users extends Controller {
 			
 			$upload = $this->upload->do_upload();
 			
+			// Get default values
+			$defaults['password'] = $this->input->post('default_password');
+			$defaults['group_id'] = $this->input->post('default_group_id');
+			$defaults['enabled'] = ($this->input->post('default_enabled') == '1') ? 1 : 0;
+			$defaults['emaildomain'] = str_replace('@', '', $this->input->post('default_emaildomain'));
+			
+			// Store defaults in session to retrieve later
+			$this->session->set_userdata('importdef', $defaults);
+			
 		} elseif(is_array($this->session->userdata('csvimport'))){
 			
 			// Otherwise fetch CSV data from 
@@ -254,7 +265,8 @@ class Users extends Controller {
 		} else {
 			
 			$this->lasterr = $this->msg->err('Expected CSV data via form upload or session, but none was found');
-			$this->import(0);
+			return $this->import(0);
+			
 		}
 		
 		// Test for valid data
@@ -262,18 +274,10 @@ class Users extends Controller {
 			
 			// Upload failed
 			$this->lasterr = $this->msg->err(strip_tags($this->upload->display_errors()), 'File upload error');
-			$this->import(0);
+			return $this->import(0);
 			
 		} else {
-			
-			// File/data OK
-			$defaults['password'] = $this->input->post('default_password');
-			$defaults['group_id'] = $this->input->post('default_group_id');
-			$defaults['enabled'] = ($this->input->post('default_enabled') == '1') ? 1 : 0;
-			$defaults['emaildomain'] = $this->input->post('default_emaildomain');
-			
-			// Store defaults in session to retrieve later
-			$this->session->set_userdata('import_defaults', $defaults);
+		
 			
 			// Elements to show on the page
 			$links[] = array('security/users/import', 'Start import again');
@@ -293,7 +297,7 @@ class Users extends Controller {
 			if($fhandle == FALSE){
 				// Check we can actually open the file
 				$this->lasterr = $this->msg->err("Could not open uploaded file {$csv['full_path']}.");
-				$this->import(0);
+				return $this->import(0);
 			}
 			
 			#$fread = fread($fhandle, filesize($csv['full_path']));
@@ -306,7 +310,7 @@ class Users extends Controller {
 			
 			// Load page
 			$tpl['title'] = 'Import users';
-			$tpl['pagetitle'] = "Import users (stage 2) - {$csv['orig_name']}.";
+			$tpl['pagetitle'] = "Import users (stage 2) - {$csv['orig_name']}";
 			$tpl['body'] = $this->lasterr;
 			$tpl['body'] .= $this->load->view('security/users.import.2.php', $body, TRUE);
 			$this->load->view($this->tpl, $tpl);
@@ -324,18 +328,122 @@ class Users extends Controller {
 	function _import_2(){
 		
 		$col = $this->input->post('col');
+		$col_num = $col;
+		$col = array_flip($col);
+		$rows = $this->input->post('row');
 		
-		$defaults = $this->session->userdata('import_defaults');
+		#die(print_r($col));
 		
-		if(!in_array('username', $col)){
+		$groups_id = $this->security->get_groups_dropdown();
+		$groups_name = array_flip($groups_id);
+		
+		#print_r($col_num);
+		
+		$csv = $this->session->userdata('csvimport');
+		
+		$defaults = $this->session->userdata('importdef');
+		
+		#print_r($csv);
+		#print_r($defaults);
+		
+		// No username column chosen? Can't continue
+		if(!isset($col['username'])){
 			$this->lasterr = $this->msg->err('You have not chosen a column that contains the username.', 'Required column not selected');
-			$this->import(1);
+			return $this->import(1);
 		}
 		
-		if(empty($defaults['password']) && !in_array('password', $col)){
-			$this->lasterr = $this->msg->err('You have not chosen a column that contains the password.', 'Required column not selected');
-			$this->import(1);
+		#print_r($defaults);
+		
+		// No default password or no password column?
+		#echo (int) array_key_exists('password', $col);
+		#echo (int) empty($defaults['password']);
+		
+		/*if( (!in_array('password', $col_num)) or (empty($defaults['password'])) ){
+			$this->lasterr = $this->msg->err('You have not chosen a password column or set the default password on the previous page.', 'Required column not selected');
+			return $this->import(1);
+		}*/
+		
+		$pass_col = in_array('password', $col_num);
+		$pass_def = !empty($defaults['password']);
+		
+		#echo var_dump($pass_col, $pass_def);
+		
+		if($pass_col == FALSE && $pass_def == FALSE){
+			$this->lasterr = $this->msg->err('You have not chosen a password column or set a default password on the previous page.');
+			return $this->import(1);
 		}
+		
+		$users = array();
+		
+		// Go through each row, and try to get proper user details from it
+		foreach($rows as $row){
+			
+			$user = array();
+			
+			// USERNAME
+			$user['username'] = trim($row[$col['username']]);
+			
+			// PASSWORD
+			$user['password'] = $defaults['password'];
+			if(array_key_exists('password', $col)){
+				if(!empty($row[$col['password']])){
+					$user['password'] = trim($row[$col['password']]);
+				}
+			}
+			
+			// DISPLAY
+			$user['display'] = $user['username'];
+			if(array_key_exists('display', $col)){
+				if(!empty($row[$col['display']])){
+					$user['display'] = trim($row[$col['display']]);
+				}
+			}
+			
+			// EMAIL
+			$user['email'] = '';
+			if(!empty($defaults['emaildomain'])){
+				$user['email'] = sprintf('%s@%s', $user['username'], $defaults['emaildomain']);
+			}
+			if(array_key_exists('email', $col)){
+				$email = trim($row[$col['email']]);
+				if(!empty($email) && $this->form_validation->valid_email($email)){
+					$user['email'] = $email;
+				}
+			}
+			
+			// GROUP
+			$user['group_id'] = $defaults['group_id'];
+			if(array_key_exists('groupname', $col)){
+				$groupname = trim($row[$col['groupname']]);
+				if(array_key_exists($groupname, $groups)){
+					$user['group_id'] = $groups_name[$groupname];
+				}
+			}
+			
+			// Enabled or not?
+			$user['enabled'] = ($defaults['enabled'] == 1) ? 1 : 0;
+			
+			// Finally add this user to the big list if we should import them
+			if(isset($row['import']) && $row['import'] == 1 && !empty($user['username'])){
+				array_push($users, $user);
+			}
+			unset($user);
+			
+		}
+		
+		$body['users'] = $users;
+		$body['groups'] = $groups_id;
+		
+		$this->session->set_userdata('users', $users);
+		
+		// Load page
+		$links[] = array('security/users/import', 'Start import again');
+		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
+		$tpl['title'] = 'Import users';
+		$tpl['pagetitle'] = "Import users (stage 3) - {$csv['orig_name']}";
+		$tpl['body'] = $this->lasterr;
+		$tpl['body'] .= $this->load->view('security/users.import.3.php', $body, TRUE);
+		$this->load->view($this->tpl, $tpl);
 		
 	}
 	

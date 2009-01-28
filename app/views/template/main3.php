@@ -52,6 +52,8 @@
 </head>
 
 <body>
+
+<?php #echo var_export($_SESSION); ?>
 	
 	<!-- top -->
 	<div id="top">

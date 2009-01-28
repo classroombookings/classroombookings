@@ -375,13 +375,6 @@ class Weeks_model extends Model{
 	
 	
 	
-	function css(){
-		return "OK";
-	}
-	
-	
-	
-	
 }
 
 
