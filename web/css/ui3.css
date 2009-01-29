@@ -469,3 +469,46 @@ div.msg.yes{
 .bg-red{background:#FBE6F2;}
 .bg-yellow{background:#fff9d7;padding:0.5em}
 .bg-info{background:#E6FBF2;}
+
+
+div#pagination{
+	clear:both;
+	text-align:center;
+}
+
+div#pagination a, div#pagination b{
+	display:inline;
+	
+	padding:4px 8px;
+	background:#FFA500;
+	color:#fff;
+	text-decoration:none;
+	font-size:110%;
+	font-weight:bold;
+	margin:1px 3px;
+	border:2px solid #ffa500;
+}
+
+div#pagination a:hover{
+	color:#FFA500;
+	background:#fff;
+	border:2px solid #ffa500;
+}
+
+div#pagination b{
+	background:#60AA37;
+	border-color:#60AA37;
+}
+
+ul.fail, ul.success{
+	line-height:150%;
+	font-size:110%;
+}
+
+ul.fail li{
+	color:#c00;
+}
+
+ul.success li{
+	color:#4e9a06;
+}

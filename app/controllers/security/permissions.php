@@ -34,8 +34,11 @@ class Permissions extends Controller {
 	
 	
 	function index($tab = NULL){
-		$links[0] = array('security/users', 'Manage users');
-		$links[1] = array('security/groups', 'Manage groups');
+		
+		$links[] = array('security/users', 'Manage users');
+		$links[] = array('security/groups', 'Manage groups');
+		$links[] = array('security/permissions', 'Change group permissions', TRUE);
+		
 		$body['tab'] = ($tab == NULL) ? $this->session->flashdata('tab') : $tab;
 		$body['groups'] = $this->security->get_groups_dropdown();
 		$body['permissions'] = $this->config->item('permissions');

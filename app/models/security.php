@@ -101,6 +101,13 @@ class Security extends Model{
 	
 	
 	function add_user($data){
+		
+		$exists = $this->auth->userexists($data['username']);
+		if($exists == TRUE){
+			$this->lasterr = 'Username already exists.';
+			return FALSE;
+		}
+		
 		$data['created'] = date("Y-m-d");
 		
 		$departments = (isset($data['departments'])) ? $data['departments'] : array();
@@ -132,6 +139,15 @@ class Security extends Model{
 		$this->update_user_departments($user_id, $departments);
 		
 		return $edit;
+	}
+	
+	
+	
+	
+	function total_users(){
+		$sql = 'SELECT user_id FROM users';
+		$query = $this->db->query($sql);
+		return $query->num_rows();
 	}
 	
 	

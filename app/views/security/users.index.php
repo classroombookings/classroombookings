@@ -40,6 +40,8 @@ if($users != 0){
 	</tbody>
 </table>
 
+<?php echo $this->pagination->create_links() ?>
+
 <script type='text/javascript'>
 /*$(function(){
 	$('a[rel*=facebox]').click(function(){

@@ -35,23 +35,66 @@ class Users extends Controller {
 	
 	
 	function index(){
+	
+		if($this->uri->segment(3) == 'ingroup'){
+			$group_id = (int) $this->uri->segment(4);
+		} else {
+			$group_id = NULL;
+		}
+		
 		$this->auth->check('users');
+		
+		$this->load->library('pagination');
+		
 		$links[] = array('security/users/add', 'Add a new user');
 		$links[] = array('security/users/import', 'Import from file');
+		$links[] = array('security/users', 'Manage users', TRUE);
 		$links[] = array('security/groups', 'Manage groups');
 		$links[] = array('security/permissions', 'Change group permissions');
 		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
 		
+		$tpl['title'] = 'Users';
+		
+		$config['per_page'] = '15';
+		$config['full_tag_open'] = '<div id="pagination">';
+		$config['full_tag_close'] = '</div>';
+		$config['next_link'] = 'Next &gt;';
+		$config['prev_link'] = '&lt; Back';
+		$config['num_links'] = 10;
+		
+		#echo var_dump($group_id);
+		
+		if($group_id == NULL){
+			// ALL USERS
+			if($this->uri->segment(3) == 'p'){
+				$pages = array($config['per_page'], $this->uri->segment(4, 0));
+				$config['uri_segment'] = 4;
+			} else {
+				$pages = array($config['per_page'], 0);
+			}
+			
+			$body['users'] = $this->security->get_user(NULL, NULL, $pages);
+			$tpl['pagetitle'] = 'Manage users';
+			$config['base_url'] = site_url('security/users/p');
+			$config['total_rows'] = $this->security->total_users();
+		} else {
+			// Users in one group
+			$groupname = $this->security->get_group_name($group_id);
+			$body['users'] = $this->security->get_user(NULL, $group_id);
+			$tpl['pagetitle'] = sprintf('Manage users in the %s group', $groupname);
+			$config['base_url'] = site_url('security/users/ingroup/' . $group_id);
+			$config['total_rows'] = count($body['users']);
+		}
+		
+		$this->pagination->initialize($config); 
+		
+		
 		// Get list of users
-		$body['users'] = $this->security->get_user();
 		if ($body['users'] == FALSE) {
 			$tpl['body'] = $this->msg->err($this->security->lasterr);
 		} else {
 			$tpl['body'] = $this->load->view('security/users.index.php', $body, TRUE);
 		}
-		
-		$tpl['title'] = 'Users';
-		$tpl['pagetitle'] = 'Manage users';
 		
 		$this->load->view($this->tpl, $tpl);
 	}
@@ -60,29 +103,11 @@ class Users extends Controller {
 	
 	
 	function ingroup($group_id){
-		$this->auth->check('users');
-		$links[] = array('security/users/add', 'Add a new user');
-		$links[] = array('security/users/import', 'Import from file');
-		$links[] = array('security/groups', 'Manage groups');
-		$links[] = array('security/permissions', 'Change group permissions');
-		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
-		
-		$tpl['title'] = 'Users';
-		$groupname = $this->security->get_group_name($group_id);
-		if ($groupname == FALSE) {
-			$tpl['body'] = $this->msg->err($this->security->lasterr);
-			$tpl['pagetitle'] = $tpl['title'];
-		} else {
-			$body['users'] = $this->security->get_user(NULL, $group_id);
-			if ($body['users'] === FALSE) {
-				$tpl['body'] = $this->msg->err($this->security->lasterr);
-			} else {
-				$tpl['body'] = $this->load->view('security/users.index.php', $body, TRUE);
-			}
-			$tpl['pagetitle'] = sprintf('Manage users in the %s group', $groupname);
-		}
-		
-		$this->load->view($this->tpl, $tpl);
+		$this->index($group_id);
+	}
+	
+	function p($offset = 0){
+		$this->index();
 	}
 	
 	
@@ -201,9 +226,9 @@ class Users extends Controller {
 		//$poststage = $this->input->post('stage');
 		//echo $poststage;
 		
+		$this->auth->check('users.add');
+		
 		if($stage == 0){
-			
-			$this->auth->check('users.add');
 			
 			$links[] = array('security/users/import', 'Start import again');
 			$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
@@ -330,19 +355,12 @@ class Users extends Controller {
 		$col = array_flip($col);
 		$rows = $this->input->post('row');
 		
-		#die(print_r($col));
-		
 		$groups_id = $this->security->get_groups_dropdown();
 		$groups_name = array_flip($groups_id);
-		
-		#print_r($col_num);
 		
 		$csv = $this->session->userdata('csvimport');
 		
 		$defaults = $this->session->userdata('importdef');
-		
-		#print_r($csv);
-		#print_r($defaults);
 		
 		// No username column chosen? Can't continue
 		if(!isset($col['username'])){
@@ -350,21 +368,8 @@ class Users extends Controller {
 			return $this->import(1);
 		}
 		
-		#print_r($defaults);
-		
-		// No default password or no password column?
-		#echo (int) array_key_exists('password', $col);
-		#echo (int) empty($defaults['password']);
-		
-		/*if( (!in_array('password', $col_num)) or (empty($defaults['password'])) ){
-			$this->lasterr = $this->msg->err('You have not chosen a password column or set the default password on the previous page.', 'Required column not selected');
-			return $this->import(1);
-		}*/
-		
 		$pass_col = in_array('password', $col_num);
 		$pass_def = !empty($defaults['password']);
-		
-		#echo var_dump($pass_col, $pass_def);
 		
 		if($pass_col == FALSE && $pass_def == FALSE){
 			$this->lasterr = $this->msg->err('You have not chosen a password column or set a default password on the previous page.');
@@ -452,6 +457,8 @@ class Users extends Controller {
 		
 		// Get array of users to add from the session (stored in previous stage)
 		$users = $this->session->userdata('users');
+		// Get CSV data
+		$csv = $this->session->userdata('csvimport');
 		
 		if(count($users) > 0){
 			
@@ -464,12 +471,12 @@ class Users extends Controller {
 				
 				// Create array of fields to be sent to the database
 				$data = array();
-				$data['username'] = $user['username']
+				$data['username'] = $user['username'];
 				$data['displayname'] = $user['display'];
 				$data['email'] = $user['email'];
 				$data['group_id'] = $user['group_id'];
 				$data['enabled'] = $user['enabled'];
-				$data['password'] = sha1($user['password1']);
+				$data['password'] = sha1($user['password']);
 				$data['ldap'] = 0;
 				
 				// Add user to database
@@ -477,7 +484,7 @@ class Users extends Controller {
 				
 				// Test result of the add
 				if($add == FALSE){
-					$user['fail'] = $this->security->lasterr();
+					$user['fail'] = $this->security->lasterr;
 					array_push($fail, $user);
 				} else {
 					array_push($success, $user);
@@ -492,12 +499,15 @@ class Users extends Controller {
 			$body['fail'] = $fail;
 			$body['success'] = $success;
 			
+			// Remove session data
+			$this->session->unset_userdata(array('csvimport', 'users'));
+			
 			// Load page
 			$links[] = array('security/users/import', 'Start import again');
 			$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
 			$tpl['title'] = 'Import users';
-			$tpl['pagetitle'] = "Import users (stage 3) - {$csv['orig_name']}";
-			$tpl['body'] = $this->load->view('security/users.import.3.php', $body, TRUE);
+			$tpl['pagetitle'] = "Import users (complete) - {$csv['orig_name']}";
+			$tpl['body'] = $this->load->view('security/users.import.4.php', $body, TRUE);
 			$this->load->view($this->tpl, $tpl);
 			
 		} else {

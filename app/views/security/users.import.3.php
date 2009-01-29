@@ -48,6 +48,8 @@ foreach($users as $user){
 
 ?>
 
+<div style="clear:both;">&nbsp;</div>
+
 <?php
 unset($buttons);
 $buttons[] = array('submit', 'positive', 'Import users', 'database-arr2.gif', $t);

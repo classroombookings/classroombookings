@@ -36,9 +36,11 @@ class Groups extends Controller {
 	
 	function index(){
 		$this->auth->check('groups');
-		$links[0] = array('security/groups/add', 'Add a new group');
-		$links[1] = array('security/users', 'Manage users');
-		$links[2] = array('security/permissions', 'Change group permissions');
+		$links[] = array('security/groups/add', 'Add a new group');
+		$links[] = array('security/users/import', 'Import from file');
+		$links[] = array('security/users', 'Manage users');
+		$links[] = array('security/groups', 'Manage groups', TRUE);
+		$links[] = array('security/permissions', 'Change group permissions');
 		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
 		
 		// Get list of users
