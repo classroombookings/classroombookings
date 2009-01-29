@@ -210,7 +210,7 @@ class Users extends Controller {
 			
 			$body['groups'] = $this->security->get_groups_dropdown();
 			$tpl['title'] = 'Import users';
-			$tpl['pagetitle'] = 'Import users';
+			$tpl['pagetitle'] = 'Import users (stage 1)';
 			
 			$tpl['body'] = $this->lasterr;
 			$tpl['body'] .= $this->load->view('security/users.import.1.php', $body, TRUE);
@@ -221,6 +221,7 @@ class Users extends Controller {
 			switch($stage){
 				case 1:	$this->_import_1(); break;
 				case 2: $this->_import_2(); break;
+				case 3: $this->_import_3(); break;
 			}
 			
 		}
@@ -233,8 +234,6 @@ class Users extends Controller {
 	 * Import stage 1 - user has uploaded a file and hopefully set some default values
 	 */
 	function _import_1(){
-		
-
 		
 		// Check where we are getting the CSV data from
 		if($this->input->post('stage') == 1){
@@ -277,7 +276,6 @@ class Users extends Controller {
 			return $this->import(0);
 			
 		} else {
-		
 			
 			// Elements to show on the page
 			$links[] = array('security/users/import', 'Start import again');
@@ -444,6 +442,71 @@ class Users extends Controller {
 		$tpl['body'] = $this->lasterr;
 		$tpl['body'] .= $this->load->view('security/users.import.3.php', $body, TRUE);
 		$this->load->view($this->tpl, $tpl);
+		
+	}
+	
+	
+	
+	
+	function _import_3(){
+		
+		// Get array of users to add from the session (stored in previous stage)
+		$users = $this->session->userdata('users');
+		
+		if(count($users) > 0){
+			
+			// Arrays to hold details of successes and failures
+			$fail = array();
+			$success = array();
+			
+			// Loop through all users and add them to the database
+			foreach($users as $user){
+				
+				// Create array of fields to be sent to the database
+				$data = array();
+				$data['username'] = $user['username']
+				$data['displayname'] = $user['display'];
+				$data['email'] = $user['email'];
+				$data['group_id'] = $user['group_id'];
+				$data['enabled'] = $user['enabled'];
+				$data['password'] = sha1($user['password1']);
+				$data['ldap'] = 0;
+				
+				// Add user to database
+				$add = $this->security->add_user($data);
+				
+				// Test result of the add
+				if($add == FALSE){
+					$user['fail'] = $this->security->lasterr();
+					array_push($fail, $user);
+				} else {
+					array_push($success, $user);
+				}
+				
+				unset($data);
+				
+			}
+			
+			// Finished adding users
+			
+			$body['fail'] = $fail;
+			$body['success'] = $success;
+			
+			// Load page
+			$links[] = array('security/users/import', 'Start import again');
+			$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
+			$tpl['title'] = 'Import users';
+			$tpl['pagetitle'] = "Import users (stage 3) - {$csv['orig_name']}";
+			$tpl['body'] = $this->load->view('security/users.import.3.php', $body, TRUE);
+			$this->load->view($this->tpl, $tpl);
+			
+		} else {
+			
+			// No users - weird - shouldn't get to this stage without them.
+			$this->lasterr = $this->msg->err('No users were supplied');
+			return $this->import(2);
+			
+		}
 		
 	}
 	
