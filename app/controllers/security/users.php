@@ -34,6 +34,9 @@ class Users extends Controller {
 	
 	
 	
+	/**
+	 * Page function for main users listing page. Is also used by ingroup() and p()
+	 */
 	function index(){
 	
 		if($this->uri->segment(3) == 'ingroup'){
@@ -55,14 +58,8 @@ class Users extends Controller {
 		
 		$tpl['title'] = 'Users';
 		
+		// Pagination setting (others are defined in /app/config/pagination.php)
 		$config['per_page'] = '15';
-		$config['full_tag_open'] = '<div id="pagination">';
-		$config['full_tag_close'] = '</div>';
-		$config['next_link'] = 'Next &gt;';
-		$config['prev_link'] = '&lt; Back';
-		$config['num_links'] = 10;
-		
-		#echo var_dump($group_id);
 		
 		if($group_id == NULL){
 			// ALL USERS
@@ -86,8 +83,7 @@ class Users extends Controller {
 			$config['total_rows'] = count($body['users']);
 		}
 		
-		$this->pagination->initialize($config); 
-		
+ 		$this->pagination->initialize($config);
 		
 		// Get list of users
 		if ($body['users'] == FALSE) {
@@ -102,10 +98,19 @@ class Users extends Controller {
 	
 	
 	
+	/**
+	 * Page function to show only users in a particular group
+	 */
 	function ingroup($group_id){
 		$this->index($group_id);
 	}
 	
+	
+	
+	
+	/**
+	 * Page function for paginated list of users (index() picks up page offset via URI)
+	 */
 	function p($offset = 0){
 		$this->index();
 	}
@@ -113,6 +118,9 @@ class Users extends Controller {
 	
 	
 	
+	/**
+	 * Page function: add a user
+	 */
 	function add(){
 		$this->auth->check('users.add');
 		$body['user'] = NULL;
@@ -128,6 +136,9 @@ class Users extends Controller {
 	
 	
 	
+	/**
+	 * Page function: edit a user
+	 */
 	function edit($user_id){
 		$this->auth->check('users.edit');
 		$body['user'] = $this->security->get_user($user_id);
@@ -144,6 +155,9 @@ class Users extends Controller {
 	
 	
 	
+	/**
+	 * Destination for form submission for add and edit pages
+	 */
 	function save(){
 		$user_id = $this->input->post('user_id');
 		
@@ -218,7 +232,7 @@ class Users extends Controller {
 	
 	
 	/**
-	 * User import main function
+	 * Page function: User import landing page
 	 */
 	function import($stage = 0){
 		
@@ -255,8 +269,9 @@ class Users extends Controller {
 	
 	
 	
+	
 	/**
-	 * Import stage 1 - user has uploaded a file and hopefully set some default values
+	 * User Import: Stage 1 - user has uploaded a file and hopefully set some default values
 	 */
 	function _import_1(){
 		
@@ -346,7 +361,7 @@ class Users extends Controller {
 	
 	
 	/**
-	 * Stage 2 of the import process
+	 * User import: Stage 2 - preview the user page
 	 */
 	function _import_2(){
 		
@@ -453,6 +468,9 @@ class Users extends Controller {
 	
 	
 	
+	/**
+	 * User Import: Stage 3 - add the actual users and show success/failures
+	 */
 	function _import_3(){
 		
 		// Get array of users to add from the session (stored in previous stage)
@@ -523,6 +541,9 @@ class Users extends Controller {
 	
 	
 	
+	/**
+	 * Page function: Deleting a user
+	 */
 	function delete($user_id = NULL){
 		$this->auth->check('users.delete');
 		

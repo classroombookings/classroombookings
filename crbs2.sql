@@ -147,8 +147,7 @@ CREATE TABLE `groups` (
   `permissions` text COMMENT 'A PHP-serialize()''d chunk of data',
   `created` date NOT NULL COMMENT 'Date the group was created',
   PRIMARY KEY  (`group_id`),
-  UNIQUE KEY `name` (`name`),
-  UNIQUE KEY `name_2` (`name`)
+  UNIQUE KEY `name` (`name`)
 ) TYPE=InnoDB AUTO_INCREMENT=10 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Groups table with settings and permiss; InnoDB free: 9216 kB'*/;
 
 
@@ -418,12 +417,12 @@ CREATE TABLE `quota` (
 
 
 #
-# Table structure for table 'rooms-fields'
+# Table structure for table 'roomattrs-fields'
 #
 
-CREATE TABLE `rooms-fields` (
+CREATE TABLE `roomattrs-fields` (
   `field_id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(50) NOT NULL,
+  `name` varchar(20) NOT NULL,
   `type` enum('text','select','check','multi') NOT NULL,
   PRIMARY KEY  (`field_id`)
 ) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Names of fields that can be assigned to rooms'*/;
@@ -431,7 +430,7 @@ CREATE TABLE `rooms-fields` (
 
 
 #
-# Dumping data for table 'rooms-fields'
+# Dumping data for table 'roomattrs-fields'
 #
 
 # (No data found.)
@@ -439,10 +438,10 @@ CREATE TABLE `rooms-fields` (
 
 
 #
-# Table structure for table 'rooms-options'
+# Table structure for table 'roomattrs-options'
 #
 
-CREATE TABLE `rooms-options` (
+CREATE TABLE `roomattrs-options` (
   `option_id` int(10) unsigned NOT NULL auto_increment,
   `value` varchar(50) NOT NULL,
   PRIMARY KEY  (`option_id`)
@@ -451,7 +450,7 @@ CREATE TABLE `rooms-options` (
 
 
 #
-# Dumping data for table 'rooms-options'
+# Dumping data for table 'roomattrs-options'
 #
 
 # (No data found.)
@@ -459,10 +458,10 @@ CREATE TABLE `rooms-options` (
 
 
 #
-# Table structure for table 'rooms-values'
+# Table structure for table 'roomattrs-values'
 #
 
-CREATE TABLE `rooms-values` (
+CREATE TABLE `roomattrs-values` (
   `value_id` int(10) unsigned NOT NULL auto_increment,
   `room_id` int(10) unsigned NOT NULL,
   `field_id` int(10) unsigned NOT NULL,
@@ -473,7 +472,27 @@ CREATE TABLE `rooms-values` (
 
 
 #
-# Dumping data for table 'rooms-values'
+# Dumping data for table 'roomattrs-values'
+#
+
+# (No data found.)
+
+
+
+#
+# Table structure for table 'roomcategories'
+#
+
+CREATE TABLE `roomcategories` (
+  `category_id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(25) NOT NULL,
+  PRIMARY KEY  (`category_id`)
+) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Categories that rooms can belong to'*/;
+
+
+
+#
+# Dumping data for table 'roomcategories'
 #
 
 # (No data found.)
@@ -486,15 +505,18 @@ CREATE TABLE `rooms-values` (
 
 CREATE TABLE `rooms` (
   `room_id` int(10) unsigned NOT NULL auto_increment,
-  `user_id` int(10) unsigned NOT NULL COMMENT 'Specifies an owner (user) of the room',
+  `category_id` int(10) unsigned default NULL COMMENT 'An optional category that the room can belong to',
+  `user_id` int(10) unsigned default NULL COMMENT 'Specifies an owner (user) of the room',
   `order` tinyint(3) unsigned default NULL COMMENT 'Order that the rooms appear in (optional)',
   `name` varchar(20) NOT NULL,
-  `location` varchar(40) NOT NULL,
+  `description` varchar(40) default NULL,
   `bookable` tinyint(1) NOT NULL COMMENT 'Boolean 1 or 0',
-  `notes` varchar(255) NOT NULL,
   `photo` char(32) NOT NULL COMMENT 'An md5 hash that references the file that is stored',
   PRIMARY KEY  (`room_id`),
-  KEY `user_id` (`user_id`)
+  KEY `user_id` (`user_id`),
+  KEY `category_id` (`category_id`),
+  CONSTRAINT `rooms_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `roomcategories` (`category_id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `rooms_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) TYPE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='School rooms'*/;
 
 
@@ -619,7 +641,7 @@ CREATE TABLE `users` (
   KEY `ldap` (`ldap`),
   KEY `group_id` (`group_id`),
   CONSTRAINT `users_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`)
-) TYPE=InnoDB AUTO_INCREMENT=112 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Main users table'*/;
+) TYPE=InnoDB AUTO_INCREMENT=127 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Main users table'*/;
 
 
 
@@ -630,12 +652,27 @@ CREATE TABLE `users` (
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS*/;
 INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `password`, `displayname`, `cookiekey`, `lastlogin`, `ldap`, `created`) VALUES
-	('1','1',1,'admin','craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Craig Rodway',NULL,'2009-01-29 15:17:16',0,'0000-00-00'),
+	('1','1',1,'admin','craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Craig Rodway',NULL,'2009-01-30 09:07:15',0,'0000-00-00'),
 	('3','9',1,'user1','','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Foo Number 1',NULL,'2008-12-19 23:06:20',0,'2008-11-27'),
 	('12','2',1,'craig.rodway','craig.rodway@bishopbarrington.net',NULL,'Mr Rodway',NULL,'2009-01-09 16:12:48',1,'2009-01-09'),
 	('19','2',1,'test.one','test.one@bishopbarrington.net',NULL,'Mr T One',NULL,'2009-01-26 10:14:39',1,'2009-01-14'),
 	('22','2',1,'test.three','test.three@bishopbarrington.net',NULL,'Mr T Three',NULL,'2009-01-14 10:56:57',1,'2009-01-14'),
-	('24','2',1,'test.two','test.two@bishopbarrington.net',NULL,'Mr T Two',NULL,'2009-01-26 16:45:49',1,'2009-01-26');
+	('24','2',1,'test.two','test.two@bishopbarrington.net',NULL,'Mr T Two',NULL,'2009-01-26 16:45:49',1,'2009-01-26'),
+	('112','2',0,'g.harrison100','g.harrison100@bishopbarrington.net','39ccb32d95edfdbcd882f2b01809724ec640ea16','g.harrison100',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
+	('113','2',0,'j.gent100','j.gent100@bishopbarrington.net','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','j.gent100',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
+	('114','2',0,'k.hammerton100','k.hammerton100@bishopbarrington.net','be8ec20d52fdf21c23e83ba2bb7446a7fecb32ac','k.hammerton100',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
+	('115','2',0,'l.johnson100','l.johnson100@bishopbarrington.net','3a56bca418737e68a7620591abd0e7e8484458a6','l.johnson100',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
+	('116','2',0,'m.bennett103','m.bennett103@bishopbarrington.net','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','m.bennett103',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
+	('117','2',0,'m.stuart100','m.stuart100@bishopbarrington.net','08e979d3576358a5d26014d935cc7fb84e0d5a7f','m.stuart100',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
+	('118','2',0,'p.beighton100','p.beighton100@bishopbarrington.net','32ba707d8ae992ced8648716fbd88002fc5be03a','p.beighton100',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
+	('119','2',0,'s.waldie100','s.waldie100@bishopbarrington.net','61284f86181d3deca93107338918ee77ebd63f06','s.waldie100',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
+	('120','2',0,'h.smith104','h.smith104@bishopbarrington.net','c06538faae9975cce73fc613a8370ba3ffb3d302','h.smith104',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
+	('121','2',0,'a.staff100','a.staff100@bishopbarrington.net','ef20a06d2c45dd9f6a58eacaa6b36d6fc89870a6','a.staff100',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
+	('122','2',0,'m.stokoe102','m.stokoe102@bishopbarrington.net','deaae441b2d1596d06f01725f930ed2f2e7277bd','m.stokoe102',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
+	('123','2',0,'j.thompson106','j.thompson106@bishopbarrington.net','78c94605b024fc545b9100d2734dc4a4ae8a8335','j.thompson106',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
+	('124','2',0,'l.walker101','l.walker101@bishopbarrington.net','52bb90127bc86e77acd3ae5fb6c632dfe90c00a1','l.walker101',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
+	('125','2',0,'c.wearmouth100','c.wearmouth100@bishopbarrington.net','9e907431a8d31fefe3c2d341ff8826624c954f15','c.wearmouth100',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
+	('126','2',0,'e.winstanley100','e.winstanley100@bishopbarrington.net','ea157601840a5b4953c2e95f5fd27223291122d6','e.winstanley100',NULL,'0000-00-00 00:00:00',0,'2009-01-30');
 /*!40000 ALTER TABLE `users` ENABLE KEYS*/;
 UNLOCK TABLES;
 
@@ -687,7 +724,7 @@ CREATE TABLE `usersactive` (
 LOCK TABLES `usersactive` WRITE;
 /*!40000 ALTER TABLE `usersactive` DISABLE KEYS*/;
 INSERT INTO `usersactive` (`user_id`, `timestamp`) VALUES
-	('1','1233247427');
+	('1','1233328479');
 /*!40000 ALTER TABLE `usersactive` ENABLE KEYS*/;
 UNLOCK TABLES;
 

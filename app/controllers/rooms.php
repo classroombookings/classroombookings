@@ -17,25 +17,43 @@
 */
 
 
-class Rooms extends Controller {
-
-
+class Rooms extends Controller
+{
+	
+	
 	var $tpl;
 	
-
-	function Rooms(){
+	
+	function Rooms()
+	{
 		parent::Controller();
+		$this->load->model('security');
+		$this->load->model('rooms_model');
 		$this->tpl = $this->config->item('template');
 		$this->output->enable_profiler($this->config->item('profiler'));
-		$this->auth->check('rooms');
 	}
 	
 	
 	
 	
-	function index(){
+	/**
+	 * Page function: main rooms listing page
+	 */
+	function index()
+	{
+		$this->auth->check('rooms');
+		
+		$links[] = array('rooms/add', 'Add a new room');
+		$links[] = array('rooms/attributes', 'Room attributes');
+		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
+		
+		$body['roomcategories'] = $this->rooms_model->get_categories();
+		
+		$body['rooms'] = $this->rooms_model->get_in_categories();
+		
 		$tpl['title'] = 'Rooms';
 		$tpl['pagetitle'] = $tpl['title'];
+		$tpl['body'] = $this->load->view('rooms/index', $body, TRUE);
 		$this->load->view($this->tpl, $tpl);
 	}
 	
