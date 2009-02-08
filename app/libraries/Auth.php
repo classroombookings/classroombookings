@@ -322,7 +322,12 @@ class Auth{
 			We need to check of the enabled=1 at this stage because we dont want 
 			preauth/ldap/local to override this
 		*/
-		$sql = 'SELECT user_id, group_id, username, displayname AS display
+		$sql = 'SELECT 
+					user_id, 
+					group_id, 
+					username, 
+					displayname,
+					IFNULL(displayname, username) AS display
 				FROM users
 				WHERE username = ? 
 				AND enabled = 1 
@@ -345,7 +350,7 @@ class Auth{
 			$sessdata['user_id']		= $user->user_id;
 			$sessdata['group_id']		= $user->group_id;
 			$sessdata['username']		= $user->username;
-			$sessdata['display']		= ($user->display == NULL) ? $user->username : $user->display;
+			$sessdata['display']		= $user->display;	#($user->display == NULL) ? $user->username : $user->display;
 			$sessdata['year_active']	= $this->CI->years_model->get_active_id();
 			$sessdata['year_working']	= $sessdata['year_active'];
 			

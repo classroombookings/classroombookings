@@ -100,6 +100,27 @@ class Security extends Model{
 	
 	
 	
+	function get_users_dropdown(){
+		$sql = 'SELECT user_id, username, displayname, IFNULL(displayname, username) AS display
+				FROM users
+				ORDER BY display ASC';
+		$query = $this->db->query($sql);
+		if($query->num_rows() > 0){
+			$result = $query->result();
+			$users = array();
+			foreach($result as $user){
+				$users[$user->user_id] = $user->display;
+			}
+			return $users;
+		} else {
+			$this->lasterr = 'No users found';
+			return FALSE;
+		}
+	}
+	
+	
+	
+	
 	function add_user($data){
 		
 		$exists = $this->auth->userexists($data['username']);

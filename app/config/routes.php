@@ -41,6 +41,6 @@
 */
 
 $route['default_controller'] = "dashboard";
-$route['scaffolding_trigger'] = "";
+$route['scaffolding_trigger'] = "crbsdev";
 
 ?>

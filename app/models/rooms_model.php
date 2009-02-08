@@ -34,10 +34,8 @@ class Rooms_model extends Model{
 	/**
 	 * get one or more room
 	 */
-	function get($room_id = NULL, $page = NULL)
-	{
-		if ($room_id == NULL)
-		{
+	function get($room_id = NULL, $page = NULL){
+		if ($room_id == NULL){
 			// Getting all rooms
 			/*$this->db->select('rooms.*, users.user_id, users.username, roomcategories');
 			$this->db->from('rooms');
@@ -101,6 +99,59 @@ class Rooms_model extends Model{
 				return FALSE;
 			}
 			
+		}
+		
+	}
+	
+	
+	
+	
+	function get_categories_dropdown(){
+		$sql = 'SELECT category_id, name FROM roomcategories ORDER BY name ASC';
+		$query = $this->db->query($sql);
+		if($query->num_rows() > 0){
+			$result = $query->result();
+			$cats = array();
+			foreach($result as $cat){
+				$cats[$cat->category_id] = $cat->name;
+			}
+			return $cats;
+		} else {
+			$this->lasterr = 'No room categories found';
+			return FALSE;
+		}
+	}
+	
+	
+	
+	
+	function get_in_categories(){
+		
+		$sql = 'SELECT 
+					rooms.*, 
+					rcs.name AS cat_name, 
+					IFNULL(users.displayname, users.username) AS owner_name
+				FROM rooms
+				LEFT JOIN roomcategories AS rcs ON rooms.category_id = rcs.category_id
+				LEFT JOIN users ON rooms.user_id = users.user_id
+				ORDER BY rooms.category_id ASC, rooms.name ASC';
+		
+		$query = $this->db->query($sql);
+		
+		if($query->num_rows() > 0){
+			$rooms = array();
+			$result = $query->result();
+			foreach($result as $row){
+				if($row->category_id == NULL){ $row->category_id = -1; }
+				if(!array_key_exists($row->category_id, $rooms)){
+					$rooms[$row->category_id] = array();
+				}
+				array_push($rooms[$row->category_id], $row);
+			}
+			return $rooms;
+		} else {
+			$this->lasterr  = 'No rooms have been added yet.';
+			return 0;
 		}
 		
 	}

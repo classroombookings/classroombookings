@@ -276,6 +276,7 @@ table.list tr.heading td{
 }
 table.a-t tr td{vertical-align:top;}
 table.list tr.disabled td, table.list tr.disabled td a{color:#aaa;font-weight:normal;}
+table.list tr.rc td{background:#efefef}
 
 
 
