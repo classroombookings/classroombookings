@@ -100,7 +100,7 @@ class Security extends Model{
 	
 	
 	
-	function get_users_dropdown(){
+	function get_users_dropdown($none = FALSE){
 		$sql = 'SELECT user_id, username, displayname, IFNULL(displayname, username) AS display
 				FROM users
 				ORDER BY display ASC';
@@ -108,6 +108,9 @@ class Security extends Model{
 		if($query->num_rows() > 0){
 			$result = $query->result();
 			$users = array();
+			if($none == TRUE){
+				$users[-1] = '(None)';
+			}
 			foreach($result as $user){
 				$users[$user->user_id] = $user->display;
 			}

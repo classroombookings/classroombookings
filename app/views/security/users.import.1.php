@@ -25,7 +25,7 @@ $t = 1;
 			$input['name'] = 'userfile';
 			$input['id'] = 'userfile';
 			$input['size'] = '40';
-			$input['maxlength'] = '255';
+			$input['maxlength'] = '1024';
 			$input['tabindex'] = $t;
 			$input['autocomplete'] = 'off';
 			echo form_upload($input);

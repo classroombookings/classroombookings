@@ -390,10 +390,5 @@ crbs2
 		license-classroombookings.txt
 		license-codeigniter.txt
 [Open project files]
-0=app\controllers\academic\weeks.php
 [Selected Project Files]
 Main=
-Selected=app\controllers\academic\weeks.php
-[app\controllers\academic\weeks.php]
-TopLine=44
-Caret=2,64

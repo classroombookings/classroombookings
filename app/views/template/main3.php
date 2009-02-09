@@ -49,6 +49,7 @@
 	<script type="text/javascript" src="js/syronex-colorpicker-mod.js"></script>
 	<script type="text/javascript" src="js/jquery.date_input.min.js"></script>
 	<script type="text/javascript" src="js/timepicker.js"></script>
+	<script type="text/javascript" src="js/jquery.autocomplete.js"></script>
 </head>
 
 <body>

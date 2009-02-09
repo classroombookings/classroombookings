@@ -45,27 +45,20 @@ class Rooms_model extends Model{
 			$this->db->orderby('category_id ASC, name ASC');*/
 			
 			$limit = 0;
-			if(isset($page) && is_array($page))
-			{
+			if(isset($page) && is_array($page)){
 				#$this->db->limit($page[0], $page[1]);
 			}
 			
 			$query = $this->db->get();
 			
-			if($query->num_rows() > 0)
-			{
+			if($query->num_rows() > 0){
 				return $query->result();
-			}
-			else
-			{
+			} else {
 				$this->lasterr = 'There are no rooms.';
 				return 0;
 			}
-		}
-		else
-		{
-			if(!is_numeric($room_id))
-			{
+		} else {
+			if(!is_numeric($room_id)){
 				return FALSE;
 			}
 			
@@ -73,29 +66,11 @@ class Rooms_model extends Model{
 			$sql = 'SELECT * FROM rooms WHERE room_id = ? LIMIT 1';
 			$query = $this->db->query($sql, array($room_id));
 			
-			if($query->num_rows() == 1)
-			{
+			if($query->num_rows() == 1){
 				// Got the room
 				$room = $query->row();
-				$department->ldapgroups = array();
-				
-				// Fetch the LDAP groups that are mapped (if any)
-				$sql = 'SELECT ldapgroup_id FROM departments2ldapgroups WHERE department_id = ?';
-				$query = $this->db->query($sql, array($department_id));
-				if($query->num_rows() > 0)
-				{
-					$ldapgroups = array();
-					foreach($query->result() as $row){
-						array_push($ldapgroups, $row->ldapgroup_id);
-					}
-					// Assign array of LDAP groups to main group object that is to be returned
-					$department->ldapgroups = $ldapgroups;
-					unset($ldapgroups);
-				}
-				return $department;
-			}
-			else
-			{
+				return $room;
+			} else {
 				return FALSE;
 			}
 			
@@ -106,12 +81,15 @@ class Rooms_model extends Model{
 	
 	
 	
-	function get_categories_dropdown(){
+	function get_categories_dropdown($none = FALSE){
 		$sql = 'SELECT category_id, name FROM roomcategories ORDER BY name ASC';
 		$query = $this->db->query($sql);
 		if($query->num_rows() > 0){
 			$result = $query->result();
 			$cats = array();
+			if($none == TRUE){
+				$cats[-1] = '(None)';
+			}
 			foreach($result as $cat){
 				$cats[$cat->category_id] = $cat->name;
 			}
@@ -245,29 +223,17 @@ class Rooms_model extends Model{
 	
 	
 	
-	function delete($department_id){
+	function delete($room_id){
 		
-		$sql = 'DELETE FROM departments WHERE department_id = ? LIMIT 1';
-		$query = $this->db->query($sql, array($department_id));
+		$sql = 'DELETE FROM rooms WHERE room_id = ? LIMIT 1';
+		$query = $this->db->query($sql, array($room_id));
 		
 		if($query == FALSE){
 			
-			$this->lasterr = 'Could not delete department. Does it exist?';
+			$this->lasterr = 'Could not delete room. Does it exist?';
 			return FALSE;
 			
 		} else {
-			
-			/* $sql = 'DELETE FROM bookings WHERE user_id = ?';
-			$query = $this->db->query($sql, array($user_id));
-			if($query == FALSE){ $failed[] = 'bookings'; }*/
-			
-			/*$sql = 'UPDATE rooms SET user_id = NULL WHERE user_id = ?';
-			$query = $this->db->query($sql, array($user_id));
-			if($query == FALSE){ $failed[] = 'rooms'; }
-			
-			if(isset($failed)){
-				$this->lasterr = 'The user was deleted successfully, but an error occured while removing their bookings and/or updating any rooms they owned.';
-			}*/
 			
 			return TRUE;
 			
@@ -278,40 +244,19 @@ class Rooms_model extends Model{
 	
 	
 	
-	
-	function get_groups_dropdown(){
-		$sql = 'SELECT group_id, name FROM groups ORDER BY name ASC';
-		$query = $this->db->query($sql);
-		if($query->num_rows() > 0){
-			$result = $query->result();
-			$groups = array();
-			foreach($result as $group){
-				$groups[$group->group_id] = $group->name;
-			}
-			return $groups;
-		} else {
-			$this->lasterr = 'No groups found';
-			return FALSE;
-		}
-	}
-	
-	
-	
-	
-	function get_department_name($department_id){
-		if($department_id == NULL || !is_numeric($department_id)){
-			$this->lasterr = 'No department ID given or invalid data type.';
-			return FALSE;
-		}
+	/**
+	 * Add a new room category to the database
+	 */
+	function add_category($name){
+		$sql = 'INSERT INTO roomcategories 
+				(category_id, name) VALUES 
+				(NULL, ?) 
+				ON DUPLICATE KEY UPDATE category_id = LAST_INSERT_ID(category_id), name = name';
+		$query = $this->db->query($sql, array($name));
 		
-		$sql = 'SELECT name FROM departments WHERE department_id = ? LIMIT 1';
-		$query = $this->db->query($sql, array($department_id));
-		
-		if($query->num_rows() == 1){
-			$row = $query->row();
-			return $row->name;
+		if($this->db->affected_rows() == 1){
+			return $this->db->insert_id();
 		} else {
-			$this->lasterr = sprintf('The department supplied (ID: %d) does not exist.', $department_id);
 			return FALSE;
 		}
 	}
@@ -321,4 +266,4 @@ class Rooms_model extends Model{
 	
 }
 
-/* End of file: app/models/departments_model.php */
+/* End of file: app/models/rooms_model.php */
