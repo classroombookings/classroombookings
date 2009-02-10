@@ -5,7 +5,8 @@ $permissions['general'][] = array('dashboard.viewdept', 'Dashboard  - view depar
 $permissions['general'][] = array('dashboard.viewown', 'Dashboard - view own bookings');
 $permissions['general'][] = array('myprofile', 'My Profile/Change password');
 $permissions['general'][] = array('configure', 'Configure Classroombookings');
-$permissions['general'][] = array('changeyear', 'Change the working academic year');
+$permissions['general'][] = array('changeyear', 'Change the working academic year', 'Allow users to change academic settings and make bookings in other academic years');
+$permissions['general'][] = array('allrooms', 'Exempt from individual room permissions');
 
 $permissions['bookings'][] = array('bookings', 'View bookings page', 'View the main bookings page');
 $permissions['bookings'][] = array('bookings.create.one', 'Create their own one-time bookings', 'Booking days ahead and quota options still apply');
@@ -13,17 +14,18 @@ $permissions['bookings'][] = array('bookings.create.recur', 'Create recurring bo
 $permissions['bookings'][] = array('bookings.delete.one.own', 'Delete their own one-time bookings');
 $permissions['bookings'][] = array('bookings.delete.one.roomowner', 'Delete room one-time bookings if room owner');
 $permissions['bookings'][] = array('bookings.delete.recur.roomowner', 'Delete room recurring bookings if room owner', 'Allow room owners to delete others\' recurring bookings in their room');
-$permissions['bookings'][] = array('bookings.overwrite.one', 'Can overwrite other one-time bookings');
+/* $permissions['bookings'][] = array('bookings.overwrite.one', 'Can overwrite other one-time bookings');
 $permissions['bookings'][] = array('bookings.overwrite.recur', 'Can overwrite other recurring bookings with one-time booking');
 $permissions['bookings'][] = array('bookings.overwrite.one.roomowner', 'Can overwrite other one-time bookings if room owner');
-$permissions['bookings'][] = array('bookings.overwrite.recur.roomowner', 'Can overwrite other recurring bookings if room owner');
+$permissions['bookings'][] = array('bookings.overwrite.recur.roomowner', 'Can overwrite other recurring bookings if room owner'); */
 
 $permissions['rooms'][] = array('rooms', 'Rooms', 'Has access to the Rooms page');
 $permissions['rooms'][] = array('rooms.add', 'Add a room');
-$permissions['rooms'][] = array('rooms.edit', 'Edit room properties');
+$permissions['rooms'][] = array('rooms.edit', 'Edit a room');
 $permissions['rooms'][] = array('rooms.delete', 'Delete a room');
-$permissions['rooms'][] = array('rooms.fields', 'Change fields');
-$permissions['rooms'][] = array('rooms.fields.values', 'Change field values');
+$permissions['rooms'][] = array('rooms.attrs', 'Add and edit attributes');
+$permissions['rooms'][] = array('rooms.attrs.values', 'Set room attribute values');
+$permissions['rooms'][] = array('rooms.permissions', 'Change room permissions');
 
 $permissions['periods'][] = array('periods', 'Periods', 'Has access to the periods page');
 $permissions['periods'][] = array('periods.add', 'Add a period');

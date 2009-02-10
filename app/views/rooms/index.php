@@ -37,6 +37,7 @@ if($rooms != 0){
 		<td class="il">
 		<?php
 		unset($actiondata);
+		$actiondata[] = array('rooms/permissions/'.$room->room_id, 'Edit permissions', 'key-sm.gif' );
 		$actiondata[] = array('rooms/info/'.$room->room_id, 'View info', 'roominfo-sm.gif');
 		$actiondata[] = array('rooms/delete/'.$room->room_id, 'Delete', 'cross_sm.gif' );
 		$this->load->view('parts/listactions', $actiondata);
