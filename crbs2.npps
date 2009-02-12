@@ -1,0 +1,21 @@
+<NotepadPlus>
+    <Session activeView="0">
+        <mainView activeIndex="12">
+            <File firstVisibleLine="155" xOffset="0" scrollWidth="882" startPos="5850" endPos="5850" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\controllers\rooms.php" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1204" startPos="682" endPos="682" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\views\rooms\addedit.php" />
+            <File firstVisibleLine="40" xOffset="0" scrollWidth="1232" startPos="1063" endPos="1063" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\views\rooms\addedit.permissions.php" />
+            <File firstVisibleLine="3" xOffset="0" scrollWidth="1008" startPos="636" endPos="1544" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\views\rooms\index.php" />
+            <File firstVisibleLine="71" xOffset="0" scrollWidth="665" startPos="2995" endPos="2458" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\models\security.php" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1204" startPos="578" endPos="653" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\views\rooms\addedit.details.php" />
+            <File firstVisibleLine="245" xOffset="0" scrollWidth="1113" startPos="7412" endPos="7412" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\models\departments_model.php" />
+            <File firstVisibleLine="176" xOffset="0" scrollWidth="987" startPos="6719" endPos="6398" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\controllers\security\users.php" />
+            <File firstVisibleLine="23" xOffset="0" scrollWidth="616" startPos="1419" endPos="1361" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\controllers\security\permissions.php" />
+            <File firstVisibleLine="24" xOffset="0" scrollWidth="1274" startPos="1397" endPos="1131" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\views\security\permissions.index.php" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="896" startPos="184" endPos="184" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\views\security\permissions.checks.php" />
+            <File firstVisibleLine="6" xOffset="0" scrollWidth="1337" startPos="2808" endPos="2808" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\config\permissions.php" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="546" startPos="0" endPos="0" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\config\config.php" />
+            <File firstVisibleLine="214" xOffset="0" scrollWidth="1176" startPos="0" endPos="0" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs\system\application\controllers\rooms.php" />
+        </mainView>
+        <subView activeIndex="0" />
+    </Session>
+</NotepadPlus>

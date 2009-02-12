@@ -227,7 +227,7 @@ div#qTip{
  * Table type: LIST
  */
 table.list{
-	border-top:1px solid #ddd;
+	border-top:0px solid #ddd;
 	/*width:100%;*/
 	margin-bottom:16px;
 	background:#fff;
@@ -347,6 +347,7 @@ label.check input{
     top:-1px;
     *overflow: hidden;
 }
+table.rp tr td.caption{text-align:left;}
 
 
 

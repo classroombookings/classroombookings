@@ -261,22 +261,20 @@ class Departments_model extends Model{
 	
 	
 	function get_dropdown($none = FALSE){
-		$sql = 'SELECT user_id, username, displayname, IFNULL(displayname, username) AS display
-				FROM users
-				ORDER BY display ASC';
+		$sql = 'SELECT department_id, name FROM departments ORDER BY name ASC';
 		$query = $this->db->query($sql);
 		if($query->num_rows() > 0){
 			$result = $query->result();
-			$users = array();
+			$departments = array();
 			if($none == TRUE){
-				$users[-1] = '(None)';
+				$departments[-1] = '(None)';
 			}
-			foreach($result as $user){
-				$users[$user->user_id] = $user->display;
+			foreach($result as $department){
+				$departments[$department->department_id] = $department->name;
 			}
-			return $users;
+			return $departments;
 		} else {
-			$this->lasterr = 'No users found';
+			$this->lasterr = 'No departmentss found';
 			return FALSE;
 		}
 	}

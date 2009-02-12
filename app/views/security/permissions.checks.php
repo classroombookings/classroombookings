@@ -1,5 +1,5 @@
 <table width="100%" class="checks" cellpadding="0" cellspacing="0" border="0">
-<tr class="h"><td colspan="2"><?php echo $category ?></td></tr>
+<?php if(!empty($category)){ ?><tr class="h"><td colspan="2"><?php echo $category ?></td></tr><?php } ?>
 <?php
 foreach($options as $option){
 ?>

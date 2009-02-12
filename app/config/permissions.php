@@ -19,6 +19,17 @@ $permissions['bookings'][] = array('bookings.overwrite.recur', 'Can overwrite ot
 $permissions['bookings'][] = array('bookings.overwrite.one.roomowner', 'Can overwrite other one-time bookings if room owner');
 $permissions['bookings'][] = array('bookings.overwrite.recur.roomowner', 'Can overwrite other recurring bookings if room owner'); */
 
+$permissions['room'][] = array('bookings.view', 'View the room');
+$permissions['room'][] = array('bookings.create.one', 'Create a single booking', 'Booking days ahead and quota still apply');
+$permissions['room'][] = array('bookings.create.recur', 'Create a timetabled booking', 'Bookings that will occur every timetable week');
+$permissions['room'][] = array('bookings.create.behalf', 'Create bookings on behalf of other users');
+$permissions['room'][] = array('bookings.delete.own.one', 'Cancel their own single booking');
+$permissions['room'][] = array('bookings.delete.own.recur', 'Cancel their own recurring booking');
+$permissions['room'][] = array('bookings.delete.other.one', 'Cancel others\' single booking');
+$permissions['room'][] = array('bookings.delete.other.recur', 'Cancel others\' recurring booking');
+$permissions['room'][] = array('bookings.edit.one', 'Edit a single booking');
+$permissions['room'][] = array('bookings.edit.recur', 'Edit a recurring booking');
+
 $permissions['rooms'][] = array('rooms', 'Rooms', 'Has access to the Rooms page');
 $permissions['rooms'][] = array('rooms.add', 'Add a room');
 $permissions['rooms'][] = array('rooms.edit', 'Edit a room');

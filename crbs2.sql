@@ -389,6 +389,37 @@ CREATE TABLE `quota` (
 
 
 #
+# Table structure for table 'room-permissions'
+#
+
+CREATE TABLE `room-permissions` (
+  `entry_id` int(10) unsigned NOT NULL auto_increment,
+  `room_id` int(10) unsigned NOT NULL,
+  `type` enum('e','o','u','g','d') NOT NULL,
+  `user_id` int(10) unsigned default NULL,
+  `group_id` int(10) unsigned default NULL,
+  `department_id` int(10) unsigned default NULL,
+  `permissions` text NOT NULL,
+  PRIMARY KEY  (`entry_id`),
+  KEY `user_id` (`user_id`),
+  KEY `group_id` (`group_id`),
+  KEY `department_id` (`department_id`),
+  CONSTRAINT `room-permissions_ibfk_3` FOREIGN KEY (`department_id`) REFERENCES `departments` (`department_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `room-permissions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `room-permissions_ibfk_2` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Permission entries for various objects on different rooms'*/;
+
+
+
+#
+# Dumping data for table 'room-permissions'
+#
+
+# (No data found.)
+
+
+
+#
 # Table structure for table 'roomattrs-fields'
 #
 
@@ -639,7 +670,7 @@ CREATE TABLE `users` (
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS*/;
 INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `password`, `displayname`, `cookiekey`, `lastlogin`, `ldap`, `created`) VALUES
-	('1','1',1,'admin','craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Craig Rodway',NULL,'2009-02-12 09:20:16',0,'0000-00-00'),
+	('1','1',1,'admin','craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Craig Rodway',NULL,'2009-02-12 15:11:29',0,'0000-00-00'),
 	('3','9',1,'user1','','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8',NULL,NULL,'2008-12-19 23:06:20',0,'2008-11-27'),
 	('12','2',1,'craig.rodway','craig.rodway@bishopbarrington.net',NULL,'Mr Rodway',NULL,'2009-01-09 16:12:48',1,'2009-01-09'),
 	('19','2',1,'test.one','test.one@bishopbarrington.net',NULL,'Mr T One',NULL,'2009-01-26 10:14:39',1,'2009-01-14'),
@@ -711,7 +742,7 @@ CREATE TABLE `usersactive` (
 LOCK TABLES `usersactive` WRITE;
 /*!40000 ALTER TABLE `usersactive` DISABLE KEYS*/;
 INSERT INTO `usersactive` (`user_id`, `timestamp`) VALUES
-	('1','1234442015');
+	('1','1234477205');
 /*!40000 ALTER TABLE `usersactive` ENABLE KEYS*/;
 UNLOCK TABLES;
 

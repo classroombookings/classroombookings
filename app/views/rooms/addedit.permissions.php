@@ -47,110 +47,167 @@ $t = 0;
 
 
 
-
+<?php echo form_open_multipart('rooms/save_permissions', NULL, array('room_id' => $room_id)); ?>
 <!-- Add a new permission entry -->
-
-<table class="form" cellpadding="6" cellspacing="0" border="0" width="100%">
+<!-- main table -->
+<table class="form" cellpadding="0" cellspacing="0" border="0" width="100%">
 	
-	<tr class="h"><td colspan="5">Add permission entry</td></tr>
-	
-	<tr>
-		<td class="caption">
-			<label for="name" class="r" accesskey="N"><u>N</u>ame</label>
-		</td>
-		<td class="field">
-			<?php
-			unset($input);
-			$input['accesskey'] = 'N';
-			$input['name'] = 'name';
-			$input['id'] = 'name';
-			$input['size'] = '30';
-			$input['maxlength'] = '20';
-			$input['tabindex'] = $t;
-			$input['value'] = @set_value($input['name'], $room->name);
-			echo form_input($input);
-			$t++;
-			?>
-		</td>
-	</tr>
+	<tr class="h"><td colspan="2">Add permission entry</td></tr>
 	
 	<tr>
-		<td class="caption">
-			<label for="name" accesskey="D" title="Enter a description of this room"><u>D</u>escription</label>
+		
+		<!-- left col : objects -->
+		<td valign="top" width="40%">
+			
+			<!-- table for object selection -->
+			<table class="form rp list" cellpadding="0" cellspacing="0" border="0" width="100%">
+				
+				<!-- row : object : everyone -->
+				<tr>
+					<td width="20" align="center">
+						<?php
+						unset($radio);
+						$radio['name'] = 'object';
+						$radio['id'] = 'object_everyone';
+						$radio['value'] = 'everyone';
+						$radio['tabindex'] = $t;
+						echo form_radio($radio);
+						$t++;
+						?>
+					</td>
+					
+					<td width="100" class="caption">
+						<label for="object_everyone">Everyone</label>
+					</td>
+					
+					<td width="250">&nbsp;</td>
+				</tr>
+				
+				<!-- row : object : room owner -->
+				<tr>
+					<td width="20" align="center">
+						<?php
+						unset($radio);
+						$radio['name'] = 'object';
+						$radio['id'] = 'object_roomowner';
+						$radio['value'] = 'roomowner';
+						$radio['tabindex'] = $t;
+						echo form_radio($radio);
+						$t++;
+						?>
+					</td>
+					
+					<td width="100" class="caption">
+						<label for="object_roomowner">Room owner</label>
+					</td>
+					
+					<td width="250">&nbsp;</td>
+				</tr>
+				
+				<!-- row : object : user -->
+				<tr>
+					<td width="20" align="center">
+						<?php
+						unset($radio);
+						$radio['name'] = 'object';
+						$radio['id'] = 'object_user';
+						$radio['value'] = 'user';
+						$radio['tabindex'] = $t;
+						echo form_radio($radio);
+						$t++;
+						?>
+					</td>
+					
+					<td width="100" class="caption">
+						<label for="object_user">User</label>
+					</td>
+					
+					<td width="250" class="field">
+					<?php
+					unset($users[-1]);
+					echo form_dropdown('user_id', $users, -1, 'tabindex="'.$t.'"');
+					?></td>
+				</tr>
+				
+				<!-- row : object : group -->
+				<tr>
+					<td width="20" align="center">
+						<?php
+						unset($radio);
+						$radio['name'] = 'object';
+						$radio['id'] = 'object_group';
+						$radio['value'] = 'group';
+						$radio['tabindex'] = $t;
+						echo form_radio($radio);
+						$t++;
+						?>
+					</td>
+					
+					<td width="100" class="caption">
+						<label for="object_group">Group</label>
+					</td>
+					
+					<td width="250" class="field">
+					<?php
+					echo form_dropdown('group_id', $groups, -1, 'tabindex="'.$t.'"');
+					?></td>
+				</tr>
+				
+				<!-- row : object : department -->
+				<tr>
+					<td width="20" align="center">
+						<?php
+						unset($radio);
+						$radio['name'] = 'object';
+						$radio['id'] = 'object_department';
+						$radio['value'] = 'department';
+						$radio['tabindex'] = $t;
+						echo form_radio($radio);
+						$t++;
+						?>
+					</td>
+					
+					<td width="100" class="caption">
+						<label for="object_department">Department</label>
+					</td>
+					
+					<td width="250" class="field">
+					<?php
+					echo form_dropdown('department_id', $departments, -1, 'tabindex="'.$t.'"');
+					?></td>
+				</tr>
+				
+			</table>
+			<!-- // table for object selection -->
+			
 		</td>
-		<td class="field">
+		
+		<td width="50">&nbsp;</td>
+		
+		<!-- right col : permissions -->
+		<td valign="top">
 			<?php
-			unset($input);
-			$input['accesskey'] = 'D';
-			$input['name'] = 'description';
-			$input['id'] = 'description';
-			$input['size'] = '40';
-			$input['maxlength'] = '50';
-			$input['tabindex'] = $t;
-			$input['value'] = @set_value($input['name'], $room->name);
-			echo form_input($input);
-			$t++;
+			unset($checks);
+			$checks['options'] = $permissions['room'];
+			$checks['group_id'] = $room_id;
+			$checks['category'] = NULL;
+			$this->load->view('security/permissions.checks.php', $checks);
 			?>
 		</td>
+		
 	</tr>
-	
-	<tr>
-		<td class="caption">
-			<label for="category" accesskey="C" title="Choose a category for this room to belong to or type a new one"><u>C</u>ategory</label>
-		</td>
-		<td class="field">
-			<?php
-			echo form_dropdown('category_id', $cats, set_value('category_id', (isset($room->category_id) ? $room->category_id : -1)), 'id="category_id" tabindex="'.$t.'"');
-			$t++;
-			?>
-		</td>
-	</tr>
-
-	
-	<tr>
-		<td class="caption">
-			<label for="user_id" accesskey="O" title="Select the owner for this room from the list of users"><u>O</u>wner</label>
-		</td>
-		<td class="field">
-			<?php
-			echo form_dropdown('user_id', $users, set_value('user_id', (isset($room->user_id) ? $room->user_id : -1)), 'tabindex="'.$t.'"');
-			$t++;
-			?>
-		</td>
-	</tr>
-	
-	<tr>
-		<td class="caption">
-			<label for="bookable" accesskey="B" title="Untick this box to prevent the room from showing the bookings list and to prevent bookings."><u>B</u>ookable</label>
-		</td>
-		<td class="field">
-			<label for="bookable" class="check">
-			<?php
-			unset($check);
-			$check['name'] = 'bookable';
-			$check['id'] = 'bookable';
-			$check['value'] = '1';
-			$check['checked'] = @set_checkbox($check['name'], $check['value'], ($room->bookable == 1));
-			$check['tabindex'] = $t;
-			echo form_checkbox($check);
-			$t++;
-			?>
-			</label>
-		</td>
-	</tr>
-	
-	<?php
-	if($room_id == NULL){
-		$submittext = 'Add room';
-	} else {
-		$submittext = 'Save room';
-	}
-	unset($buttons);
-	$buttons[] = array('submit', 'positive', $submittext, 'disk1.gif', $t);
-	#$buttons[] = array('submit', '', 'Save and add another', 'add.gif', $t+1);
-	$buttons[] = array('cancel', 'negative', 'Cancel', 'arr-left.gif', $t+2, site_url('rooms'));
-	$this->load->view('parts/buttons', array('buttons' => $buttons));
-	?>
 	
 </table>
+<!-- // main table -->
+
+	
+<?php
+unset($buttons);
+$buttons[] = array('submit', 'positive', 'Add permission entry', 'disk1.gif', $t);
+#$buttons[] = array('submit', '', 'Save and add another', 'add.gif', $t+1);
+$buttons[] = array('cancel', 'negative', 'Cancel', 'arr-left.gif', $t+2, site_url('rooms'));
+$this->load->view('parts/buttons', array('buttons' => $buttons));
+?>
+
+
 </form>

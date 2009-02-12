@@ -21,6 +21,8 @@ class Rooms extends Controller{
 	
 	
 	var $tpl;
+	var $lasterr;
+	var $resize_errors;
 	
 	
 	function Rooms(){
@@ -96,10 +98,13 @@ class Rooms extends Controller{
 		$body['room'] = $this->rooms_model->get($room_id);
 		$body['room_id'] = $room_id;
 		
+		// Permissions
+		$body['permissions'] = $this->config->item('permissions');
 		$body['users'] = $this->security->get_users_dropdown(TRUE);
 		$body['groups'] = $this->security->get_groups_dropdown();
 		$body['departments'] = $this->departments_model->get_dropdown();
 		
+		// Categories
 		$body['cats'] = $this->rooms_model->get_categories_dropdown(TRUE);
 		$body['cats'][-2] = 'Add new ...';
 		
@@ -119,6 +124,9 @@ class Rooms extends Controller{
 	
 	
 	
+	/**
+	 * Form destination: Add/Edit a room
+	 */
 	function save(){
 		
 		$room_id = $this->input->post('room_id');
@@ -131,12 +139,12 @@ class Rooms extends Controller{
 		$this->form_validation->set_rules('bookable', 'Bookable', 'exact_length[1]');
 		$this->form_validation->set_error_delimiters('<li>', '</li>');
 		
+		$data = array();
 		
-		// Check if upload is successful.
+		// Check if upload is successful
 		$upload = $this->_do_upload();
-		#echo var_dump($upload);
 		if($upload == FALSE){
-			// Upload failed or was nothing upload
+			// Upload failed OR nothing was uploaded
 			// Check if a previous attempt was successful (will be in session)
 			$rpupload = $this->session->userdata('rpupload');
 			if($rpupload){
@@ -147,13 +155,14 @@ class Rooms extends Controller{
 			// Upload was successful, set the session data
 			$this->session->set_userdata('rpupload', $upload);
 		}
-		#echo var_dump($upload);
 		
 		
 		// Do certain actions based on category chosen
 		$data['category_id'] = $this->input->post('category_id');
 		if(is_numeric($data['category_id'])){
 			// Haven't chosen to add a new category or it's not chosen, or no existing selected
+			// Convert to proper integer
+			$data['category_id'] = (int)$this->input->post('category_id');
 			switch($data['category_id']){
 				// If chosen a non-valued option, set to null
 				case -1: $data['category_id'] = NULL; break;
@@ -174,19 +183,66 @@ class Rooms extends Controller{
 			
 		} else {
 			
-			// OK
+			// All fields validated
+			
+			// Set initial photo value to nothing
+			$data['photo'] = NULL;
+			
+			// Check image upload is OK
 			if($upload != FALSE){
-				$image = $this->_process_image($upload);
-				$data['photo'] = '';	//TODO return value here
+				// Attempt to resize the image
+				$resize = $this->_process_image($upload);
+				if($resize != FALSE){
+					// Resize didn't fail - we can now use the name returned from the function
+					$data['photo'] = $resize;
+				} else {
+					// Resize failed - add error message
+					$this->msg->add('err', implode(', ', $this->resize_errors), $this->lasterr);
+				}
 			}
 			
+			// Clear the photo upload data from the session
+			$this->session->unset_userdata('rpupload');
+			
+			// Data array of fields to add to the database
 			$data['name'] = $this->input->post('name');
 			$data['description'] = $this->input->post('description');
-			$data['bookable'] = ($this->input->post('bookable') == '1') ? 1 : 0;
-			$data['user_id'] = ($this->input->post('user_id') != '-1') ? $this->input->post('user_id') : NULL;
+			$data['bookable'] = ((int)$this->input->post('bookable') == 1) ? 1 : 0;
+			$data['user_id'] = ((int)$this->input->post('user_id') != -1) ? (int)$this->input->post('user_id') : NULL;
+			
+			#var_dump($data);
+			
+			if($room_id == NULL){
+				
+				// Adding a new room
+				
+				#$add = $this->rooms_model->add($data);
+				
+				if($add == TRUE){
+					$this->msg->add('info', $this->lang->line('ROOM_ADD_OK'));
+				} else {
+					$this->msg->add('err', sprintf($this->lang->line('SECURITY_USER_ADD_FAIL', $this->security->lasterr)));
+				}
+				
+			} else {
+				
+				// Updating a room
+				
+				#$edit = $this->rooms_model->edit($data);
+				
+			}
 			
 		}
 		
+	}
+	
+	
+	
+	
+	/**
+	 * Form destination: Save room permissions
+	 */
+	function save_permissions(){
 	}
 	
 	
@@ -223,31 +279,79 @@ class Rooms extends Controller{
 	 * @return bool
 	 */
 	function _process_image($data){
-		print_r($data);
+		
+		// Largest side dimensions for small and large thumbnails
+		$px_sm = 320;
+		$px_lg = 640;
+		
+		// Generate new name for this image
+		$new_name = uniqid(TRUE);
+		
+		// Initialise array for resizing errors
+		$this->resize_errors = array();
+		
+		// Array to hold the new dimensions
+		$dimensions = array();
+		
+		// Work out the dimensions of the image based on longest side
+		if ($data['image_width'] > $data['image_height']){
+			$dimensions['sm']['w'] = $px_sm;
+			$dimensions['lg']['w'] = $px_lg;
+			$dimensions['sm']['h'] = $data['image_height'] * ($px_sm / $data['image_width']);
+			$dimensions['lg']['h'] = $data['image_height'] * ($px_lg / $data['image_width']);
+		} elseif($data['image_width'] < $data['image_height']){
+			$dimensions['sm']['w'] = $data['image_width'] * ($px_sm / $data['image_height']);
+			$dimensions['lg']['w'] = $data['image_width'] * ($px_lg / $data['image_height']);
+			$dimensions['sm']['h'] = $px_sm;
+			$dimensions['lg']['h'] = $px_lg;
+		} elseif ($data['image_width'] == $data['image_height']){
+			$dimensions['sm']['w'] = $px_sm;
+			$dimensions['lg']['w'] = $px_lg;
+			$dimensions['sm']['h'] = $px_sm;
+			$dimensions['lg']['h'] = $px_lg;
+		}
+		
+		// Global resize vars
+		$config['image_library'] = 'gd2';
+		$config['source_image']	= $data['full_path'];
+		$config['create_thumb'] = FALSE;
+		$config['maintain_ratio'] = TRUE;
+		$config['quality'] = 100;
+		$this->load->library('image_lib', $config);
 		
 		// Create small image
-		$config['image_library'] = 'gd2';
-		$config['source_image']	= $data['full_path'];
-		$config['create_thumb'] = TRUE;
-		$config['maintain_ratio'] = TRUE;
-		$config['width'] = 320;
-		$config['quality'] = 100;
-		$config['new_image'] = sprintf('web/upload/%s.sm', $data['file_name']);
-		$this->load->library('image_lib', $config);
-		$this->image_lib->resize();
-		$this->image_lib->clear();
+		$config['width'] = $dimensions['sm']['w'];
+		$config['height'] = $dimensions['sm']['h'];
+		$config['new_image'] = sprintf('%s/%s.sm%s', realpath('web/upload/'), $new_name, $data['file_ext']);
+		$this->image_lib->initialize($config);
+		$result_sm = $this->image_lib->resize();
+		if($result_sm == FALSE){
+			array_push($this->resize_errors, $this->image_lib->display_errors());
+		}
 		
 		// Create larger image
-		$config['image_library'] = 'gd2';
-		$config['source_image']	= $data['full_path'];
-		$config['create_thumb'] = TRUE;
-		$config['maintain_ratio'] = TRUE;
-		$config['width'] = 640;
-		$config['quality'] = 100;
-		$config['new_image'] = sprintf('web/upload/%s.lg', $data['file_name']);
-		$this->load->library('image_lib', $config);
-		$this->image_lib->resize();
-		$this->image_lib->clear();
+		$config['width'] = $dimensions['lg']['w'];
+		$config['height'] = $dimensions['lg']['h'];
+		$config['new_image'] = sprintf('%s/%s.lg%s', realpath('web/upload/'), $new_name, $data['file_ext']);
+		$this->image_lib->initialize($config);
+		$result_lg = $this->image_lib->resize();
+		if($result_lg == FALSE){
+			array_push($this->resize_errors, $this->image_lib->display_errors());
+		}
+		
+		// Finished with file, delete.
+		@unlink($data['full_path']);
+		
+		// Finished resizing functions - test for errors and return
+		if($this->resize_errors == NULL){
+			// No errors encountered - delete old image
+			$name = sprintf('%s.#%s', $new_name, $data['file_ext']);
+			return $name;
+		} else {
+			// One or more errors occured when resizing the images
+			$this->lasterr = 'Failed to resize the images.';
+			return FALSE;
+		}
 	}
 	
 	

@@ -14,7 +14,7 @@ if($errors){
 
 	<?php if($room_id != NULL){ ?>
 	<div class="tabbertab<?php echo ($tab == 'addedit-permissions') ? ' tabbertabdefault' : ''; ?>">
-		<h2>Permissions</h2>
+		<h2>Booking permissions</h2>
 		<?php $this->load->view('rooms/addedit.permissions.php', $room); ?>
 	</div>
 	<?php } ?>
