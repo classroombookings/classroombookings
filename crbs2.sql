@@ -25,34 +25,6 @@ USE `crbs2`;
 
 
 #
-# Table structure for table 'ci_sessions'
-#
-
-CREATE TABLE `ci_sessions` (
-  `session_id` varchar(40) NOT NULL default '0',
-  `ip_address` varchar(16) NOT NULL default '0',
-  `user_agent` varchar(50) NOT NULL,
-  `last_activity` int(10) unsigned NOT NULL default '0',
-  `user_data` text NOT NULL,
-  PRIMARY KEY  (`session_id`)
-) ENGINE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='CodeIgniter sessions table'*/;
-
-
-
-#
-# Dumping data for table 'ci_sessions'
-#
-
-LOCK TABLES `ci_sessions` WRITE;
-/*!40000 ALTER TABLE `ci_sessions` DISABLE KEYS*/;
-INSERT INTO `ci_sessions` (`session_id`, `ip_address`, `user_agent`, `last_activity`, `user_data`) VALUES
-	('ac539b118e4f07c593a64ad3c60f46fc','127.0.0.1','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv','1231414954','a:1:{s:17:\"group_permissions\";s:0:\"\";}'),
-	('d110909bdd379009e058558ca0c8e0da','127.0.0.1','Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;','1231414638','a:1:{s:17:\"group_permissions\";s:0:\"\";}');
-/*!40000 ALTER TABLE `ci_sessions` ENABLE KEYS*/;
-UNLOCK TABLES;
-
-
-#
 # Table structure for table 'departments'
 #
 
@@ -667,7 +639,7 @@ CREATE TABLE `users` (
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS*/;
 INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `password`, `displayname`, `cookiekey`, `lastlogin`, `ldap`, `created`) VALUES
-	('1','1',1,'admin','craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Craig Rodway',NULL,'2009-02-10 15:47:58',0,'0000-00-00'),
+	('1','1',1,'admin','craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Craig Rodway',NULL,'2009-02-12 09:20:16',0,'0000-00-00'),
 	('3','9',1,'user1','','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8',NULL,NULL,'2008-12-19 23:06:20',0,'2008-11-27'),
 	('12','2',1,'craig.rodway','craig.rodway@bishopbarrington.net',NULL,'Mr Rodway',NULL,'2009-01-09 16:12:48',1,'2009-01-09'),
 	('19','2',1,'test.one','test.one@bishopbarrington.net',NULL,'Mr T One',NULL,'2009-01-26 10:14:39',1,'2009-01-14'),
@@ -739,7 +711,7 @@ CREATE TABLE `usersactive` (
 LOCK TABLES `usersactive` WRITE;
 /*!40000 ALTER TABLE `usersactive` DISABLE KEYS*/;
 INSERT INTO `usersactive` (`user_id`, `timestamp`) VALUES
-	('1','1234284053');
+	('1','1234442015');
 /*!40000 ALTER TABLE `usersactive` ENABLE KEYS*/;
 UNLOCK TABLES;
 

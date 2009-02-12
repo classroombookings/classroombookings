@@ -27,6 +27,7 @@ class Rooms extends Controller{
 		parent::Controller();
 		$this->load->model('security');
 		$this->load->model('rooms_model');
+		$this->load->model('departments_model');
 		$this->load->helper('text');
 		$this->load->helper('file');
 		$this->tpl = $this->config->item('template');
@@ -67,8 +68,9 @@ class Rooms extends Controller{
 	/**
 	 * Page function: add a room
 	 */
-	function add(){
+	function add($tab = 'addedit-details'){
 		$this->auth->check('rooms.add');
+		$body['tab'] = ($this->session->flashdata('tab')) ? $this->session->flashdata('tab') : $tab;
 		$body['room'] = NULL;
 		$body['room_id'] = NULL;
 		
@@ -88,12 +90,16 @@ class Rooms extends Controller{
 	/**
 	 * Page function: edit a room
 	 */
-	function edit($room_id){
+	function edit($room_id, $tab = 'addedit-details'){
 		$this->auth->check('rooms.edit');
+		$body['tab'] = ($this->session->flashdata('tab')) ? $this->session->flashdata('tab') : $tab;
 		$body['room'] = $this->rooms_model->get($room_id);
 		$body['room_id'] = $room_id;
 		
 		$body['users'] = $this->security->get_users_dropdown(TRUE);
+		$body['groups'] = $this->security->get_groups_dropdown();
+		$body['departments'] = $this->departments_model->get_dropdown();
+		
 		$body['cats'] = $this->rooms_model->get_categories_dropdown(TRUE);
 		$body['cats'][-2] = 'Add new ...';
 		
