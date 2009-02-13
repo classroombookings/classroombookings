@@ -170,16 +170,18 @@ class Weeks_model extends Model{
 	/**
 	 * Update the dates for a given week
 	 *
-	 * @param	week_id		ID of the week whose dates we want to update
-	 * @param	year_id		ID of the academic year it will belong to
-	 * @param	array		1-dimensional array of dates
+	 * @param	int		week_id		ID of the week whose dates we want to update
+	 * @param	int		year_id		ID of the academic year it will belong to
+	 * @param	array	dates		1-dimensional array of dates
 	 * @return	bool
 	 */
 	function update_dates($week_id, $year_id, $dates){
 		
+		// Put dates into string
 		$str = implode(',', $dates);
+		// Remove last comma
 		$str = preg_replace('/,$/', '', $str);
-		
+		// Put the dates into a string ready for SQL
 		$datesql = '';
 		foreach($dates as $date){
 			$datesql .= "($week_id, $year_id, '$date'),";
@@ -334,9 +336,9 @@ class Weeks_model extends Model{
 	/**
 	 * Get the months in a given date range (academic year)
 	 *
-	 * @param	date_start		Start date in YYYY-MM-DD format
-	 * @param	date_end		End date in YYYY-MM-DD format
-	 * @return	array			[0] = array(YYYY, MM)
+	 * @param	str		date_start		Start date in YYYY-MM-DD format
+	 * @param	str		date_end		End date in YYYY-MM-DD format
+	 * @return	array					[0] = array(YYYY, MM)
 	 */
 	function get_months($date_start, $date_end){
 		

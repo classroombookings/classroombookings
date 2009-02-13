@@ -32,7 +32,11 @@ class Rooms_model extends Model{
 	
 	
 	/**
-	 * get one or more room
+	 * Get one or more room details along with booking permissions
+	 *
+	 * @param	int		room_id		ID of a room to get if only one is desired
+	 * @param	int		page		Pagination values
+	 * @return	mixed				Array object of items or 0 on failure
 	 */
 	function get($room_id = NULL, $page = NULL){
 		if ($room_id == NULL){
@@ -67,8 +71,10 @@ class Rooms_model extends Model{
 			$query = $this->db->query($sql, array($room_id));
 			
 			if($query->num_rows() == 1){
-				// Got the room
+				// Got the room - get all fields
 				$room = $query->row();
+				// Get the permissions for this room
+				#$room->permissions = $this->get_room_permissions($room_id);
 				return $room;
 			} else {
 				return FALSE;
@@ -81,6 +87,12 @@ class Rooms_model extends Model{
 	
 	
 	
+	/**
+	 * Get list of room categories in array format of cat_id => name
+	 *
+	 * @param bool $none	Add an entry of index -1 and name of None
+	 * @return array		Array of categories in cat_id => name format
+	 */
 	function get_categories_dropdown($none = FALSE){
 		$sql = 'SELECT category_id, name FROM roomcategories ORDER BY name ASC';
 		$query = $this->db->query($sql);
@@ -103,6 +115,11 @@ class Rooms_model extends Model{
 	
 	
 	
+	/**
+	 * Get the list of rooms arranged in categories
+	 *
+	 * @return mixed	Array of rooms in categories on success, 0 on failure
+	 */
 	function get_in_categories(){
 		
 		$sql = 'SELECT 
@@ -112,7 +129,7 @@ class Rooms_model extends Model{
 				FROM rooms
 				LEFT JOIN roomcategories AS rcs ON rooms.category_id = rcs.category_id
 				LEFT JOIN users ON rooms.user_id = users.user_id
-				ORDER BY rooms.category_id ASC, rooms.name ASC';
+				ORDER BY rcs.name ASC, rooms.name ASC';
 		
 		$query = $this->db->query($sql);
 		
@@ -137,92 +154,59 @@ class Rooms_model extends Model{
 	
 	
 	
+	/**
+	 * Add a room the database
+	 *
+	 * @param	array	data		Array of DB fields => values to insert into the database
+	 * @return	mixed				ID of the new room on success, FALSE on failure
+	 */
 	function add($data){
+		
 		$data['created'] = date("Y-m-d");
 		
-		// If no LDAP groups, set empty array. Otherwise assign to new array for itself
-		if(in_array(-1, $data['ldapgroups'])){
-			$ldapgroups = array();
+		// Insert new room into DB
+		$add = $this->db->insert('rooms', $data);
+		$room_id = $this->db->insert_id();
+		
+		// Return the ID on success
+		if($add != FALSE){	
+			return $week_id;
 		} else {
-			$ldapgroups = $data['ldapgroups'];
+			return FALSE;
 		}
-		
-		// Remove ldapgroups from the main data array (no 'ldapgroups' column)
-		unset($data['ldapgroups']);
-		
-		$add = $this->db->insert('departments', $data);
-		
-		$department_id = $this->db->insert_id();
-		
-		// If LDAP groups were assigned then insert into DB now we have the group ID
-		if(count($ldapgroups) > 0){
-			$sql = 'INSERT INTO departments2ldapgroups (department_id, ldapgroup_id) VALUES ';
-			foreach($ldapgroups as $ldapgroup_id){
-				$sql .= sprintf("(%d,%d),", $department_id, $ldapgroup_id);
-			}
-			// Remove last comma
-			$sql = preg_replace('/,$/', '', $sql);
-			$query = $this->db->query($sql);
-			if($query == FALSE){
-				$this->lasterr = 'Could not assign LDAP groups to department';
-			}
-		}
-		
-		return $department_id;
 	}
 	
 	
 	
 	
-	function edit($department_id = NULL, $data){
-		if($department_id == NULL){
-			$this->lasterr = 'Cannot update a department without its ID.';
+	/**
+	 * Update a room
+	 *
+	 * @param	int		room_id		ID of the room to update
+	 * @param	array	data		Array of DB fields => values to update with
+	 * @return	bool				TRUE on success, FALSE on failure
+	 */
+	function edit($room_id = NULL, $data){
+		
+		if($room_id == NULL){
+			$this->lasterr = 'Cannot update a room without its ID.';
 			return FALSE;
 		}
 		
-		
-		
-		// If no LDAP groups, set empty array. Otherwise assign to new array for itself
-		if(in_array(-1, $data['ldapgroups'])){
-			$ldapgroups = array();
-		} else {
-			$ldapgroups = $data['ldapgroups'];
-		}
-		// Remove 'column' from data array
-		unset($data['ldapgroups']);
-		
-		#die(print_r($ldapgroups));
-		#die();
-		
-		// Update department info
-		$this->db->where('department_id', $department_id);
-		$edit = $this->db->update('departments', $data);
-		
-		// Now remove LDAP group assignments (don't panic - will now re-insert if they are specified)
-		$sql = 'DELETE FROM departments2ldapgroups WHERE department_id = ?';
-		$query = $this->db->query($sql, array($department_id));
-		
-		// If LDAP groups were assigned then insert into DB
-		#die(count($ldapgroups));
-		if(count($ldapgroups) > 0){
-			$sql = 'INSERT INTO departments2ldapgroups (department_id, ldapgroup_id) VALUES ';
-			foreach($ldapgroups as $ldapgroup_id){
-				$sql .= sprintf("(%d,%d),", $department_id, $ldapgroup_id);
-			}
-			// Remove last comma
-			$sql = preg_replace('/,$/', '', $sql);
-			$query = $this->db->query($sql);
-			if($query == FALSE){
-				$this->lasterr = 'Could not assign LDAP groups';
-			}
-		}
+		// Update room info
+		$this->db->where('room_id', $room_id);
+		$edit = $this->db->update('rooms', $data);
 		
 		return $edit;
+		
 	}
 	
 	
 	
 	
+	/**
+	 * Delete a room from the database
+	 */
 	function delete($room_id){
 		
 		$sql = 'DELETE FROM rooms WHERE room_id = ? LIMIT 1';
@@ -246,6 +230,9 @@ class Rooms_model extends Model{
 	
 	/**
 	 * Add a new room category to the database
+	 *
+	 * @param	str		name	Name of the category to add
+	 * @return	mixed			ID of category on success, FALSE on failure
 	 */
 	function add_category($name){
 		$sql = 'INSERT INTO roomcategories 

@@ -523,12 +523,13 @@ CREATE TABLE `rooms` (
   `description` varchar(40) default NULL,
   `bookable` tinyint(1) NOT NULL COMMENT 'Boolean 1 or 0',
   `photo` char(32) default NULL COMMENT 'An md5 hash that references the file that is stored',
+  `created` date default NULL COMMENT 'Date the entry was created',
   PRIMARY KEY  (`room_id`),
   KEY `user_id` (`user_id`),
   KEY `category_id` (`category_id`),
   CONSTRAINT `rooms_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `roomcategories` (`category_id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `rooms_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 /*!40100 DEFAULT CHARSET=latin1 COMMENT='School rooms'*/;
+) ENGINE=InnoDB AUTO_INCREMENT=6 /*!40100 DEFAULT CHARSET=latin1 COMMENT='School rooms'*/;
 
 
 
@@ -538,11 +539,12 @@ CREATE TABLE `rooms` (
 
 LOCK TABLES `rooms` WRITE;
 /*!40000 ALTER TABLE `rooms` DISABLE KEYS*/;
-INSERT INTO `rooms` (`room_id`, `category_id`, `user_id`, `order`, `name`, `description`, `bookable`, `photo`) VALUES
-	('1',NULL,NULL,NULL,'ICT1',NULL,1,NULL),
-	('2','2','1',NULL,'RM42',NULL,1,NULL),
-	('3',NULL,NULL,NULL,'ICT2',NULL,1,NULL),
-	('4','1','3',NULL,'Foo',NULL,0,NULL);
+INSERT INTO `rooms` (`room_id`, `category_id`, `user_id`, `order`, `name`, `description`, `bookable`, `photo`, `created`) VALUES
+	('1','1','121',NULL,'ICT1','ICT1',1,NULL,NULL),
+	('2','2','1',NULL,'RM42',NULL,1,NULL,NULL),
+	('3',NULL,NULL,NULL,'ICT2',NULL,1,NULL,NULL),
+	('4',NULL,NULL,NULL,'Foo','Foo',0,NULL,NULL),
+	('5','2',NULL,NULL,'Tech Suite','Tech Suite',0,NULL,'2009-02-13');
 /*!40000 ALTER TABLE `rooms` ENABLE KEYS*/;
 UNLOCK TABLES;
 
@@ -670,7 +672,7 @@ CREATE TABLE `users` (
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS*/;
 INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `password`, `displayname`, `cookiekey`, `lastlogin`, `ldap`, `created`) VALUES
-	('1','1',1,'admin','craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Craig Rodway',NULL,'2009-02-12 15:11:29',0,'0000-00-00'),
+	('1','1',1,'admin','craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Craig Rodway',NULL,'2009-02-13 15:29:18',0,'0000-00-00'),
 	('3','9',1,'user1','','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8',NULL,NULL,'2008-12-19 23:06:20',0,'2008-11-27'),
 	('12','2',1,'craig.rodway','craig.rodway@bishopbarrington.net',NULL,'Mr Rodway',NULL,'2009-01-09 16:12:48',1,'2009-01-09'),
 	('19','2',1,'test.one','test.one@bishopbarrington.net',NULL,'Mr T One',NULL,'2009-01-26 10:14:39',1,'2009-01-14'),
@@ -742,7 +744,7 @@ CREATE TABLE `usersactive` (
 LOCK TABLES `usersactive` WRITE;
 /*!40000 ALTER TABLE `usersactive` DISABLE KEYS*/;
 INSERT INTO `usersactive` (`user_id`, `timestamp`) VALUES
-	('1','1234477205');
+	('1','1234540761');
 /*!40000 ALTER TABLE `usersactive` ENABLE KEYS*/;
 UNLOCK TABLES;
 

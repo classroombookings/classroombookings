@@ -216,21 +216,29 @@ class Rooms extends Controller{
 				
 				// Adding a new room
 				
-				#$add = $this->rooms_model->add($data);
+				$add = $this->rooms_model->add($data);
 				
 				if($add == TRUE){
-					$this->msg->add('info', $this->lang->line('ROOM_ADD_OK'));
+					$this->msg->add('info', $this->lang->line('ROOMS_ADD_OK'));
 				} else {
-					$this->msg->add('err', sprintf($this->lang->line('SECURITY_USER_ADD_FAIL', $this->security->lasterr)));
+					$this->msg->add('err', sprintf($this->lang->line('ROOMS_ADD_FAIL', $this->rooms_model->lasterr)));
 				}
 				
 			} else {
 				
 				// Updating a room
 				
-				#$edit = $this->rooms_model->edit($data);
+				$edit = $this->rooms_model->edit($room_id, $data);
+				if($edit == TRUE){
+					$this->msg->add('info', $this->lang->line('ROOMS_EDIT_OK'));
+				} else {
+					$this->msg->add('err', sprintf($this->lang->line('ROOMS_ADD_FAIL', $this->rooms_model->lasterr)));
+				}
 				
 			}
+			
+			// All done - redirect
+			redirect('rooms');
 			
 		}
 		
@@ -248,6 +256,9 @@ class Rooms extends Controller{
 	
 	
 	
+	/**
+	 * Carry out the uploading of the photo
+	 */
 	function _do_upload(){
 		// Do upload if it was submitted
 		$config['upload_path'] = 'temp';
@@ -256,8 +267,11 @@ class Rooms extends Controller{
 		$this->load->library('upload', $config);
 		
 		$upload = $this->upload->do_upload();
+		
 		if($upload == TRUE){
+			// Get data of uploaded file
 			$data = $this->upload->data();
+			// Check if it is an image
 			if($data['is_image'] == 1){
 				return $data;
 			} else {
@@ -275,7 +289,7 @@ class Rooms extends Controller{
 	/**
 	 * Process an uploaded room photo image
 	 *
-	 * @param array $data	Array containing the uploaded file information
+	 * @param array		data	Array containing the uploaded file information
 	 * @return bool
 	 */
 	function _process_image($data){
@@ -284,7 +298,7 @@ class Rooms extends Controller{
 		$px_sm = 320;
 		$px_lg = 640;
 		
-		// Generate new name for this image
+		// Generate new base name for this image
 		$new_name = uniqid(TRUE);
 		
 		// Initialise array for resizing errors
@@ -293,7 +307,7 @@ class Rooms extends Controller{
 		// Array to hold the new dimensions
 		$dimensions = array();
 		
-		// Work out the dimensions of the image based on longest side
+		// Work out the dimensions of the image based on longest side, or set both to same if equal
 		if ($data['image_width'] > $data['image_height']){
 			$dimensions['sm']['w'] = $px_sm;
 			$dimensions['lg']['w'] = $px_lg;
@@ -339,12 +353,12 @@ class Rooms extends Controller{
 			array_push($this->resize_errors, $this->image_lib->display_errors());
 		}
 		
-		// Finished with file, delete.
+		// Delete the original source file now we're finished with it
 		@unlink($data['full_path']);
 		
 		// Finished resizing functions - test for errors and return
 		if($this->resize_errors == NULL){
-			// No errors encountered - delete old image
+			// No errors encountered - delete original image
 			$name = sprintf('%s.#%s', $new_name, $data['file_ext']);
 			return $name;
 		} else {
@@ -360,4 +374,4 @@ class Rooms extends Controller{
 }
 
 
-?>
+/* End of file: /app/controllers/rooms.php */

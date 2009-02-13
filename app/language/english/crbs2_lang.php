@@ -50,12 +50,17 @@ $lang['YEARS_ACTIVATE_OK'] = 'The academic year has been made active.';
 $lang['YEARS_ACTIVATE_FAIL'] = 'An error occured and the academic year could not be made active.';
 $lang['YEARS_ACTIVATE_NOID'] = 'You must supply a year ID to make it active.';
 
+$lang['ROOMS_ADD_OK'] = 'The room was added successfully';
+$lang['ROOMS_ADD_FAIL'] = 'An error occured and the room could not be added (%s).';
+$lang['ROOMS_EDIT_OK'] = 'The room details were saved successfully.';
+$lang['ROOMS_EDIT_FAIL'] = 'An error occured and the room details could not be  saved.';
+
+// Misc
 $lang['PERMISSIONS_EFFECTIVE_USER_FAIL'] = 'Could not find the given user, or no user ID supplied.';
-
 $lang['FORM_ERRORS'] = 'Please check the following invalid item(s) and try again.';
-
 $lang['ADD_ANOTHER'] = 'and add another';
 
+// Words
 $lang['W_PERIOD'] = 'Period';
 $lang['W_PERIODS'] = 'Periods';
 $lang['W_DEPARTMENT'] = 'Department';
@@ -65,6 +70,7 @@ $lang['W_WEEKS'] = 'Weeks';
 $lang['W_YEAR'] = 'Year';
 $lang['W_YEARS'] = 'Years';
 
+// Actions
 $lang['ACTION_ADD'] = 'Add';
 $lang['ACTION_SAVE'] = 'Save';
 $lang['ACTION_DELETE'] = 'Delete';
