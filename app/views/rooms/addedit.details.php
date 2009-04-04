@@ -158,8 +158,11 @@ $t = 1;
 		</td>
 		<td class="field">
 			<?php
-			echo $room->photo;
+			if(!empty($room->photo)){
+				echo sprintf('<img src="upload/%s" />', image_small($room->photo));
+			}
 			?>
+			<?php echo form_hidden('photo', $room->photo) ?>
 		</td>
 	</tr>
 	<tr>

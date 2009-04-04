@@ -1,33 +1,31 @@
-# HeidiSQL Dump 
-#
-# --------------------------------------------------------
-# Host:                 127.0.0.1
-# Database:             crbs2
-# Server version:       5.0.51b-community-nt
-# Server OS:            Win32
-# Target-Compatibility: MySQL 5.0
-# max_allowed_packet:   1048576
-# HeidiSQL version:     3.2 Revision: 1129
-# --------------------------------------------------------
+-- phpMyAdmin SQL Dump
+-- version 2.11.6
+-- http://www.phpmyadmin.net
+--
+-- Host: localhost
+-- Generation Time: Apr 04, 2009 at 10:58 PM
+-- Server version: 5.0.51
+-- PHP Version: 5.2.6
 
-/*!40100 SET CHARACTER SET latin1*/;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0*/;
+SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
 
-#
-# Database structure for database 'crbs2'
-#
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
 
-DROP DATABASE IF EXISTS `crbs2`;
-CREATE DATABASE `crbs2` /*!40100 DEFAULT CHARACTER SET latin1 */;
+--
+-- Database: `crbs2`
+--
 
-USE `crbs2`;
+-- --------------------------------------------------------
 
+--
+-- Table structure for table `departments`
+--
 
-#
-# Table structure for table 'departments'
-#
-
+DROP TABLE IF EXISTS `departments`;
 CREATE TABLE `departments` (
   `department_id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(64) NOT NULL,
@@ -35,80 +33,72 @@ CREATE TABLE `departments` (
   `colour` char(7) default NULL COMMENT 'Hex colour value',
   `created` date default NULL,
   PRIMARY KEY  (`department_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 /*!40100 DEFAULT CHARSET=latin1 COMMENT='School departments'*/;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='School departments' AUTO_INCREMENT=14 ;
 
+--
+-- Dumping data for table `departments`
+--
 
-
-#
-# Dumping data for table 'departments'
-#
-
-LOCK TABLES `departments` WRITE;
-/*!40000 ALTER TABLE `departments` DISABLE KEYS*/;
 INSERT INTO `departments` (`department_id`, `name`, `description`, `colour`, `created`) VALUES
-	('1','English','','#204A87','2008-12-19'),
-	('2','Maths','','#C4A000','2008-12-19'),
-	('3','Science','','#729FCF','2008-12-19'),
-	('4','ICT','','#BABDB6','2008-12-19'),
-	('5','Music','','#F57900','2008-12-19'),
-	('6','History','','#8F5902','2008-12-19'),
-	('7','Art','','#A40000','2008-12-19'),
-	('9','RE','','#EF2929','2008-12-19'),
-	('10','Geography','','#8AE234','2008-12-19'),
-	('11','Languages','','#AD7FA8','2009-01-09'),
-	('12','PE','','#2E3436','2009-01-09'),
-	('13','Technology','','#FCE94F','2009-01-09');
-/*!40000 ALTER TABLE `departments` ENABLE KEYS*/;
-UNLOCK TABLES;
+(1, 'English', '', '#204A87', '2008-12-19'),
+(2, 'Maths', '', '#C4A000', '2008-12-19'),
+(3, 'Science', '', '#729FCF', '2008-12-19'),
+(4, 'ICT', '', '#BABDB6', '2008-12-19'),
+(5, 'Music', '', '#F57900', '2008-12-19'),
+(6, 'History', '', '#8F5902', '2008-12-19'),
+(7, 'Art', '', '#A40000', '2008-12-19'),
+(9, 'RE', '', '#EF2929', '2008-12-19'),
+(10, 'Geography', '', '#8AE234', '2008-12-19'),
+(11, 'Languages', '', '#AD7FA8', '2009-01-09'),
+(12, 'PE', '', '#2E3436', '2009-01-09'),
+(13, 'Technology', '', '#FCE94F', '2009-01-09');
 
+-- --------------------------------------------------------
 
-#
-# Table structure for table 'departments2ldapgroups'
-#
+--
+-- Table structure for table `departments2ldapgroups`
+--
 
+DROP TABLE IF EXISTS `departments2ldapgroups`;
 CREATE TABLE `departments2ldapgroups` (
   `department_id` int(10) unsigned NOT NULL,
   `ldapgroup_id` int(10) unsigned NOT NULL,
   UNIQUE KEY `unique` (`department_id`,`ldapgroup_id`),
   KEY `department_id` (`department_id`),
   KEY `ldapgroup_id` (`ldapgroup_id`)
-) ENGINE=InnoDB /*!40100 DEFAULT CHARSET=latin1*/;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `departments2ldapgroups`
+--
 
-
-#
-# Dumping data for table 'departments2ldapgroups'
-#
-
-LOCK TABLES `departments2ldapgroups` WRITE;
-/*!40000 ALTER TABLE `departments2ldapgroups` DISABLE KEYS*/;
 INSERT INTO `departments2ldapgroups` (`department_id`, `ldapgroup_id`) VALUES
-	('1','1157'),
-	('2','1154'),
-	('2','1176'),
-	('3','1147'),
-	('3','1164'),
-	('4','1149'),
-	('5','1158'),
-	('6','1162'),
-	('6','1190'),
-	('7','1150'),
-	('9','1163'),
-	('9','1186'),
-	('10','1179'),
-	('10','1190'),
-	('11','1156'),
-	('12','1159'),
-	('12','1199'),
-	('13','1144');
-/*!40000 ALTER TABLE `departments2ldapgroups` ENABLE KEYS*/;
-UNLOCK TABLES;
+(1, 1157),
+(2, 1154),
+(2, 1176),
+(3, 1147),
+(3, 1164),
+(4, 1149),
+(5, 1158),
+(6, 1162),
+(6, 1190),
+(7, 1150),
+(9, 1163),
+(9, 1186),
+(10, 1179),
+(10, 1190),
+(11, 1156),
+(12, 1159),
+(12, 1199),
+(13, 1144);
 
+-- --------------------------------------------------------
 
-#
-# Table structure for table 'groups'
-#
+--
+-- Table structure for table `groups`
+--
 
+DROP TABLE IF EXISTS `groups`;
 CREATE TABLE `groups` (
   `group_id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(20) NOT NULL,
@@ -120,58 +110,48 @@ CREATE TABLE `groups` (
   `created` date NOT NULL COMMENT 'Date the group was created',
   PRIMARY KEY  (`group_id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Groups table with settings and permiss; InnoDB free: 9216 kB'*/;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Groups table with settings and permiss; InnoDB free: 9216 kB' AUTO_INCREMENT=10 ;
 
+--
+-- Dumping data for table `groups`
+--
 
-
-#
-# Dumping data for table 'groups'
-#
-
-LOCK TABLES `groups` WRITE;
-/*!40000 ALTER TABLE `groups` DISABLE KEYS*/;
 INSERT INTO `groups` (`group_id`, `name`, `description`, `bookahead`, `quota_num`, `quota_type`, `permissions`, `created`) VALUES
-	('1','Administrators','Default group for administrator users',0,NULL,NULL,'a:62:{i:0;s:9:\"dashboard\";i:1;s:18:\"dashboard.viewdept\";i:2;s:17:\"dashboard.viewown\";i:3;s:9:\"myprofile\";i:4;s:9:\"configure\";i:5;s:10:\"changeyear\";i:6;s:8:\"allrooms\";i:7;s:8:\"bookings\";i:8;s:19:\"bookings.create.one\";i:9;s:21:\"bookings.create.recur\";i:10;s:23:\"bookings.delete.one.own\";i:11;s:29:\"bookings.delete.one.roomowner\";i:12;s:31:\"bookings.delete.recur.roomowner\";i:13;s:5:\"rooms\";i:14;s:9:\"rooms.add\";i:15;s:10:\"rooms.edit\";i:16;s:12:\"rooms.delete\";i:17;s:11:\"rooms.attrs\";i:18;s:18:\"rooms.attrs.values\";i:19;s:17:\"rooms.permissions\";i:20;s:8:\"academic\";i:21;s:5:\"years\";i:22;s:9:\"years.add\";i:23;s:10:\"years.edit\";i:24;s:12:\"years.delete\";i:25;s:7:\"periods\";i:26;s:11:\"periods.add\";i:27;s:12:\"periods.edit\";i:28;s:14:\"periods.delete\";i:29;s:5:\"weeks\";i:30;s:9:\"weeks.add\";i:31;s:10:\"weeks.edit\";i:32;s:12:\"weeks.delete\";i:33;s:19:\"weeks.ayears.manage\";i:34;s:16:\"weeks.ayears.set\";i:35;s:5:\"terms\";i:36;s:9:\"terms.add\";i:37;s:10:\"terms.edit\";i:38;s:12:\"terms.delete\";i:39;s:8:\"holidays\";i:40;s:12:\"holidays.add\";i:41;s:13:\"holidays.edit\";i:42;s:15:\"holidays.delete\";i:43;s:11:\"departments\";i:44;s:15:\"departments.add\";i:45;s:16:\"departments.edit\";i:46;s:18:\"departments.delete\";i:47;s:7:\"reports\";i:48;s:21:\"reports.owndepartment\";i:49;s:22:\"reports.alldepartments\";i:50;s:15:\"reports.ownroom\";i:51;s:16:\"reports.allrooms\";i:52;s:13:\"reports.other\";i:53;s:5:\"users\";i:54;s:9:\"users.add\";i:55;s:10:\"users.edit\";i:56;s:12:\"users.delete\";i:57;s:12:\"users.import\";i:58;s:6:\"groups\";i:59;s:10:\"groups.add\";i:60;s:11:\"groups.edit\";i:61;s:13:\"groups.delete\";}','0000-00-00'),
-	('2','Teaching Staff','Teachers from LDAP',14,'6','day','a:7:{i:0;s:9:\"dashboard\";i:1;s:18:\"dashboard.viewdept\";i:2;s:17:\"dashboard.viewown\";i:3;s:9:\"myprofile\";i:4;s:8:\"bookings\";i:5;s:19:\"bookings.create.one\";i:6;s:23:\"bookings.delete.one.own\";}','0000-00-00'),
-	('4','Support staff','',14,'6','current','a:7:{i:0;s:9:\"dashboard\";i:1;s:18:\"dashboard.viewdept\";i:2;s:17:\"dashboard.viewown\";i:3;s:9:\"myprofile\";i:4;s:8:\"bookings\";i:5;s:19:\"bookings.create.one\";i:6;s:23:\"bookings.delete.one.own\";}','2008-12-02'),
-	('7','Guests','Default group for guests',0,'1','current','a:1:{i:0;s:8:\"bookings\";}','0000-00-00'),
-	('9','Foo','',0,NULL,NULL,NULL,'2009-01-23');
-/*!40000 ALTER TABLE `groups` ENABLE KEYS*/;
-UNLOCK TABLES;
+(1, 'Administrators', 'Default group for administrator users', 0, NULL, NULL, 'a:62:{i:0;s:9:"dashboard";i:1;s:18:"dashboard.viewdept";i:2;s:17:"dashboard.viewown";i:3;s:9:"myprofile";i:4;s:9:"configure";i:5;s:10:"changeyear";i:6;s:8:"allrooms";i:7;s:8:"bookings";i:8;s:19:"bookings.create.one";i:9;s:21:"bookings.create.recur";i:10;s:23:"bookings.delete.one.own";i:11;s:29:"bookings.delete.one.roomowner";i:12;s:31:"bookings.delete.recur.roomowner";i:13;s:5:"rooms";i:14;s:9:"rooms.add";i:15;s:10:"rooms.edit";i:16;s:12:"rooms.delete";i:17;s:11:"rooms.attrs";i:18;s:18:"rooms.attrs.values";i:19;s:17:"rooms.permissions";i:20;s:8:"academic";i:21;s:5:"years";i:22;s:9:"years.add";i:23;s:10:"years.edit";i:24;s:12:"years.delete";i:25;s:7:"periods";i:26;s:11:"periods.add";i:27;s:12:"periods.edit";i:28;s:14:"periods.delete";i:29;s:5:"weeks";i:30;s:9:"weeks.add";i:31;s:10:"weeks.edit";i:32;s:12:"weeks.delete";i:33;s:19:"weeks.ayears.manage";i:34;s:16:"weeks.ayears.set";i:35;s:5:"terms";i:36;s:9:"terms.add";i:37;s:10:"terms.edit";i:38;s:12:"terms.delete";i:39;s:8:"holidays";i:40;s:12:"holidays.add";i:41;s:13:"holidays.edit";i:42;s:15:"holidays.delete";i:43;s:11:"departments";i:44;s:15:"departments.add";i:45;s:16:"departments.edit";i:46;s:18:"departments.delete";i:47;s:7:"reports";i:48;s:21:"reports.owndepartment";i:49;s:22:"reports.alldepartments";i:50;s:15:"reports.ownroom";i:51;s:16:"reports.allrooms";i:52;s:13:"reports.other";i:53;s:5:"users";i:54;s:9:"users.add";i:55;s:10:"users.edit";i:56;s:12:"users.delete";i:57;s:12:"users.import";i:58;s:6:"groups";i:59;s:10:"groups.add";i:60;s:11:"groups.edit";i:61;s:13:"groups.delete";}', '0000-00-00'),
+(2, 'Teaching Staff', 'Teachers from LDAP', 14, 6, 'day', 'a:7:{i:0;s:9:"dashboard";i:1;s:18:"dashboard.viewdept";i:2;s:17:"dashboard.viewown";i:3;s:9:"myprofile";i:4;s:8:"bookings";i:5;s:19:"bookings.create.one";i:6;s:23:"bookings.delete.one.own";}', '0000-00-00'),
+(4, 'Support staff', '', 14, 6, 'current', 'a:7:{i:0;s:9:"dashboard";i:1;s:18:"dashboard.viewdept";i:2;s:17:"dashboard.viewown";i:3;s:9:"myprofile";i:4;s:8:"bookings";i:5;s:19:"bookings.create.one";i:6;s:23:"bookings.delete.one.own";}', '2008-12-02'),
+(7, 'Guests', 'Default group for guests', 0, 1, 'current', 'a:1:{i:0;s:8:"bookings";}', '0000-00-00'),
+(9, 'Foo', '', 0, NULL, NULL, NULL, '2009-01-23');
 
+-- --------------------------------------------------------
 
-#
-# Table structure for table 'groups2ldapgroups'
-#
+--
+-- Table structure for table `groups2ldapgroups`
+--
 
+DROP TABLE IF EXISTS `groups2ldapgroups`;
 CREATE TABLE `groups2ldapgroups` (
   `group_id` int(10) unsigned NOT NULL,
   `ldapgroup_id` int(10) unsigned NOT NULL,
   UNIQUE KEY `ldapgroup_id` (`ldapgroup_id`),
-  KEY `group_id` (`group_id`),
-  CONSTRAINT `groups2ldapgroups_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`) ON DELETE CASCADE,
-  CONSTRAINT `groups2ldapgroups_ibfk_2` FOREIGN KEY (`ldapgroup_id`) REFERENCES `ldapgroups` (`ldapgroup_id`) ON DELETE CASCADE
-) ENGINE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Maps 1+ LDAp groups to 1 CRBS group'*/;
+  KEY `group_id` (`group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Maps 1+ LDAp groups to 1 CRBS group';
 
+--
+-- Dumping data for table `groups2ldapgroups`
+--
 
-
-#
-# Dumping data for table 'groups2ldapgroups'
-#
-
-LOCK TABLES `groups2ldapgroups` WRITE;
-/*!40000 ALTER TABLE `groups2ldapgroups` DISABLE KEYS*/;
 INSERT INTO `groups2ldapgroups` (`group_id`, `ldapgroup_id`) VALUES
-	('2','1120'),
-	('4','1118');
-/*!40000 ALTER TABLE `groups2ldapgroups` ENABLE KEYS*/;
-UNLOCK TABLES;
+(2, 1120),
+(4, 1118);
 
+-- --------------------------------------------------------
 
-#
-# Table structure for table 'holidays'
-#
+--
+-- Table structure for table `holidays`
+--
 
+DROP TABLE IF EXISTS `holidays`;
 CREATE TABLE `holidays` (
   `holiday_id` int(10) unsigned NOT NULL auto_increment,
   `year_id` int(10) unsigned NOT NULL COMMENT 'The academic year that this holiday is relevant to',
@@ -179,159 +159,150 @@ CREATE TABLE `holidays` (
   `date_end` date NOT NULL,
   `name` varchar(20) default NULL,
   PRIMARY KEY  (`holiday_id`),
-  KEY `year_id` (`year_id`),
-  CONSTRAINT `holidays_ibfk_1` FOREIGN KEY (`year_id`) REFERENCES `years` (`year_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 /*!40100 DEFAULT CHARSET=latin1 COMMENT='School holidays'*/;
+  KEY `year_id` (`year_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='School holidays' AUTO_INCREMENT=6 ;
 
+--
+-- Dumping data for table `holidays`
+--
 
-
-#
-# Dumping data for table 'holidays'
-#
-
-LOCK TABLES `holidays` WRITE;
-/*!40000 ALTER TABLE `holidays` DISABLE KEYS*/;
 INSERT INTO `holidays` (`holiday_id`, `year_id`, `date_start`, `date_end`, `name`) VALUES
-	('4','1','2009-01-12','2009-01-24','Foo'),
-	('5','1','2009-01-22','2009-01-22','test2');
-/*!40000 ALTER TABLE `holidays` ENABLE KEYS*/;
-UNLOCK TABLES;
+(4, 1, '2009-01-12', '2009-01-24', 'Foo'),
+(5, 1, '2009-01-22', '2009-01-22', 'test2');
 
+-- --------------------------------------------------------
 
-#
-# Table structure for table 'ldapgroups'
-#
+--
+-- Table structure for table `ldapgroups`
+--
 
+DROP TABLE IF EXISTS `ldapgroups`;
 CREATE TABLE `ldapgroups` (
   `ldapgroup_id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(104) NOT NULL COMMENT 'Name of LDAP group (not full DN, just name part)',
   PRIMARY KEY  (`ldapgroup_id`),
   UNIQUE KEY `ldapgroup_id` (`ldapgroup_id`,`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=1222 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Group names retrieved from LDAP; InnoDB free: 9216 kB'*/;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Group names retrieved from LDAP; InnoDB free: 9216 kB' AUTO_INCREMENT=1222 ;
 
+--
+-- Dumping data for table `ldapgroups`
+--
 
-
-#
-# Dumping data for table 'ldapgroups'
-#
-
-LOCK TABLES `ldapgroups` WRITE;
-/*!40000 ALTER TABLE `ldapgroups` DISABLE KEYS*/;
 INSERT INTO `ldapgroups` (`ldapgroup_id`, `name`) VALUES
-	('1116','BBS Print Operators'),
-	('1117','BBS Staff Print Operators'),
-	('1118','BBS Non-Teaching Staff'),
-	('1119','BBS Students'),
-	('1120','BBS Teaching Staff'),
-	('1121','BBS Accessibility'),
-	('1122','BBS Internet Disabled'),
-	('1123','BBS Guest UserType'),
-	('1124','BBS RM Explorer UserType'),
-	('1125','BBS Restricted UserType'),
-	('1126','BBS Standard UserType'),
-	('1127','BBS Advanced UserType'),
-	('1128','BBS Staff UserType'),
-	('1129','BBS Advanced Staff UserType'),
-	('1130','BBS Advanced Station Security'),
-	('1131','BBS Standard Station Security'),
-	('1132','BBS No Station Security'),
-	('1133','BBS Shared Laptop StationType'),
-	('1134','BBS Managed Stations'),
-	('1135','BBS Authorised ManagerType'),
-	('1136','BBS Delegate ManagerType'),
-	('1137','BBS Shared Desktop StationType'),
-	('1138','BBS Personal StationType'),
-	('1139','BBS CyberCafe StationType'),
-	('1140','BBS EasyLink'),
-	('1141','BBS Education Management System'),
-	('1142','BBS Legacy Application Users'),
-	('1143','BBS Management Information System'),
-	('1144','BBS Technology Teachers'),
-	('1145','BBS Local Administrators'),
-	('1146','BBS Station Setup'),
-	('1147','BBS Science Teachers'),
-	('1148','BBS Leisure and Tourism Teachers'),
-	('1149','BBS ICT Teachers'),
-	('1150','BBS Art Teachers'),
-	('1151','BBS CD Burning'),
-	('1152','BBS Textiles Teachers'),
-	('1153','BBS PowerDVD'),
-	('1154','BBS Maths Teachers'),
-	('1155','BBS Food Technology Teachers'),
-	('1156','BBS MFL Teachers'),
-	('1157','BBS English Teachers'),
-	('1158','BBS Music Teachers'),
-	('1159','BBS Physical Education Teachers'),
-	('1160','BBS Performing Arts Teachers'),
-	('1161','BBS Media Studies Teachers'),
-	('1162','BBS History Teachers'),
-	('1163','BBS Religious Education Teachers'),
-	('1164','BBS Science'),
-	('1165','BBS RMMC AccessRight'),
-	('1166','BBS User Controller ManagerType'),
-	('1167','BBS EDI System'),
-	('1168','BBS Finance System'),
-	('1169','BBS Library System'),
-	('1170','BBS MIS Manager'),
-	('1171','BBS Network ManagerType'),
-	('1172','BBS Sleuth Users'),
-	('1173','BBS Staff Absences'),
-	('1174','BBS School Income'),
-	('1175','BBS RMSecurenet'),
-	('1176','BBS Maths'),
-	('1177','BBS Science Exam'),
-	('1178','BBS Admin Users'),
-	('1179','BBS Geography Teachers'),
-	('1180','BBS No GPO Security'),
-	('1181','BBS Associates'),
-	('1182','BBS Science year 11'),
-	('1183','BBS Science year 10'),
-	('1184','BBS Science Review'),
-	('1185','BBS Careers Teacher'),
-	('1186','BBS RE Teachers'),
-	('1187','BBS Detention DB Users'),
-	('1188','BBS Eregistration'),
-	('1189','BBS Interactive Whiteboard'),
-	('1190','BBS Humanities'),
-	('1191','BBS Science year 9'),
-	('1192','BBS Legal Team'),
-	('1193','BBS Leisure and Tourism'),
-	('1194','BBS QuarkXPress Users'),
-	('1195','BBS Quizdom'),
-	('1196','BBS BKSB'),
-	('1197','BBS Staff DAP UserType'),
-	('1198','BBS Design Teachers'),
-	('1199','BBS PE Teachers'),
-	('1200','BBS Exam Users'),
-	('1201','Terminal Services Users'),
-	('1202','BBS Shared Desktop 1280 StationType'),
-	('1203','BBS SecureNet'),
-	('1204','BBS Exam Officer'),
-	('1205','BBS Admin Staff UserType'),
-	('1206','BBS AnyComms Users'),
-	('1207','BBS Careers Teachers'),
-	('1208','BBS BKSB Manager'),
-	('1209','BBS Copy of Advanced UserType'),
-	('1210','BBS SEN Teachers'),
-	('1211','BBS SEN Students'),
-	('1212','BBS Childcare'),
-	('1213','BBS Truancy Call'),
-	('1214','BBS SSP'),
-	('1215','BBS Email disabled'),
-	('1216','BBS School Fund Officer'),
-	('1217','BBS IT authorised UserType'),
-	('1218','BBS Copy of Restricted UserType'),
-	('1219','BBS Encrypted Folder'),
-	('1220','BBS Guest 2 UserType'),
-	('1221','BBS HSS Finance');
-/*!40000 ALTER TABLE `ldapgroups` ENABLE KEYS*/;
-UNLOCK TABLES;
+(1116, 'BBS Print Operators'),
+(1117, 'BBS Staff Print Operators'),
+(1118, 'BBS Non-Teaching Staff'),
+(1119, 'BBS Students'),
+(1120, 'BBS Teaching Staff'),
+(1121, 'BBS Accessibility'),
+(1122, 'BBS Internet Disabled'),
+(1123, 'BBS Guest UserType'),
+(1124, 'BBS RM Explorer UserType'),
+(1125, 'BBS Restricted UserType'),
+(1126, 'BBS Standard UserType'),
+(1127, 'BBS Advanced UserType'),
+(1128, 'BBS Staff UserType'),
+(1129, 'BBS Advanced Staff UserType'),
+(1130, 'BBS Advanced Station Security'),
+(1131, 'BBS Standard Station Security'),
+(1132, 'BBS No Station Security'),
+(1133, 'BBS Shared Laptop StationType'),
+(1134, 'BBS Managed Stations'),
+(1135, 'BBS Authorised ManagerType'),
+(1136, 'BBS Delegate ManagerType'),
+(1137, 'BBS Shared Desktop StationType'),
+(1138, 'BBS Personal StationType'),
+(1139, 'BBS CyberCafe StationType'),
+(1140, 'BBS EasyLink'),
+(1141, 'BBS Education Management System'),
+(1142, 'BBS Legacy Application Users'),
+(1143, 'BBS Management Information System'),
+(1144, 'BBS Technology Teachers'),
+(1145, 'BBS Local Administrators'),
+(1146, 'BBS Station Setup'),
+(1147, 'BBS Science Teachers'),
+(1148, 'BBS Leisure and Tourism Teachers'),
+(1149, 'BBS ICT Teachers'),
+(1150, 'BBS Art Teachers'),
+(1151, 'BBS CD Burning'),
+(1152, 'BBS Textiles Teachers'),
+(1153, 'BBS PowerDVD'),
+(1154, 'BBS Maths Teachers'),
+(1155, 'BBS Food Technology Teachers'),
+(1156, 'BBS MFL Teachers'),
+(1157, 'BBS English Teachers'),
+(1158, 'BBS Music Teachers'),
+(1159, 'BBS Physical Education Teachers'),
+(1160, 'BBS Performing Arts Teachers'),
+(1161, 'BBS Media Studies Teachers'),
+(1162, 'BBS History Teachers'),
+(1163, 'BBS Religious Education Teachers'),
+(1164, 'BBS Science'),
+(1165, 'BBS RMMC AccessRight'),
+(1166, 'BBS User Controller ManagerType'),
+(1167, 'BBS EDI System'),
+(1168, 'BBS Finance System'),
+(1169, 'BBS Library System'),
+(1170, 'BBS MIS Manager'),
+(1171, 'BBS Network ManagerType'),
+(1172, 'BBS Sleuth Users'),
+(1173, 'BBS Staff Absences'),
+(1174, 'BBS School Income'),
+(1175, 'BBS RMSecurenet'),
+(1176, 'BBS Maths'),
+(1177, 'BBS Science Exam'),
+(1178, 'BBS Admin Users'),
+(1179, 'BBS Geography Teachers'),
+(1180, 'BBS No GPO Security'),
+(1181, 'BBS Associates'),
+(1182, 'BBS Science year 11'),
+(1183, 'BBS Science year 10'),
+(1184, 'BBS Science Review'),
+(1185, 'BBS Careers Teacher'),
+(1186, 'BBS RE Teachers'),
+(1187, 'BBS Detention DB Users'),
+(1188, 'BBS Eregistration'),
+(1189, 'BBS Interactive Whiteboard'),
+(1190, 'BBS Humanities'),
+(1191, 'BBS Science year 9'),
+(1192, 'BBS Legal Team'),
+(1193, 'BBS Leisure and Tourism'),
+(1194, 'BBS QuarkXPress Users'),
+(1195, 'BBS Quizdom'),
+(1196, 'BBS BKSB'),
+(1197, 'BBS Staff DAP UserType'),
+(1198, 'BBS Design Teachers'),
+(1199, 'BBS PE Teachers'),
+(1200, 'BBS Exam Users'),
+(1201, 'Terminal Services Users'),
+(1202, 'BBS Shared Desktop 1280 StationType'),
+(1203, 'BBS SecureNet'),
+(1204, 'BBS Exam Officer'),
+(1205, 'BBS Admin Staff UserType'),
+(1206, 'BBS AnyComms Users'),
+(1207, 'BBS Careers Teachers'),
+(1208, 'BBS BKSB Manager'),
+(1209, 'BBS Copy of Advanced UserType'),
+(1210, 'BBS SEN Teachers'),
+(1211, 'BBS SEN Students'),
+(1212, 'BBS Childcare'),
+(1213, 'BBS Truancy Call'),
+(1214, 'BBS SSP'),
+(1215, 'BBS Email disabled'),
+(1216, 'BBS School Fund Officer'),
+(1217, 'BBS IT authorised UserType'),
+(1218, 'BBS Copy of Restricted UserType'),
+(1219, 'BBS Encrypted Folder'),
+(1220, 'BBS Guest 2 UserType'),
+(1221, 'BBS HSS Finance');
 
+-- --------------------------------------------------------
 
-#
-# Table structure for table 'periods'
-#
+--
+-- Table structure for table `periods`
+--
 
+DROP TABLE IF EXISTS `periods`;
 CREATE TABLE `periods` (
   `period_id` int(10) unsigned NOT NULL auto_increment,
   `year_id` int(10) unsigned NOT NULL,
@@ -341,61 +312,53 @@ CREATE TABLE `periods` (
   `days` varchar(255) NOT NULL COMMENT 'Serialize() of the days that this period is set on',
   `bookable` tinyint(1) NOT NULL COMMENT 'Boolean 1 or 0 if periods can be booked or not',
   PRIMARY KEY  (`period_id`),
-  KEY `year_id` (`year_id`),
-  CONSTRAINT `periods_ibfk_1` FOREIGN KEY (`year_id`) REFERENCES `years` (`year_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=50 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Periods'*/;
+  KEY `year_id` (`year_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Periods' AUTO_INCREMENT=50 ;
 
+--
+-- Dumping data for table `periods`
+--
 
-
-#
-# Dumping data for table 'periods'
-#
-
-LOCK TABLES `periods` WRITE;
-/*!40000 ALTER TABLE `periods` DISABLE KEYS*/;
 INSERT INTO `periods` (`period_id`, `year_id`, `time_start`, `time_end`, `name`, `days`, `bookable`) VALUES
-	('9','1','08:45:00','09:00:00','Registration','a:5:{i:0;s:1:\"1\";i:1;s:1:\"2\";i:2;s:1:\"3\";i:3;s:1:\"4\";i:4;s:1:\"5\";}',0),
-	('10','1','09:00:00','10:00:00','Period 1','a:5:{i:0;s:1:\"1\";i:1;s:1:\"2\";i:2;s:1:\"3\";i:3;s:1:\"4\";i:4;s:1:\"5\";}',1),
-	('11','1','10:00:00','11:00:00','Period 2','a:5:{i:0;s:1:\"1\";i:1;s:1:\"2\";i:2;s:1:\"3\";i:3;s:1:\"4\";i:4;s:1:\"5\";}',1),
-	('12','1','11:00:00','11:15:00','Break','a:5:{i:0;s:1:\"1\";i:1;s:1:\"2\";i:2;s:1:\"3\";i:3;s:1:\"4\";i:4;s:1:\"5\";}',0),
-	('13','1','11:15:00','12:15:00','Period 3','a:5:{i:0;s:1:\"1\";i:1;s:1:\"2\";i:2;s:1:\"3\";i:3;s:1:\"4\";i:4;s:1:\"5\";}',1),
-	('14','1','12:15:00','13:20:00','Lunch','a:5:{i:0;s:1:\"1\";i:1;s:1:\"2\";i:2;s:1:\"3\";i:3;s:1:\"4\";i:4;s:1:\"5\";}',0),
-	('15','1','13:20:00','14:20:00','Period 4','a:5:{i:0;s:1:\"1\";i:1;s:1:\"2\";i:2;s:1:\"3\";i:3;s:1:\"4\";i:4;s:1:\"5\";}',1),
-	('16','1','14:20:00','15:20:00','Period 5','a:5:{i:0;s:1:\"1\";i:1;s:1:\"2\";i:2;s:1:\"3\";i:3;s:1:\"4\";i:4;s:1:\"5\";}',1),
-	('49','1','15:20:00','18:30:00','After school','a:5:{i:0;s:1:\"1\";i:1;s:1:\"2\";i:2;s:1:\"3\";i:3;s:1:\"4\";i:4;s:1:\"5\";}',1);
-/*!40000 ALTER TABLE `periods` ENABLE KEYS*/;
-UNLOCK TABLES;
+(9, 1, '08:45:00', '09:00:00', 'Registration', 'a:5:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:1:"3";i:3;s:1:"4";i:4;s:1:"5";}', 0),
+(10, 1, '09:00:00', '10:00:00', 'Period 1', 'a:5:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:1:"3";i:3;s:1:"4";i:4;s:1:"5";}', 1),
+(11, 1, '10:00:00', '11:00:00', 'Period 2', 'a:5:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:1:"3";i:3;s:1:"4";i:4;s:1:"5";}', 1),
+(12, 1, '11:00:00', '11:15:00', 'Break', 'a:5:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:1:"3";i:3;s:1:"4";i:4;s:1:"5";}', 0),
+(13, 1, '11:15:00', '12:15:00', 'Period 3', 'a:5:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:1:"3";i:3;s:1:"4";i:4;s:1:"5";}', 1),
+(14, 1, '12:15:00', '13:20:00', 'Lunch', 'a:5:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:1:"3";i:3;s:1:"4";i:4;s:1:"5";}', 0),
+(15, 1, '13:20:00', '14:20:00', 'Period 4', 'a:5:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:1:"3";i:3;s:1:"4";i:4;s:1:"5";}', 1),
+(16, 1, '14:20:00', '15:20:00', 'Period 5', 'a:5:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:1:"3";i:3;s:1:"4";i:4;s:1:"5";}', 1),
+(49, 1, '15:20:00', '18:30:00', 'After school', 'a:5:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:1:"3";i:3;s:1:"4";i:4;s:1:"5";}', 1);
 
+-- --------------------------------------------------------
 
-#
-# Table structure for table 'quota'
-#
+--
+-- Table structure for table `quota`
+--
 
+DROP TABLE IF EXISTS `quota`;
 CREATE TABLE `quota` (
   `user_id` int(10) unsigned NOT NULL,
   `quota_num` int(10) unsigned NOT NULL,
-  UNIQUE KEY `user_id` (`user_id`),
-  CONSTRAINT `quota_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
-) ENGINE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Quota details'*/;
+  UNIQUE KEY `user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Quota details';
+
+--
+-- Dumping data for table `quota`
+--
 
 
+-- --------------------------------------------------------
 
-#
-# Dumping data for table 'quota'
-#
+--
+-- Table structure for table `room-permissions`
+--
 
-# (No data found.)
-
-
-
-#
-# Table structure for table 'room-permissions'
-#
-
+DROP TABLE IF EXISTS `room-permissions`;
 CREATE TABLE `room-permissions` (
   `entry_id` int(10) unsigned NOT NULL auto_increment,
   `room_id` int(10) unsigned NOT NULL,
-  `type` enum('e','o','u','g','d') NOT NULL,
+  `type` enum('e','o','u','g','d') NOT NULL COMMENT 'E: everyone; O: owner; U: user; G: group; D: department',
   `user_id` int(10) unsigned default NULL,
   `group_id` int(10) unsigned default NULL,
   `department_id` int(10) unsigned default NULL,
@@ -404,116 +367,102 @@ CREATE TABLE `room-permissions` (
   KEY `user_id` (`user_id`),
   KEY `group_id` (`group_id`),
   KEY `department_id` (`department_id`),
-  CONSTRAINT `room-permissions_ibfk_3` FOREIGN KEY (`department_id`) REFERENCES `departments` (`department_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `room-permissions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `room-permissions_ibfk_2` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Permission entries for various objects on different rooms'*/;
+  KEY `room_id` (`room_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Permission entries for various objects on different rooms' AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `room-permissions`
+--
 
 
+-- --------------------------------------------------------
 
-#
-# Dumping data for table 'room-permissions'
-#
+--
+-- Table structure for table `roomattrs-fields`
+--
 
-# (No data found.)
-
-
-
-#
-# Table structure for table 'roomattrs-fields'
-#
-
+DROP TABLE IF EXISTS `roomattrs-fields`;
 CREATE TABLE `roomattrs-fields` (
   `field_id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(20) NOT NULL,
   `type` enum('text','select','check','multi') NOT NULL,
   PRIMARY KEY  (`field_id`)
-) ENGINE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Names of fields that can be assigned to rooms'*/;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Names of fields that can be assigned to rooms' AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `roomattrs-fields`
+--
 
 
+-- --------------------------------------------------------
 
-#
-# Dumping data for table 'roomattrs-fields'
-#
+--
+-- Table structure for table `roomattrs-options`
+--
 
-# (No data found.)
-
-
-
-#
-# Table structure for table 'roomattrs-options'
-#
-
+DROP TABLE IF EXISTS `roomattrs-options`;
 CREATE TABLE `roomattrs-options` (
   `option_id` int(10) unsigned NOT NULL auto_increment,
   `value` varchar(50) NOT NULL,
   PRIMARY KEY  (`option_id`)
-) ENGINE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Options for room drop-down fields'*/;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Options for room drop-down fields' AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `roomattrs-options`
+--
 
 
+-- --------------------------------------------------------
 
-#
-# Dumping data for table 'roomattrs-options'
-#
+--
+-- Table structure for table `roomattrs-values`
+--
 
-# (No data found.)
-
-
-
-#
-# Table structure for table 'roomattrs-values'
-#
-
+DROP TABLE IF EXISTS `roomattrs-values`;
 CREATE TABLE `roomattrs-values` (
   `value_id` int(10) unsigned NOT NULL auto_increment,
   `room_id` int(10) unsigned NOT NULL,
   `field_id` int(10) unsigned NOT NULL,
   `value` varchar(255) NOT NULL,
   PRIMARY KEY  (`value_id`)
-) ENGINE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Actual values of room fields for each room'*/;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Actual values of room fields for each room' AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `roomattrs-values`
+--
 
 
+-- --------------------------------------------------------
 
-#
-# Dumping data for table 'roomattrs-values'
-#
+--
+-- Table structure for table `roomcategories`
+--
 
-# (No data found.)
-
-
-
-#
-# Table structure for table 'roomcategories'
-#
-
+DROP TABLE IF EXISTS `roomcategories`;
 CREATE TABLE `roomcategories` (
   `category_id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(25) NOT NULL,
   PRIMARY KEY  (`category_id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Categories that rooms can belong to'*/;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Categories that rooms can belong to' AUTO_INCREMENT=5 ;
 
+--
+-- Dumping data for table `roomcategories`
+--
 
-
-#
-# Dumping data for table 'roomcategories'
-#
-
-LOCK TABLES `roomcategories` WRITE;
-/*!40000 ALTER TABLE `roomcategories` DISABLE KEYS*/;
 INSERT INTO `roomcategories` (`category_id`, `name`) VALUES
-	('4','0'),
-	('1','ICT'),
-	('3','Maths'),
-	('2','Technology');
-/*!40000 ALTER TABLE `roomcategories` ENABLE KEYS*/;
-UNLOCK TABLES;
+(4, '0'),
+(1, 'ICT'),
+(3, 'Maths'),
+(2, 'Technology');
 
+-- --------------------------------------------------------
 
-#
-# Table structure for table 'rooms'
-#
+--
+-- Table structure for table `rooms`
+--
 
+DROP TABLE IF EXISTS `rooms`;
 CREATE TABLE `rooms` (
   `room_id` int(10) unsigned NOT NULL auto_increment,
   `category_id` int(10) unsigned default NULL COMMENT 'An optional category that the room can belong to',
@@ -526,33 +475,27 @@ CREATE TABLE `rooms` (
   `created` date default NULL COMMENT 'Date the entry was created',
   PRIMARY KEY  (`room_id`),
   KEY `user_id` (`user_id`),
-  KEY `category_id` (`category_id`),
-  CONSTRAINT `rooms_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `roomcategories` (`category_id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  CONSTRAINT `rooms_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 /*!40100 DEFAULT CHARSET=latin1 COMMENT='School rooms'*/;
+  KEY `category_id` (`category_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='School rooms' AUTO_INCREMENT=6 ;
 
+--
+-- Dumping data for table `rooms`
+--
 
-
-#
-# Dumping data for table 'rooms'
-#
-
-LOCK TABLES `rooms` WRITE;
-/*!40000 ALTER TABLE `rooms` DISABLE KEYS*/;
 INSERT INTO `rooms` (`room_id`, `category_id`, `user_id`, `order`, `name`, `description`, `bookable`, `photo`, `created`) VALUES
-	('1','1','121',NULL,'ICT1','ICT1',1,NULL,NULL),
-	('2','2','1',NULL,'RM42',NULL,1,NULL,NULL),
-	('3',NULL,NULL,NULL,'ICT2',NULL,1,NULL,NULL),
-	('4',NULL,NULL,NULL,'Foo','Foo',0,NULL,NULL),
-	('5','2',NULL,NULL,'Tech Suite','Tech Suite',0,NULL,'2009-02-13');
-/*!40000 ALTER TABLE `rooms` ENABLE KEYS*/;
-UNLOCK TABLES;
+(1, 1, 121, NULL, 'ICT1', 'ICT1', 1, NULL, NULL),
+(2, 2, 1, NULL, 'RM42', NULL, 1, NULL, NULL),
+(3, 1, NULL, NULL, 'ICT2', 'ICT2', 1, '0', NULL),
+(4, NULL, NULL, NULL, 'Foo', 'Foo', 0, NULL, NULL),
+(5, 2, NULL, NULL, 'Tech Suite', 'Tech Suite', 0, NULL, '2009-02-13');
 
+-- --------------------------------------------------------
 
-#
-# Table structure for table 'settings-auth'
-#
+--
+-- Table structure for table `settings-auth`
+--
 
+DROP TABLE IF EXISTS `settings-auth`;
 CREATE TABLE `settings-auth` (
   `preauthkey` char(40) default NULL COMMENT 'SHA1 hash to be used as preauth key',
   `preauthgroup_id` int(10) unsigned default NULL COMMENT 'Default group for accounts created automatically via preauth',
@@ -564,52 +507,44 @@ CREATE TABLE `settings-auth` (
   `ldapfilter` text COMMENT 'LDAP search query filter',
   `ldapgroup_id` int(10) unsigned default NULL COMMENT 'Default group for LDAP accounts',
   `ldaploginupdate` tinyint(1) unsigned default NULL COMMENT 'Boolean. Update user details on every login?'
-) ENGINE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='LDAP configuration'*/;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='LDAP configuration';
 
+--
+-- Dumping data for table `settings-auth`
+--
 
-
-#
-# Dumping data for table 'settings-auth'
-#
-
-LOCK TABLES `settings-auth` WRITE;
-/*!40000 ALTER TABLE `settings-auth` DISABLE KEYS*/;
 INSERT INTO `settings-auth` (`preauthkey`, `preauthgroup_id`, `preauthemail`, `ldap`, `ldaphost`, `ldapport`, `ldapbase`, `ldapfilter`, `ldapgroup_id`, `ldaploginupdate`) VALUES
-	('14ba16efe8ce9786aaa9ca15297f9dc802855476','4','bishopbarrington.net',1,'bbs-svr-001','389','ou=teaching staff, ou=bbs, ou=establishments, dc=bbarrington, dc=internal; ou=system administrators, ou=bbs, ou=establishments, dc=bbarrington, dc=internal','(& (| (!(displayname=Administrator*)) (!(displayname=Admin*)) ) (cn=%u) )','7',1);
-/*!40000 ALTER TABLE `settings-auth` ENABLE KEYS*/;
-UNLOCK TABLES;
+('14ba16efe8ce9786aaa9ca15297f9dc802855476', 4, 'bishopbarrington.net', 1, 'bbs-svr-001', 389, 'ou=teaching staff, ou=bbs, ou=establishments, dc=bbarrington, dc=internal; ou=system administrators, ou=bbs, ou=establishments, dc=bbarrington, dc=internal', '(& (| (!(displayname=Administrator*)) (!(displayname=Admin*)) ) (cn=%u) )', 7, 1);
 
+-- --------------------------------------------------------
 
-#
-# Table structure for table 'settings-main'
-#
+--
+-- Table structure for table `settings-main`
+--
 
+DROP TABLE IF EXISTS `settings-main`;
 CREATE TABLE `settings-main` (
   `schoolname` varchar(100) default NULL COMMENT 'Name of school',
   `schoolurl` varchar(255) default NULL COMMENT 'Web address for school',
   `bd_mode` enum('room','day') default NULL COMMENT 'Mode of display for room booking table',
   `bd_col` enum('periods','rooms','days') default NULL COMMENT 'Columns on the booking table',
   `room_order` enum('alpha','order') default NULL COMMENT 'How to display rooms in the booking view'
-) ENGINE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Global app settings'*/;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Global app settings';
 
+--
+-- Dumping data for table `settings-main`
+--
 
-
-#
-# Dumping data for table 'settings-main'
-#
-
-LOCK TABLES `settings-main` WRITE;
-/*!40000 ALTER TABLE `settings-main` DISABLE KEYS*/;
 INSERT INTO `settings-main` (`schoolname`, `schoolurl`, `bd_mode`, `bd_col`, `room_order`) VALUES
-	('Bishop Barrington School Sports With Mathematics College','','day','periods','alpha');
-/*!40000 ALTER TABLE `settings-main` ENABLE KEYS*/;
-UNLOCK TABLES;
+('Bishop Barrington School Sports With Mathematics College', '', 'day', 'periods', 'alpha');
 
+-- --------------------------------------------------------
 
-#
-# Table structure for table 'terms'
-#
+--
+-- Table structure for table `terms`
+--
 
+DROP TABLE IF EXISTS `terms`;
 CREATE TABLE `terms` (
   `term_id` int(10) unsigned NOT NULL auto_increment,
   `year_id` int(10) unsigned NOT NULL COMMENT 'The academic year that this term belongs to',
@@ -620,30 +555,25 @@ CREATE TABLE `terms` (
   UNIQUE KEY `uniquedates` (`date_start`,`date_end`),
   UNIQUE KEY `date_start` (`date_start`),
   UNIQUE KEY `date_end` (`date_end`),
-  KEY `year_id` (`year_id`),
-  CONSTRAINT `terms_ibfk_1` FOREIGN KEY (`year_id`) REFERENCES `years` (`year_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=11 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Term dates'*/;
+  KEY `year_id` (`year_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Term dates' AUTO_INCREMENT=11 ;
 
+--
+-- Dumping data for table `terms`
+--
 
-
-#
-# Dumping data for table 'terms'
-#
-
-LOCK TABLES `terms` WRITE;
-/*!40000 ALTER TABLE `terms` DISABLE KEYS*/;
 INSERT INTO `terms` (`term_id`, `year_id`, `date_start`, `date_end`, `name`) VALUES
-	('1','1','2008-09-08','2008-10-24','Autumn'),
-	('2','1','2009-01-05','2009-02-13','Spring A'),
-	('10','1','2009-04-09','2009-05-16','Foo');
-/*!40000 ALTER TABLE `terms` ENABLE KEYS*/;
-UNLOCK TABLES;
+(1, 1, '2008-09-08', '2008-10-24', 'Autumn'),
+(2, 1, '2009-01-05', '2009-02-13', 'Spring A'),
+(10, 1, '2009-04-09', '2009-05-16', 'Foo');
 
+-- --------------------------------------------------------
 
-#
-# Table structure for table 'users'
-#
+--
+-- Table structure for table `users`
+--
 
+DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `user_id` int(10) unsigned NOT NULL auto_increment,
   `group_id` int(10) unsigned NOT NULL COMMENT 'Group that the user is a member of',
@@ -659,167 +589,146 @@ CREATE TABLE `users` (
   PRIMARY KEY  (`user_id`),
   UNIQUE KEY `username` (`username`),
   KEY `ldap` (`ldap`),
-  KEY `group_id` (`group_id`),
-  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=127 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Main users table'*/;
+  KEY `group_id` (`group_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Main users table' AUTO_INCREMENT=127 ;
 
+--
+-- Dumping data for table `users`
+--
 
-
-#
-# Dumping data for table 'users'
-#
-
-LOCK TABLES `users` WRITE;
-/*!40000 ALTER TABLE `users` DISABLE KEYS*/;
 INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `password`, `displayname`, `cookiekey`, `lastlogin`, `ldap`, `created`) VALUES
-	('1','1',1,'admin','craig.rodway@gmail.com','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','Craig Rodway',NULL,'2009-02-13 15:29:18',0,'0000-00-00'),
-	('3','9',1,'user1','','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8',NULL,NULL,'2008-12-19 23:06:20',0,'2008-11-27'),
-	('12','2',1,'craig.rodway','craig.rodway@bishopbarrington.net',NULL,'Mr Rodway',NULL,'2009-01-09 16:12:48',1,'2009-01-09'),
-	('19','2',1,'test.one','test.one@bishopbarrington.net',NULL,'Mr T One',NULL,'2009-01-26 10:14:39',1,'2009-01-14'),
-	('22','2',1,'test.three','test.three@bishopbarrington.net',NULL,'Mr T Three',NULL,'2009-01-14 10:56:57',1,'2009-01-14'),
-	('24','2',1,'test.two','test.two@bishopbarrington.net',NULL,'Mr T Two',NULL,'2009-01-26 16:45:49',1,'2009-01-26'),
-	('112','2',0,'g.harrison100','g.harrison100@bishopbarrington.net','39ccb32d95edfdbcd882f2b01809724ec640ea16','g.harrison100',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
-	('113','2',0,'j.gent100','j.gent100@bishopbarrington.net','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','j.gent100',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
-	('114','2',0,'k.hammerton100','k.hammerton100@bishopbarrington.net','be8ec20d52fdf21c23e83ba2bb7446a7fecb32ac','k.hammerton100',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
-	('115','2',0,'l.johnson100','l.johnson100@bishopbarrington.net','3a56bca418737e68a7620591abd0e7e8484458a6','l.johnson100',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
-	('116','2',0,'m.bennett103','m.bennett103@bishopbarrington.net','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','m.bennett103',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
-	('117','2',0,'m.stuart100','m.stuart100@bishopbarrington.net','08e979d3576358a5d26014d935cc7fb84e0d5a7f','m.stuart100',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
-	('118','2',0,'p.beighton100','p.beighton100@bishopbarrington.net','32ba707d8ae992ced8648716fbd88002fc5be03a','p.beighton100',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
-	('119','2',0,'s.waldie100','s.waldie100@bishopbarrington.net','61284f86181d3deca93107338918ee77ebd63f06','s.waldie100',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
-	('120','2',0,'h.smith104','h.smith104@bishopbarrington.net','c06538faae9975cce73fc613a8370ba3ffb3d302','h.smith104',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
-	('121','2',0,'a.staff100','a.staff100@bishopbarrington.net','ef20a06d2c45dd9f6a58eacaa6b36d6fc89870a6','a.staff100',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
-	('122','2',0,'m.stokoe102','m.stokoe102@bishopbarrington.net','deaae441b2d1596d06f01725f930ed2f2e7277bd','m.stokoe102',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
-	('123','2',0,'j.thompson106','j.thompson106@bishopbarrington.net','78c94605b024fc545b9100d2734dc4a4ae8a8335','j.thompson106',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
-	('124','2',0,'l.walker101','l.walker101@bishopbarrington.net','52bb90127bc86e77acd3ae5fb6c632dfe90c00a1','l.walker101',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
-	('125','2',0,'c.wearmouth100','c.wearmouth100@bishopbarrington.net','9e907431a8d31fefe3c2d341ff8826624c954f15','c.wearmouth100',NULL,'0000-00-00 00:00:00',0,'2009-01-30'),
-	('126','2',0,'e.winstanley100','e.winstanley100@bishopbarrington.net','ea157601840a5b4953c2e95f5fd27223291122d6','e.winstanley100',NULL,'0000-00-00 00:00:00',0,'2009-01-30');
-/*!40000 ALTER TABLE `users` ENABLE KEYS*/;
-UNLOCK TABLES;
+(1, 1, 1, 'admin', 'craig.rodway@gmail.com', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Craig Rodway', NULL, '2009-04-02 16:10:51', 0, '0000-00-00'),
+(3, 9, 1, 'user1', '', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', NULL, NULL, '2008-12-19 23:06:20', 0, '2008-11-27'),
+(12, 2, 1, 'craig.rodway', 'craig.rodway@bishopbarrington.net', NULL, 'Mr Rodway', NULL, '2009-01-09 16:12:48', 1, '2009-01-09'),
+(19, 2, 1, 'test.one', 'test.one@bishopbarrington.net', NULL, 'Mr T One', NULL, '2009-01-26 10:14:39', 1, '2009-01-14'),
+(22, 2, 1, 'test.three', 'test.three@bishopbarrington.net', NULL, 'Mr T Three', NULL, '2009-01-14 10:56:57', 1, '2009-01-14'),
+(24, 2, 1, 'test.two', 'test.two@bishopbarrington.net', NULL, 'Mr T Two', NULL, '2009-01-26 16:45:49', 1, '2009-01-26'),
+(112, 2, 0, 'g.harrison100', 'g.harrison100@bishopbarrington.net', '39ccb32d95edfdbcd882f2b01809724ec640ea16', 'g.harrison100', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
+(113, 2, 0, 'j.gent100', 'j.gent100@bishopbarrington.net', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'j.gent100', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
+(114, 2, 0, 'k.hammerton100', 'k.hammerton100@bishopbarrington.net', 'be8ec20d52fdf21c23e83ba2bb7446a7fecb32ac', 'k.hammerton100', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
+(115, 2, 0, 'l.johnson100', 'l.johnson100@bishopbarrington.net', '3a56bca418737e68a7620591abd0e7e8484458a6', 'l.johnson100', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
+(116, 2, 0, 'm.bennett103', 'm.bennett103@bishopbarrington.net', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'm.bennett103', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
+(117, 2, 0, 'm.stuart100', 'm.stuart100@bishopbarrington.net', '08e979d3576358a5d26014d935cc7fb84e0d5a7f', 'm.stuart100', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
+(118, 2, 0, 'p.beighton100', 'p.beighton100@bishopbarrington.net', '32ba707d8ae992ced8648716fbd88002fc5be03a', 'p.beighton100', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
+(119, 2, 0, 's.waldie100', 's.waldie100@bishopbarrington.net', '61284f86181d3deca93107338918ee77ebd63f06', 's.waldie100', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
+(120, 2, 0, 'h.smith104', 'h.smith104@bishopbarrington.net', 'c06538faae9975cce73fc613a8370ba3ffb3d302', 'h.smith104', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
+(121, 2, 0, 'a.staff100', 'a.staff100@bishopbarrington.net', 'ef20a06d2c45dd9f6a58eacaa6b36d6fc89870a6', 'a.staff100', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
+(122, 2, 0, 'm.stokoe102', 'm.stokoe102@bishopbarrington.net', 'deaae441b2d1596d06f01725f930ed2f2e7277bd', 'm.stokoe102', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
+(123, 2, 0, 'j.thompson106', 'j.thompson106@bishopbarrington.net', '78c94605b024fc545b9100d2734dc4a4ae8a8335', 'j.thompson106', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
+(124, 2, 0, 'l.walker101', 'l.walker101@bishopbarrington.net', '52bb90127bc86e77acd3ae5fb6c632dfe90c00a1', 'l.walker101', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
+(125, 2, 0, 'c.wearmouth100', 'c.wearmouth100@bishopbarrington.net', '9e907431a8d31fefe3c2d341ff8826624c954f15', 'c.wearmouth100', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
+(126, 2, 0, 'e.winstanley100', 'e.winstanley100@bishopbarrington.net', 'ea157601840a5b4953c2e95f5fd27223291122d6', 'e.winstanley100', NULL, '0000-00-00 00:00:00', 0, '2009-01-30');
 
+-- --------------------------------------------------------
 
-#
-# Table structure for table 'users2departments'
-#
+--
+-- Table structure for table `users2departments`
+--
 
+DROP TABLE IF EXISTS `users2departments`;
 CREATE TABLE `users2departments` (
   `user_id` int(10) unsigned NOT NULL,
   `department_id` int(10) unsigned NOT NULL,
   KEY `department_id` (`department_id`),
   KEY `assignment` (`user_id`,`department_id`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `users2departments_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
-  CONSTRAINT `users2departments_ibfk_3` FOREIGN KEY (`department_id`) REFERENCES `departments` (`department_id`) ON DELETE CASCADE
-) ENGINE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Maps a user to multiple departments'*/;
+  KEY `user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Maps a user to multiple departments';
 
+--
+-- Dumping data for table `users2departments`
+--
 
-
-#
-# Dumping data for table 'users2departments'
-#
-
-LOCK TABLES `users2departments` WRITE;
-/*!40000 ALTER TABLE `users2departments` DISABLE KEYS*/;
 INSERT INTO `users2departments` (`user_id`, `department_id`) VALUES
-	('19','13');
-/*!40000 ALTER TABLE `users2departments` ENABLE KEYS*/;
-UNLOCK TABLES;
+(19, 13);
 
+-- --------------------------------------------------------
 
-#
-# Table structure for table 'usersactive'
-#
+--
+-- Table structure for table `usersactive`
+--
 
+DROP TABLE IF EXISTS `usersactive`;
 CREATE TABLE `usersactive` (
   `user_id` int(10) unsigned NOT NULL,
   `timestamp` int(11) unsigned NOT NULL,
   UNIQUE KEY `user_id` (`user_id`)
-) ENGINE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Keep track of current active users'*/;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Keep track of current active users';
 
+--
+-- Dumping data for table `usersactive`
+--
 
-
-#
-# Dumping data for table 'usersactive'
-#
-
-LOCK TABLES `usersactive` WRITE;
-/*!40000 ALTER TABLE `usersactive` DISABLE KEYS*/;
 INSERT INTO `usersactive` (`user_id`, `timestamp`) VALUES
-	('1','1234540761');
-/*!40000 ALTER TABLE `usersactive` ENABLE KEYS*/;
-UNLOCK TABLES;
+(1, 1238690670);
 
+-- --------------------------------------------------------
 
-#
-# Table structure for table 'weekdates'
-#
+--
+-- Table structure for table `weekdates`
+--
 
+DROP TABLE IF EXISTS `weekdates`;
 CREATE TABLE `weekdates` (
   `week_id` int(10) unsigned NOT NULL,
   `year_id` int(10) unsigned NOT NULL,
   `date` date NOT NULL,
   UNIQUE KEY `date` (`date`),
   KEY `week_id` (`week_id`),
-  KEY `year_id` (`year_id`),
-  CONSTRAINT `weekdates_ibfk_1` FOREIGN KEY (`week_id`) REFERENCES `weeks` (`week_id`) ON DELETE CASCADE,
-  CONSTRAINT `weekdates_ibfk_2` FOREIGN KEY (`year_id`) REFERENCES `years` (`year_id`) ON DELETE CASCADE
-) ENGINE=InnoDB /*!40100 DEFAULT CHARSET=latin1 COMMENT='Start-dates of weeks for timetable'*/;
+  KEY `year_id` (`year_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Start-dates of weeks for timetable';
 
+--
+-- Dumping data for table `weekdates`
+--
 
-
-#
-# Dumping data for table 'weekdates'
-#
-
-LOCK TABLES `weekdates` WRITE;
-/*!40000 ALTER TABLE `weekdates` DISABLE KEYS*/;
 INSERT INTO `weekdates` (`week_id`, `year_id`, `date`) VALUES
-	('11','1','2008-09-08'),
-	('12','1','2008-09-15'),
-	('11','1','2008-09-22'),
-	('12','1','2008-09-29'),
-	('11','1','2008-10-06'),
-	('12','1','2008-10-13'),
-	('11','1','2008-10-20'),
-	('12','1','2008-11-03'),
-	('11','1','2008-11-10'),
-	('12','1','2008-11-17'),
-	('11','1','2008-11-24'),
-	('12','1','2008-12-01'),
-	('11','1','2008-12-08'),
-	('12','1','2008-12-15'),
-	('11','1','2009-01-05'),
-	('12','1','2009-01-12'),
-	('11','1','2009-01-19'),
-	('12','1','2009-01-26'),
-	('11','1','2009-02-02'),
-	('12','1','2009-02-09'),
-	('11','1','2009-02-23'),
-	('12','1','2009-03-02'),
-	('11','1','2009-03-09'),
-	('12','1','2009-03-16'),
-	('11','1','2009-03-23'),
-	('12','1','2009-03-30'),
-	('11','1','2009-04-20'),
-	('12','1','2009-04-27'),
-	('11','1','2009-05-04'),
-	('12','1','2009-05-11'),
-	('11','1','2009-05-18'),
-	('12','1','2009-06-01'),
-	('11','1','2009-06-08'),
-	('12','1','2009-06-15'),
-	('11','1','2009-06-22'),
-	('12','1','2009-06-29'),
-	('11','1','2009-07-06'),
-	('12','1','2009-07-13'),
-	('11','1','2009-07-20');
-/*!40000 ALTER TABLE `weekdates` ENABLE KEYS*/;
-UNLOCK TABLES;
+(11, 1, '2008-09-08'),
+(12, 1, '2008-09-15'),
+(11, 1, '2008-09-22'),
+(12, 1, '2008-09-29'),
+(11, 1, '2008-10-06'),
+(12, 1, '2008-10-13'),
+(11, 1, '2008-10-20'),
+(12, 1, '2008-11-03'),
+(11, 1, '2008-11-10'),
+(12, 1, '2008-11-17'),
+(11, 1, '2008-11-24'),
+(12, 1, '2008-12-01'),
+(11, 1, '2008-12-08'),
+(12, 1, '2008-12-15'),
+(11, 1, '2009-01-05'),
+(12, 1, '2009-01-12'),
+(11, 1, '2009-01-19'),
+(12, 1, '2009-01-26'),
+(11, 1, '2009-02-02'),
+(12, 1, '2009-02-09'),
+(11, 1, '2009-02-23'),
+(12, 1, '2009-03-02'),
+(11, 1, '2009-03-09'),
+(12, 1, '2009-03-16'),
+(11, 1, '2009-03-23'),
+(12, 1, '2009-03-30'),
+(11, 1, '2009-04-20'),
+(12, 1, '2009-04-27'),
+(11, 1, '2009-05-04'),
+(12, 1, '2009-05-11'),
+(11, 1, '2009-05-18'),
+(12, 1, '2009-06-01'),
+(11, 1, '2009-06-08'),
+(12, 1, '2009-06-15'),
+(11, 1, '2009-06-22'),
+(12, 1, '2009-06-29'),
+(11, 1, '2009-07-06'),
+(12, 1, '2009-07-13'),
+(11, 1, '2009-07-20');
 
+-- --------------------------------------------------------
 
-#
-# Table structure for table 'weeks'
-#
+--
+-- Table structure for table `weeks`
+--
 
+DROP TABLE IF EXISTS `weeks`;
 CREATE TABLE `weeks` (
   `week_id` int(10) unsigned NOT NULL auto_increment,
   `year_id` int(10) unsigned NOT NULL,
@@ -827,29 +736,24 @@ CREATE TABLE `weeks` (
   `colour` char(7) default NULL COMMENT 'Hex colour value including hash',
   `created` date default NULL,
   PRIMARY KEY  (`week_id`),
-  KEY `year_id` (`year_id`),
-  CONSTRAINT `weeks_ibfk_1` FOREIGN KEY (`year_id`) REFERENCES `years` (`year_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=13 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Week definitions for timetable weeks'*/;
+  KEY `year_id` (`year_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Week definitions for timetable weeks' AUTO_INCREMENT=13 ;
 
+--
+-- Dumping data for table `weeks`
+--
 
-
-#
-# Dumping data for table 'weeks'
-#
-
-LOCK TABLES `weeks` WRITE;
-/*!40000 ALTER TABLE `weeks` DISABLE KEYS*/;
 INSERT INTO `weeks` (`week_id`, `year_id`, `name`, `colour`, `created`) VALUES
-	('11','1','Red Week','#EF2929','2009-01-25'),
-	('12','1','Blue Week','#729FCF','2009-01-25');
-/*!40000 ALTER TABLE `weeks` ENABLE KEYS*/;
-UNLOCK TABLES;
+(11, 1, 'Red Week', '#EF2929', '2009-01-25'),
+(12, 1, 'Blue Week', '#729FCF', '2009-01-25');
 
+-- --------------------------------------------------------
 
-#
-# Table structure for table 'years'
-#
+--
+-- Table structure for table `years`
+--
 
+DROP TABLE IF EXISTS `years`;
 CREATE TABLE `years` (
   `year_id` int(10) unsigned NOT NULL auto_increment,
   `date_start` date NOT NULL,
@@ -858,20 +762,89 @@ CREATE TABLE `years` (
   `active` tinyint(1) unsigned default '0',
   PRIMARY KEY  (`year_id`),
   UNIQUE KEY `active` (`active`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 /*!40100 DEFAULT CHARSET=latin1 COMMENT='Academic year definitions'*/;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Academic year definitions' AUTO_INCREMENT=7 ;
 
+--
+-- Dumping data for table `years`
+--
 
-
-#
-# Dumping data for table 'years'
-#
-
-LOCK TABLES `years` WRITE;
-/*!40000 ALTER TABLE `years` DISABLE KEYS*/;
 INSERT INTO `years` (`year_id`, `date_start`, `date_end`, `name`, `active`) VALUES
-	('1','2008-09-08','2009-07-23','2008 - 2009',1),
-	('5','2009-09-07','2010-07-23','2009 - 2010',NULL),
-	('6','2007-09-01','2008-07-24','2007 - 2008',NULL);
-/*!40000 ALTER TABLE `years` ENABLE KEYS*/;
-UNLOCK TABLES;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS*/;
+(1, '2008-09-08', '2009-07-23', '2008 - 2009', 1),
+(5, '2009-09-07', '2010-07-23', '2009 - 2010', NULL),
+(6, '2007-09-01', '2008-07-24', '2007 - 2008', NULL);
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `groups2ldapgroups`
+--
+ALTER TABLE `groups2ldapgroups`
+  ADD CONSTRAINT `groups2ldapgroups_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `groups2ldapgroups_ibfk_2` FOREIGN KEY (`ldapgroup_id`) REFERENCES `ldapgroups` (`ldapgroup_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `holidays`
+--
+ALTER TABLE `holidays`
+  ADD CONSTRAINT `holidays_ibfk_1` FOREIGN KEY (`year_id`) REFERENCES `years` (`year_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `periods`
+--
+ALTER TABLE `periods`
+  ADD CONSTRAINT `periods_ibfk_1` FOREIGN KEY (`year_id`) REFERENCES `years` (`year_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `quota`
+--
+ALTER TABLE `quota`
+  ADD CONSTRAINT `quota_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `room-permissions`
+--
+ALTER TABLE `room-permissions`
+  ADD CONSTRAINT `room-permissions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `room-permissions_ibfk_2` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `room-permissions_ibfk_3` FOREIGN KEY (`department_id`) REFERENCES `departments` (`department_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `rooms`
+--
+ALTER TABLE `rooms`
+  ADD CONSTRAINT `rooms_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `roomcategories` (`category_id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `rooms_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+--
+-- Constraints for table `terms`
+--
+ALTER TABLE `terms`
+  ADD CONSTRAINT `terms_ibfk_1` FOREIGN KEY (`year_id`) REFERENCES `years` (`year_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `users`
+--
+ALTER TABLE `users`
+  ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`);
+
+--
+-- Constraints for table `users2departments`
+--
+ALTER TABLE `users2departments`
+  ADD CONSTRAINT `users2departments_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `users2departments_ibfk_3` FOREIGN KEY (`department_id`) REFERENCES `departments` (`department_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `weekdates`
+--
+ALTER TABLE `weekdates`
+  ADD CONSTRAINT `weekdates_ibfk_1` FOREIGN KEY (`week_id`) REFERENCES `weeks` (`week_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `weekdates_ibfk_2` FOREIGN KEY (`year_id`) REFERENCES `years` (`year_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `weeks`
+--
+ALTER TABLE `weeks`
+  ADD CONSTRAINT `weeks_ibfk_1` FOREIGN KEY (`year_id`) REFERENCES `years` (`year_id`) ON DELETE CASCADE;

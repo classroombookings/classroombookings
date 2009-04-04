@@ -156,8 +156,10 @@ class Rooms extends Controller{
 			$this->session->set_userdata('rpupload', $upload);
 		}
 		
+		#die(var_dump($upload));
 		
-		// Do certain actions based on category chosen
+		
+		// Do certain actions based on category chosen (could be new or existing)
 		$data['category_id'] = $this->input->post('category_id');
 		if(is_numeric($data['category_id'])){
 			// Haven't chosen to add a new category or it's not chosen, or no existing selected
@@ -199,6 +201,22 @@ class Rooms extends Controller{
 					// Resize failed - add error message
 					$this->msg->add('err', implode(', ', $this->resize_errors), $this->lasterr);
 				}
+			} else {
+				// Not uploaded, maintain existing one
+				$data['photo'] = $this->input->post('photo');
+			}
+			
+			// Delete room photo if required (form filename doesn't match new filename)
+			if(!empty($data['photo']) && $this->input->post('photo')){
+				if($data['photo'] != $this->input->post('photo')){
+					$this->_delete_photo($this->input->post('photo'));
+				}
+			}
+			
+			// Delete room photo if user ticks delete box
+			if((int)$this->input->post('delete') == 1){
+				$this->_delete_photo($data['photo']);
+				$data['photo'] = NULL;
 			}
 			
 			// Clear the photo upload data from the session
@@ -238,6 +256,7 @@ class Rooms extends Controller{
 			}
 			
 			// All done - redirect
+			#die(print_r($data));
 			redirect('rooms');
 			
 		}
@@ -250,14 +269,14 @@ class Rooms extends Controller{
 	/**
 	 * Form destination: Save room permissions
 	 */
-	function save_permissions(){
+	function add_permission(){
 	}
 	
 	
 	
 	
 	/**
-	 * Carry out the uploading of the photo
+	 * Carry out the uploading of the photo from the form
 	 */
 	function _do_upload(){
 		// Do upload if it was submitted
@@ -366,6 +385,19 @@ class Rooms extends Controller{
 			$this->lasterr = 'Failed to resize the images.';
 			return FALSE;
 		}
+	}
+	
+	
+	
+	
+	/**
+	 * Function to delete the files associated with a given photo
+	 *
+	 * @param	string	Filename with # - will be replaced
+	 */
+	function _delete_photo($file){
+		@unlink('web/upload/'.image_small($file));
+		@unlink('web/upload/'.image_large($file));
 	}
 	
 	

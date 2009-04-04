@@ -35,7 +35,7 @@ $t = 0;
 	} else {
 		?>
 		<tr>
-			<td colspan="3">No permission entries have been created yet.</td>
+			<td colspan="3">No permission entries have been added yet.</td>
 		</tr>
 		<?php
 	}
