@@ -17,35 +17,32 @@
 */
 
 
-class Main extends Controller {
+class Academic extends Model{
 
 
-	var $tpl;
-	
-
-	function Main(){
-		parent::Controller();
-		$this->load->model('academic');
-		$this->tpl = $this->config->item('template');
-		$this->output->enable_profiler($this->config->item('profiler'));
+	function Academic(){
+		parent::Model();
 	}
 	
 	
-	
-	
-	function index(){
-		$this->auth->check('academic');
-		$tpl['subnav'] = $this->academic->subnav();
-		$tpl['title'] = 'Academic setup';
-		$tpl['pagetitle'] = $tpl['title'];
-		$tpl['body'] = $this->load->view('academic/main', NULL, TRUE);
-		$this->load->view($this->tpl, $tpl);
+	/**
+	 * Link definitions of pages in this section
+	 */
+	function subnav(){
+		$subnav = array();
+		// Other pages in this parent section
+		$subnav[] = array('academic/years', 'Years', 'years');
+		$subnav[] = array('academic/terms', 'Term dates', 'terms');
+		$subnav[] = array('academic/weeks', 'Timetable weeks', 'weeks');
+		$subnav[] = array('academic/periods', 'Periods', 'periods');
+		$subnav[] = array('academic/holidays', 'Holidays', 'holidays');
+		return $subnav;
 	}
-	
-	
 	
 	
 }
 
 
-?>
+
+
+/* End of file: app/models/academic.php */

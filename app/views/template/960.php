@@ -1,4 +1,15 @@
-<?php $title = (!isset($title)) ? '' : $title; ?>
+<?php
+$title = (!isset($title)) ? '' : $title;
+$seg1 = $this->uri->segment(1, 'dashboard');
+$seg2 = $this->uri->segment(2);
+
+if(isset($sidebar)){
+	$class['content'] = 'grid_8';
+	$class['sidebar'] = 'grid_4';
+} else {
+	$class['content'] = 'grid_12';
+}
+?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
@@ -14,57 +25,74 @@
 	<link rel="stylesheet" type="text/css" media="all" href="css/960/960.css" />
 	<link rel="stylesheet" type="text/css" media="screen" href="css/ui960.css" />
 	<style type="text/css">
-	body{background:#F4F4F4;}
-	#t{background:#468ED8;}
-    #tabsB {
-		background:#468ED8;
-      float:left;
-      width:100%;
-      font-size:87%;
-      line-height:normal;
-      }
-    #tabsB ul {
-	margin:0;
-	width:960px;
-	margin:0px auto;
-	padding:10px 10px 0 40px;
-	list-style:none;
-      }
-    #tabsB li {
-      display:inline;
-      margin:0;
-      padding:0;
-      }
-    #tabsB a {
-      float:left;
-      background:url("img/template/tableftB.gif") no-repeat left top;
-	  background-position:0% -42px;
-      margin:0;
-      padding:0 0 0 4px;
-      text-decoration:none;
-      }
-    #tabsB a span {
-      float:left;
-      display:block;
-      background:url("img/template/tabrightB.gif") no-repeat right top;
-	  background-position:100% -42px;
-      padding:5px 15px 4px 6px;
-      color:#666;
-      }
-    /* Commented Backslash Hack hides rule from IE5-Mac \*/
-    #tabsB a span {float:none;}
-    /* End IE5-Mac hack */
-    #tabsB a:hover span {
-      color:#000;
-      }
-    #tabsB a:hover, #tabsB a.active {
-      background-position:0% 0px;
-      }
-    #tabsB a:hover span, #tabsB a.active span {
-      background-position:100% 0px;
-      }
+	body{background:#fff;	/*#F4F4F4;*/}
+	#t{background:url(img/template/patt4.jpg) top left #069;padding-top:0.5em;}
+	#tabs{/*background:#AFCEED;*/}
+	
+	#t2{background:#AFCEED;}
+	#tabs2{background:#AFCEED;padding-top:0.5em;}
+	
+	#tr{text-align:right;}
+	#tr span a{color:#fff;}
+	
+	#tabs ul, #tabs2 ul{
+		list-style:none;
+		padding:0;
+		margin:0;
+	}
+	
+	#tabs li, #tabs2 li{
+		float:left;
+		border:0;
+		border-bottom-width:0;
+		margin:0 0.5em 0 0;
+	}
+	
+	#tabs a, #tabs2 a{
+		display:block;
+		padding:0.25em 1em 0.5em 1em;
+		color:#fff;
+		text-decoration:underline;
+		font-weight:bold;
+	}
+	
+	
+	#tabs .selected, #tabs2 .selected, #tabs2 a:hover{
+		position:relative;
+		top:1px;
+		background:#fff;	/*#F4F4F4;*/
+		color:#000;
+	}
+	
+	a.selected{
+		text-decoration:none;
+	}
+	
+	
+	#ft{
+		margin-top:4em;
+		padding-top:0.5em;
+		border-top:1px solid #ccc;
+		font-size:90%;
+		color:#666;
+	}
+	
+	#ft p{
+		margin-bottom:0.25em;
+	}
+	
+	#fr{
+		text-align:right;
+	}
 	
 	<?php
+	if(isset($subnav)){
+		echo '#tabs .selected, #tabs a:hover{background:#AFCEED;color:#000;}';
+	} else {
+		echo '#tabs .selected, #tabs a:hover{background:#fff;color:#000;}';
+	}
+	
+	
 	$weeks = $this->weeks_model->get();
 	foreach($weeks as $week){
 		$cssarr[] = 'table tr.week_%1$d td{background:%2$s;color:%3$s}';
@@ -105,54 +133,214 @@
 	<script type="text/javascript" src="js/jquery.autocomplete.js"></script>
 </head>
 <body>
-
+	
+	
 	<div id="t">
 		
 		
-		<div id="tl">
-			Classroombookings
+		<!-- header 960 container -->
+		<div class="container_12">
+			
+			
+			<!-- #tl (top left) -->
+			<div class="grid_6" id="tl">
+				<p><a href="<?php echo site_url() ?>">
+					<img src="img/template/title.png" alt="Classroombookings" />
+				</a><br />
+				<span><?php
+					$settings = $this->settings->get_all('main');
+					if($settings->schoolurl != FALSE){
+						echo '<a href="'.$settings->schoolurl.'">'.$settings->schoolname.'</a>';
+					} else {
+						echo $settings->schoolname;
+					}
+				?></span>
+				</p>
+			</div>
+			<!-- // tl -->
+			
+			
+			<!-- #tr (top right) -->
+			<div class="grid_6" id="tr"><br /><?php
+				if($this->auth->logged_in()){
+					echo sprintf('<span>Logged in as %s</span>', anchor('account', $this->session->userdata('display')));
+					echo sprintf('<span>%s</span>', anchor('account/bookings', sprintf('%d active bookings', 5)));
+					echo sprintf('<span>%s</span>', anchor('account/logout', 'Logout'));
+				} else {
+					echo sprintf('<span>You are not currently logged in. %s</span>', anchor('account/login', 'Login now.'));
+				}
+			?></div>
+			<!-- // tr -->
+			
+			
+			<div class="clear">&nbsp;</div>
+			
+			
+			<!-- #tabs (primary nav) -->
+			<div class="grid_12" id="tabs">
+				<ul>
+					<?php
+					if($this->auth->check('dashboard', TRUE)){ echo dolink($seg1, 'dashboard', 'Dashboard'); }
+					if($this->auth->check('bookings', TRUE)){ echo dolink($seg1, 'bookings', 'Bookings'); }
+					if($this->auth->check('myprofile', TRUE)){ echo dolink($seg1, 'account', 'My Profile'); }
+					if($this->auth->check('configure', TRUE)){ echo dolink($seg1, 'configure', 'Configure'); }
+					if($this->auth->check('rooms', TRUE)){ echo dolink($seg1, 'rooms', 'Rooms'); }
+					if($this->auth->check('academic', TRUE)){ echo dolink($seg1, 'academic/main', 'Academic setup'); }
+					if($this->auth->check('departments', TRUE)){ echo dolink($seg1, 'departments', 'Departments'); }
+					if($this->auth->check('reports', TRUE)){ echo dolink($seg1, 'reports', 'Reports'); }
+					if($this->auth->check('users', TRUE)){ echo dolink($seg1, 'security/users', 'Security'); }
+					?>
+				</ul>
+			</div>
+			<!-- // #tabs -->
+			
+			
+			<!-- needed to keep bg colour at each side of tabs -->
+			<div class="clear">&nbsp;</div>
+			
+			
 		</div>
+		<!-- // header 960 container -->
 		
-		<div id="tr">
-			Username | bookings | Logout
-		</div>
+	</div>
+	
+	
+	<?php if(isset($subnav)){ ?>
+	<!-- #t2 (secondary horizontal nav) -->
+	<div id="t2">
 		
-		<div id="tabsB">
-			<ul>
-				<?php
-				$link = '<li><a href="%s"><span>%s</span></a></li>';
-				if($this->auth->check('dashboard', TRUE)){ echo sprintf($link, site_url('dashboard'), 'Dashboard'); }
-				if($this->auth->check('bookings', TRUE)){ echo sprintf($link, site_url('bookings'), 'Bookings'); }
-				if($this->auth->check('myprofile', TRUE)){ echo sprintf($link, site_url('account'), 'My Profile'); }
-				if($this->auth->check('configure', TRUE)){ echo sprintf($link, site_url('configure'), 'Configure'); }
-				if($this->auth->check('rooms', TRUE)){ echo sprintf($link, site_url('rooms'), 'Rooms'); }
-				if($this->auth->check('academic', TRUE)){ echo sprintf($link, site_url('academic/main'), 'Academic setup'); }
-				if($this->auth->check('departments', TRUE)){ echo sprintf($link, site_url('departments'), 'Departments'); }
-				if($this->auth->check('reports', TRUE)){ echo sprintf($link, site_url('reports'), 'Reports'); }
-				if($this->auth->check('users', TRUE)){ echo sprintf($link, site_url('security/users'), 'Security'); }
-				if($this->auth->check('users', TRUE)){ echo '<li><a href="foo" class="active"><span>Foobar</span></a></li>'; }
-				?>
-			</ul>
+		<div class="container_12">
+			
+			<!-- #tabs2 -->
+			<div class="grid_12" id="tabs2">
+				<ul><?php
+					foreach($subnav as $item){
+						if($this->auth->check($item[2], TRUE)){ echo dolink($seg2, $item[0], $item[1], 1); }
+					}
+				?></ul>
+			</div>
+			<!-- // #tabs2 -->
+			
+			<div class="clear">&nbsp;</div>
 			
 		</div>
 		
 	</div>
+	<!-- // #t2 -->
+	<?php } ?>
+	
+	
+	<div class="clear">&nbsp;</div>
+	
 	
 	<div class="container_12">
+		
 		
 		<div class="grid_12">
 			&nbsp;
 		</div>
 		
+		
 		<div class="clear">&nbsp;</div>
 		
-		<div class="grid_12" style="background:#fff">
-				<?php
-				echo (isset($body)) ? $body : 'Nothing to display.';
-				?>
+		
+		<!-- stuff that goes above main content here (title, sublinks, flash msgs) -->
+		<div class="grid_12">
+			<?php
+			$h1class = (isset($links)) ? 'class="nomargin"' : '';
+			echo $this->session->flashdata('flash');
+			echo (isset($pretitle)) ? $pretitle : '';
+			echo (isset($pagetitle)) ? '<h1 ' . $h1class . '>' . $pagetitle . '</h1>' : '';
+			echo (isset($links)) ? $links : '';
+			?>
 		</div>
-		<!-- end .grid_12 -->
-
-
+		
+		
+		<div class="clear">&nbsp;</div>
+		
+		
+		<!-- #content (main area) -->
+		<div class="<?php echo $class['content'] ?>" style="margin-bottom:4em;" id="content">
+			<?php echo (isset($body)) ? $body : '[Nothing to display]'; ?>
+		</div>
+		<!-- // #content (main area) -->
+		
+		
+		<?php if(isset($sidebar)){ ?>
+		<!-- #sidebar -->
+		<div class="<?php echo $class['sidebar'] ?>" id="sidebar">
+			<?php echo $sidebar ?>
+		</div>
+		<!-- // #sidebar -->
+		<?php } ?>
+		
+		
+		<!-- area to change the academic year, if appropriate -->
+		<?php if($this->auth->logged_in() && $this->auth->check('changeyear', TRUE)){ ?>
+			<div class="clear">&nbsp;</div>
+			<div class="grid_12 extra"><?php
+			$years = $this->years_model->get_dropdown();
+			$this->load->view('template/set-year', array('years' => $years));
+			?></div>
+		<?php } ?>
+		
+		
+		<?php if(isset($extra)){ ?>
+		<!-- extra -->
+		<div class="clear">&nbsp;</div>
+		<div class="grid_12" class="extra">
+			<?php echo $extra; ?>
+		</div>
+		<!-- // extra -->
+		<?php } ?>
+		
+		
+		<div class="clear">&nbsp;</div>
+		
+		
+		<!-- #ft -->
+		<div class="grid_12" id="ft">
+		
+			<div class="grid_7 alpha" id="fl">
+				<p>&copy; Craig Rodway 2008.</p>
+				<p><a href="http://classroombookings.com/">Classroombookings</a> is released under the GNU General Public Licence version 3.</p>
+				<p>Total execution time: <?php echo $this->benchmark->elapsed_time() ?> seconds; Memory usage: <?php echo $this->benchmark->memory_usage() ?></p>
+			</div>
+			
+			<div class="grid_5 omega" id="fr">
+				<p><?php
+				if($this->auth->logged_in()){
+					echo sprintf('<span>Logged in as %s</span> &#183; ', anchor('account', $this->session->userdata('display')));
+					echo sprintf('<span>%s</span> &#183; ', anchor('account/bookings', sprintf('%d active bookings', 5)));
+					echo sprintf('<span>%s</span>', anchor('account/logout', 'Logout'));
+				} else {
+					echo sprintf('<span>You are not currently logged in. %s</span>', anchor('account/login', 'Login now.'));
+				}
+				?></p>
+			</div>
+		
+		</div>
+		<!-- // #ft -->
+		
+	</div>
+	
+	
 </body>
 </html>
+
+
+
+<?php
+/**
+ * seg1 - the segment of the current URI at the position we want
+ * href - path/to/url (gets truned into array, too)
+ * text - text of link
+ * i - index of href array to check uri segment to
+ */
+function dolink($seg, $href, $text, $i = 0){
+	$hrefarr = explode('/', $href);
+	$link = '<li><a href="%s"%s>%s</a></li>';
+	$sel = ($seg == $hrefarr[$i]) ? ' class="selected"' : '';
+	return sprintf($link, site_url($href), $sel, $text);
+}
+?>

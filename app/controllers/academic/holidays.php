@@ -25,6 +25,7 @@ class Holidays extends Controller {
 
 	function Holidays(){
 		parent::Controller();
+		$this->load->model('academic');
 		$this->load->model('holidays_model');
 		$this->tpl = $this->config->item('template');
 		$this->output->enable_profiler($this->config->item('profiler'));
@@ -36,19 +37,20 @@ class Holidays extends Controller {
 	function index(){
 		$this->auth->check('holidays');
 		
-		$links[] = array('academic/main', 'Academic setup');
+		/*$links[] = array('academic/main', 'Academic setup');
 		$links[] = array('academic/years', 'Years');
 		$links[] = array('academic/terms', 'Term dates');
 		$links[] = array('academic/weeks', 'Timetable weeks');
 		$links[] = array('academic/periods', 'Periods');
 		$links[] = array('academic/holidays', 'Holidays', TRUE);
-		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
+		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);*/
 		
 		$body['holidays'] = $this->holidays_model->get(NULL, NULL, $this->session->userdata('year_working'));
 		$tpl['body'] = $this->load->view('academic/holidays/index', $body, TRUE);
 		
 		$tpl['sidebar'] = "<p class=\"bg-yellow\">Add a holiday if you want to define a stretch of time within a term where bookings can't be made.<br /><br />Make the dates the same if you only want it to last one day.</p>";
 		
+		$tpl['subnav'] = $this->academic->subnav();
 		$tpl['title'] = 'Holidays';
 		$tpl['pagetitle'] = 'Holidays';
 		$this->load->view($this->tpl, $tpl);

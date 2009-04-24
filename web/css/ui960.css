@@ -23,6 +23,9 @@
 
 
 
+input,textarea,select{
+	font:100% Arial, Lucida Grande, Verdana, Sans-serif;
+}
 
 /*h1{font-size:200%;font-weight:bold;margin:0 0 10px 0;}*/
 /*h2{font-size:175%;font-weight:normal;}
@@ -35,13 +38,15 @@ h1,h2,h3,h4{/*color:#60aa37;*/margin:0 0 20px 0;}
 /* Remove margin from forms */
 form{margin:0;padding:0;}
 
+
 /** TOP AREA **/
 div#top{background:url('../img/template/dots-h.gif') bottom left repeat-x transparent;}
 div#top-left{text-align:left;line-height:65%;}
-div#top-left span{
+div#tr span{
 	text-transform:lowercase;
 	color:#777;
-	font-size:90%;
+	font-size:100%;
+	font-weight:bold;
 	margin:0;
 	padding:1px;
 }
@@ -50,8 +55,11 @@ div#top-right{
 	text-align:right;
 	color:#777;
 }
-div#top-right span{
+div#tr span{
 	margin-left:15px;
+}
+div#tr a{
+	color:#006699;
 }
 div#top-menu{
 	text-align:left;
@@ -91,8 +99,8 @@ div#sidebar p{margin:0;}
 /* Extra box at the bottom */
 div.extra{
 	background:#C0DDB0;
-	padding:0;
-	margin:5px 0;
+	padding:5px;
+	
 }
 div.extra p{
 	margin:0;

@@ -25,6 +25,7 @@ class Periods extends Controller {
 
 	function Periods(){
 		parent::Controller();
+		$this->load->model('academic');
 		$this->load->model('periods_model');
 		$this->load->model('years_model');
 		$this->tpl = $this->config->item('template');
@@ -38,12 +39,12 @@ class Periods extends Controller {
 		$this->auth->check('periods');
 		
 		$links[] = array('academic/periods/add', 'Add a new period');
-		$links[] = array('academic/main', 'Academic setup');
+		/*$links[] = array('academic/main', 'Academic setup');
 		$links[] = array('academic/years', 'Years');
 		$links[] = array('academic/terms', 'Term dates');
 		$links[] = array('academic/weeks', 'Timetable weeks');
 		$links[] = array('academic/periods', 'Periods', TRUE);
-		$links[] = array('academic/holidays', 'Holidays');
+		$links[] = array('academic/holidays', 'Holidays');*/
 		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
 		$body['days'] = $this->periods_model->days;
 		$body['years'] = $this->years_model->get_dropdown();
@@ -59,6 +60,7 @@ class Periods extends Controller {
 			$tpl['body'] = $this->load->view('academic/periods/index', $body, TRUE);
 		}
 		
+		$tpl['subnav'] = $this->academic->subnav();
 		$tpl['title'] = 'Periods';
 		$tpl['pagetitle'] = $tpl['title'];
 		$this->load->view($this->tpl, $tpl);
@@ -77,6 +79,7 @@ class Periods extends Controller {
 		$body['period_id'] = NULL;
 		$body['days'] = $this->periods_model->days;
 		$tpl['sidebar'] = $this->load->view('academic/periods/addedit.sidebar.php', NULL, TRUE);
+		$tpl['subnav'] = $this->academic->subnav();
 		$tpl['title'] = 'Add period';
 		$tpl['pagetitle'] = 'Add a new period';
 		$tpl['body'] = $this->load->view('academic/periods/addedit', $body, TRUE);
@@ -92,6 +95,7 @@ class Periods extends Controller {
 		$body['period_id'] = $period_id;
 		$body['days'] = $this->periods_model->days;
 		
+		$tpl['subnav'] = $this->academic->subnav();
 		$tpl['title'] = 'Edit period';
 		
 		if($body['period'] != FALSE){
@@ -217,6 +221,7 @@ class Periods extends Controller {
 				
 			}
 			
+			$tpl['subnav'] = $this->academic->subnav();
 			$this->load->view($this->tpl, $tpl);
 			
 		}

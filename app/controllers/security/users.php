@@ -45,18 +45,18 @@ class Users extends Controller {
 			$group_id = NULL;
 		}
 		
+		// Check authorisation
 		$this->auth->check('users');
 		
 		$this->load->library('pagination');
 		
+		$tpl['subnav'] = $this->security->subnav();
+		$tpl['title'] = 'Users';
+		
+		// Links just for this page
 		$links[] = array('security/users/add', 'Add a new user');
 		$links[] = array('security/users/import', 'Import from file');
-		$links[] = array('security/users', 'Manage users', TRUE);
-		$links[] = array('security/groups', 'Manage groups');
-		$links[] = array('security/permissions', 'Change group permissions');
 		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
-		
-		$tpl['title'] = 'Users';
 		
 		// Pagination setting (others are defined in /app/config/pagination.php)
 		$config['per_page'] = '15';
@@ -127,6 +127,7 @@ class Users extends Controller {
 		$body['user_id'] = NULL;
 		$body['groups'] = $this->security->get_groups_dropdown();
 		$tpl['sidebar'] = $this->load->view('security/users.addedit.side.php', NULL, TRUE);
+		$tpl['subnav'] = $this->security->subnav();
 		$tpl['title'] = 'Add user';
 		$tpl['pagetitle'] = 'Add a new user';
 		$tpl['body'] = $this->load->view('security/users.addedit.php', $body, TRUE);
@@ -145,6 +146,7 @@ class Users extends Controller {
 		$body['user_id'] = $user_id;
 		$body['groups'] = $this->security->get_groups_dropdown();
 		
+		$tpl['subnav'] = $this->security->subnav();
 		$tpl['title'] = 'Edit user';
 		$tpl['pagetitle'] = ($body['user']->displayname == FALSE) ? 'Edit ' . $body['user']->username : 'Edit ' . $body['user']->displayname;
 		$tpl['body'] = $this->load->view('security/users.addedit.php', $body, TRUE);
@@ -248,6 +250,7 @@ class Users extends Controller {
 			$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
 			
 			$body['groups'] = $this->security->get_groups_dropdown();
+			$tpl['subnav'] = $this->security->subnav();
 			$tpl['title'] = 'Import users';
 			$tpl['pagetitle'] = 'Import users (stage 1)';
 			
@@ -347,6 +350,7 @@ class Users extends Controller {
 			#$body['csvdata'] = fgetcsv($fhandle, filesize($csv['full_path']), ',');
 			
 			// Load page
+			$tpl['subnav'] = $this->security->subnav();
 			$tpl['title'] = 'Import users';
 			$tpl['pagetitle'] = "Import users (stage 2) - {$csv['orig_name']}";
 			$tpl['body'] = $this->lasterr;
@@ -457,6 +461,7 @@ class Users extends Controller {
 		// Load page
 		$links[] = array('security/users/import', 'Start import again');
 		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
+		$tpl['subnav'] = $this->security->subnav();
 		$tpl['title'] = 'Import users';
 		$tpl['pagetitle'] = "Import users (stage 3) - {$csv['orig_name']}";
 		$tpl['body'] = $this->lasterr;
@@ -523,6 +528,7 @@ class Users extends Controller {
 			// Load page
 			$links[] = array('security/users/import', 'Start import again');
 			$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
+			$tpl['subnav'] = $this->security->subnav();
 			$tpl['title'] = 'Import users';
 			$tpl['pagetitle'] = "Import users (complete) - {$csv['orig_name']}";
 			$tpl['body'] = $this->load->view('security/users.import.4.php', $body, TRUE);
@@ -605,6 +611,7 @@ class Users extends Controller {
 				
 			}
 			
+			$tpl['subnav'] = $this->security->subnav();
 			$this->load->view($this->tpl, $tpl);
 			
 		}

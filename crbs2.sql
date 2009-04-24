@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Apr 04, 2009 at 10:58 PM
+-- Generation Time: Apr 24, 2009 at 03:47 PM
 -- Server version: 5.0.51
 -- PHP Version: 5.2.6
 
@@ -117,7 +117,7 @@ CREATE TABLE `groups` (
 --
 
 INSERT INTO `groups` (`group_id`, `name`, `description`, `bookahead`, `quota_num`, `quota_type`, `permissions`, `created`) VALUES
-(1, 'Administrators', 'Default group for administrator users', 0, NULL, NULL, 'a:62:{i:0;s:9:"dashboard";i:1;s:18:"dashboard.viewdept";i:2;s:17:"dashboard.viewown";i:3;s:9:"myprofile";i:4;s:9:"configure";i:5;s:10:"changeyear";i:6;s:8:"allrooms";i:7;s:8:"bookings";i:8;s:19:"bookings.create.one";i:9;s:21:"bookings.create.recur";i:10;s:23:"bookings.delete.one.own";i:11;s:29:"bookings.delete.one.roomowner";i:12;s:31:"bookings.delete.recur.roomowner";i:13;s:5:"rooms";i:14;s:9:"rooms.add";i:15;s:10:"rooms.edit";i:16;s:12:"rooms.delete";i:17;s:11:"rooms.attrs";i:18;s:18:"rooms.attrs.values";i:19;s:17:"rooms.permissions";i:20;s:8:"academic";i:21;s:5:"years";i:22;s:9:"years.add";i:23;s:10:"years.edit";i:24;s:12:"years.delete";i:25;s:7:"periods";i:26;s:11:"periods.add";i:27;s:12:"periods.edit";i:28;s:14:"periods.delete";i:29;s:5:"weeks";i:30;s:9:"weeks.add";i:31;s:10:"weeks.edit";i:32;s:12:"weeks.delete";i:33;s:19:"weeks.ayears.manage";i:34;s:16:"weeks.ayears.set";i:35;s:5:"terms";i:36;s:9:"terms.add";i:37;s:10:"terms.edit";i:38;s:12:"terms.delete";i:39;s:8:"holidays";i:40;s:12:"holidays.add";i:41;s:13:"holidays.edit";i:42;s:15:"holidays.delete";i:43;s:11:"departments";i:44;s:15:"departments.add";i:45;s:16:"departments.edit";i:46;s:18:"departments.delete";i:47;s:7:"reports";i:48;s:21:"reports.owndepartment";i:49;s:22:"reports.alldepartments";i:50;s:15:"reports.ownroom";i:51;s:16:"reports.allrooms";i:52;s:13:"reports.other";i:53;s:5:"users";i:54;s:9:"users.add";i:55;s:10:"users.edit";i:56;s:12:"users.delete";i:57;s:12:"users.import";i:58;s:6:"groups";i:59;s:10:"groups.add";i:60;s:11:"groups.edit";i:61;s:13:"groups.delete";}', '0000-00-00'),
+(1, 'Administrators', 'Default group for administrator users', 0, NULL, NULL, 'a:63:{i:0;s:9:"dashboard";i:1;s:18:"dashboard.viewdept";i:2;s:17:"dashboard.viewown";i:3;s:9:"myprofile";i:4;s:9:"configure";i:5;s:10:"changeyear";i:6;s:8:"allrooms";i:7;s:8:"bookings";i:8;s:19:"bookings.create.one";i:9;s:21:"bookings.create.recur";i:10;s:23:"bookings.delete.one.own";i:11;s:29:"bookings.delete.one.roomowner";i:12;s:31:"bookings.delete.recur.roomowner";i:13;s:5:"rooms";i:14;s:9:"rooms.add";i:15;s:10:"rooms.edit";i:16;s:12:"rooms.delete";i:17;s:11:"rooms.attrs";i:18;s:18:"rooms.attrs.values";i:19;s:17:"rooms.permissions";i:20;s:8:"academic";i:21;s:5:"years";i:22;s:9:"years.add";i:23;s:10:"years.edit";i:24;s:12:"years.delete";i:25;s:7:"periods";i:26;s:11:"periods.add";i:27;s:12:"periods.edit";i:28;s:14:"periods.delete";i:29;s:5:"weeks";i:30;s:9:"weeks.add";i:31;s:10:"weeks.edit";i:32;s:12:"weeks.delete";i:33;s:19:"weeks.ayears.manage";i:34;s:16:"weeks.ayears.set";i:35;s:5:"terms";i:36;s:9:"terms.add";i:37;s:10:"terms.edit";i:38;s:12:"terms.delete";i:39;s:8:"holidays";i:40;s:12:"holidays.add";i:41;s:13:"holidays.edit";i:42;s:15:"holidays.delete";i:43;s:11:"departments";i:44;s:15:"departments.add";i:45;s:16:"departments.edit";i:46;s:18:"departments.delete";i:47;s:7:"reports";i:48;s:21:"reports.owndepartment";i:49;s:22:"reports.alldepartments";i:50;s:15:"reports.ownroom";i:51;s:16:"reports.allrooms";i:52;s:13:"reports.other";i:53;s:5:"users";i:54;s:9:"users.add";i:55;s:10:"users.edit";i:56;s:12:"users.delete";i:57;s:12:"users.import";i:58;s:6:"groups";i:59;s:10:"groups.add";i:60;s:11:"groups.edit";i:61;s:13:"groups.delete";i:62;s:11:"permissions";}', '0000-00-00'),
 (2, 'Teaching Staff', 'Teachers from LDAP', 14, 6, 'day', 'a:7:{i:0;s:9:"dashboard";i:1;s:18:"dashboard.viewdept";i:2;s:17:"dashboard.viewown";i:3;s:9:"myprofile";i:4;s:8:"bookings";i:5;s:19:"bookings.create.one";i:6;s:23:"bookings.delete.one.own";}', '0000-00-00'),
 (4, 'Support staff', '', 14, 6, 'current', 'a:7:{i:0;s:9:"dashboard";i:1;s:18:"dashboard.viewdept";i:2;s:17:"dashboard.viewown";i:3;s:9:"myprofile";i:4;s:8:"bookings";i:5;s:19:"bookings.create.one";i:6;s:23:"bookings.delete.one.own";}', '2008-12-02'),
 (7, 'Guests', 'Default group for guests', 0, 1, 'current', 'a:1:{i:0;s:8:"bookings";}', '0000-00-00'),
@@ -597,10 +597,10 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `password`, `displayname`, `cookiekey`, `lastlogin`, `ldap`, `created`) VALUES
-(1, 1, 1, 'admin', 'craig.rodway@gmail.com', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Craig Rodway', NULL, '2009-04-02 16:10:51', 0, '0000-00-00'),
+(1, 1, 1, 'admin', 'craig.rodway@gmail.com', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Craig Rodway', NULL, '2009-04-24 12:31:38', 0, '0000-00-00'),
 (3, 9, 1, 'user1', '', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', NULL, NULL, '2008-12-19 23:06:20', 0, '2008-11-27'),
 (12, 2, 1, 'craig.rodway', 'craig.rodway@bishopbarrington.net', NULL, 'Mr Rodway', NULL, '2009-01-09 16:12:48', 1, '2009-01-09'),
-(19, 2, 1, 'test.one', 'test.one@bishopbarrington.net', NULL, 'Mr T One', NULL, '2009-01-26 10:14:39', 1, '2009-01-14'),
+(19, 2, 1, 'test.one', 'test.one@bishopbarrington.net', NULL, 'Mr T One', NULL, '2009-04-23 12:27:53', 1, '2009-01-14'),
 (22, 2, 1, 'test.three', 'test.three@bishopbarrington.net', NULL, 'Mr T Three', NULL, '2009-01-14 10:56:57', 1, '2009-01-14'),
 (24, 2, 1, 'test.two', 'test.two@bishopbarrington.net', NULL, 'Mr T Two', NULL, '2009-01-26 16:45:49', 1, '2009-01-26'),
 (112, 2, 0, 'g.harrison100', 'g.harrison100@bishopbarrington.net', '39ccb32d95edfdbcd882f2b01809724ec640ea16', 'g.harrison100', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
@@ -639,7 +639,9 @@ CREATE TABLE `users2departments` (
 --
 
 INSERT INTO `users2departments` (`user_id`, `department_id`) VALUES
-(19, 13);
+(19, 2),
+(19, 2),
+(19, 4);
 
 -- --------------------------------------------------------
 
@@ -659,7 +661,7 @@ CREATE TABLE `usersactive` (
 --
 
 INSERT INTO `usersactive` (`user_id`, `timestamp`) VALUES
-(1, 1238690670);
+(1, 1240584435);
 
 -- --------------------------------------------------------
 

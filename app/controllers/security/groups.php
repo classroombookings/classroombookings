@@ -36,11 +36,11 @@ class Groups extends Controller {
 	
 	function index(){
 		$this->auth->check('groups');
+		
+		$tpl['subnav'] = $this->security->subnav();
+		
 		$links[] = array('security/groups/add', 'Add a new group');
 		$links[] = array('security/users/import', 'Import from file');
-		$links[] = array('security/users', 'Manage users');
-		$links[] = array('security/groups', 'Manage groups', TRUE);
-		$links[] = array('security/permissions', 'Change group permissions');
 		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
 		
 		// Get list of users
@@ -65,6 +65,7 @@ class Groups extends Controller {
 		$body['group'] = NULL;
 		$body['group_id'] = NULL;
 		$body['ldapgroups'] = $this->security->get_ldap_groups_unassigned();
+		$tpl['subnav'] = $this->security->subnav();
 		$tpl['title'] = 'Add group';
 		$tpl['pagetitle'] = 'Add a new group';
 		$tpl['body'] = $this->load->view('security/groups.addedit.php', $body, TRUE);
@@ -80,6 +81,7 @@ class Groups extends Controller {
 		$body['group_id'] = $group_id;
 		$body['ldapgroups'] = $this->security->get_ldap_groups_unassigned($group_id);
 		
+		$tpl['subnav'] = $this->security->subnav();
 		$tpl['title'] = 'Edit group';
 		
 		if($body['group'] != FALSE){
@@ -222,6 +224,7 @@ class Groups extends Controller {
 				
 			}
 			
+			$tpl['subnav'] = $this->security->subnav();
 			$this->load->view($this->tpl, $tpl);
 			
 		}

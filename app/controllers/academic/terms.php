@@ -25,6 +25,7 @@ class Terms extends Controller {
 
 	function Terms(){
 		parent::Controller();
+		$this->load->model('academic');
 		$this->load->model('terms_model');
 		$this->tpl = $this->config->item('template');
 		$this->output->enable_profiler($this->config->item('profiler'));
@@ -37,17 +38,18 @@ class Terms extends Controller {
 	function index(){
 		$this->auth->check('terms');
 		
-		$links[] = array('academic/main', 'Academic setup');
+		/*$links[] = array('academic/main', 'Academic setup');
 		$links[] = array('academic/years', 'Years');
 		$links[] = array('academic/terms', 'Term dates', TRUE);
 		$links[] = array('academic/weeks', 'Timetable weeks');
 		$links[] = array('academic/periods', 'Periods');
 		$links[] = array('academic/holidays', 'Holidays');
-		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
+		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);*/
 		
 		$body['terms'] = $this->terms_model->get(NULL, NULL, $this->session->userdata('year_working'));
 		$tpl['body'] = $this->load->view('academic/terms/index', $body, TRUE);
 		
+		$tpl['subnav'] = $this->academic->subnav();
 		$tpl['title'] = 'Terms';
 		$tpl['pagetitle'] = 'Term dates';
 		$this->load->view($this->tpl, $tpl);
@@ -215,6 +217,7 @@ class Terms extends Controller {
 				
 			}
 			
+			$tpl['subnav'] = $this->academic->subnav();
 			$this->load->view($this->tpl, $tpl);
 			
 		}

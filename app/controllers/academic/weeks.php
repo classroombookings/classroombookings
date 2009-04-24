@@ -25,6 +25,7 @@ class Weeks extends Controller {
 
 	function Weeks(){
 		parent::Controller();
+		$this->load->model('academic');
 		$this->load->model('weeks_model');
 		$this->tpl = $this->config->item('template');
 		$this->output->enable_profiler($this->config->item('profiler'));
@@ -38,12 +39,12 @@ class Weeks extends Controller {
 		$this->auth->check('weeks');
 		
 		$links[] = array('academic/weeks/add', 'Add a new week');
-		$links[] = array('academic/main', 'Academic setup');
+		/*$links[] = array('academic/main', 'Academic setup');
 		$links[] = array('academic/years', 'Years');
 		$links[] = array('academic/terms', 'Term dates');
 		$links[] = array('academic/weeks', 'Timetable weeks', TRUE);
 		$links[] = array('academic/periods', 'Periods');
-		$links[] = array('academic/holidays', 'Holidays');
+		$links[] = array('academic/holidays', 'Holidays');*/
 		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
 		
 		// Get list of weeks
@@ -54,6 +55,7 @@ class Weeks extends Controller {
 			$tpl['body'] = $this->load->view('academic/weeks/index', $body, TRUE);
 		}
 		
+		$tpl['subnav'] = $this->academic->subnav();
 		$tpl['title'] = 'Weeks';
 		$tpl['pagetitle'] = $tpl['title'];
 		$this->load->view($this->tpl, $tpl);
@@ -68,6 +70,8 @@ class Weeks extends Controller {
 		
 		$body['week'] = NULL;
 		$body['week_id'] = NULL;
+		
+		$tpl['subnav'] = $this->academic->subnav();
 		$tpl['title'] = 'Add week';
 		$tpl['pagetitle'] = 'Add a new week';
 		
@@ -89,6 +93,7 @@ class Weeks extends Controller {
 		$body['week_id'] = $week_id;
 		$body['calendar'] = $this->weeks_model->calendar($week_id, $this->session->userdata('year_working'));
 		
+		$tpl['subnav'] = $this->academic->subnav();
 		$tpl['title'] = 'Edit week';
 		
 		if($body['week'] != FALSE){
@@ -213,6 +218,7 @@ class Weeks extends Controller {
 				
 			}
 			
+			$tpl['subnav'] = $this->academic->subnav();
 			$this->load->view($this->tpl, $tpl);
 			
 		}

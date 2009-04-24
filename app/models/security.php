@@ -29,6 +29,20 @@ class Security extends Model{
 	
 	
 	
+	/**
+	 * Link definitions of pages in this section
+	 */
+	function subnav(){
+		$subnav = array();
+		// Other pages in this parent section
+		$subnav[] = array('security/users', 'Manage users', 'users');
+		$subnav[] = array('security/groups', 'Manage groups', 'groups');
+		$subnav[] = array('security/permissions', 'Change group permissions', 'permissions');
+		return $subnav;
+	}
+	
+	
+	
 	
 	/**
 	 * get one or more users (optionally by group)

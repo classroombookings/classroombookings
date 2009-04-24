@@ -19,7 +19,7 @@ if($errors){
 		<table class="form a-t" cellpadding="0" cellspacing="0" border="0">
 			
 			<tr>
-				<td width="250">
+				<td width="400">
 					<!-- GENERAL -->
 					<?php
 					unset($checks);
@@ -30,7 +30,7 @@ if($errors){
 					?>
 				</td>
 				<td width="50">&nbsp;</td>
-				<td width="350">
+				<td width="400">
 					<!-- BOOKINGS -->
 					<?php
 					unset($checks);
@@ -140,7 +140,7 @@ if($errors){
 			
 			<tr>
 				<td>
-					<!-- SECURITY -->
+					<!-- USERS -->
 					<?php
 					unset($checks);
 					$checks['options'] = $permissions['users'];
@@ -159,6 +159,23 @@ if($errors){
 					$checks['category'] = 'Security - Groups';
 					$this->load->view('security/permissions.checks.php', $checks);
 					?>
+				</td>
+			</tr>
+			
+			<tr>
+				<td>
+					<!-- PERMISSIONS -->
+					<?php
+					unset($checks);
+					$checks['options'] = $permissions['permissions'];
+					$checks['group_id'] = $group_id;
+					$checks['category'] = 'Security - Permissions';
+					$this->load->view('security/permissions.checks.php', $checks);
+					?>
+				</td>
+				<td width="50">&nbsp;</td>
+				<td>
+					&nbsp;
 				</td>
 			</tr>
 			

@@ -25,6 +25,7 @@ class Years extends Controller {
 
 	function Years(){
 		parent::Controller();
+		$this->load->model('academic');
 		$this->load->model('years_model');
 		$this->tpl = $this->config->item('template');
 		$this->output->enable_profiler($this->config->item('profiler'));
@@ -38,12 +39,12 @@ class Years extends Controller {
 		$this->auth->check('years');
 		
 		$links[] = array('academic/years/add', 'Add a new academic year');
-		$links[] = array('academic/main', 'Academic setup');
+		/*$links[] = array('academic/main', 'Academic setup');
 		$links[] = array('academic/years', 'Years', TRUE);
 		$links[] = array('academic/terms', 'Term dates');
 		$links[] = array('academic/weeks', 'Timetable weeks');
 		$links[] = array('academic/periods', 'Periods');
-		$links[] = array('academic/holidays', 'Holidays');
+		$links[] = array('academic/holidays', 'Holidays');*/
 		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
 		
 		// Get list of years
@@ -54,6 +55,7 @@ class Years extends Controller {
 			$tpl['body'] = $this->load->view('academic/years/index', $body, TRUE);
 		}
 		
+		$tpl['subnav'] = $this->academic->subnav();
 		$tpl['title'] = 'Academic years';
 		$tpl['pagetitle'] = $tpl['title'];
 		$this->load->view($this->tpl, $tpl);
@@ -67,6 +69,7 @@ class Years extends Controller {
 		$body['year'] = NULL;
 		$body['year_id'] = NULL;
 		#$tpl['sidebar'] = $this->load->view('academic/years/addedit-side', NULL, TRUE);
+		$tpl['subnav'] = $this->academic->subnav();
 		$tpl['title'] = 'Add academic year';
 		$tpl['pagetitle'] = 'Add a new academic year';
 		$tpl['body'] = $this->load->view('academic/years/addedit', $body, TRUE);
@@ -81,6 +84,7 @@ class Years extends Controller {
 		$body['year'] = $this->years_model->get($year_id);
 		$body['year_id'] = $year_id;
 		
+		$tpl['subnav'] = $this->academic->subnav();
 		$tpl['title'] = 'Edit academic year';
 		
 		if($body['year'] != FALSE){
@@ -208,6 +212,7 @@ class Years extends Controller {
 				
 			}
 			
+			$tpl['subnav'] = $this->academic->subnav();
 			$this->load->view($this->tpl, $tpl);
 			
 		}
@@ -222,6 +227,7 @@ class Years extends Controller {
 		
 		if($year_id == NULL){
 			
+			$tpl['subnav'] = $this->academic->subnav();
 			$tpl['title'] = 'Make year active';
 			$tpl['pagetitle'] = $tpl['title'];
 			$tpl['body'] = $this->msg->err($this->lang->line('YEARS_ACTIVATE_NOID'));

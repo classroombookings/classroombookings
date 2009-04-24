@@ -89,6 +89,8 @@ $permissions['groups'][] = array('groups.add', 'Add a group');
 $permissions['groups'][] = array('groups.edit', 'Edit groups');
 $permissions['groups'][] = array('groups.delete', 'Delete a group');
 
+$permissions['permissions'][] = array('permissions', 'Edit permissions');
+
 $config['permissions'] = $permissions;
 
 ?>
