@@ -50,6 +50,7 @@ class Permissions extends Controller {
 		$tpl['pagetitle'] = 'Manage group permissions';
 		$tpl['body'] = $this->load->view('security/permissions.index.php', $body, TRUE);
 		$this->load->view($this->tpl, $tpl);
+		
 	}
 	
 	
@@ -63,6 +64,7 @@ class Permissions extends Controller {
 	
 	
 	function save(){
+		
 		$this->form_validation->set_rules('group_id', 'Group ID');
 		$this->form_validation->set_rules('permissions[]', 'Permissions');
 		$this->form_validation->set_rules('daysahead', 'days ahead');
@@ -101,6 +103,12 @@ class Permissions extends Controller {
 	
 	
 	
+	/**
+	 * Show effective permissions on a user
+	 *
+	 * @param	int		user_id		ID of user to find info on
+	 * @param	bool	ajax		Whether the request is via ajax or a normal page
+	 */
 	function effective($user_id = NULL, $ajax = FALSE){
 		
 		$tpl['title'] = 'Effective user permissions';

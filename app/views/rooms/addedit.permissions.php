@@ -1,5 +1,8 @@
 <?php
 $t = 0;
+
+$t_letter = array('e', 'o', 'u', 'g', 'd');
+$t_word = array('Everyone', 'Room owner', 'User', 'Group', 'Department');
 ?>
 <!-- Current permissions -->
 
@@ -8,6 +11,7 @@ $t = 0;
 	<thead>
 	<tr class="heading">
 		<td class="h" title="Who">Who</td>
+		<td class="h" title="Who">&nbsp;</td>
 		<td class="h" title="Permissions">Permissions</td>
 		<td class="h" title="X">&nbsp;</td>
 	</tr>
@@ -15,22 +19,26 @@ $t = 0;
 	<tbody>
 	
 	<?php
-	if(!empty($room->permissions)){
-		foreach($room->permissions as $permission){
+	if(!empty($entries)){
+		foreach($entries as $entry_id => $entry){
 			?>
 			<tr>
-				<td class="x" valign="top">Everyone</td>
-				<td class="x" valign="top"><p>Make a single booking</p><p>Make recurring bookings</p></td>
+				<td valign="top"><strong><?php echo $this->types[$entry['type']] ?></strong></td>
+				<td valign="top"><?php if(isset($entry['object_name'])){ echo $entry['object_name']; } ?></td>
+				<td valign="top"><?php
+					foreach($entry['permissions'] as $p){
+						echo '<span>' . $room_permissions[$p] . '</span><br />';
+					}
+				?></td>
 				<td class="il">
 				<?php
 				unset($actiondata);
-				$actiondata[] = array('rooms/delete/'.$room->room_id, 'Delete', 'cross_sm.gif' );
+				$actiondata[] = array('rooms/manage/delete_permission/'.$entry_id, 'Delete', 'cross_sm.gif' );
 				$this->load->view('parts/listactions', $actiondata);
 				?>	
 				</td>
 			</tr>
 			<?php
-			$i++;
 		}
 	} else {
 		?>
@@ -47,7 +55,7 @@ $t = 0;
 
 
 
-<?php echo form_open_multipart('rooms/save_permissions', NULL, array('room_id' => $room_id)); ?>
+<?php echo form_open('rooms/manage/save_permission', NULL, array('room_id' => $room_id)); ?>
 <!-- Add a new permission entry -->
 <!-- main table -->
 <table class="form" cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -71,6 +79,7 @@ $t = 0;
 						$radio['id'] = 'object_everyone';
 						$radio['value'] = 'everyone';
 						$radio['tabindex'] = $t;
+						$radio['checked'] = set_radio($radio['name'], $radio['value']);
 						echo form_radio($radio);
 						$t++;
 						?>
@@ -92,6 +101,7 @@ $t = 0;
 						$radio['id'] = 'object_roomowner';
 						$radio['value'] = 'roomowner';
 						$radio['tabindex'] = $t;
+						$radio['checked'] = set_radio($radio['name'], $radio['value']);
 						echo form_radio($radio);
 						$t++;
 						?>
@@ -113,6 +123,7 @@ $t = 0;
 						$radio['id'] = 'object_user';
 						$radio['value'] = 'user';
 						$radio['tabindex'] = $t;
+						$radio['checked'] = set_radio($radio['name'], $radio['value']);
 						echo form_radio($radio);
 						$t++;
 						?>
@@ -138,6 +149,7 @@ $t = 0;
 						$radio['id'] = 'object_group';
 						$radio['value'] = 'group';
 						$radio['tabindex'] = $t;
+						$radio['checked'] = set_radio($radio['name'], $radio['value']);
 						echo form_radio($radio);
 						$t++;
 						?>
@@ -162,6 +174,7 @@ $t = 0;
 						$radio['id'] = 'object_department';
 						$radio['value'] = 'department';
 						$radio['tabindex'] = $t;
+						$radio['checked'] = set_radio($radio['name'], $radio['value']);
 						echo form_radio($radio);
 						$t++;
 						?>
@@ -205,7 +218,7 @@ $t = 0;
 unset($buttons);
 $buttons[] = array('submit', 'positive', 'Add permission entry', 'disk1.gif', $t);
 #$buttons[] = array('submit', '', 'Save and add another', 'add.gif', $t+1);
-$buttons[] = array('cancel', 'negative', 'Cancel', 'arr-left.gif', $t+2, site_url('rooms'));
+$buttons[] = array('cancel', 'negative', 'Cancel', 'arr-left.gif', $t+2, site_url('rooms/manage'));
 $this->load->view('parts/buttons', array('buttons' => $buttons));
 ?>
 

@@ -158,7 +158,6 @@ class Weeks extends Controller {
 			
 			// All done, redirect!
 			redirect('academic/weeks');
-			#$this->index();
 			
 		}
 		

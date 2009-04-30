@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Apr 24, 2009 at 03:47 PM
+-- Generation Time: Apr 30, 2009 at 03:44 PM
 -- Server version: 5.0.51
 -- PHP Version: 5.2.6
 
@@ -33,7 +33,7 @@ CREATE TABLE `departments` (
   `colour` char(7) default NULL COMMENT 'Hex colour value',
   `created` date default NULL,
   PRIMARY KEY  (`department_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='School departments' AUTO_INCREMENT=14 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='School departments' AUTO_INCREMENT=15 ;
 
 --
 -- Dumping data for table `departments`
@@ -110,7 +110,7 @@ CREATE TABLE `groups` (
   `created` date NOT NULL COMMENT 'Date the group was created',
   PRIMARY KEY  (`group_id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Groups table with settings and permiss; InnoDB free: 9216 kB' AUTO_INCREMENT=10 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Groups table with settings and permiss; InnoDB free: 9216 kB' AUTO_INCREMENT=11 ;
 
 --
 -- Dumping data for table `groups`
@@ -363,17 +363,23 @@ CREATE TABLE `room-permissions` (
   `group_id` int(10) unsigned default NULL,
   `department_id` int(10) unsigned default NULL,
   `permissions` text NOT NULL,
+  `hash` char(32) NOT NULL,
   PRIMARY KEY  (`entry_id`),
+  UNIQUE KEY `hash` (`hash`),
   KEY `user_id` (`user_id`),
   KEY `group_id` (`group_id`),
   KEY `department_id` (`department_id`),
   KEY `room_id` (`room_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Permission entries for various objects on different rooms' AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Permission entries for various objects on different rooms' AUTO_INCREMENT=19 ;
 
 --
 -- Dumping data for table `room-permissions`
 --
 
+INSERT INTO `room-permissions` (`entry_id`, `room_id`, `type`, `user_id`, `group_id`, `department_id`, `permissions`, `hash`) VALUES
+(6, 4, 'u', 121, NULL, NULL, 'a:1:{i:0;s:13:"bookings.view";}', '62082762a2271b7f2e05ce12c6ffe7ef'),
+(7, 4, 'g', NULL, 1, NULL, 'a:1:{i:0;s:21:"bookings.create.recur";}', '3de2b6372ee350c9bcca4a64d83b8a12'),
+(10, 5, 'e', NULL, NULL, NULL, 'a:1:{i:0;s:13:"bookings.view";}', '73eadfcb737ae0f288fca3f4e03cb2fa');
 
 -- --------------------------------------------------------
 
@@ -385,7 +391,7 @@ DROP TABLE IF EXISTS `roomattrs-fields`;
 CREATE TABLE `roomattrs-fields` (
   `field_id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(20) NOT NULL,
-  `type` enum('text','select','check','multi') NOT NULL,
+  `type` enum('text','select','check') NOT NULL,
   PRIMARY KEY  (`field_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Names of fields that can be assigned to rooms' AUTO_INCREMENT=1 ;
 
@@ -476,7 +482,7 @@ CREATE TABLE `rooms` (
   PRIMARY KEY  (`room_id`),
   KEY `user_id` (`user_id`),
   KEY `category_id` (`category_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='School rooms' AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='School rooms' AUTO_INCREMENT=14 ;
 
 --
 -- Dumping data for table `rooms`
@@ -486,7 +492,7 @@ INSERT INTO `rooms` (`room_id`, `category_id`, `user_id`, `order`, `name`, `desc
 (1, 1, 121, NULL, 'ICT1', 'ICT1', 1, NULL, NULL),
 (2, 2, 1, NULL, 'RM42', NULL, 1, NULL, NULL),
 (3, 1, NULL, NULL, 'ICT2', 'ICT2', 1, '0', NULL),
-(4, NULL, NULL, NULL, 'Foo', 'Foo', 0, NULL, NULL),
+(4, NULL, NULL, NULL, 'Foo', 'Foo3', 0, '149f6c931a44e8.#.JPG', NULL),
 (5, 2, NULL, NULL, 'Tech Suite', 'Tech Suite', 0, NULL, '2009-02-13');
 
 -- --------------------------------------------------------
@@ -597,8 +603,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `password`, `displayname`, `cookiekey`, `lastlogin`, `ldap`, `created`) VALUES
-(1, 1, 1, 'admin', 'craig.rodway@gmail.com', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Craig Rodway', NULL, '2009-04-24 12:31:38', 0, '0000-00-00'),
-(3, 9, 1, 'user1', '', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', NULL, NULL, '2008-12-19 23:06:20', 0, '2008-11-27'),
+(1, 1, 1, 'admin', 'craig.rodway@gmail.com', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Craig Rodway', NULL, '2009-04-30 15:17:09', 0, '0000-00-00'),
 (12, 2, 1, 'craig.rodway', 'craig.rodway@bishopbarrington.net', NULL, 'Mr Rodway', NULL, '2009-01-09 16:12:48', 1, '2009-01-09'),
 (19, 2, 1, 'test.one', 'test.one@bishopbarrington.net', NULL, 'Mr T One', NULL, '2009-04-23 12:27:53', 1, '2009-01-14'),
 (22, 2, 1, 'test.three', 'test.three@bishopbarrington.net', NULL, 'Mr T Three', NULL, '2009-01-14 10:56:57', 1, '2009-01-14'),
@@ -608,14 +613,11 @@ INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `pas
 (114, 2, 0, 'k.hammerton100', 'k.hammerton100@bishopbarrington.net', 'be8ec20d52fdf21c23e83ba2bb7446a7fecb32ac', 'k.hammerton100', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
 (115, 2, 0, 'l.johnson100', 'l.johnson100@bishopbarrington.net', '3a56bca418737e68a7620591abd0e7e8484458a6', 'l.johnson100', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
 (116, 2, 0, 'm.bennett103', 'm.bennett103@bishopbarrington.net', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'm.bennett103', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
-(117, 2, 0, 'm.stuart100', 'm.stuart100@bishopbarrington.net', '08e979d3576358a5d26014d935cc7fb84e0d5a7f', 'm.stuart100', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
 (118, 2, 0, 'p.beighton100', 'p.beighton100@bishopbarrington.net', '32ba707d8ae992ced8648716fbd88002fc5be03a', 'p.beighton100', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
-(119, 2, 0, 's.waldie100', 's.waldie100@bishopbarrington.net', '61284f86181d3deca93107338918ee77ebd63f06', 's.waldie100', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
 (120, 2, 0, 'h.smith104', 'h.smith104@bishopbarrington.net', 'c06538faae9975cce73fc613a8370ba3ffb3d302', 'h.smith104', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
 (121, 2, 0, 'a.staff100', 'a.staff100@bishopbarrington.net', 'ef20a06d2c45dd9f6a58eacaa6b36d6fc89870a6', 'a.staff100', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
 (122, 2, 0, 'm.stokoe102', 'm.stokoe102@bishopbarrington.net', 'deaae441b2d1596d06f01725f930ed2f2e7277bd', 'm.stokoe102', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
 (123, 2, 0, 'j.thompson106', 'j.thompson106@bishopbarrington.net', '78c94605b024fc545b9100d2734dc4a4ae8a8335', 'j.thompson106', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
-(124, 2, 0, 'l.walker101', 'l.walker101@bishopbarrington.net', '52bb90127bc86e77acd3ae5fb6c632dfe90c00a1', 'l.walker101', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
 (125, 2, 0, 'c.wearmouth100', 'c.wearmouth100@bishopbarrington.net', '9e907431a8d31fefe3c2d341ff8826624c954f15', 'c.wearmouth100', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
 (126, 2, 0, 'e.winstanley100', 'e.winstanley100@bishopbarrington.net', 'ea157601840a5b4953c2e95f5fd27223291122d6', 'e.winstanley100', NULL, '0000-00-00 00:00:00', 0, '2009-01-30');
 
@@ -661,7 +663,7 @@ CREATE TABLE `usersactive` (
 --
 
 INSERT INTO `usersactive` (`user_id`, `timestamp`) VALUES
-(1, 1240584435);
+(1, 1241102462);
 
 -- --------------------------------------------------------
 
@@ -808,6 +810,7 @@ ALTER TABLE `quota`
 -- Constraints for table `room-permissions`
 --
 ALTER TABLE `room-permissions`
+  ADD CONSTRAINT `room-permissions_ibfk_4` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`room_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `room-permissions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `room-permissions_ibfk_2` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `room-permissions_ibfk_3` FOREIGN KEY (`department_id`) REFERENCES `departments` (`department_id`) ON DELETE CASCADE ON UPDATE CASCADE;

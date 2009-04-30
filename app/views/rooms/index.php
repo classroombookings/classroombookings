@@ -33,15 +33,15 @@ if($rooms != 0){
 				<td class="x" width="16"><img src="img/ico/arr-down-sm.gif" /></td>
 				<td class="x" width="16"><img src="img/ico/arr-up-sm.gif" /></td>
 				<td align="center" width="20"><img src="img/ico/<?php echo $bookable_img ?>" width="16" height="16" alt="Bookable" title="<?php echo $bookable_title ?>" /></td>
-				<td class="x"><?php echo anchor('rooms/edit/'.$room->room_id, $room->name) ?></td>
+				<td class="x"><?php echo anchor('rooms/manage/edit/'.$room->room_id, $room->name) ?></td>
 				<td class="x"><span title="<?php echo $room->description ?>"><?php echo word_limiter($room->description, 8) ?>&nbsp;</span></td>
 				<td class="x"><?php echo $room->owner_name ?>&nbsp;</td>
 				<td class="il">
 				<?php
 				unset($actiondata);
 				#$actiondata[] = array('rooms/permissions/'.$room->room_id, 'Edit permissions', 'key-sm.gif' );
-				$actiondata[] = array('rooms/info/'.$room->room_id, 'View info', 'roominfo-sm.gif');
-				$actiondata[] = array('rooms/delete/'.$room->room_id, 'Delete', 'cross_sm.gif' );
+				$actiondata[] = array('rooms/manage/info/'.$room->room_id, 'View info', 'roominfo-sm.gif');
+				$actiondata[] = array('rooms/manage/delete/'.$room->room_id, 'Delete', 'cross_sm.gif' );
 				$this->load->view('parts/listactions', $actiondata);
 				?></td>
 			</tr>

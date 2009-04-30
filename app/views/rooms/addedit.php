@@ -7,13 +7,13 @@ if($errors){
 
 <div class="tabber" id="tabs-configure">
 
-	<div class="tabbertab<?php echo ($tab == 'addedit-details') ? ' tabbertabdefault' : ''; ?>">
+	<div class="tabbertab<?php echo ($tab == 'details') ? ' tabbertabdefault' : ''; ?>">
 		<h2>Main details</h2>
 		<?php $this->load->view('rooms/addedit.details.php', $room); ?>
 	</div>
 
-	<?php if($room_id != NULL){ ?>
-	<div class="tabbertab<?php echo ($tab == 'addedit-permissions') ? ' tabbertabdefault' : ''; ?>">
+	<?php if($room_id != NULL && $this->auth->check('rooms.permissions', TRUE)){ ?>
+	<div class="tabbertab<?php echo ($tab == 'permissions') ? ' tabbertabdefault' : ''; ?>">
 		<h2>Booking permissions</h2>
 		<?php $this->load->view('rooms/addedit.permissions.php', $room); ?>
 	</div>

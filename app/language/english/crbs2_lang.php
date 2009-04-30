@@ -55,6 +55,9 @@ $lang['ROOMS_ADD_FAIL'] = 'An error occured and the room could not be added (%s)
 $lang['ROOMS_EDIT_OK'] = 'The room details were saved successfully.';
 $lang['ROOMS_EDIT_FAIL'] = 'An error occured and the room details could not be  saved.';
 
+$lang['ROOMS_PERMS_ADD_OK'] = 'The room permission entry was added successfully.';
+$lang['ROOMS_PERMS_ADD_FAIL'] = 'An error occured and the room permission entry could not be added.';
+
 // Misc
 $lang['PERMISSIONS_EFFECTIVE_USER_FAIL'] = 'Could not find the given user, or no user ID supplied.';
 $lang['FORM_ERRORS'] = 'Please check the following invalid item(s) and try again.';

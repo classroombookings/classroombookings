@@ -34,10 +34,10 @@ class Security extends Model{
 	 */
 	function subnav(){
 		$subnav = array();
-		// Other pages in this parent section
-		$subnav[] = array('security/users', 'Manage users', 'users');
-		$subnav[] = array('security/groups', 'Manage groups', 'groups');
-		$subnav[] = array('security/permissions', 'Change group permissions', 'permissions');
+		// Other pages in this parent section (uri, title, permission name)
+		$subnav[] = array('security/users', 'Users', 'users');
+		$subnav[] = array('security/groups', 'Groups', 'groups');
+		$subnav[] = array('security/permissions', 'Group permissions', 'permissions');
 		return $subnav;
 	}
 	

@@ -16,7 +16,7 @@ if(count($paths) > 0){
 	$path_err = $this->msg->warn('<ul>'.implode("<br />", $paths).'</ul>', 'Unable to upload photo');
 }
 
-echo form_open_multipart('rooms/save', NULL, array('room_id' => $room_id));
+echo form_open_multipart('rooms/manage/save', NULL, array('room_id' => $room_id));
 
 // Start tabindex
 $t = 1;
@@ -59,7 +59,7 @@ $t = 1;
 			$input['size'] = '40';
 			$input['maxlength'] = '50';
 			$input['tabindex'] = $t;
-			$input['value'] = @set_value($input['name'], $room->name);
+			$input['value'] = @set_value($input['name'], $room->description);
 			echo form_input($input);
 			$t++;
 			?>
@@ -196,7 +196,7 @@ $t = 1;
 	unset($buttons);
 	$buttons[] = array('submit', 'positive', $submittext, 'disk1.gif', $t);
 	#$buttons[] = array('submit', '', 'Save and add another', 'add.gif', $t+1);
-	$buttons[] = array('cancel', 'negative', 'Cancel', 'arr-left.gif', $t+2, site_url('rooms'));
+	$buttons[] = array('cancel', 'negative', 'Cancel', 'arr-left.gif', $t+2, site_url('rooms/manage'));
 	$this->load->view('parts/buttons', array('buttons' => $buttons));
 	?>
 	

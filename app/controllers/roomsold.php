@@ -16,6 +16,15 @@
 	along with Classroombookings.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/*
+	Room permission object types
+		E:	Everyone
+		O:	Room owner
+		U:	User
+		G:	Group
+		D:	Department
+*/
+
 
 class Rooms extends Controller{
 	
@@ -23,6 +32,7 @@ class Rooms extends Controller{
 	var $tpl;
 	var $lasterr;
 	var $resize_errors;
+	var $types;
 	
 	
 	function Rooms(){
@@ -34,6 +44,12 @@ class Rooms extends Controller{
 		$this->load->helper('file');
 		$this->tpl = $this->config->item('template');
 		$this->output->enable_profiler($this->config->item('profiler'));
+		
+		$this->types['e'] = 'Everyone';
+		$this->types['o'] = 'Owner';
+		$this->types['u'] = 'User';
+		$this->types['g'] = 'Group';
+		$this->types['d'] = 'Department';
 	}
 	
 	
@@ -59,6 +75,7 @@ class Rooms extends Controller{
 			$tpl['body'] = $this->load->view('rooms/index', $body, TRUE);
 		}
 		
+		$tpl['subnav'] = $this->rooms_model->subnav();
 		$tpl['title'] = 'Rooms';
 		$tpl['pagetitle'] = $tpl['title'];
 		$this->load->view($this->tpl, $tpl);
@@ -80,6 +97,7 @@ class Rooms extends Controller{
 		$body['cats'] = $this->rooms_model->get_categories_dropdown(TRUE);
 		$body['cats'][-2] = 'Add new ...';
 		
+		$tpl['subnav'] = $this->rooms_model->subnav();
 		$tpl['title'] = 'Add room';
 		$tpl['pagetitle'] = 'Add a new room';
 		$tpl['body'] = $this->load->view('rooms/addedit', $body, TRUE);
@@ -94,20 +112,30 @@ class Rooms extends Controller{
 	 */
 	function edit($room_id, $tab = 'addedit-details'){
 		$this->auth->check('rooms.edit');
+		
 		$body['tab'] = ($this->session->flashdata('tab')) ? $this->session->flashdata('tab') : $tab;
 		$body['room'] = $this->rooms_model->get($room_id);
 		$body['room_id'] = $room_id;
 		
 		// Permissions
-		$body['permissions'] = $this->config->item('permissions');
+		$body['permissions'] = $this->config->item('permissions');	// list of all AVAILABLE permissions
+		$body['room_permissions'] = array();		// Booking-related permissions
+		foreach($body['permissions']['room'] as $p){
+			$body['room_permissions'][$p[0]] = $p[1];
+		}
+		
+		$body['entries'] = $this->rooms_model->get_permissions($room_id);		// Permission entries
 		$body['users'] = $this->security->get_users_dropdown(TRUE);
 		$body['groups'] = $this->security->get_groups_dropdown();
 		$body['departments'] = $this->departments_model->get_dropdown();
+		
+		#echo '<!-- ' . var_export($body, TRUE) . ' -->';
 		
 		// Categories
 		$body['cats'] = $this->rooms_model->get_categories_dropdown(TRUE);
 		$body['cats'][-2] = 'Add new ...';
 		
+		$tpl['subnav'] = $this->rooms_model->subnav();
 		$tpl['title'] = 'Edit room';
 		
 		if($body['room'] != FALSE){
@@ -266,11 +294,164 @@ class Rooms extends Controller{
 	
 	
 	
+	function delete($room_id = NULL){
+		
+		$this->auth->check('rooms.delete');
+		
+		// Check if a form has been submitted; if not - show it to ask user confirmation
+		if($this->input->post('id')){
+		
+			// Form has been submitted (so the POST value exists)
+			// Call model function to delete room
+			$delete = $this->rooms_model->delete($this->input->post('id'));
+			if($delete == FALSE){
+				$this->msg->add('err', $this->rooms_model->lasterr, 'An error occured');
+			} else {
+				$this->msg->add('info', 'The room has been deleted.');
+			}
+			// Redirect
+			redirect('rooms');
+			
+		} else {
+			
+			if($room_id == NULL){
+				
+				$tpl['title'] = 'Delete room';
+				$tpl['pagetitle'] = $tpl['title'];
+				$tpl['body'] = $this->msg->err('Cannot find the room or no room ID given.');
+				
+			} else {
+				
+				// Get room info so we can present the confirmation page with a name
+				$room = $this->rooms_model->get($room_id);
+				
+				if($room == FALSE){
+				
+					$tpl['title'] = 'Delete room';
+					$tpl['pagetitle'] = $tpl['title'];
+					$tpl['body'] = $this->msg->err('Could not find that room or no room ID given.');
+					
+				} else {
+					
+					// Initialise page
+					$body['action'] = 'rooms/delete';
+					$body['id'] = $room_id;
+					$body['cancel'] = 'rooms';
+					$body['text'] = 'If you delete this room, all bookings made on it and its permissions will also be removed.';
+					$tpl['title'] = 'Delete room';
+					$tpl['pagetitle'] = 'Delete ' . $room->name;
+					$tpl['body'] = $this->load->view('parts/deleteconfirm', $body, TRUE);
+					
+				}
+				
+			}
+			
+			$tpl['subnav'] = $this->rooms_model->subnav();
+			$this->load->view($this->tpl, $tpl);
+			
+		}
+		
+	}
+	
+	
+	
+	
+	
+	// ---------- PERMISSIONS BELOW ---------- //
+	
+	
+	
+	
+	
 	/**
 	 * Form destination: Save room permissions
 	 */
-	function add_permission(){
+	function save_permissions(){
+		
+		#print_r($_POST);
+		
+		$room_id = $this->input->post('room_id');
+		
+		// Base validation
+		$this->form_validation->set_rules('room_id', 'Room ID', 'required|integer');
+		$this->form_validation->set_rules('object', 'Object type', 'required');
+		
+		// Set up appropriate validation based on which object type is selected
+		switch($this->input->post('object')){
+			case 'everyone':
+				$data['type'] = 'e';
+				$object_id = 0;
+			break;
+			
+			case 'roomowner':
+				$data['type'] = 'o';
+				$object_id = 0;
+			break;
+			
+			case 'user':
+				$this->form_validation->set_rules('user_id', 'User', 'required|integer');
+				$data['type'] = 'u';
+				$data['user_id'] = $this->input->post('user_id');
+				$object_id = $data['user_id'];
+			break;
+			
+			case 'group':
+				$this->form_validation->set_rules('group_id', 'Group', 'required|integer');
+				$data['type'] = 'g';
+				$data['group_id'] = $this->input->post('group_id');
+				$object_id = $data['group_id'];
+			break;
+			
+			case 'department':
+				$this->form_validation->set_rules('department_id', 'Department', 'required|integer');
+				$data['type'] = 'd';
+				$data['department_id'] = $this->input->post('department_id');
+				$object_id = $data['department_id'];
+			break;
+			default:
+			break;
+			
+		}
+		
+		$perms = 'permissions_' . $room_id;
+		$this->form_validation->set_rules($perms, 'Permissions', 'required');
+		$this->form_validation->set_error_delimiters('<li>', '</li>');
+		
+		
+		if($this->form_validation->run() == FALSE){
+			
+			$this->edit($room_id, 'addedit-permissions');
+			
+		} else {
+			
+			$data['room_id'] = $room_id;
+			$data['permissions'] = serialize($this->input->post($perms));
+			
+			// Unique permissions hash
+			$data['hash'] = md5(sprintf('%d:%s:%d', $data['room_id'], $data['type'], $object_id));	#, $data['permissions']));
+			
+			// Add to the database
+			$add = $this->rooms_model->add_permissions($data);
+			
+			if($add == TRUE){
+				$this->msg->add('info', $this->lang->line('ROOMS_PERMS_ADD_OK'));
+			} else {
+				$this->msg->add('err', 'An error occured: ' . $this->rooms_model->lasterr);
+			}
+			
+			redirect(sprintf('rooms/edit/%d/%s', $room_id, 'addedit-permissions'));
+			
+		}
+		
+		
 	}
+	
+	
+	
+	
+	
+	// ---------- OTHER MISC STUFF HERE ---------- //
+	
 	
 	
 	
@@ -279,6 +460,7 @@ class Rooms extends Controller{
 	 * Carry out the uploading of the photo from the form
 	 */
 	function _do_upload(){
+		
 		// Do upload if it was submitted
 		$config['upload_path'] = 'temp';
 		$config['allowed_types'] = 'jpg|jpeg|gif|png';
@@ -385,6 +567,7 @@ class Rooms extends Controller{
 			$this->lasterr = 'Failed to resize the images.';
 			return FALSE;
 		}
+		
 	}
 	
 	

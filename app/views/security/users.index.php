@@ -74,6 +74,7 @@ jQuery(document).ready(function($){
 } else {
 ?>
 
+<!-- This shouldn't happen... -->
 <p>No users currently exist!</p>
 
 <?php

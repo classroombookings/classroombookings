@@ -18,8 +18,8 @@
 
 
 class Academic extends Model{
-
-
+	
+	
 	function Academic(){
 		parent::Model();
 	}

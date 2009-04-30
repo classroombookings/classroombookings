@@ -1,8 +1,11 @@
 <?php
 $title = (!isset($title)) ? '' : $title;
+
+// URI segments
 $seg1 = $this->uri->segment(1, 'dashboard');
 $seg2 = $this->uri->segment(2);
 
+// Decide which classes to apply to the main grid960 divs
 if(isset($sidebar)){
 	$class['content'] = 'grid_8';
 	$class['sidebar'] = 'grid_4';
@@ -26,7 +29,8 @@ if(isset($sidebar)){
 	<link rel="stylesheet" type="text/css" media="screen" href="css/ui960.css" />
 	<style type="text/css">
 	body{background:#fff;	/*#F4F4F4;*/}
-	#t{background:url(img/template/patt4.jpg) top left #069;padding-top:0.5em;}
+	#t{background: #069;}
+	#t p{margin:0.5em 0;}
 	#tabs{/*background:#AFCEED;*/}
 	
 	#t2{background:#AFCEED;}
@@ -52,7 +56,7 @@ if(isset($sidebar)){
 		display:block;
 		padding:0.25em 1em 0.5em 1em;
 		color:#fff;
-		text-decoration:underline;
+		text-decoration:none;	/*underline;*/
 		font-weight:bold;
 	}
 	
@@ -71,6 +75,7 @@ if(isset($sidebar)){
 	
 	#ft{
 		margin-top:4em;
+		margin-bottom:2em;
 		padding-top:0.5em;
 		border-top:1px solid #ccc;
 		font-size:90%;
@@ -132,6 +137,7 @@ if(isset($sidebar)){
 	<script type="text/javascript" src="js/timepicker.js"></script>
 	<script type="text/javascript" src="js/jquery.autocomplete.js"></script>
 </head>
+
 <body>
 	
 	
@@ -184,7 +190,7 @@ if(isset($sidebar)){
 					if($this->auth->check('bookings', TRUE)){ echo dolink($seg1, 'bookings', 'Bookings'); }
 					if($this->auth->check('myprofile', TRUE)){ echo dolink($seg1, 'account', 'My Profile'); }
 					if($this->auth->check('configure', TRUE)){ echo dolink($seg1, 'configure', 'Configure'); }
-					if($this->auth->check('rooms', TRUE)){ echo dolink($seg1, 'rooms', 'Rooms'); }
+					if($this->auth->check('rooms', TRUE)){ echo dolink($seg1, 'rooms/manage', 'Rooms'); }
 					if($this->auth->check('academic', TRUE)){ echo dolink($seg1, 'academic/main', 'Academic setup'); }
 					if($this->auth->check('departments', TRUE)){ echo dolink($seg1, 'departments', 'Departments'); }
 					if($this->auth->check('reports', TRUE)){ echo dolink($seg1, 'reports', 'Reports'); }
@@ -233,6 +239,7 @@ if(isset($sidebar)){
 	<div class="clear">&nbsp;</div>
 	
 	
+	<!-- main area 960 container -->
 	<div class="container_12">
 		
 		
@@ -300,9 +307,9 @@ if(isset($sidebar)){
 		
 		<!-- #ft -->
 		<div class="grid_12" id="ft">
-		
+			
 			<div class="grid_7 alpha" id="fl">
-				<p>&copy; Craig Rodway 2008.</p>
+				<p>&copy; Craig Rodway 2006 &mdash; <?php echo date('Y') ?>.</p>
 				<p><a href="http://classroombookings.com/">Classroombookings</a> is released under the GNU General Public Licence version 3.</p>
 				<p>Total execution time: <?php echo $this->benchmark->elapsed_time() ?> seconds; Memory usage: <?php echo $this->benchmark->memory_usage() ?></p>
 			</div>
@@ -318,11 +325,12 @@ if(isset($sidebar)){
 				}
 				?></p>
 			</div>
-		
+			
 		</div>
 		<!-- // #ft -->
 		
 	</div>
+	<!-- // main area 960 container -->
 	
 	
 </body>
@@ -330,10 +338,11 @@ if(isset($sidebar)){
 
 
 
+
 <?php
 /**
  * seg1 - the segment of the current URI at the position we want
- * href - path/to/url (gets truned into array, too)
+ * href - path/to/url (gets truned into array)
  * text - text of link
  * i - index of href array to check uri segment to
  */
