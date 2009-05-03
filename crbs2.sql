@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Apr 30, 2009 at 03:44 PM
+-- Generation Time: May 03, 2009 at 09:08 PM
 -- Server version: 5.0.51
 -- PHP Version: 5.2.6
 
@@ -370,7 +370,7 @@ CREATE TABLE `room-permissions` (
   KEY `group_id` (`group_id`),
   KEY `department_id` (`department_id`),
   KEY `room_id` (`room_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Permission entries for various objects on different rooms' AUTO_INCREMENT=19 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Permission entries for various objects on different rooms' AUTO_INCREMENT=11 ;
 
 --
 -- Dumping data for table `room-permissions`
@@ -391,7 +391,7 @@ DROP TABLE IF EXISTS `roomattrs-fields`;
 CREATE TABLE `roomattrs-fields` (
   `field_id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(20) NOT NULL,
-  `type` enum('text','select','check') NOT NULL,
+  `type` enum('text','select','check') NOT NULL COMMENT 'Text: textbox; Select: Choose one item from list; Check: Boolean on/off',
   PRIMARY KEY  (`field_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Names of fields that can be assigned to rooms' AUTO_INCREMENT=1 ;
 
@@ -482,7 +482,7 @@ CREATE TABLE `rooms` (
   PRIMARY KEY  (`room_id`),
   KEY `user_id` (`user_id`),
   KEY `category_id` (`category_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='School rooms' AUTO_INCREMENT=14 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='School rooms' AUTO_INCREMENT=6 ;
 
 --
 -- Dumping data for table `rooms`
@@ -603,7 +603,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `password`, `displayname`, `cookiekey`, `lastlogin`, `ldap`, `created`) VALUES
-(1, 1, 1, 'admin', 'craig.rodway@gmail.com', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Craig Rodway', NULL, '2009-04-30 15:17:09', 0, '0000-00-00'),
+(1, 1, 1, 'admin', 'craig.rodway@gmail.com', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Craig Rodway', NULL, '2009-05-03 19:09:14', 0, '0000-00-00'),
 (12, 2, 1, 'craig.rodway', 'craig.rodway@bishopbarrington.net', NULL, 'Mr Rodway', NULL, '2009-01-09 16:12:48', 1, '2009-01-09'),
 (19, 2, 1, 'test.one', 'test.one@bishopbarrington.net', NULL, 'Mr T One', NULL, '2009-04-23 12:27:53', 1, '2009-01-14'),
 (22, 2, 1, 'test.three', 'test.three@bishopbarrington.net', NULL, 'Mr T Three', NULL, '2009-01-14 10:56:57', 1, '2009-01-14'),
@@ -663,7 +663,7 @@ CREATE TABLE `usersactive` (
 --
 
 INSERT INTO `usersactive` (`user_id`, `timestamp`) VALUES
-(1, 1241102462);
+(1, 1241379996);
 
 -- --------------------------------------------------------
 

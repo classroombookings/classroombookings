@@ -22,6 +22,7 @@ class Rooms_model extends Model{
 
 	var $lasterr;
 	var $types;
+	var $fieldtypes;
 	
 	
 	function Rooms_model(){
@@ -33,6 +34,11 @@ class Rooms_model extends Model{
 		$this->types['u'] = 'User';
 		$this->types['g'] = 'Group';
 		$this->types['d'] = 'Department';
+		
+		// Types for atrribute fields
+		$this->fieldtypes['text'] = 'Text';
+		$this->fieldtypes['select'] = 'Drop-down list';
+		$this->fieldtypes['check'] = 'Tick box';
 	}
 	
 	
@@ -496,8 +502,41 @@ class Rooms_model extends Model{
 	/**
 	 * Get all attribute field names
 	 */
-	function get_all_attr_fields(){
-	
+	function get_attr_field($field_id = NULL){
+		
+		if ($field_id == NULL){
+			
+			$query = $this->db->get('roomattrs-fields');
+			
+			if($query->num_rows() > 0){
+				return $query->result();
+			} else {
+				$this->lasterr = 'No fields have been created yet.';
+				return 0;
+			}
+			
+		} else {
+			
+			if(!is_numeric($field_id)){
+				return FALSE;
+			}
+			
+			// Getting one field
+			$sql = 'SELECT * FROM `roomattrs-fields` WHERE field_id = ? LIMIT 1';
+			$query = $this->db->query($sql, array($room_id));
+			
+			if($query->num_rows() == 1){
+				// Got the room - get all fields
+				$field = $query->row();
+				// Get the permissions for this room
+				#$room->permissions = $this->get_room_permissions($room_id);
+				return $field;
+			} else {
+				return FALSE;
+			}
+			
+		}
+		
 	}
 	
 	

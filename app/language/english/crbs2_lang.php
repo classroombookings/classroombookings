@@ -72,6 +72,7 @@ $lang['W_WEEK'] = 'Week';
 $lang['W_WEEKS'] = 'Weeks';
 $lang['W_YEAR'] = 'Year';
 $lang['W_YEARS'] = 'Years';
+$lang['W_FIELD'] = 'Field';
 
 // Actions
 $lang['ACTION_ADD'] = 'Add';

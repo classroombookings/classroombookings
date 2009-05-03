@@ -43,7 +43,7 @@ class Attributes extends Controller{
 		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
 		
 		// Get list of room attributes
-		$body['attrs'] = $this->rooms_model->get_all_attr_fields();
+		$body['attrs'] = $this->rooms_model->get_attr_field();
 		if($body['attrs'] == FALSE){
 			$tpl['body'] = $this->msg->err($this->rooms_model->lasterr);
 		} else {
@@ -51,7 +51,7 @@ class Attributes extends Controller{
 		}
 		
 		$tpl['subnav'] = $this->rooms_model->subnav();
-		$tpl['title'] = 'Rooms';
+		$tpl['title'] = 'Room attribute fields';
 		$tpl['pagetitle'] = $tpl['title'];
 		$this->load->view($this->tpl, $tpl);
 		
@@ -64,6 +64,15 @@ class Attributes extends Controller{
 		
 		$this->auth->check('rooms.attrs');
 		
+		$body['field'] = NULL;
+		$body['field_id'] = NULL;
+		$body['fieldtypes'] = $this->rooms_model->fieldtypes;
+		$tpl['subnav'] = $this->rooms_model->subnav();
+		$tpl['title'] = 'Add a field';
+		$tpl['pagetitle'] = $tpl['title'];
+		$tpl['body'] = $this->load->view('rooms/attributes/addedit.field.php', $body, TRUE);
+		$this->load->view($this->tpl, $tpl);
+		
 	}
 	
 	
@@ -74,8 +83,10 @@ class Attributes extends Controller{
 		$this->auth->check('rooms.attrs');
 		
 	}
-
-
+	
+	
+	
+	
 }
 
 /* End of file: /app/controllers/rooms/attributes.php */
