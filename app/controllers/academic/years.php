@@ -223,6 +223,7 @@ class Years extends Controller {
 	
 	
 	function activate($year_id = NULL){
+		
 		$this->auth->check('years.edit');
 		
 		if($year_id == NULL){
@@ -248,6 +249,7 @@ class Years extends Controller {
 			}
 			
 		}
+		
 	}
 	
 	

@@ -12,4 +12,6 @@ $config['template'] = 'template/960';
 
 $config['profiler'] = FALSE;
 
+$config['log_threshold'] = 0;
+
 ?>

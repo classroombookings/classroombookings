@@ -58,7 +58,7 @@ class Manage extends Controller{
 		$this->auth->check('rooms');
 		
 		$links[] = array('rooms/manage/add', 'Add a new room');
-		$links[] = array('rooms/manage/attributes', 'Room attributes');
+		#$links[] = array('rooms/manage/attributes', 'Room attributes');
 		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
 		
 		$body['rooms'] = $this->rooms_model->get_in_categories();
@@ -116,6 +116,7 @@ class Manage extends Controller{
 		$body['tab'] = ($this->session->flashdata('tab')) ? $this->session->flashdata('tab') : $tab;
 		$body['room'] = $this->rooms_model->get($room_id);
 		$body['room_id'] = $room_id;
+		$body['attrs'] = $this->rooms_model->get_attr_field();
 		
 		// Permissions
 		$body['permissions'] = $this->config->item('permissions');	// list of all AVAILABLE permissions
@@ -430,7 +431,6 @@ class Manage extends Controller{
 		$this->form_validation->set_rules($perms, 'Permissions', 'required');
 		$this->form_validation->set_error_delimiters('<li>', '</li>');
 		
-		
 		if($this->form_validation->run() == FALSE){
 			
 			$this->edit($room_id, 'permissions');
@@ -525,6 +525,20 @@ class Manage extends Controller{
 			
 		}
 		
+	}
+	
+	
+	
+	
+	
+	// ---------- ATTRIBUTES ---------- //
+	
+	
+	
+	
+	
+	function save_attrs(){
+		die(print_r($_POST));
 	}
 	
 	

@@ -60,10 +60,14 @@ if(isset($sidebar)){
 		font-weight:bold;
 	}
 	
+	#tabs2 a{
+		color:#000;
+	}
+	
 	
 	#tabs .selected, #tabs2 .selected, #tabs2 a:hover{
 		position:relative;
-		top:1px;
+		/*top:1px;*/
 		background:#fff;	/*#F4F4F4;*/
 		color:#000;
 	}
@@ -189,7 +193,7 @@ if(isset($sidebar)){
 					if($this->auth->check('dashboard', TRUE)){ echo dolink($seg1, 'dashboard', 'Dashboard'); }
 					if($this->auth->check('bookings', TRUE)){ echo dolink($seg1, 'bookings', 'Bookings'); }
 					if($this->auth->check('myprofile', TRUE)){ echo dolink($seg1, 'account', 'My Profile'); }
-					if($this->auth->check('configure', TRUE)){ echo dolink($seg1, 'configure', 'Configure'); }
+					if($this->auth->check('configure', TRUE)){ echo dolink($seg1, 'configure/general', 'Configure'); }
 					if($this->auth->check('rooms', TRUE)){ echo dolink($seg1, 'rooms/manage', 'Rooms'); }
 					if($this->auth->check('academic', TRUE)){ echo dolink($seg1, 'academic/main', 'Academic setup'); }
 					if($this->auth->check('departments', TRUE)){ echo dolink($seg1, 'departments', 'Departments'); }

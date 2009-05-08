@@ -500,19 +500,29 @@ class Rooms_model extends Model{
 	
 	
 	/**
-	 * Get all attribute field names
+	 * Get attribute field data
+	 *
+	 * @param	int		Field ID (if retrieving a single one. Ignore if wanting all fields)
+	 * @return	array object
 	 */
 	function get_attr_field($field_id = NULL){
 		
 		if ($field_id == NULL){
 			
+			$this->db->orderby('name ASC, type ASC');
 			$query = $this->db->get('roomattrs-fields');
 			
 			if($query->num_rows() > 0){
-				return $query->result();
+				$result = $query->result();
+				foreach($result as &$field){
+					if($field->type == 'select'){
+						$field->options = $this->_get_attr_options($field->field_id);
+					}
+				}
+				return $result;
 			} else {
 				$this->lasterr = 'No fields have been created yet.';
-				return 0;
+				return FALSE;
 			}
 			
 		} else {
@@ -523,17 +533,218 @@ class Rooms_model extends Model{
 			
 			// Getting one field
 			$sql = 'SELECT * FROM `roomattrs-fields` WHERE field_id = ? LIMIT 1';
-			$query = $this->db->query($sql, array($room_id));
+			$query = $this->db->query($sql, array($field_id));
 			
 			if($query->num_rows() == 1){
 				// Got the room - get all fields
 				$field = $query->row();
-				// Get the permissions for this room
-				#$room->permissions = $this->get_room_permissions($room_id);
+				
+				if($field->type == 'select'){
+					// Get the options [array] for this drop-down list
+					$field->options = $this->_get_attr_options($field_id);
+				}
 				return $field;
 			} else {
 				return FALSE;
 			}
+			
+		}
+		
+	}
+	
+	
+	
+	
+	/**
+	 * Add a field
+	 *
+	 * @param	array	Array of data
+	 * @return	int		ID of new field on success
+	 */
+	function add_field($data){
+		
+		// Move the drop-down options into separate array if exists
+		if(isset($data['options']) && $data['type'] == 'select'){
+			// Move the options into another variable
+			$options = $data['options'];
+			// Remove it from the main data array so it isn't put in a column in this table
+			unset($data['options']);
+			// Make an md5 of the options being supplied
+			$data['options_md5'] = md5(serialize($options));
+		}
+		
+		// Insert new field into DB
+		$add = $this->db->insert('roomattrs-fields', $data);
+		$field_id = $this->db->insert_id();
+		
+		if($add != FALSE){	
+			
+			// Now we have the field_id - add options if we have them
+			if(isset($options) && $data['type'] == 'select'){
+				$sql = 'INSERT INTO `roomattrs-options` (option_id, field_id, value) VALUES ';
+				foreach($options as $option){
+					$sql .= sprintf("(NULL, %d, '%s'),", $field_id, $option);
+				}
+				$sql = preg_replace('/,$/', '', $sql);
+				$query = $this->db->query($sql);
+				if($query == FALSE){
+					$this->lasterr = 'Could not insert values of drop-down box.';
+				}
+			}
+			
+			// Return the ID on success
+			return $field_id;
+			
+		} else {
+			
+			// Something went wrong
+			return FALSE;
+			
+		}
+		
+	}
+	
+	
+	
+	
+	/**
+	 * Update a field
+	 *
+	 * It is not appropriate to change a field's type once it's been created, because 
+	 * strange things can happen if they have already been applied to rooms and have values.
+	 *
+	 * We also only need to update the options for 'select' types if the md5 hash is different
+	 * from what is already in the DB.
+	 *
+	 * @param	field_id	Field ID to update
+	 * @param	array		Data to update
+	 */
+	function edit_field($field_id = NULL, $data){
+		
+		if($field_id == NULL){
+			$this->lasterr = 'Cannot update a field without its ID.';
+			return FALSE;
+		}
+		
+		// Get current info about the field
+		$field = $this->get_attr_field($field_id);
+		
+		// If current field is of type 'select', then we need to check the md5s
+		if($field->type == 'select'){
+			
+			log_message('debug', 'Field that is being edited exists as a select type');
+			
+			// Make an md5 of the options being supplied
+			$data['options_md5'] = md5(serialize($data['options']));
+			
+			log_message('debug', 'MD5 of current options: ' . $field->options_md5);
+			log_message('debug', 'MD5 of new options: ' . $data['options_md5']);
+			
+			if($data['options_md5'] == $field->options_md5){
+				
+				// Options are the same, no need to update
+				log_message('debug', 'The md5 hash of the old field options matches the new md5');
+				
+			} else {
+				
+				/*
+					Uh-oh - options have changed!
+					1. Need to remove value assignments from rooms that have values from this field
+					2. Delete 'old' field options
+					3. Insert new field options
+					4. Notification that old values have been removed (hmmm... how to implement?)
+					
+					Point (1) can probably be done with SQL's ON DELETE CASCADE
+				*/
+				
+				// Remove values assigned to rooms
+				$sql = 'DELETE FROM `roomattrs-values` WHERE field_id = ?';
+				$query = $this->db->query($sql, array($field_id));
+				
+				// Remove options
+				$sql = 'DELETE FROM `roomattrs-options` WHERE field_id = ?';
+				$query = $this->db->query($sql, array($field_id));
+				
+				// Insert new options
+				$sql = 'INSERT INTO `roomattrs-options` (option_id, field_id, value) VALUES ';
+				foreach($data['options'] as $option){
+					$sql .= sprintf("(NULL, %d, '%s'),", $field_id, $option);
+				}
+				$sql = preg_replace('/,$/', '', $sql);
+				$query = $this->db->query($sql);
+				if($query == FALSE){
+					$this->lasterr = 'Could not insert values of drop-down box.';
+				}
+				
+			}
+			
+		}
+		
+		// We will not change a field type
+		unset($data['type']);
+		// Remove options (if any) from main data array
+		unset($data['options']);
+		
+		// Update room info
+		$this->db->where('field_id', $field_id);
+		$edit = $this->db->update('roomattrs-fields', $data);
+		
+		return $edit;
+		
+	}
+	
+	
+	
+	
+	/**
+	 * Delete a room from the database
+	 *
+	 * @param	field_id		Field ID to delete
+	 * @return	bool
+	 */
+	function delete_field($field_id){
+		
+		$sql = 'DELETE FROM `roomattrs-fields` WHERE field_id = ? LIMIT 1';
+		$query = $this->db->query($sql, array($field_id));
+		
+		if($this->db->affected_rows() != 1){
+			$this->lasterr = 'Could not delete field. Does it exist?';
+			return FALSE;
+		} else {
+			return TRUE;
+		}
+		
+	}
+	
+	
+	
+	
+	/**
+	 * Get an array of options for the given field
+	 *
+	 * @param	field_id	Field ID of the field to get the options for
+	 * @return	array		Array (empty, or otherwise containing the options)
+	 */
+	private function _get_attr_options($field_id){
+		
+		$sql = 'SELECT option_id, value FROM `roomattrs-options` WHERE field_id = ? ORDER BY field_id ASC';
+		$query = $this->db->query($sql, array($field_id));
+		
+		if($query->num_rows() > 0){
+			
+			$options = array();
+			$result = $query->result();
+			foreach($result as $row){
+				#array_push($options, $row->value);
+				$options[$row->option_id] = $row->value;
+			}
+			
+			return $options;
+			
+		} else {
+			
+			$this->lasterr = 'No options exist for the supplied field.';
+			return array();
 			
 		}
 		

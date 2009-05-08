@@ -3,9 +3,11 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: May 03, 2009 at 09:08 PM
+-- Generation Time: May 08, 2009 at 04:02 PM
 -- Server version: 5.0.51
 -- PHP Version: 5.2.6
+
+SET FOREIGN_KEY_CHECKS=0;
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
@@ -392,13 +394,21 @@ CREATE TABLE `roomattrs-fields` (
   `field_id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(20) NOT NULL,
   `type` enum('text','select','check') NOT NULL COMMENT 'Text: textbox; Select: Choose one item from list; Check: Boolean on/off',
+  `options_md5` char(32) default NULL,
   PRIMARY KEY  (`field_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Names of fields that can be assigned to rooms' AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Names of fields that can be assigned to rooms' AUTO_INCREMENT=19 ;
 
 --
 -- Dumping data for table `roomattrs-fields`
 --
 
+INSERT INTO `roomattrs-fields` (`field_id`, `name`, `type`, `options_md5`) VALUES
+(13, 'Text field 1', 'text', NULL),
+(14, 'Text field 2', 'text', NULL),
+(15, 'List box 1', 'select', '2fa179a7b39047609ae590d12642b797'),
+(16, 'List box 2', 'select', '307751a5b1f09e282c251c82fcaaae5c'),
+(17, 'Tick 1', 'check', NULL),
+(18, 'Tick 2', 'check', NULL);
 
 -- --------------------------------------------------------
 
@@ -409,14 +419,23 @@ CREATE TABLE `roomattrs-fields` (
 DROP TABLE IF EXISTS `roomattrs-options`;
 CREATE TABLE `roomattrs-options` (
   `option_id` int(10) unsigned NOT NULL auto_increment,
+  `field_id` int(10) unsigned NOT NULL COMMENT 'Field that this belongs to',
   `value` varchar(50) NOT NULL,
-  PRIMARY KEY  (`option_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Options for room drop-down fields' AUTO_INCREMENT=1 ;
+  PRIMARY KEY  (`option_id`),
+  KEY `field_id` (`field_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Options for room drop-down fields' AUTO_INCREMENT=33 ;
 
 --
 -- Dumping data for table `roomattrs-options`
 --
 
+INSERT INTO `roomattrs-options` (`option_id`, `field_id`, `value`) VALUES
+(27, 15, 'One'),
+(28, 15, 'Two'),
+(29, 15, 'Three'),
+(30, 16, 'Four'),
+(31, 16, 'Five'),
+(32, 16, 'Six');
 
 -- --------------------------------------------------------
 
@@ -430,13 +449,19 @@ CREATE TABLE `roomattrs-values` (
   `room_id` int(10) unsigned NOT NULL,
   `field_id` int(10) unsigned NOT NULL,
   `value` varchar(255) NOT NULL,
-  PRIMARY KEY  (`value_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Actual values of room fields for each room' AUTO_INCREMENT=1 ;
+  PRIMARY KEY  (`value_id`),
+  UNIQUE KEY `attr` (`room_id`,`field_id`),
+  KEY `field_id` (`field_id`),
+  KEY `room_id` (`room_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Actual values of room fields for each room' AUTO_INCREMENT=6 ;
 
 --
 -- Dumping data for table `roomattrs-values`
 --
 
+INSERT INTO `roomattrs-values` (`value_id`, `room_id`, `field_id`, `value`) VALUES
+(4, 4, 13, 'blah three'),
+(5, 4, 14, '1');
 
 -- --------------------------------------------------------
 
@@ -489,10 +514,10 @@ CREATE TABLE `rooms` (
 --
 
 INSERT INTO `rooms` (`room_id`, `category_id`, `user_id`, `order`, `name`, `description`, `bookable`, `photo`, `created`) VALUES
-(1, 1, 121, NULL, 'ICT1', 'ICT1', 1, NULL, NULL),
+(1, 1, 121, NULL, 'ICT1', 'ICT Suite / Eve Winstanley', 1, '0', NULL),
 (2, 2, 1, NULL, 'RM42', NULL, 1, NULL, NULL),
-(3, 1, NULL, NULL, 'ICT2', 'ICT2', 1, '0', NULL),
-(4, NULL, NULL, NULL, 'Foo', 'Foo3', 0, '149f6c931a44e8.#.JPG', NULL),
+(3, 1, NULL, NULL, 'ICT2', 'Room 13 / Chris Hudson', 1, '0', NULL),
+(4, NULL, NULL, NULL, 'Foo', 'Foo3', 0, NULL, NULL),
 (5, 2, NULL, NULL, 'Tech Suite', 'Tech Suite', 0, NULL, '2009-02-13');
 
 -- --------------------------------------------------------
@@ -603,9 +628,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `password`, `displayname`, `cookiekey`, `lastlogin`, `ldap`, `created`) VALUES
-(1, 1, 1, 'admin', 'craig.rodway@gmail.com', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Craig Rodway', NULL, '2009-05-03 19:09:14', 0, '0000-00-00'),
+(1, 1, 1, 'admin', 'craig.rodway@gmail.com', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Craig Rodway', NULL, '2009-05-05 16:21:12', 0, '0000-00-00'),
 (12, 2, 1, 'craig.rodway', 'craig.rodway@bishopbarrington.net', NULL, 'Mr Rodway', NULL, '2009-01-09 16:12:48', 1, '2009-01-09'),
-(19, 2, 1, 'test.one', 'test.one@bishopbarrington.net', NULL, 'Mr T One', NULL, '2009-04-23 12:27:53', 1, '2009-01-14'),
+(19, 2, 1, 'test.one', 'test.one@bishopbarrington.net', NULL, 'Mr T One', NULL, '2009-05-05 09:28:33', 1, '2009-01-14'),
 (22, 2, 1, 'test.three', 'test.three@bishopbarrington.net', NULL, 'Mr T Three', NULL, '2009-01-14 10:56:57', 1, '2009-01-14'),
 (24, 2, 1, 'test.two', 'test.two@bishopbarrington.net', NULL, 'Mr T Two', NULL, '2009-01-26 16:45:49', 1, '2009-01-26'),
 (112, 2, 0, 'g.harrison100', 'g.harrison100@bishopbarrington.net', '39ccb32d95edfdbcd882f2b01809724ec640ea16', 'g.harrison100', NULL, '0000-00-00 00:00:00', 0, '2009-01-30'),
@@ -663,7 +688,7 @@ CREATE TABLE `usersactive` (
 --
 
 INSERT INTO `usersactive` (`user_id`, `timestamp`) VALUES
-(1, 1241379996);
+(1, 1241789654);
 
 -- --------------------------------------------------------
 
@@ -816,6 +841,19 @@ ALTER TABLE `room-permissions`
   ADD CONSTRAINT `room-permissions_ibfk_3` FOREIGN KEY (`department_id`) REFERENCES `departments` (`department_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Constraints for table `roomattrs-options`
+--
+ALTER TABLE `roomattrs-options`
+  ADD CONSTRAINT `roomattrs-options_ibfk_1` FOREIGN KEY (`field_id`) REFERENCES `roomattrs-fields` (`field_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `roomattrs-values`
+--
+ALTER TABLE `roomattrs-values`
+  ADD CONSTRAINT `roomattrs-values_ibfk_1` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`room_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `roomattrs-values_ibfk_2` FOREIGN KEY (`field_id`) REFERENCES `roomattrs-fields` (`field_id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `rooms`
 --
 ALTER TABLE `rooms`
@@ -853,3 +891,5 @@ ALTER TABLE `weekdates`
 --
 ALTER TABLE `weeks`
   ADD CONSTRAINT `weeks_ibfk_1` FOREIGN KEY (`year_id`) REFERENCES `years` (`year_id`) ON DELETE CASCADE;
+
+SET FOREIGN_KEY_CHECKS=1;

@@ -32,8 +32,24 @@ class Configure extends Controller {
 	
 	
 	
+	/**
+	 * Link definitions of pages in this section
+	 */
+	function subnav(){
+		$subnav = array();
+		// Other pages in this parent section
+		$subnav[] = array('configure/general', 'General', 'configure');
+		$subnav[] = array('configure/authentication', 'Authentication', 'configure');
+		if($this->settings->ldap() == TRUE){
+			$subnav[] = array('configure/ldapgroups', 'LDAP Groups', 'configure');
+		}
+		return $subnav;
+	}
 	
-	function index($tab = 'conf-main'){
+	
+	
+	
+	/*function index($tab = 'conf-main'){
 		$this->auth->check('configure');
 		$body['tab'] = ($this->session->flashdata('tab')) ? $this->session->flashdata('tab') : $tab;
 		$body['conf']['main'] = $this->settings->get_all('main');
@@ -44,6 +60,59 @@ class Configure extends Controller {
 		$tpl['title'] = 'Configure';
 		$tpl['pagetitle'] = 'Configure classroombookings';
 		$tpl['body'] = $this->load->view('configure/conf.index.php', $body, TRUE);
+		$this->load->view($this->tpl, $tpl);
+	}*/
+	function index(){
+		$this->general();
+	}
+	
+	
+	/*
+	 * Page: General
+	 */
+	function general(){
+		$this->auth->check('configure');
+		$body['main'] = $this->settings->get_all('main');
+		$tpl['subnav'] = $this->subnav();
+		$tpl['title'] = 'Configure';
+		$tpl['pagetitle'] = 'Configure classroombookings';
+		$tpl['body'] = $this->load->view('configure/conf.main.php', $body, TRUE);
+		$this->load->view($this->tpl, $tpl);
+	}
+	
+	
+	
+	
+	/**
+	 * Page: Authentication
+	 */
+	function authentication(){
+		$this->auth->check('configure');
+		$body['auth'] = $this->settings->get_all('auth');
+		$body['groups'] = $this->security->get_groups_dropdown();
+		$body['ldapgroups'] = $this->security->get_ldap_groups();		
+		$tpl['subnav'] = $this->subnav();
+		$tpl['title'] = 'Configure';
+		$tpl['pagetitle'] = 'Configure authentication';
+		$tpl['body'] = $this->load->view('configure/conf.auth.php', $body, TRUE);
+		$this->load->view($this->tpl, $tpl);
+	}
+	
+	
+	
+	
+	/**
+	 * Page: LDAP groups
+	 */
+	function ldapgroups(){
+		$this->auth->check('configure');
+		$body['auth'] = $this->settings->get_all('auth');
+		$body['groups'] = $this->security->get_groups_dropdown();
+		$body['ldapgroups'] = $this->security->get_ldap_groups();
+		$tpl['subnav'] = $this->subnav();
+		$tpl['title'] = 'Configure';
+		$tpl['pagetitle'] = 'Configure LDAP groups';
+		$tpl['body'] = $this->load->view('configure/conf.ldap-groups.php', $body, TRUE);
 		$this->load->view($this->tpl, $tpl);
 	}
 	
@@ -62,7 +131,8 @@ class Configure extends Controller {
 		if($this->form_validation->run() == FALSE){
 			
 			// Validation failed
-			$this->index('conf-main');
+			#$this->index('conf-main');
+			$this->general();
 			
 		} else {
 			
@@ -75,8 +145,8 @@ class Configure extends Controller {
 			$this->settings->save('main', $data);
 			
 			$this->session->set_flashdata('flash', $this->msg->info($this->lang->line('CONF_MAIN_SAVE_OK')));
-			$this->session->set_flashdata('tab', 'conf-main');
-			redirect('configure');
+			#$this->session->set_flashdata('tab', 'conf-main');
+			redirect('configure/general');
 			
 		}
 		
@@ -108,7 +178,8 @@ class Configure extends Controller {
 		if($this->form_validation->run() == FALSE){
 			
 			// Validation failed
-			$this->index('conf-auth');
+			#$this->index('conf-auth');
+			$this->authentication();
 			
 		} else {
 			
@@ -150,8 +221,8 @@ class Configure extends Controller {
 				$this->msg->add('info', $this->lang->line('CONF_AUTH_SAVE_OK'));
 			}
 			
-			$this->session->set_flashdata('tab', 'conf-auth');
-			redirect('configure');
+			#$this->session->set_flashdata('tab', 'conf-auth');
+			redirect('configure/authentication');
 			
 		}
 		
@@ -277,7 +348,7 @@ class Configure extends Controller {
 		// Get auth settings
 		$auth = $this->settings->get_all('auth');
 		// Set the tab for when returning to config page
-		$this->session->set_flashdata('tab', 'conf-ldap-groups');
+		#$this->session->set_flashdata('tab', 'conf-ldap-groups');
 		
 		$base = $this->input->post('ldapbase');
 		$user = $this->input->post('user');
@@ -292,7 +363,7 @@ class Configure extends Controller {
 		$connect = ldap_connect($auth->ldaphost, $auth->ldapport);
 		if(!$connect){
 			$this->msg->add('err', 'Could not connect to LDAP server.');
-			redirect('configure');
+			redirect('configure/ldapgroups');
 		}
 		
 		// Now go through the supplied DNs and see if we can bind as the user in them
@@ -357,8 +428,6 @@ class Configure extends Controller {
 		// Check if we need to add any groups to begin with...
 		if(count($groups_to_add) > 0){
 			
-
-			
 			$sql = 'INSERT INTO ldapgroups (name) VALUES ';
 			foreach($groups_to_add as $group_to_add){
 				$sql .= "('$group_to_add'),";
@@ -379,7 +448,7 @@ class Configure extends Controller {
 			
 		}
 		
-		redirect('configure');
+		redirect('configure/ldapgroups');
 		
 	}
 	

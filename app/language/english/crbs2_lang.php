@@ -53,10 +53,15 @@ $lang['YEARS_ACTIVATE_NOID'] = 'You must supply a year ID to make it active.';
 $lang['ROOMS_ADD_OK'] = 'The room was added successfully';
 $lang['ROOMS_ADD_FAIL'] = 'An error occured and the room could not be added (%s).';
 $lang['ROOMS_EDIT_OK'] = 'The room details were saved successfully.';
-$lang['ROOMS_EDIT_FAIL'] = 'An error occured and the room details could not be  saved.';
+$lang['ROOMS_EDIT_FAIL'] = 'An error occured and the room details could not be saved (%s).';
 
 $lang['ROOMS_PERMS_ADD_OK'] = 'The room permission entry was added successfully.';
 $lang['ROOMS_PERMS_ADD_FAIL'] = 'An error occured and the room permission entry could not be added.';
+
+$lang['FIELDS_ADD_OK'] = 'The field was added successfully.';
+$lang['FIELDS_ADD_FAIL'] = 'An error occured and the field could not be added (%s).';
+$lang['FIELDS_EDIT_OK'] = 'The field details were saved successfully';
+$lang['FIELDS_EDIT_FAIL'] = 'An error occured and the field details could not be saved (%s).';
 
 // Misc
 $lang['PERMISSIONS_EFFECTIVE_USER_FAIL'] = 'Could not find the given user, or no user ID supplied.';

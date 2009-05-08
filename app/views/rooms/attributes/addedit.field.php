@@ -12,6 +12,7 @@ $t = 1;
 
 <table class="form" cellpadding="6" cellspacing="0" border="0" width="100%">
 	
+	
 	<tr>
 		<td class="caption">
 			<label for="name" class="r" accesskey="N"><u>N</u>ame</label>
@@ -33,28 +34,41 @@ $t = 1;
 	</tr>
 	
 	
-	<tr>
+	<tr<?php echo (isset($field->type)) ? ' style="display:none"' : ''; ?>>
 		<td class="caption">
-			<label for="type" class="r" accesskey="S"><u>T</u>ype</label>
+			<label for="type" class="r" accesskey="T"><u>T</u>ype</label>
 		</td>
 		<td class="field">
 			<?php
-			unset($input);
-			$input['accesskey'] = 'S';
-			$input['name'] = 'date_start';
-			$input['id'] = 'date_start';
-			$input['size'] = '15';
-			$input['maxlength'] = '10';
-			$input['tabindex'] = $t;
-			$input['class'] = 'date';
-			$input['value'] = @set_value($input['name'], $year->date_start);
-			echo form_input($input);
+			$js = 'onchange="toggleoptions();"';
+			echo form_dropdown('type', $fieldtypes, set_value('type', isset($field->type) ? $field->type : 'text'), 'id="type" tabindex="'.$t.'" '.$js.'');
 			$t++;
 			?>
 		</td>
 	</tr>
 	
 	
+	<tr id="field-options">
+		<td class="caption">
+			<label for="options" accesskey="O" title="Enter possible options for the drop-down list, separated by new lines or commas."><u>O</u>ptions</label>
+		</td>
+		<td class="field">
+			<?php
+			unset($input);
+			$input['accesskey'] = 'O';
+			$input['name'] = 'options';
+			$input['id'] = 'options';
+			$input['cols'] = '40';
+			$input['rows'] = '6';
+			$input['maxlength'] = '255';
+			$input['tabindex'] = $t;
+			$input['autocomplete'] = 'off';
+			$input['value'] = @set_value($input['name'], implode("\n", $field->options));
+			echo form_textarea($input);
+			$t++;
+			?>
+		</td>
+	</tr>
 	
 	
 	<?php
@@ -72,3 +86,16 @@ $t = 1;
 
 </table>
 </form>
+
+
+<script type="text/javascript">
+// Show the options table row if the type is a drop-down
+function toggleoptions(){
+	if($('#type').val() == 'select'){
+		$('#field-options').show();
+	} else {
+		$('#field-options').hide();
+	}
+}
+toggleoptions();
+</script>

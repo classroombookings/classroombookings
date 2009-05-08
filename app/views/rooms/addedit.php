@@ -18,5 +18,12 @@ if($errors){
 		<?php $this->load->view('rooms/addedit.permissions.php', $room); ?>
 	</div>
 	<?php } ?>
+	
+	<?php if($room_id != NULL && $this->auth->check('rooms.attrs.values', TRUE) && !empty($attrs)){ ?>
+	<div class="tabbertab<?php echo ($tab == 'attrs') ? ' tabbertabdefault' : ''; ?>">
+		<h2>Room attributes</h2>
+		<?php $this->load->view('rooms/addedit.attrs.php', array('room' => $room, 'attrs' => $attrs)); ?>
+	</div>
+	<?php } ?>
 
 </div>

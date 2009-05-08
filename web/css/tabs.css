@@ -14,9 +14,9 @@ li.tabberactive = the active tab
 --------------------------------------------------*/
 ul.tabbernav{
 	margin:0;
-	padding: 6px 0;
-	border-bottom: 1px solid #468ED8;
-	font-weight:normal;
+	padding:10px 0 5px 0;
+	font-weight:bold;
+	background:#C0DDB0;
 }
 
 ul.tabbernav li{
@@ -26,11 +26,10 @@ ul.tabbernav li{
 }
 
 ul.tabbernav li a{
-	padding: 6px 1em;
-	margin-left: 8px;
-	border-left: 0px solid #fff;
-	border-bottom: none;
-	background:#AFCEED;
+	padding:6px 1em;
+	margin-left:8px;
+	border:0;
+	background:#C0DDB0;
 	text-decoration: none;
 	color:#000;
 }
@@ -45,10 +44,8 @@ ul.tabbernav li a:hover{
 }
 
 ul.tabbernav li.tabberactive a{
-	background-color:#468ED8;
-	color:#fff;
-	border-bottom:1px solid #468ED8;
-	font-weight:bold;
+	background-color:#FFF;
+	color:#000;
 }
 
 ul.tabbernav li.tabberactive a:hover{

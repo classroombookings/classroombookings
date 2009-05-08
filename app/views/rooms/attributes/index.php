@@ -19,7 +19,8 @@ if($attrs != 0){
 	?>
 	<tr>
 		<td class="x"><?php echo anchor('rooms/attributes/edit/'.$attr->field_id, $attr->name) ?></td>
-		<td class="x"><?php echo $attr->type ?></td>
+		<td class="x"><?php echo $fieldtypes[$attr->type] ?></td>
+		<td class="x"><?php echo (isset($attr->options)) ? implode(", ", $attr->options) : ''; ?></td>
 		<td class="il">
 		<?php
 		$actiondata[0] = array('rooms/attributes/delete/'.$attr->field_id, 'Delete', 'cross_sm.gif' );
