@@ -8,13 +8,17 @@ echo form_open('rooms/manage/save_attrs', NULL, array('room_id' => $room_id));
 
 // Start tabindex
 $t = 1;
+
+// Get room attribute values
+$values = $room->attrs;
+
 ?>
 
 <table class="form" cellpadding="6" cellspacing="0" border="0" width="100%">
 
 
 	<?php
-	#print_r($attrs);
+	#print_r($room['attrs']);
 	
 	/*
 		Iterate through all the fields.
@@ -24,10 +28,10 @@ $t = 1;
 	$t = 1;
 	foreach($attrs as $attr){
 		unset($data);
-		$data['name'] = sprintf('field[%d]', $attr->field_id);
+		$data['name'] = sprintf('fields[%d]', $attr->field_id);
 		$data['attr'] = $attr;
-		$data['t'] = $t;
-		$data['values'] = array();		// This needs to be a 2D array of the values for this room's fields
+		$data['t'] = $t; 
+		$data['values'] = $values;	//array();		// This needs to be a 2D array of the values for this room's fields
 			// Like [field_id] = actual value
 		switch($attr->type){
 			case 'text':
@@ -56,4 +60,4 @@ $t = 1;
 	
 	
 </table>
-</form>
+<?php echo form_close() ?>

@@ -1,0 +1,16 @@
+/**
+ * Styles for ColorPicker
+ */
+
+.colorpickerControl {
+	border:				1px solid gray;
+	background-color:	#efefef;
+	padding:			3px;
+}
+
+.colorpickerControl input {
+	font-size:			8pt;
+	margin:0;
+}
+
+.colorpickerControl *{padding:0;margin:0;}

@@ -103,6 +103,8 @@ class Rooms_model extends Model{
 			if($query->num_rows() == 1){
 				// Got the room - get all fields
 				$room = $query->row();
+				// Get the field values for this room
+				$room->attrs = $this->get_attr_values($room_id);
 				// Get the permissions for this room
 				#$room->permissions = $this->get_room_permissions($room_id);
 				return $room;
@@ -713,6 +715,85 @@ class Rooms_model extends Model{
 		} else {
 			return TRUE;
 		}
+		
+	}
+	
+	
+	
+	
+	/**
+	 * Get the attribute values for a given room
+	 *
+	 * @param	int		room_id		Room ID
+	 * @return	array
+	 */
+	function get_attr_values($room_id){
+		
+		if(empty($room_id) OR !is_numeric($room_id)){
+			$this->lasterr = 'Invalid Room ID';
+			return FALSE;
+		}
+		
+		$sql = 'SELECT field_id, value FROM `roomattrs-values` WHERE room_id = ?';
+		$query = $this->db->query($sql, array($room_id));
+		
+		if($query->num_rows() > 0){
+			
+			$values = array();
+			$row = $query->result();
+			foreach($row as $item){
+				$values[$item->field_id] = $item->value;
+			}
+			return $values;
+			
+		} else {
+			
+			$this->lasterr = 'No values exist for the supplied room';
+			return array();
+			
+		}
+		
+	}
+	
+	
+	
+	
+	/**
+	 * Save room attribute values
+	 *
+	 * @param	int		room_id		Room ID that the values belong to
+	 * @param	array	fields		Array of field_id => value
+	 * @return	bool
+	 */
+	function save_attr_values($room_id, $fields){
+		
+		#die($room_id . print_r($values));
+		
+		if(empty($room_id) OR !is_numeric($room_id)){
+			$this->lasterr = 'No Room ID supplied.';
+			return FALSE;
+		}
+		
+		if(empty($fields)){
+			$this->lasterr = 'No values to update attributes with.';
+			return FALSE;
+		}
+		
+		$sql = 'REPLACE INTO `roomattrs-values` (room_id, field_id, value) VALUES';
+		foreach($fields as $field_id => $value){
+			$sql .= sprintf("(%d, %d, '%s'),", $room_id, $field_id, $value);
+		}
+		$sql = preg_replace('/,$/', '', $sql);
+		
+		$query = $this->db->query($sql);
+		if($this->db->affected_rows() > 0){
+			return TRUE;
+		} else {
+			$this->lasterr = 'Failed to update room attribute values.';
+			return FALSE;
+		}
+		
+		#die($sql);
 		
 	}
 	

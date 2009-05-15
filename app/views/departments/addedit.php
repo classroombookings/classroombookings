@@ -69,11 +69,16 @@ $t = 1;
 			$input['size'] = '10';
 			$input['maxlength'] = '7';
 			$input['tabindex'] = $t;
+			$input['class'] = 'colorpicker';
 			$input['value'] = @set_value('colour', $department->colour);
 			echo form_input($input);
 			$t++;
 			?>
-			<div id="cp"></div>
+			<script type="text/javascript"><!--
+			new Control.ColorPicker('colour');
+			// -->
+			</script>
+			<?php /*<div id="cp"></div>
 			<script type="text/javascript"><!--
 			$(document).ready(function(){
 				$('#cp').colorPicker({
@@ -82,7 +87,7 @@ $t = 1;
 				});
 				$('#colour').css("display", "none");
 			});
-			// --></script>
+			// --></script> */ ?>
 		</td>
 	</tr>
 	

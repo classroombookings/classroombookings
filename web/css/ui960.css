@@ -15,17 +15,24 @@
 
 
 @import "buttons.css";
-@import "jcolour.css";
+/*@import "jcolour.css";
 @import "facebox.css";
-@import "tabs.css";
+/*@import "tabs.css";
 @import "date_input.css";
 @import "timepicker.css";
-@import "autocomplete.css";
+@import "autocomplete.css";*/
+
+
+/* proto js stuff */
+@import "proto/colorpicker.css";
+@import "proto/tabs.css";
+@import "proto/calendarview.css";
+@import "proto/window.css";
 
 
 
 input,textarea,select{
-	font:100% Arial, Lucida Grande, Verdana, Sans-serif;
+	font:100% Tahoma,Arial, "Lucida Grande", Verdana, Sans-serif;
 }
 
 /*h1{font-size:200%;font-weight:bold;margin:0 0 10px 0;}*/
@@ -296,8 +303,8 @@ table.form tr.h td, table.checks tr.h td{
 	/*background:#eee;color:#000;font-size:120%;font-weight:bold;padding:4px;*/
 	font-size:135%;color:#60aa37;font-weight:bold;padding:15px 4px 10px 0;
 }
-table.form tr td{padding:8px 4px;}
-table.form td.title{
+table.form>tbody>tr>td{padding:8px 4px;}
+table.form>tbody>tr>td.title{
 	font-weight:bold;
 	color:#fff;
 }

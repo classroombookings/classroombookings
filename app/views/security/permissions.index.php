@@ -7,12 +7,22 @@ if($errors){
 
 <p>Listed below are the groups that exist within Classroombookings. In each tab, it is possible to configure what users belonging to that group are allowed and not allowed to do.</p>
 
-<div class="tabber" id="tabs-permissions">
+<ul id="pagetabs" class="subsection_tabs">
+<?php
+foreach($groups as $group_id => $group_name){
+	echo '<li class="tab"><a href="'.current_url().'#g'.$group_id.'">'.$group_name.'</a></li>';
+}
+?>
+</ul>
+
+<!-- <div class="tabber" id="tabs-permissions"> -->
+
 
 	<?php
 	foreach($groups as $group_id => $group_name){
-		echo '<div class="tabbertab' . (("$tab" == "$group_id") ? ' tabbertabdefault' : '') . '">';
-		echo '<h2>' . $group_name . '</h2>';
+		#echo '<div class="tabbertab' . (("$tab" == "$group_id") ? ' tabbertabdefault' : '') . '">';
+		echo '<div id="g'.$group_id.'">';
+		#echo '<h2>' . $group_name . '</h2>';
 		echo form_open('security/permissions/save', NULL, array('group_id' => $group_id));
 	?>
 			

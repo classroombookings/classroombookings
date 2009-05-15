@@ -13,17 +13,17 @@ $t = 1;
 <p>Choose the appropriate heading for each column you want to import. Untick the rows that you do not want to import.</p>
 
 <p>
-	(<a href="#" onclick="$('.check').attr('checked', 'checked'); return false;">Tick all rows</a> | 
-	<a href="#" onclick="$('.check').attr('checked', false); return false;">Untick all rows</a>)
+	(<a href="#" onclick="tickall();return false;">Tick all rows</a> | 
+	<a href="#" onclick="untickall();return false;">Untick all rows</a>)
 </p>
 
 <div style="overflow:scroll;max-height:500px;">
 
-	<table class="list" width="99%" cellpadding="0" cellspacing="0" border="0">
+	<table class="list" width="100%" cellpadding="0" cellspacing="0" border="0">
 		
 		<thead>
 		<tr class="heading">
-			<td class="h" width="16" title="Import/Not">&nbsp;</td>
+			<td class="h" width="16">&nbsp;</td>
 			<?php
 			$options['ignore'] = '(Ignore)';
 			$options['username'] = 'Username';
@@ -37,7 +37,7 @@ $t = 1;
 			$col = 0;
 			for($i = 0; $i<count($csvdata); $i++){
 				$select = form_dropdown("col[{$col}]", $options, '0', 'tabindex="'.$t.'"');
-				echo '<td class="h" title="column" width="100">' . $select . '</td>';
+				echo '<td class="h" title="column">' . $select . '</td>';
 				$col++;
 				$t++;
 			}
@@ -97,5 +97,13 @@ $this->load->view('parts/buttons', array('buttons' => $buttons));
 </form>
 
 <script type="text/javascript">
-$('.check').attr('checked', 'checked');
+function tickall(){
+	$$('input.check').each(function(e){e.checked = true});
+}
+
+function untickall(){
+	$$('input.check').each(function(e){e.checked = false});
+}
+
+document.observe('dom:loaded', function(){ tickall(); });
 </script>

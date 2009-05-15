@@ -171,7 +171,7 @@ if($errors){
 
 
 <script type="text/javascript">
-$.extend(DateInput.DEFAULT_OPTS, {
+/* $.extend(DateInput.DEFAULT_OPTS, {
 	stringToDate: function(string){
 		var matches;
 		if(matches = string.match(/^(\d{4,4})-(\d{2,2})-(\d{2,2})$/)){
@@ -191,5 +191,17 @@ $.extend(DateInput.DEFAULT_OPTS, {
 
 $(function(){
 	$(".date").date_input();
+}); */
+
+
+// Set up calendars on all .date input fields
+document.observe('dom:loaded', function(){
+	$$('input.date').each(function(el){
+		Calendar.setup({
+			dateField:el.id,
+			triggerElement:el.id
+		});
+	});
 });
+</script>
 </script>

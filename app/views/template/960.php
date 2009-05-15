@@ -29,7 +29,7 @@ if(isset($sidebar)){
 	<link rel="stylesheet" type="text/css" media="screen" href="css/ui960.css" />
 	<style type="text/css">
 	body{background:#fff;	/*#F4F4F4;*/}
-	#t{background: #069;}
+	#t{background:url(img/template/topgrad3.png) top left repeat-x #069;}
 	#t p{margin:0.5em 0;}
 	#tabs{/*background:#AFCEED;*/}
 	
@@ -94,6 +94,15 @@ if(isset($sidebar)){
 		text-align:right;
 	}
 	
+	
+	#tabs li a, #tabs2 li a{
+		-moz-border-radius:3px 3px 0 0;
+	}
+	
+	ul#pagetabs li a{
+		-moz-border-radius:4px 4px 0 0;
+	}
+	
 	<?php
 	if(isset($subnav)){
 		echo '#tabs .selected, #tabs a:hover{background:#AFCEED;color:#000;}';
@@ -113,14 +122,16 @@ if(isset($sidebar)){
 	}
 	?>
 	</style>
-	<script type="text/javascript">
+	
+	<?php
+	/*<script type="text/javascript">
 	var tabberOptions = {
 		'cookie':"crbstabber",
 		'onLoad':function(argsObj){
 			//var t = argsObj.tabber;
 			//var i;
 			//if(t.id){t.cookie = t.id + t.cookie;}
-			/* If a cookie was previously set, restore the active tab */
+			//// If a cookie was previously set, restore the active tab
 			//i = parseInt(getCookie(t.cookie));
 			//if (isNaN(i)) { return; }
 			//t.tabShow(i);
@@ -140,6 +151,34 @@ if(isset($sidebar)){
 	<script type="text/javascript" src="js/jquery.date_input.min.js"></script>
 	<script type="text/javascript" src="js/timepicker.js"></script>
 	<script type="text/javascript" src="js/jquery.autocomplete.js"></script>
+	*/
+	?>
+	
+	<script type="text/javascript" src="js/proto/prototype-1.6.0.3.js"></script>
+	<script type="text/javascript" src="js/proto/lp/livepipe.js"></script>
+	<script type="text/javascript" src="js/proto/lp/hotkey.js"></script>
+	<script type="text/javascript" src="js/proto/lp/event_behavior.js"></script>
+	<script type="text/javascript" src="js/proto/lp/tabs.js"></script>
+	<script type="text/javascript" src="js/proto/lp/window.js"></script>
+	<script type="text/javascript" src="js/proto/prototype-base-extensions.js"></script>
+	<script type="text/javascript" src="js/proto/colorpicker.js"></script>
+	<script type="text/javascript" src="js/proto/calendarview.js"></script>
+	<script type="text/javascript">
+	document.observe('dom:loaded',function(){
+		if($('pagetabs')){ new Control.Tabs('pagetabs', {<?php if(!empty($tab)){echo "defaultTab:'$tab'";} ?>}); }
+		
+		$$('label').each(function(el){
+			var tooltip = new Control.ToolTip($(el), $(el).title,{
+				className:'tooltip',
+				offsetLeft:50,
+				hover:true
+			});
+			el.writeAttribute('title', '');
+		});
+	});
+	</script>
+	
+	
 </head>
 
 <body>

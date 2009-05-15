@@ -115,6 +115,9 @@ class Manage extends Controller{
 		
 		$body['tab'] = ($this->session->flashdata('tab')) ? $this->session->flashdata('tab') : $tab;
 		$body['room'] = $this->rooms_model->get($room_id);
+		
+		#die(print_r($body['room']));
+		
 		$body['room_id'] = $room_id;
 		$body['attrs'] = $this->rooms_model->get_attr_field();
 		
@@ -538,7 +541,41 @@ class Manage extends Controller{
 	
 	
 	function save_attrs(){
-		die(print_r($_POST));
+		
+		#die(print_r($_POST));
+		
+		/*
+			TODO
+			
+			When unticking a check box, we need to ensure that it's unchecked value is updated in the DB.
+			At present, an unticked box's field will not be present in the $_POST array; so the old value remains.
+		*/
+		
+		$room_id = $this->input->post('room_id');
+		
+		$this->form_validation->set_rules('room_id', 'Room ID');
+		$this->form_validation->set_error_delimiters('<li>', '</li>');
+		
+		if($this->form_validation->run() == FALSE){
+			
+			$this->edit($room_id, 'attrs');
+			
+		} else {
+			
+			// Update the values for this room
+			$fields = $this->input->post('fields');
+			$update = $this->rooms_model->save_attr_values($room_id, $fields);
+			
+			if($update == TRUE){
+				$this->msg->add('info', $this->lang->line('ROOMS_ATTRVALS_SAVE_OK'));
+			} else {
+				$this->msg->add('err', sprintf($this->lang->line('ROOMS_ATTRVALS_FAIL', $this->rooms_model->lasterr)));
+			}
+			
+		}
+		
+		redirect('rooms/manage');
+		
 	}
 	
 	

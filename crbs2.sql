@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: May 08, 2009 at 04:02 PM
+-- Generation Time: May 15, 2009 at 04:01 PM
 -- Server version: 5.0.51
 -- PHP Version: 5.2.6
 
@@ -42,18 +42,18 @@ CREATE TABLE `departments` (
 --
 
 INSERT INTO `departments` (`department_id`, `name`, `description`, `colour`, `created`) VALUES
-(1, 'English', '', '#204A87', '2008-12-19'),
-(2, 'Maths', '', '#C4A000', '2008-12-19'),
-(3, 'Science', '', '#729FCF', '2008-12-19'),
-(4, 'ICT', '', '#BABDB6', '2008-12-19'),
-(5, 'Music', '', '#F57900', '2008-12-19'),
-(6, 'History', '', '#8F5902', '2008-12-19'),
-(7, 'Art', '', '#A40000', '2008-12-19'),
-(9, 'RE', '', '#EF2929', '2008-12-19'),
+(1, 'English', '', '#339966', '2008-12-19'),
+(2, 'Maths', '', '#FFCC00', '2008-12-19'),
+(3, 'Science', '', '#33CCCC', '2008-12-19'),
+(4, 'ICT', '', '#C0C0C0', '2008-12-19'),
+(5, 'Music', '', '#008080', '2008-12-19'),
+(6, 'History', '', '#993300', '2008-12-19'),
+(7, 'Art', '', '#FF99CC', '2008-12-19'),
+(9, 'RE', '', '#FF0000', '2008-12-19'),
 (10, 'Geography', '', '#8AE234', '2008-12-19'),
-(11, 'Languages', '', '#AD7FA8', '2009-01-09'),
-(12, 'PE', '', '#2E3436', '2009-01-09'),
-(13, 'Technology', '', '#FCE94F', '2009-01-09');
+(11, 'Languages', '', '#CC99FF', '2009-01-09'),
+(12, 'PE', '', '#000080', '2009-01-09'),
+(13, 'Technology', '', '#FFFF00', '2009-01-09');
 
 -- --------------------------------------------------------
 
@@ -119,7 +119,7 @@ CREATE TABLE `groups` (
 --
 
 INSERT INTO `groups` (`group_id`, `name`, `description`, `bookahead`, `quota_num`, `quota_type`, `permissions`, `created`) VALUES
-(1, 'Administrators', 'Default group for administrator users', 0, NULL, NULL, 'a:63:{i:0;s:9:"dashboard";i:1;s:18:"dashboard.viewdept";i:2;s:17:"dashboard.viewown";i:3;s:9:"myprofile";i:4;s:9:"configure";i:5;s:10:"changeyear";i:6;s:8:"allrooms";i:7;s:8:"bookings";i:8;s:19:"bookings.create.one";i:9;s:21:"bookings.create.recur";i:10;s:23:"bookings.delete.one.own";i:11;s:29:"bookings.delete.one.roomowner";i:12;s:31:"bookings.delete.recur.roomowner";i:13;s:5:"rooms";i:14;s:9:"rooms.add";i:15;s:10:"rooms.edit";i:16;s:12:"rooms.delete";i:17;s:11:"rooms.attrs";i:18;s:18:"rooms.attrs.values";i:19;s:17:"rooms.permissions";i:20;s:8:"academic";i:21;s:5:"years";i:22;s:9:"years.add";i:23;s:10:"years.edit";i:24;s:12:"years.delete";i:25;s:7:"periods";i:26;s:11:"periods.add";i:27;s:12:"periods.edit";i:28;s:14:"periods.delete";i:29;s:5:"weeks";i:30;s:9:"weeks.add";i:31;s:10:"weeks.edit";i:32;s:12:"weeks.delete";i:33;s:19:"weeks.ayears.manage";i:34;s:16:"weeks.ayears.set";i:35;s:5:"terms";i:36;s:9:"terms.add";i:37;s:10:"terms.edit";i:38;s:12:"terms.delete";i:39;s:8:"holidays";i:40;s:12:"holidays.add";i:41;s:13:"holidays.edit";i:42;s:15:"holidays.delete";i:43;s:11:"departments";i:44;s:15:"departments.add";i:45;s:16:"departments.edit";i:46;s:18:"departments.delete";i:47;s:7:"reports";i:48;s:21:"reports.owndepartment";i:49;s:22:"reports.alldepartments";i:50;s:15:"reports.ownroom";i:51;s:16:"reports.allrooms";i:52;s:13:"reports.other";i:53;s:5:"users";i:54;s:9:"users.add";i:55;s:10:"users.edit";i:56;s:12:"users.delete";i:57;s:12:"users.import";i:58;s:6:"groups";i:59;s:10:"groups.add";i:60;s:11:"groups.edit";i:61;s:13:"groups.delete";i:62;s:11:"permissions";}', '0000-00-00'),
+(1, 'Administrators', 'Default group for administrator users', 0, NULL, NULL, 'a:62:{i:0;s:9:"dashboard";i:1;s:18:"dashboard.viewdept";i:2;s:17:"dashboard.viewown";i:3;s:9:"myprofile";i:4;s:9:"configure";i:5;s:8:"allrooms";i:6;s:8:"bookings";i:7;s:19:"bookings.create.one";i:8;s:21:"bookings.create.recur";i:9;s:23:"bookings.delete.one.own";i:10;s:29:"bookings.delete.one.roomowner";i:11;s:31:"bookings.delete.recur.roomowner";i:12;s:5:"rooms";i:13;s:9:"rooms.add";i:14;s:10:"rooms.edit";i:15;s:12:"rooms.delete";i:16;s:11:"rooms.attrs";i:17;s:18:"rooms.attrs.values";i:18;s:17:"rooms.permissions";i:19;s:8:"academic";i:20;s:5:"years";i:21;s:9:"years.add";i:22;s:10:"years.edit";i:23;s:12:"years.delete";i:24;s:7:"periods";i:25;s:11:"periods.add";i:26;s:12:"periods.edit";i:27;s:14:"periods.delete";i:28;s:5:"weeks";i:29;s:9:"weeks.add";i:30;s:10:"weeks.edit";i:31;s:12:"weeks.delete";i:32;s:19:"weeks.ayears.manage";i:33;s:16:"weeks.ayears.set";i:34;s:5:"terms";i:35;s:9:"terms.add";i:36;s:10:"terms.edit";i:37;s:12:"terms.delete";i:38;s:8:"holidays";i:39;s:12:"holidays.add";i:40;s:13:"holidays.edit";i:41;s:15:"holidays.delete";i:42;s:11:"departments";i:43;s:15:"departments.add";i:44;s:16:"departments.edit";i:45;s:18:"departments.delete";i:46;s:7:"reports";i:47;s:21:"reports.owndepartment";i:48;s:22:"reports.alldepartments";i:49;s:15:"reports.ownroom";i:50;s:16:"reports.allrooms";i:51;s:13:"reports.other";i:52;s:5:"users";i:53;s:9:"users.add";i:54;s:10:"users.edit";i:55;s:12:"users.delete";i:56;s:12:"users.import";i:57;s:6:"groups";i:58;s:10:"groups.add";i:59;s:11:"groups.edit";i:60;s:13:"groups.delete";i:61;s:11:"permissions";}', '0000-00-00'),
 (2, 'Teaching Staff', 'Teachers from LDAP', 14, 6, 'day', 'a:7:{i:0;s:9:"dashboard";i:1;s:18:"dashboard.viewdept";i:2;s:17:"dashboard.viewown";i:3;s:9:"myprofile";i:4;s:8:"bookings";i:5;s:19:"bookings.create.one";i:6;s:23:"bookings.delete.one.own";}', '0000-00-00'),
 (4, 'Support staff', '', 14, 6, 'current', 'a:7:{i:0;s:9:"dashboard";i:1;s:18:"dashboard.viewdept";i:2;s:17:"dashboard.viewown";i:3;s:9:"myprofile";i:4;s:8:"bookings";i:5;s:19:"bookings.create.one";i:6;s:23:"bookings.delete.one.own";}', '2008-12-02'),
 (7, 'Guests', 'Default group for guests', 0, 1, 'current', 'a:1:{i:0;s:8:"bookings";}', '0000-00-00'),
@@ -372,7 +372,7 @@ CREATE TABLE `room-permissions` (
   KEY `group_id` (`group_id`),
   KEY `department_id` (`department_id`),
   KEY `room_id` (`room_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Permission entries for various objects on different rooms' AUTO_INCREMENT=11 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Permission entries for various objects on different rooms' AUTO_INCREMENT=14 ;
 
 --
 -- Dumping data for table `room-permissions`
@@ -380,8 +380,10 @@ CREATE TABLE `room-permissions` (
 
 INSERT INTO `room-permissions` (`entry_id`, `room_id`, `type`, `user_id`, `group_id`, `department_id`, `permissions`, `hash`) VALUES
 (6, 4, 'u', 121, NULL, NULL, 'a:1:{i:0;s:13:"bookings.view";}', '62082762a2271b7f2e05ce12c6ffe7ef'),
-(7, 4, 'g', NULL, 1, NULL, 'a:1:{i:0;s:21:"bookings.create.recur";}', '3de2b6372ee350c9bcca4a64d83b8a12'),
-(10, 5, 'e', NULL, NULL, NULL, 'a:1:{i:0;s:13:"bookings.view";}', '73eadfcb737ae0f288fca3f4e03cb2fa');
+(10, 5, 'e', NULL, NULL, NULL, 'a:1:{i:0;s:13:"bookings.view";}', '73eadfcb737ae0f288fca3f4e03cb2fa'),
+(11, 4, 'e', NULL, NULL, NULL, 'a:1:{i:0;s:13:"bookings.view";}', '39d40f538d89baaeea6ca1eb78dffad6'),
+(12, 4, 'g', NULL, 1, NULL, 'a:10:{i:0;s:13:"bookings.view";i:1;s:19:"bookings.create.one";i:2;s:21:"bookings.create.recur";i:3;s:22:"bookings.create.behalf";i:4;s:23:"bookings.delete.own.one";i:5;s:25:"bookings.delete.own.recur";i:6;s:25:"bookings.delete.other.one";i:7;s:27:"bookings.delete.other.recur";i:8;s:17:"bookings.edit.one";i:9;s:19:"bookings.edit.recur";}', 'a2b539ebd74dae502c261cb6f4e32829'),
+(13, 4, 'o', NULL, NULL, NULL, 'a:3:{i:0;s:13:"bookings.view";i:1;s:19:"bookings.create.one";i:2;s:21:"bookings.create.recur";}', 'fc8c066bd4e1bd039b21340119ce520e');
 
 -- --------------------------------------------------------
 
@@ -453,15 +455,19 @@ CREATE TABLE `roomattrs-values` (
   UNIQUE KEY `attr` (`room_id`,`field_id`),
   KEY `field_id` (`field_id`),
   KEY `room_id` (`room_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Actual values of room fields for each room' AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Actual values of room fields for each room' AUTO_INCREMENT=55 ;
 
 --
 -- Dumping data for table `roomattrs-values`
 --
 
 INSERT INTO `roomattrs-values` (`value_id`, `room_id`, `field_id`, `value`) VALUES
-(4, 4, 13, 'blah three'),
-(5, 4, 14, '1');
+(49, 4, 15, '29'),
+(50, 4, 16, '32'),
+(51, 4, 13, ''),
+(52, 4, 14, 'def'),
+(53, 4, 17, '1'),
+(54, 4, 18, '1');
 
 -- --------------------------------------------------------
 
@@ -517,7 +523,7 @@ INSERT INTO `rooms` (`room_id`, `category_id`, `user_id`, `order`, `name`, `desc
 (1, 1, 121, NULL, 'ICT1', 'ICT Suite / Eve Winstanley', 1, '0', NULL),
 (2, 2, 1, NULL, 'RM42', NULL, 1, NULL, NULL),
 (3, 1, NULL, NULL, 'ICT2', 'Room 13 / Chris Hudson', 1, '0', NULL),
-(4, NULL, NULL, NULL, 'Foo', 'Foo3', 0, NULL, NULL),
+(4, NULL, NULL, NULL, 'Foobar', 'Foo3', 0, '0', NULL),
 (5, 2, NULL, NULL, 'Tech Suite', 'Tech Suite', 0, NULL, '2009-02-13');
 
 -- --------------------------------------------------------
@@ -545,7 +551,7 @@ CREATE TABLE `settings-auth` (
 --
 
 INSERT INTO `settings-auth` (`preauthkey`, `preauthgroup_id`, `preauthemail`, `ldap`, `ldaphost`, `ldapport`, `ldapbase`, `ldapfilter`, `ldapgroup_id`, `ldaploginupdate`) VALUES
-('14ba16efe8ce9786aaa9ca15297f9dc802855476', 4, 'bishopbarrington.net', 1, 'bbs-svr-001', 389, 'ou=teaching staff, ou=bbs, ou=establishments, dc=bbarrington, dc=internal; ou=system administrators, ou=bbs, ou=establishments, dc=bbarrington, dc=internal', '(& (| (!(displayname=Administrator*)) (!(displayname=Admin*)) ) (cn=%u) )', 7, 1);
+('5faeb3797924c7598daf85cd70816a2c66be6994', 7, 'bishopbarrington.net', 1, 'bbs-svr-001', 389, 'ou=teaching staff, ou=bbs, ou=establishments, dc=bbarrington, dc=internal; ou=system administrators, ou=bbs, ou=establishments, dc=bbarrington, dc=internal', '(& (| (!(displayname=Administrator*)) (!(displayname=Admin*)) ) (cn=%u) )', 7, 1);
 
 -- --------------------------------------------------------
 
@@ -628,7 +634,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `password`, `displayname`, `cookiekey`, `lastlogin`, `ldap`, `created`) VALUES
-(1, 1, 1, 'admin', 'craig.rodway@gmail.com', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Craig Rodway', NULL, '2009-05-05 16:21:12', 0, '0000-00-00'),
+(1, 1, 1, 'admin', 'craig.rodway@gmail.com', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Craig Rodway', NULL, '2009-05-14 11:48:12', 0, '0000-00-00'),
 (12, 2, 1, 'craig.rodway', 'craig.rodway@bishopbarrington.net', NULL, 'Mr Rodway', NULL, '2009-01-09 16:12:48', 1, '2009-01-09'),
 (19, 2, 1, 'test.one', 'test.one@bishopbarrington.net', NULL, 'Mr T One', NULL, '2009-05-05 09:28:33', 1, '2009-01-14'),
 (22, 2, 1, 'test.three', 'test.three@bishopbarrington.net', NULL, 'Mr T Three', NULL, '2009-01-14 10:56:57', 1, '2009-01-14'),
@@ -688,7 +694,7 @@ CREATE TABLE `usersactive` (
 --
 
 INSERT INTO `usersactive` (`user_id`, `timestamp`) VALUES
-(1, 1241789654);
+(1, 1242399632);
 
 -- --------------------------------------------------------
 

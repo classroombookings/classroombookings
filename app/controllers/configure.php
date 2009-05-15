@@ -106,6 +106,12 @@ class Configure extends Controller {
 	 */
 	function ldapgroups(){
 		$this->auth->check('configure');
+		
+		if($this->settings->ldap() == FALSE){
+			$this->session->set_flashdata('flash', $this->msg->err('You are not currently using LDAP authentication.'));
+			redirect('configure/authentication');
+		}
+		
 		$body['auth'] = $this->settings->get_all('auth');
 		$body['groups'] = $this->security->get_groups_dropdown();
 		$body['ldapgroups'] = $this->security->get_ldap_groups();

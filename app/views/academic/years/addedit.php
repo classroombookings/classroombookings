@@ -10,6 +10,7 @@ echo form_open('academic/years/save', NULL, array('year_id' => $year_id));
 $t = 1;
 ?>
 
+
 <table class="form" cellpadding="6" cellspacing="0" border="0" width="100%">
 	
 	<!-- <tr class="h"><td colspan="2">Year details</td></tr> -->
@@ -53,6 +54,7 @@ $t = 1;
 			echo form_input($input);
 			$t++;
 			?>
+			<div id="calendar_date_start"></div>
 		</td>
 	</tr>
 	
@@ -75,6 +77,7 @@ $t = 1;
 			echo form_input($input);
 			$t++;
 			?>
+			<div id="calendar_date_end"></div>
 		</td>
 	</tr>
 	
@@ -118,7 +121,7 @@ $t = 1;
 
 
 <script type="text/javascript">
-$.extend(DateInput.DEFAULT_OPTS, {
+/* $.extend(DateInput.DEFAULT_OPTS, {
 	stringToDate: function(string){
 		var matches;
 		if(matches = string.match(/^(\d{4,4})-(\d{2,2})-(\d{2,2})$/)){
@@ -138,5 +141,18 @@ $.extend(DateInput.DEFAULT_OPTS, {
 
 $(function(){
 	$(".date").date_input();
+}); */
+
+document.observe('dom:loaded',function(){
+	Calendar.setup({
+		dateField:'date_start',
+		parentElement:'calendar_date_start'
+	});
+	$('date_start').hide();
+	Calendar.setup({
+		dateField:'date_end',
+		parentElement:'calendar_date_end'
+	});
+	$('date_end').hide();
 });
 </script>
