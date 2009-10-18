@@ -20,15 +20,16 @@
 } 
  
 .simple_window {  
-    width:250px;  
-    height:50px;  
-    border:1px solid #000;  
-    background-color:#fff;  
-    padding:10px;  
+    width:512px;
+    height:384px;
+    border:1px solid #ccc;
+    background-color:#fff;
+    padding:5px;  
     text-align:left;  
-    font-family:"Lucida Grande",Verdana;  
-    font-size:12px;  
-    color:#333;  
+    /*font-family:"Lucida Grande",Verdana;  
+    font-size:12px;  */
+    color:#333;
+	overflow:scroll;
 } 
  
 .window {  

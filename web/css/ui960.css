@@ -135,7 +135,7 @@ a:hover{text-decoration:underline;}
 
 
 
-
+/*  Top horizontal nav */
 ul.linkbar{
 	list-style-type:none;
 	margin:3px 0;
@@ -170,7 +170,7 @@ ul.linkbar li.ibl{
 
 
 
-/* Icon bar */
+/* Icon bar. Redundant now in v2? */
 ul.iconbar{
 	list-style-type:none;
 	list-style-position:outside;
@@ -222,6 +222,7 @@ dd {margin-bottom: 12px;}
 div#content ul.normal li{line-height:200%}
 
 
+/* Redundant in v2? */
 div#qTip{
 	padding:5px;
 	border:1px solid #777;	/*#FFA500;	/*#006699;*/
@@ -299,6 +300,7 @@ table.list tr.rc td{background:#efefef}
 
 
 /* Form table */
+
 table.form tr.h td, table.checks tr.h td{
 	/*background:#eee;color:#000;font-size:120%;font-weight:bold;padding:4px;*/
 	font-size:135%;color:#60aa37;font-weight:bold;padding:15px 4px 10px 0;
@@ -333,12 +335,17 @@ table.form td.field span.hint{ clear:both; display:block; color:#000; font-size:
 table.form td.actions{padding-top:16px;vertical-align:middle;}
 table.form td.actions input{
 	font-weight:bold;
-	padding:2px 3px;
+	padding:3px 4px;
 }
 /* Make subsequent buttons non-bold */
 table.form td.actions input+input{font-weight:normal;}
 table.form td.actions a{vertical-align:middle;}
 
+table.form td p.tip{
+	font:95% Verdana,Arial,Helvetica,sans-serif;
+	color:#666;
+	margin:0.5em 0;
+}
 
 
 /* Tables within field cells */
@@ -346,7 +353,7 @@ table.form td.actions a{vertical-align:middle;}
 table.checks tr td{padding:2px;margin:0;vertical-align:middle;}
 
 label.check{
-    display: block;
+    display:block;
     padding-left:15px;
     text-indent:-15px;
 }
@@ -356,7 +363,7 @@ label.check input{
     width:13px;
     height:13px;
     padding:0;
-    margin:4px;
+    margin:4px 4px 0 4px;
     vertical-align:middle;
     position:relative;
 	z-index:2;
@@ -367,6 +374,7 @@ table.rp tr td.caption{text-align:left;}
 
 
 
+/* Calendar chooser I think */
 table#cc tr td{
 	text-align:center;
 	padding:1em;
@@ -438,7 +446,7 @@ div#codeigniter_profiler{text-align:left;font-size:90%}
 div.msg{
 	background-position:5px 50%;
 	background-repeat:no-repeat;
-	width:400px;
+	width:50%;
 	color:#000;
 	padding:5px 5px 5px 26px !important;
 	border-style:solid;

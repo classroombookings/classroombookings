@@ -14,7 +14,7 @@ $t = 1;
 <p>Please fill in the required fields below to add a new group to the system.</p>
 <?php } ?>
 
-<table class="form" cellpadding="6" cellspacing="0" border="0" width="50%">
+<table class="form" cellpadding="6" cellspacing="0" border="0" width="100%">
 	
 	<tr class="h"><td colspan="2">Group details</td></tr>
 	
@@ -64,7 +64,7 @@ $t = 1;
 	<?php if($this->settings->ldap() == TRUE){ ?>
 	<tr>
 		<td class="caption">
-			<label for="ldapgroups" class="r" accesskey="L" title="Users who belong to the selected LDAP group(s) will be put in this classroombookings group. The selected group(s) will not be available to assign to other groups as a user can only be a member of one group."><u>L</u>DAP Groups</label>
+			<label for="ldapgroups" class="r" accesskey="L"><u>L</u>DAP Groups</label>
 		</td>
 		<td class="field">
 			<select name="ldapgroups[]" id="ldapgroups" size="20" tabindex="<?php echo $t ?>" multiple="multiple">
@@ -77,6 +77,7 @@ $t = 1;
 			$t++;
 			?>
 			</select>
+			<p class="tip">Users who belong to the selected LDAP group(s) will be put in this classroombookings group.<br />The selected group(s) will not be available to assign to other groups, becuase a user can only be a member of one group.</p>
 		</td>
 	</tr>
 	<?php } ?>
@@ -84,7 +85,7 @@ $t = 1;
 	<tr class="h"><td colspan="2">Other options</td></tr>
 	
 	<tr>
-		<td class="caption"><label for="daysahead" title="The number of days ahead users can create a booking. Leave blank to allow bookings at any time in the future.">Booking ahead</label></td>
+		<td class="caption"><label for="daysahead">Booking ahead</label></td>
 		<td class="field">
 			<?php
 		  	unset($input);
@@ -95,11 +96,12 @@ $t = 1;
 			$input['value'] = @set_value($input['name'], $group->bookahead);
 			echo form_input($input);
 			?>
+			<p class="tip">The number of days ahead users can create a booking. Leave blank to allow bookings at any time in the future.</p>
 		</td>
 	</tr>
 	
 	<tr>
-		<td class="caption"><label for="quota_num" title="The number of bookings a user in this group can make in a given period of time.">Booking quota</label></td>
+		<td class="caption"><label for="quota_num">Booking quota</label></td>
 		<td class="field">
 			<?php
 			unset($input);
@@ -111,7 +113,7 @@ $t = 1;
 			echo form_input($input);
 			?>
 			
-			<label for="quota-unlimited" class="check" title="Can make any number of bookings.">
+			<label for="quota-unlimited" class="check">
 			<?php
 			unset($radio);
 			$radio['name'] = 'quota_type';
@@ -122,7 +124,7 @@ $t = 1;
 			?>Unlimited
 			</label>
 			
-			<label for="quota-current" class="check" title="This means that a user can only have a given amount of bookings at one time, and must wait until their earliest one has passed until they can make another.">
+			<label for="quota-current" class="check">
 			<?php
 			unset($radio);
 			$radio['name'] = 'quota_type';
@@ -133,7 +135,7 @@ $t = 1;
 			?>Concurrent bookings
 			</label>
 			
-			<label for="quota-day" class="check" title="A user can make this amount of bookings in a day, for any time in the future (up to and including) the day limit set above.">
+			<label for="quota-day" class="check">
 			<?php
 			unset($radio);
 			$radio['name'] = 'quota_type';
@@ -144,7 +146,7 @@ $t = 1;
 			?>Per day
 			</label>
 			
-			<label for="quota-week" class="check" title="A user can make this amount of bookings in a week, for any time in the future (up to and including) the day limit set above.">
+			<label for="quota-week" class="check">
 			<?php
 			unset($radio);
 			$radio['name'] = 'quota_type';
@@ -155,7 +157,7 @@ $t = 1;
 			?>Per week
 			</label>
 			
-			<label for="quota-month" class="check" title="A user can make this amount of bookings in a month, for any time in the future (up to and including) the day limit set above.">
+			<label for="quota-month" class="check">
 			<?php
 			unset($radio);
 			$radio['name'] = 'quota_type';
@@ -165,9 +167,10 @@ $t = 1;
 			echo form_radio($radio);
 			?>Per month
 			</label>
+			<p class="tip">The number of bookings a user in this group can make in a given period of time.</p>
 		</td>
 	</tr>
-	
+
 	<?php
 	if($group_id == NULL){
 		$submittext = 'Add group';

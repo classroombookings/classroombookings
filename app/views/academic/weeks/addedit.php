@@ -51,7 +51,11 @@ $t = 1;
 			echo form_input($input);
 			$t++;
 			?>
-			<div id="cp"></div>
+			<script type="text/javascript"><!--
+			new Control.ColorPicker('colour');
+			// -->
+			</script>
+			<?php /* <div id="cp"></div>
 			<script type="text/javascript"><!--
 			$(document).ready(function(){
 				$('#cp').colorPicker({
@@ -60,7 +64,7 @@ $t = 1;
 				});
 				$('#colour').css("display", "none");
 			});
-			// --></script>
+			// --></script> */ ?>
 		</td>
 	</tr>
 	
@@ -71,7 +75,6 @@ $t = 1;
 		echo $calendar;
 		?>
 	</tr>
-	
 	
 	<?php
 	if($week_id == NULL){
@@ -85,10 +88,6 @@ $t = 1;
 	$buttons[] = array('cancel', 'negative', 'Cancel', 'arr-left.gif', $t+2, site_url('academic/weeks'));
 	$this->load->view('parts/buttons', array('buttons' => $buttons));
 	?>
-
+	
 </table>
 </form>
-
-
-
-

@@ -61,14 +61,22 @@ class AuthHook{
 	 * Remove expired users
 	 */
 	function activeuser(){
+		
 		if($this->CI->auth->logged_in() == TRUE){
 			
+			// Get the logged in user ID and current time
 			$user_id = (int)$this->CI->session->userdata('user_id');
 			$now = time();
 			
+			// Update the current user in the usersactive table
 			$sql = 'REPLACE INTO usersactive VALUES(?, ?)';
 			$query = $this->CI->db->query($sql, array($user_id, $now));
 			
+			// Update 'last activity' time in the users table
+			$sql = 'UPDATE users SET lastactivity = NOW() WHERE user_id = ?';
+			$query = $this->CI->db->query($sql, array($user_id));
+			
+			// Remove dead entries
 			$expiretime = strtotime("-{$this->timeout} minutes");
 			$sql = 'DELETE FROM usersactive WHERE timestamp < ?';
 			$query = $this->CI->db->query($sql, array($expiretime));

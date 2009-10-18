@@ -25,6 +25,7 @@ class Account extends Controller {
 
 	function Account(){
 		parent::Controller();
+		$this->load->model('account_model');
 		$this->tpl = $this->config->item('template');
 		$this->output->enable_profiler($this->config->item('profiler'));
 	}
@@ -33,10 +34,42 @@ class Account extends Controller {
 	
 	
 	function index(){
+		$tpl['subnav'] = $this->account_model->subnav();
 		$tpl['title'] = 'My Account';
 		$tpl['pagetitle'] = $tpl['title'];
 		$this->load->view($this->tpl, $tpl);
 	}
+	
+	
+	
+	
+	function activebookings(){
+		$tpl['subnav'] = $this->account_model->subnav();
+		$tpl['title'] = 'My Active Bookings';
+		$tpl['pagetitle'] = $tpl['title'];
+		$this->load->view($this->tpl, $tpl);
+	}
+	
+	
+	
+	
+	function previousbookings(){
+		$tpl['subnav'] = $this->account_model->subnav();
+		$tpl['title'] = 'My Active Bookings';
+		$tpl['pagetitle'] = $tpl['title'];
+		$this->load->view($this->tpl, $tpl);
+	}
+	
+	
+	
+	
+	function changepassword(){
+		$tpl['subnav'] = $this->account_model->subnav();
+		$tpl['title'] = 'Change password';
+		$tpl['pagetitle'] = $tpl['title'];
+		$this->load->view($this->tpl, $tpl);
+	}
+	
 	
 	
 	
@@ -123,7 +156,7 @@ class Account extends Controller {
 			
 			// See if user exists
 			if($this->auth->userexists($url['username'])){
-			
+				
 				if($this->auth->loggedin() == TRUE){
 					$this->auth->logout();
 				}
@@ -197,7 +230,6 @@ class Account extends Controller {
 			
 		}
 		
-		
 	}
 	
 	
@@ -219,19 +251,11 @@ class Account extends Controller {
 	
 	
 	
+	
 	function view(){
 		$user_id = $this->uri->segment(3);
 		$tpl['title'] = 'View Account Profile';
 		$tpl['pagetitle'] = $tpl['title'] . ' ('.$user_id.')';
-		$this->load->view($this->tpl, $tpl);
-	}
-	
-	
-	
-	
-	function bookings(){
-		$tpl['title'] = 'My Bookings';
-		$tpl['pagetitle'] = $tpl['title'];
 		$this->load->view($this->tpl, $tpl);
 	}
 	

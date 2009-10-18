@@ -58,6 +58,9 @@ $lang['ROOMS_EDIT_FAIL'] = 'An error occured and the room details could not be s
 $lang['ROOMS_PERMS_ADD_OK'] = 'The room permission entry was added successfully.';
 $lang['ROOMS_PERMS_ADD_FAIL'] = 'An error occured and the room permission entry could not be added.';
 
+$lang['ROOMS_ATTRVALS_SAVE_OK'] = 'The room attributes were saved successfully.';
+$lang['ROOMS_ATTRVALS_SAVE_FAIL'] = 'An error occured and the room attributes could not be saves (%s).';
+
 $lang['FIELDS_ADD_OK'] = 'The field was added successfully.';
 $lang['FIELDS_ADD_FAIL'] = 'An error occured and the field could not be added (%s).';
 $lang['FIELDS_EDIT_OK'] = 'The field details were saved successfully';

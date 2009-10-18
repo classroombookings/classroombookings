@@ -27,6 +27,8 @@ class Users extends Controller {
 	function Users(){
 		parent::Controller();
 		$this->load->model('security');
+		$this->load->model('departments_model');
+		$this->load->model('quota');
 		$this->tpl = $this->config->item('template');
 		$this->output->enable_profiler($this->config->item('profiler'));
 	}
@@ -126,11 +128,14 @@ class Users extends Controller {
 		$body['user'] = NULL;
 		$body['user_id'] = NULL;
 		$body['groups'] = $this->security->get_groups_dropdown();
+		$body['departments'] = $this->departments_model->get_dropdown();
+		
 		$tpl['sidebar'] = $this->load->view('security/users.addedit.side.php', NULL, TRUE);
 		$tpl['subnav'] = $this->security->subnav();
 		$tpl['title'] = 'Add user';
 		$tpl['pagetitle'] = 'Add a new user';
 		$tpl['body'] = $this->load->view('security/users.addedit.php', $body, TRUE);
+		
 		$this->load->view($this->tpl, $tpl);
 	}
 	
@@ -145,6 +150,7 @@ class Users extends Controller {
 		$body['user'] = $this->security->get_user($user_id);
 		$body['user_id'] = $user_id;
 		$body['groups'] = $this->security->get_groups_dropdown();
+		$body['departments'] = $this->departments_model->get_dropdown();
 		
 		$tpl['subnav'] = $this->security->subnav();
 		$tpl['title'] = 'Edit user';
@@ -190,15 +196,18 @@ class Users extends Controller {
 			$data['group_id'] = $this->input->post('group_id');
 			//$data['department_id'] = $this->input->post('department_id');
 			$data['enabled'] = ($this->input->post('enabled') == '1') ? 1 : 0;
+			$data['ldap'] = ($this->input->post('ldap') == '1') ? 1 : 0;
 			// Only set password if supplied.
 			if($this->input->post('password1')){
 				$data['password'] = sha1($this->input->post('password1'));
 			}
 			
+			
+			
 			if($user_id == NULL){
 				
 				// Adding user
-				$data['ldap'] = 0;
+				#$data['ldap'] = 0;
 				
 				#die(var_export($data, true));
 				$add = $this->security->add_user($data);
@@ -222,6 +231,14 @@ class Users extends Controller {
 				}
 				
 			}
+			
+			
+			// Set quota
+			if($this->input->post('quota')){
+				$user_id = (is_numeric($add)) ? $add : $data['user_id'];
+				$this->quota->set_quota_u($user_id, (int) $this->input->post('quota'));
+			}
+			
 			
 			// All done, redirect!
 			redirect('security/users');

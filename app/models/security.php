@@ -66,9 +66,10 @@ class Security extends Model{
 		if ($user_id == NULL) {
 		
 			// Getting all users
-			$this->db->select('users.*, groups.name AS groupname', FALSE);
+			$this->db->select('users.*, groups.name AS groupname, groups.quota_type, quota.quota_num', FALSE);
 			$this->db->from('users');
 			$this->db->join('groups', 'users.group_id = groups.group_id', 'left');
+			$this->db->join('quota', 'users.user_id = quota.user_id', 'left');
 			
 			// Filter to group if necessary
 			if ($group_id != NULL && is_numeric($group_id)) {
@@ -96,7 +97,10 @@ class Security extends Model{
 			}
 			
 			// Getting one user
-			$sql = 'SELECT * FROM users WHERE user_id = ? LIMIT 1';
+			$sql = 'SELECT users.*, quota.quota_num, groups.quota_type FROM users, quota, groups
+					WHERE users.user_id = ? 
+					AND users.group_id = groups.group_id
+					LIMIT 1';
 			$query = $this->db->query($sql, array($user_id));
 			
 			if($query->num_rows() == 1){
@@ -114,6 +118,12 @@ class Security extends Model{
 	
 	
 	
+	/**
+	 * Get users in format for a dropdown box (id => name)
+	 *
+	 * @param	bool	none	Include a "(None)" option with a value of -1
+	 * @return	Array	Array: user_id => Display name
+	 */
 	function get_users_dropdown($none = FALSE){
 		$sql = 'SELECT user_id, username, displayname, IFNULL(displayname, username) AS display
 				FROM users
@@ -138,8 +148,12 @@ class Security extends Model{
 	
 	
 	
+	/**
+	 * Add a user to the database
+	 */
 	function add_user($data){
 		
+		// Check if user exists - can't add if already in DB
 		$exists = $this->auth->userexists($data['username']);
 		if($exists == TRUE){
 			$this->lasterr = 'Username already exists.';
@@ -156,12 +170,21 @@ class Security extends Model{
 		
 		$this->update_user_departments($user_id, $departments);
 		
-		return $add;
+		// Return new ID
+		if($add == TRUE){
+			return $user_id;
+		} else {
+			return FALSE;
+		}
+		
 	}
 	
 	
 	
 	
+	/**
+	 * Update user details
+	 */
 	function edit_user($user_id = NULL, $data){
 		if($user_id == NULL){
 			$this->lasterr = 'Cannot update a user without their ID.';
@@ -182,6 +205,11 @@ class Security extends Model{
 	
 	
 	
+	/**
+	 * Count the total number of users
+	 *
+	 * @return	int		Number of users in the DB
+	 */
 	function total_users(){
 		$sql = 'SELECT user_id FROM users';
 		$query = $this->db->query($sql);
@@ -191,8 +219,14 @@ class Security extends Model{
 	
 	
 	
+	/**
+	 * Re-assign users to departments
+	 *
+	 * @param	int		user_id			User ID
+	 * @param	array	departments		Array of department IDs to associate with user
+	 */
 	function update_user_departments($user_id, $departments = array()){
-		// Remove LDAP department assignments (don't panic - will re-insert if they are specified)
+		// Remove LDAP department assignments (don't panic; will re-insert if they are specified)
 		$sql = 'DELETE FROM users2departments WHERE user_id = ?';
 		$query = $this->db->query($sql, array($user_id));
 		
@@ -207,6 +241,9 @@ class Security extends Model{
 			$query = $this->db->query($sql);
 			if($query == FALSE){
 				$this->lasterr = 'Could not assign departments to user.';
+				return FALSE;
+			} else {
+				return TRUE;
 			}
 		}
 	}
@@ -214,6 +251,12 @@ class Security extends Model{
 	
 	
 	
+	/**
+	 * Delete a user from the DB
+	 *
+	 * @param	int		user_id		User ID
+	 * @return	bool	True on successful deletion
+	 */
 	function delete_user($user_id){
 		
 		$sql = 'DELETE FROM users WHERE user_id = ? LIMIT 1';
@@ -247,6 +290,13 @@ class Security extends Model{
 	
 	
 	
+	/**
+	 * Get one or more groups
+	 *
+	 * @param	int		group_id	Specify if wanting one group. NULL to return all groups.
+	 * @param	array	page		Pagination array (start,limit)
+	 * @return	array
+	 */
 	function get_group($group_id = NULL, $page = NULL){
 		if ($group_id == NULL) {
 		
@@ -315,11 +365,18 @@ class Security extends Model{
 			}
 			
 		}
+		
 	}
 	
 	
 	
 	
+	/**
+	 * Add a group to the database
+	 *
+	 * @param	array	data	Array of group data to insert
+	 * @return	bool
+	 */
 	function add_group($data){
 		// Add created date to the array to be inserted into the DB
 		$data['created'] = date("Y-m-d");
@@ -353,11 +410,18 @@ class Security extends Model{
 		}
 		
 		return $group_id;
+		
 	}
 	
 	
 	
 	
+	/**
+	 * Update data for a group
+	 *
+	 * @param	int		group_id	Group ID
+	 * @param	array	data		Data
+	 */
 	function edit_group($group_id = NULL, $data){
 		// Gotta have an ID
 		if($group_id == NULL){

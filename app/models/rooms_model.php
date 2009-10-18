@@ -781,9 +781,10 @@ class Rooms_model extends Model{
 		
 		$sql = 'REPLACE INTO `roomattrs-values` (room_id, field_id, value) VALUES';
 		foreach($fields as $field_id => $value){
+			$value = ($value == -1) ? NULL : $value;		// -1 on selects means empty
 			$sql .= sprintf("(%d, %d, '%s'),", $room_id, $field_id, $value);
 		}
-		$sql = preg_replace('/,$/', '', $sql);
+		$sql = preg_replace('/,$/', '', $sql);		// Remove last comma from statement
 		
 		$query = $this->db->query($sql);
 		if($this->db->affected_rows() > 0){
@@ -815,6 +816,7 @@ class Rooms_model extends Model{
 			
 			$options = array();
 			$result = $query->result();
+			$options[-1] = '';		// No value
 			foreach($result as $row){
 				#array_push($options, $row->value);
 				$options[$row->option_id] = $row->value;

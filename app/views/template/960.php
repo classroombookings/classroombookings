@@ -167,14 +167,14 @@ if(isset($sidebar)){
 	document.observe('dom:loaded',function(){
 		if($('pagetabs')){ new Control.Tabs('pagetabs', {<?php if(!empty($tab)){echo "defaultTab:'$tab'";} ?>}); }
 		
-		$$('label').each(function(el){
+		/*$$('label').each(function(el){
 			var tooltip = new Control.ToolTip($(el), $(el).title,{
 				className:'tooltip',
 				offsetLeft:50,
 				hover:true
 			});
 			el.writeAttribute('title', '');
-		});
+		}); */
 	});
 	</script>
 	
@@ -231,13 +231,18 @@ if(isset($sidebar)){
 					<?php
 					if($this->auth->check('dashboard', TRUE)){ echo dolink($seg1, 'dashboard', 'Dashboard'); }
 					if($this->auth->check('bookings', TRUE)){ echo dolink($seg1, 'bookings', 'Bookings'); }
-					if($this->auth->check('myprofile', TRUE)){ echo dolink($seg1, 'account', 'My Profile'); }
+					if($this->auth->check('account', TRUE)){ echo dolink($seg1, 'account/activebookings', 'My Profile'); }
 					if($this->auth->check('configure', TRUE)){ echo dolink($seg1, 'configure/general', 'Configure'); }
 					if($this->auth->check('rooms', TRUE)){ echo dolink($seg1, 'rooms/manage', 'Rooms'); }
 					if($this->auth->check('academic', TRUE)){ echo dolink($seg1, 'academic/main', 'Academic setup'); }
 					if($this->auth->check('departments', TRUE)){ echo dolink($seg1, 'departments', 'Departments'); }
 					if($this->auth->check('reports', TRUE)){ echo dolink($seg1, 'reports', 'Reports'); }
-					if($this->auth->check('users', TRUE)){ echo dolink($seg1, 'security/users', 'Security'); }
+					$security = ($this->auth->check('users', TRUE) OR $this->auth->check('groups', TRUE) OR $this->auth->check('permissions', TRUE));
+					if($this->auth->check('users', TRUE)){
+						echo dolink($seg1, 'security/users', 'Security');
+					} elseif($security){
+						echo dolink($seg1, 'security/main', 'Security');
+					}
 					?>
 				</ul>
 			</div>

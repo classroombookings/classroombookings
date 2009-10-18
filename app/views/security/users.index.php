@@ -11,7 +11,9 @@ if($users != 0){
 		<td class="h" title="Username">Username</td>
 		<td class="h" title="Name">Display name</td>
 		<td class="h" title="Name">Group</td>
+		<td class="h" title="Quota">Quota</td>
 		<td class="h" title="Lastlogin">Last login</td>
+		<td class="h" title="Lastactivity">Last activity</td>
 		<td class="h" title="Type">Type</td>
 		<td class="h" title="X">&nbsp;</td>
 	</tr>
@@ -25,12 +27,28 @@ if($users != 0){
 		<td class="t"><?php echo anchor('security/users/edit/'.$user->user_id, $user->username) ?></td>
 		<td class="m"><?php echo $user->displayname ?>&nbsp;</td>
 		<td class="m"><?php echo $user->groupname ?>&nbsp;</td>
+		<td class="m"><?php
+		if($user->quota_type == NULL){
+			$text = '(Unlimited)';
+		} else {
+			switch($user->quota_type){
+				case 'current': $q = '%d concurrent'; break;
+				case 'day': $q = '%d per day'; break;
+				case 'week': $q = '%d per week'; break;
+				case 'month': $q = '%d per month'; break;
+			}
+			$text = sprintf($q, $user->quota_num);
+		}
+		echo $text;
+		?>
+		</td>
 		<td class="m"><?php echo mysqlhuman($user->lastlogin, "d/m/Y H:i") ?>&nbsp;</td>
+		<td class="m"><?php echo mysqlhuman($user->lastactivity, "d/m/Y H:i") ?>&nbsp;</td>
 		<td class="m"><?php echo ($user->ldap == 1) ? 'LDAP' : 'Local'; ?></td>
 		<td class="il" width="270">
 		<?php
 		$actiondata[0] = array('security/users/view/'.$user->user_id, 'Report', 'magnifier_sm.gif');
-		$actiondata[1] = array('security/permissions/effective/'.$user->user_id, 'Effective permissions', 'key-sm.gif', 'facebox');
+		$actiondata[1] = array('security/permissions/effective/'.$user->user_id, 'Effective permissions', 'key-sm.gif', 'win');
 		$actiondata[2] = array('security/users/delete/'.$user->user_id, 'Delete', 'cross_sm.gif');
 		$this->load->view('parts/listactions', $actiondata);
 		#$this->load->view('parts/delete', array('url' => 'security/users/delete/'.$user->user_id));
@@ -58,9 +76,9 @@ if($users != 0){
 }) */
 
 //$('a[rel*=facebox]').attr("href", $(this).attr("href") + "/ajax");
-jQuery(document).ready(function($){
+/*jQuery(document).ready(function($){
 	$('a[class*=facebox]').facebox();
-});
+}); WHEN JS LIB WAS JQUERY, THIS ONE WORKED */
 
 /* $(function(){
 	$('.boxy').click(function(){
@@ -68,6 +86,15 @@ jQuery(document).ready(function($){
 		return false;
 	});
 }); */
+
+$$('a.win').each(function(el){
+	el.href = el.href + "/ajax"
+	var ajax = new Control.Window(el,{
+		className: 'simple_window',
+		closeOnClick: true,
+	});
+});
+
 </script> 
 
 <?php

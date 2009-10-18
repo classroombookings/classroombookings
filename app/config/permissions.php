@@ -3,7 +3,8 @@
 $permissions['general'][] = array('dashboard', 'Dashboard', 'View dashboard');
 $permissions['general'][] = array('dashboard.viewdept', 'Dashboard  - view department bookings');
 $permissions['general'][] = array('dashboard.viewown', 'Dashboard - view own bookings');
-$permissions['general'][] = array('myprofile', 'My Profile/Change password');
+$permissions['general'][] = array('account', 'My Profile');
+$permissions['general'][] = array('account.changepwd', 'Change password');
 $permissions['general'][] = array('configure', 'Configure Classroombookings');
 $permissions['general'][] = array('changeyear', 'Change the working academic year', 'Allow users to change academic settings and make bookings in other academic years');
 $permissions['general'][] = array('allrooms', 'Exempt from individual room permissions');

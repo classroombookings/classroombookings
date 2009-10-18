@@ -391,8 +391,8 @@ class Auth{
 			
 		} else {
 			
-			// FAIL!
-			$this->lasterr = 'Failed to login that user even though they should already exist.';
+			// FAIL! User account is *probably*: 1) LDAP, but 2) Disabled
+			$this->lasterr = 'Logon failed - could not find details to initialise session.';
 			return FALSE;
 			
 		}
@@ -592,14 +592,16 @@ class Auth{
 		
 		// Check if user in a DN has been found
 		if($found == FALSE){
-			$this->lasterr = 'Failed to bind with the given user in any of the supplied base DNs';
+			// Password could be wrong.
+			$this->lasterr = 'LDAP authentication failure. Check details and try again.';
 			return FALSE;
 		}
 		
 		// search for details
 		$search = ldap_search($connect, $correctdn, $ldapfilter);
 		if(!$search){
-			$this->lasterr = "Could not find the user's details - the query filter is probably incorrect.";
+			// LDAP query filter is probably incorrect.
+			$this->lasterr = "LDAP authentication failure. Query filter did not return any results.";
 			return FALSE;
 		}
 		

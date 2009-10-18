@@ -542,15 +542,6 @@ class Manage extends Controller{
 	
 	function save_attrs(){
 		
-		#die(print_r($_POST));
-		
-		/*
-			TODO
-			
-			When unticking a check box, we need to ensure that it's unchecked value is updated in the DB.
-			At present, an unticked box's field will not be present in the $_POST array; so the old value remains.
-		*/
-		
 		$room_id = $this->input->post('room_id');
 		
 		$this->form_validation->set_rules('room_id', 'Room ID');
@@ -558,18 +549,32 @@ class Manage extends Controller{
 		
 		if($this->form_validation->run() == FALSE){
 			
+			// Return to editing page
 			$this->edit($room_id, 'attrs');
 			
 		} else {
 			
-			// Update the values for this room
-			$fields = $this->input->post('fields');
+			// Get the form data
+			$form_fields = $this->input->post('fields');
+			
+			// Get a list of all attrs
+			$attrs = $this->rooms_model->get_attr_field();
+			
+			// Loop through all possible attributes
+			foreach($attrs as $attr){
+				// If the field has a value in the POST data, use that. Otherwise, set empty..
+				$fields[$attr->field_id] = (array_key_exists($attr->field_id, $form_fields)) 
+					? $form_fields[$attr->field_id]
+					: NULL;
+			}
+			
+			// Send data to the database
 			$update = $this->rooms_model->save_attr_values($room_id, $fields);
 			
 			if($update == TRUE){
 				$this->msg->add('info', $this->lang->line('ROOMS_ATTRVALS_SAVE_OK'));
 			} else {
-				$this->msg->add('err', sprintf($this->lang->line('ROOMS_ATTRVALS_FAIL', $this->rooms_model->lasterr)));
+				$this->msg->add('err', sprintf($this->lang->line('ROOMS_ATTRVALS_SAVE_FAIL', $this->rooms_model->lasterr)));
 			}
 			
 		}

@@ -139,6 +139,7 @@ class Departments_model extends Model{
 	
 	
 	function edit($department_id = NULL, $data){
+		
 		if($department_id == NULL){
 			$this->lasterr = 'Cannot update a department without its ID.';
 			return FALSE;
@@ -220,7 +221,8 @@ class Departments_model extends Model{
 	
 	
 	
-	
+	// CR 2009-06-25: Redundant?
+	/*
 	function get_groups_dropdown(){
 		$sql = 'SELECT group_id, name FROM groups ORDER BY name ASC';
 		$query = $this->db->query($sql);
@@ -235,7 +237,7 @@ class Departments_model extends Model{
 			$this->lasterr = 'No groups found';
 			return FALSE;
 		}
-	}
+	}*/
 	
 	
 	
@@ -257,6 +259,7 @@ class Departments_model extends Model{
 			return FALSE;
 		}
 	}
+	
 	
 	
 	

@@ -77,19 +77,20 @@ $t = 1;
 	
 	<tr>
 		<td class="caption">
-			<label for="group_id" class="r" accesskey="G" title="Select the permission group that this user should belong to.">Permission <u>g</u>roup</label>
+			<label for="group_id" class="r" accesskey="G">Permission <u>g</u>roup</label>
 		</td>
 		<td class="field">
 			<?php
 			echo form_dropdown('group_id', $groups, set_value('group_id', (isset($user->group_id) ? $user->group_id : 0)), 'tabindex="'.$t.'"');
 			$t++;
 			?>
+			<p class="tip">Select the permission group that this user should belong to.</p>
 		</td>
 	</tr>
 	
 	<tr>
 		<td class="caption">
-			<label for="enabled" accesskey="E" title="Untick this box to prevent the user logging in. This also applies to LDAP users."><u>E</u>nabled</label>
+			<label for="enabled" accesskey="E"><u>E</u>nabled</label>
 		</td>
 		<td class="field">
 			<label for="enabled" class="check">
@@ -104,6 +105,28 @@ $t = 1;
 			$t++;
 			?>
 			</label>
+			<p class="tip">Untick this box to prevent the user logging in. This also affects LDAP users.</p>
+		</td>
+	</tr>
+	
+	<tr>
+		<td class="caption">
+			<label for="ldap" accesskey="L"><u>L</u>DAP user</label>
+		</td>
+		<td class="field">
+			<label for="ldap" class="check">
+			<?php
+			unset($check);
+			$check['name'] = 'ldap';
+			$check['id'] = 'ldap';
+			$check['value'] = '1';
+			$check['checked'] = @set_checkbox($check['name'], $check['value'], ($user->ldap == 1));
+			$check['tabindex'] = $t;
+			echo form_checkbox($check);
+			$t++;
+			?>
+			</label>
+			<p class="tip">Specify if this user should authenticate via LDAP or Classroombookings.</p>
 		</td>
 	</tr>
 	
@@ -163,6 +186,30 @@ $t = 1;
 	
 	<?php } ?>
 	
+	<?php if(isset($user) && $user->quota_type != NULL){ ?>
+	
+	<tr>
+		<td class="caption">
+			<label for="displayname" accesskey="Q"><u>Q</u>uota</label>
+		</td>
+		<td class="field">
+			<?php
+			unset($input);
+			$input['accesskey'] = 'Q';
+			$input['name'] = 'quota';
+			$input['id'] = 'quota';
+			$input['size'] = '10';
+			$input['maxlength'] = '5';
+			$input['tabindex'] = $t;
+			$input['value'] = @set_value('quota', $user->quota_num);
+			echo form_input($input);
+			$t++;
+			?>
+		</td>
+	</tr>
+	
+	<?php } ?>
+	
 	<?php
 	if($user_id == NULL){
 		$submittext = 'Add user';
@@ -172,7 +219,7 @@ $t = 1;
 	unset($buttons);
 	$buttons[] = array('submit', 'positive', $submittext, 'disk1.gif', $t);
 	#$buttons[] = array('submit', '', 'Save and add another', 'add.gif', $t+1);
-	$buttons[] = array('cancel', 'negative', 'Cancel', 'arr-left.gif', $t+2, site_url('security/users'));
+	#$buttons[] = array('cancel', 'negative', 'Cancel', 'arr-left.gif', $t+2, site_url('security/users'));
 	$this->load->view('parts/buttons', array('buttons' => $buttons));
 	?>
 
