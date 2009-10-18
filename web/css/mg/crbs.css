@@ -1,0 +1,242 @@
+table tr td, table th td, input, select, textarea{font:11px/1.5 Arial,Verdana,Helvetica,Arial,'Liberation Sans',FreeSans,sans-serif}
+
+h1,h2,h3,h4,h5,h6{
+	/*font-family:verdana,geneva,helvetica,sans-serif;*/
+	font-weight:normal;
+}
+
+/* Globals */
+h1{font-size:200%;}
+h2{font-size:180%;}
+h3{font-size:160%;}
+h4{font-size:140%;}
+h5{font-size:120%;}
+h6{font-size:100%;font-weight:bold;}
+
+/* Head */
+div#head{
+	font-weight:bold;
+}
+div#head a, div#subhead a{
+	text-decoration:none;
+}
+
+/* Head Menu */
+div#head-menu div, div#head-account div{
+	padding-top:8px;
+}
+
+div#head-account{
+	text-align:right;
+	font-weight:normal;
+}
+
+/* Sub head */
+div#subhead div{
+	padding-top:4px;
+	font-size:95%;
+}
+
+/* Footer */
+div#footer{
+	margin-top:2em;
+}
+div#footer p{
+	margin:0.4em 0;
+	font-size:90%;
+}
+
+
+
+/* Other things */
+
+
+
+
+/**
+ * Table type: LIST
+ */
+table.list{
+	border-top:0px solid #ddd;
+	/*width:100%;*/
+	margin-bottom:16px;
+	background:#fff;
+}
+/* Normal cell */
+table.list tr td{
+	border-bottom:1px solid #ddd;
+	padding:5px;
+}
+/* Title cell */
+table.list tr td.t{
+	font-size:110%;
+	font-weight:bold;
+}
+/* Text cell */
+table.list tr td.x{
+	color:#666;
+}
+/* Delete cell */
+table.list tr td.d{
+	width:60px;
+	vertical-align:middle;
+}
+/* Delete link */
+table.list tr td.d a{
+	background:url(../img/ico/cross_sm.gif) 0px 50% no-repeat;
+	padding-left:14px;
+}
+/* Icon links */
+table.list tr td.il{text-align:right;}
+table.list tr td.il a{
+	background-position:0 50%;
+	background-repeat:no-repeat;
+	padding-left:16px;
+	line-height:16px;
+	margin-left:8px;
+}
+/* Icon in a cell */
+table.list tr td.i{
+	width:16px;
+	vertical-align:middle;
+}
+/* heading */
+table.list tr.heading td{
+	font-weight:bold;
+	background:#D6DFF7;
+}
+table.a-t tr td{vertical-align:top;}
+table.list tr.disabled td, table.list tr.disabled td a{color:#aaa;font-weight:normal;}
+table.list tr.rc td{background:#efefef}
+
+
+
+
+/* Form table */
+
+table.form tr.h td, table.checks tr.h td{
+	background:#D6D5B8;color:#000;font-size:120%;font-weight:bold;padding:4px;
+	/*font-size:135%;color:#60aa37;font-weight:bold;padding:15px 4px 10px 0;*/
+}
+table.form>tbody>tr>td{padding:8px 4px;}
+table.form>tbody>tr>td.title{
+	font-weight:bold;
+	color:#fff;
+}
+table.form td.caption{
+	width:160px;
+	text-align:right;
+	color:#666;
+	vertical-align:top;
+	/*background:transparent;*/
+	font-weight:bold;
+}
+table.form td.caption label.r{
+	color:#000;	/*#991900;*/
+}
+table.form td.field{
+	/*background:transparent;*/
+}
+table.form td.field input,
+table.form td.field select,
+table.form td.field textarea{
+	border:1px solid #999;
+	padding:2px;
+}
+table.form td.field select{padding:0;}
+table.form td.field span.hint{ clear:both; display:block; color:#000; font-size:90%;}
+table.form td.actions{padding-top:16px;vertical-align:middle;}
+table.form td.actions input{
+	font-weight:bold;
+	padding:3px 4px;
+}
+/* Make subsequent buttons non-bold */
+table.form td.actions input+input{font-weight:normal;}
+table.form td.actions a{vertical-align:middle;}
+
+table.form td p.tip{
+	font:95% Verdana,Arial,Helvetica,sans-serif;
+	color:#666;
+	margin:0.5em 0;
+}
+
+
+/* Tables within field cells */
+/*table.form td.field table td{padding:0px;}*/
+table.checks tr td{padding:2px;margin:0;vertical-align:middle;}
+
+label.check{
+    display:block;
+    padding-left:15px;
+    text-indent:-15px;
+}
+
+label.check input{
+	border:0px solid #000 !important;
+    width:13px;
+    height:13px;
+    padding:0;
+    margin:4px 4px 0 4px;
+    vertical-align:middle;
+    position:relative;
+	z-index:2;
+    top:-1px;
+    *overflow: hidden;
+}
+table.rp tr td.caption{text-align:left;}
+
+
+
+
+/* Message box - Base class */
+div.msg{
+	background-position:5px 50%;
+	background-repeat:no-repeat;
+	color:#000;
+	padding:5px 5px 5px 26px !important;
+	border-style:solid;
+	border-width:2px;
+	/*border-left-width:8px;*/
+	font-size:120%;
+	margin:10px;
+}
+/* ERROR */
+div.msg.err{
+	background-image:url(../../img/ico/f_err.gif);
+	background-color:#FBE6F2;
+	border-color:#D893A1;
+}
+/* INFORMATION */
+div.msg.info{
+	background-image:url(../../img/ico/f_info.gif);
+	background-color:#E6FBF2;
+	border-color:#93D8A1;
+}
+/* EXCLAMATION */
+div.msg.warn{
+	background-image:url(../../img/ico/f_warn.gif);
+	background-color:#FBE6F2;
+	border-color:#D893A1;
+}
+/* QUESTION */
+div.msg.help{
+	background-image:url(../../img/ico/f_help.gif);
+	/*background-color:#E6FBF2;
+	border-color:#93D8A1;*/
+	background-color:#fff9d7;
+	border-color:#e2c822;
+}
+div.msg.note{
+	background-image:url(../../img/ico/f_info.gif);
+	background-color:#fff9d7;
+	border-color:#e2c822;
+}
+div.msg.yes{
+	background-image:url(../../img/ico/f_yes.gif);
+	background-color:#FFF3A8;
+	border-color:#e2c822;
+}
+
+.bg-red{background:#FBE6F2;}
+.bg-yellow{background:#fff9d7;padding:0.5em}
+.bg-info{background:#E6FBF2;}

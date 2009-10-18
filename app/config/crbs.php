@@ -8,7 +8,7 @@ $config['base_url']	= "http://localhost/projects/crbs2/";
 $config['index_page'] = "index.php";
 
 // Template
-$config['template'] = 'template/960';
+$config['template'] = 'template/mg';
 
 $config['profiler'] = FALSE;
 
