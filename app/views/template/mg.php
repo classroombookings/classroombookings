@@ -4,6 +4,13 @@ $title = (!isset($title)) ? '' : $title;
 // URI segments
 $seg1 = $this->uri->segment(1, 'dashboard');
 $seg2 = $this->uri->segment(2);
+
+// Decide which classes to apply to the main grid divs
+if(isset($sidebar)){
+	$class = 'with-side';
+} else {
+	$class = 'without-side';
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -32,6 +39,9 @@ $seg2 = $this->uri->segment(2);
 				margin:0 20px 0 0;
 				padding:0;
 			}
+			.ui-tabs .ui-tabs-hide {
+				display: none;
+			}
 			<?php
 			$weeks = $this->weeks_model->get();
 			foreach($weeks as $week){
@@ -44,6 +54,16 @@ $seg2 = $this->uri->segment(2);
 			}
 			?>
 		</style>
+		<script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
+		<script type="text/javascript" src="js/jquery.cookie.js"></script>
+		<script type="text/javascript" src="js/jquery-ui-1.7.2.custom.min.js"></script>
+		<script type="text/javascript" src="js/qTip.js"></script>
+		<script type="text/javascript" src="js/facebox.js"></script>
+		<!-- <script type="text/javascript" src="js/tabber-minimized.js"></script>
+		<script type="text/javascript" src="js/syronex-colorpicker-mod.js"></script>
+		<script type="text/javascript" src="js/jquery.date_input.min.js"></script>
+		<script type="text/javascript" src="js/timepicker.js"></script>
+		<script type="text/javascript" src="js/jquery.autocomplete.js"></script> -->
 	</head>
 	
 	
@@ -158,16 +178,31 @@ $seg2 = $this->uri->segment(2);
 			
 			
 			<div class="row">
-				<div class="column grid_12p" id="main">
-					<div class="cell"><?php
-						echo (isset($pretitle)) ? $pretitle : '';
-						echo (isset($pagetitle)) ? '<h1>' . $pagetitle . '</h1>' : '';
-						echo (isset($links)) ? $links : '';
-					?></div>
-					<div class="cell"><?php
-						echo (isset($body)) ? $body : '[Nothing to display]';
-					?></div>
+				
+				<?php if(isset($sidebar)): ?>
+				<div class="right column grid_3" id="main-sidebar">
+					<div class="cell pad"><h1>Sidebar</h1>
+					<?php echo $sidebar ?>
+					</div>
 				</div>
+			
+				<div class="row <?php echo $class ?>">
+				<?php endif; ?>
+					
+					<div class="column grid_12p" id="main-body">
+						<div class="cell"><?php
+							echo (isset($pretitle)) ? $pretitle : '';
+							echo (isset($pagetitle)) ? '<h1>' . $pagetitle . '</h1>' : '';
+							echo (isset($links)) ? $links : '';
+						?></div>
+						<div class="cell"><?php
+							echo (isset($body)) ? $body : '[Nothing to display]';
+						?></div>
+					</div>
+					
+				<?php if(isset($sidebar)): ?>
+				</div>
+				<?php endif; ?>
 			</div>
 			
 			

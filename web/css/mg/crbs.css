@@ -1,3 +1,7 @@
+@import "../buttons.css";
+@import "../facebox.css";
+@import "../smoothness/jquery-ui-1.7.2.custom.css";
+
 table tr td, table th td, input, select, textarea{font:11px/1.5 Arial,Verdana,Helvetica,Arial,'Liberation Sans',FreeSans,sans-serif}
 
 h1,h2,h3,h4,h5,h6{
@@ -203,40 +207,22 @@ div.msg{
 /* ERROR */
 div.msg.err{
 	background-image:url(../../img/ico/f_err.gif);
-	background-color:#FBE6F2;
-	border-color:#D893A1;
 }
 /* INFORMATION */
 div.msg.info{
 	background-image:url(../../img/ico/f_info.gif);
-	background-color:#E6FBF2;
-	border-color:#93D8A1;
 }
 /* EXCLAMATION */
 div.msg.warn{
 	background-image:url(../../img/ico/f_warn.gif);
-	background-color:#FBE6F2;
-	border-color:#D893A1;
 }
 /* QUESTION */
 div.msg.help{
 	background-image:url(../../img/ico/f_help.gif);
-	/*background-color:#E6FBF2;
-	border-color:#93D8A1;*/
-	background-color:#fff9d7;
-	border-color:#e2c822;
 }
 div.msg.note{
 	background-image:url(../../img/ico/f_info.gif);
-	background-color:#fff9d7;
-	border-color:#e2c822;
 }
 div.msg.yes{
 	background-image:url(../../img/ico/f_yes.gif);
-	background-color:#FFF3A8;
-	border-color:#e2c822;
 }
-
-.bg-red{background:#FBE6F2;}
-.bg-yellow{background:#fff9d7;padding:0.5em}
-.bg-info{background:#E6FBF2;}

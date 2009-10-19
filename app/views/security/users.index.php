@@ -48,7 +48,7 @@ if($users != 0){
 		<td class="il" width="270">
 		<?php
 		$actiondata[0] = array('security/users/view/'.$user->user_id, 'Report', 'magnifier_sm.gif');
-		$actiondata[1] = array('security/permissions/effective/'.$user->user_id, 'Effective permissions', 'key-sm.gif', 'win');
+		$actiondata[1] = array('security/permissions/effective/'.$user->user_id, 'Effective permissions', 'key-sm.gif', 'facebox');
 		$actiondata[2] = array('security/users/delete/'.$user->user_id, 'Delete', 'cross_sm.gif');
 		$this->load->view('parts/listactions', $actiondata);
 		#$this->load->view('parts/delete', array('url' => 'security/users/delete/'.$user->user_id));
@@ -75,10 +75,11 @@ if($users != 0){
 	$.get('blah.html', function(data) { $.facebox(data) })
 }) */
 
-//$('a[rel*=facebox]').attr("href", $(this).attr("href") + "/ajax");
-/*jQuery(document).ready(function($){
+$('a[rel*=facebox]').attr("href", $(this).attr("href") + "/ajax");
+jQuery(document).ready(function($){
 	$('a[class*=facebox]').facebox();
-}); WHEN JS LIB WAS JQUERY, THIS ONE WORKED */
+}); /* WHEN JS LIB WAS JQUERY, THIS ONE WORKED */
+
 
 /* $(function(){
 	$('.boxy').click(function(){
@@ -87,13 +88,14 @@ if($users != 0){
 	});
 }); */
 
+/* 
 $$('a.win').each(function(el){
 	el.href = el.href + "/ajax"
 	var ajax = new Control.Window(el,{
 		className: 'simple_window',
 		closeOnClick: true,
 	});
-});
+}); */
 
 </script> 
 

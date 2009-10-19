@@ -8,6 +8,8 @@ EBEBBE
 F2C823
 
 Kuler 230627
+
+Kuler 230267
 CDCF92
 EBEACC
 D6D5B8
@@ -51,7 +53,7 @@ div#subhead a:hover, div#subhead a.current{
 }
 
 /* Main area */
-div#main div h1{
+div#main-body div h1, div#main-sidebar div h1{
 	color:#60AA37;
 }
 
@@ -61,10 +63,47 @@ div#footer div.cell{
 	color:#666;
 }
 
-div#main a, div#footer a{
+/* Normal links */
+a{
 	color:#08C;
 }
-
-div#main a:hover, div#footer a:hover{
+a:hover{
 	color:#FCA604;
 }
+
+
+
+/* ERROR */
+div.msg.err{
+	background-color:#FBE6F2;
+	border-color:#D893A1;
+}
+/* INFORMATION */
+div.msg.info{
+	background-color:#E6FBF2;
+	border-color:#93D8A1;
+}
+/* EXCLAMATION */
+div.msg.warn{
+	background-color:#FBE6F2;
+	border-color:#D893A1;
+}
+/* QUESTION */
+div.msg.help{
+	background-color:#fff9d7;
+	border-color:#e2c822;
+}
+div.msg.note{
+	background-color:#fff9d7;
+	border-color:#e2c822;
+}
+div.msg.yes{
+	background-color:#FFF3A8;
+	border-color:#e2c822;
+}
+
+
+
+.bg-red{background:#FBE6F2;}
+.bg-yellow{background:#fff9d7;padding:0.5em}
+.bg-info{background:#E6FBF2;}
