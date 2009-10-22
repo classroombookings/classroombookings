@@ -61,7 +61,7 @@ $t_word = array('Everyone', 'Room owner', 'User', 'Group', 'Department');
 <!-- main table -->
 <table class="form" cellpadding="0" cellspacing="0" border="0" width="100%">
 	
-	<tr class="h"><td colspan="2">Add permission entry</td></tr>
+	<tr class="h"><td colspan="3">Add permission entry</td></tr>
 	
 	<tr>
 		

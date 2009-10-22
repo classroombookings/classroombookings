@@ -57,6 +57,24 @@ div#footer p{
 
 
 
+/* Tooltips */
+div#qTip{
+	padding:5px;
+	border:1px solid #777;	/*#FFA500;	/*#006699;*/
+	display:none;
+	background:#fff;	/*#B1DE98;	/*#D86B46;*/
+	color:#000;
+	font-size:95%;
+	font-weight:bold;
+	width:300px;
+	text-align:left;
+	position:absolute;
+	z-index:1000;
+}
+
+
+
+
 /**
  * Table type: LIST
  */

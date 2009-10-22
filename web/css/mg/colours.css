@@ -72,6 +72,12 @@ a:hover{
 }
 
 
+div#qTip{
+	border:0px solid #777;	/*#FFA500;	/*#006699;*/
+	background:#6D7D7F;	/*#B1DE98;	/*#D86B46;*/
+	color:#fff;
+}
+
 
 /* ERROR */
 div.msg.err{

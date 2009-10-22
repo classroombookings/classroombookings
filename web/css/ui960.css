@@ -229,7 +229,7 @@ div#qTip{
 	display:none;
 	background:#fff;	/*#B1DE98;	/*#D86B46;*/
 	color:#000;
-	/*font-size:normal;*/
+	font-weight:bold;
 	width:300px;
 	text-align:left;
 	position:absolute;
