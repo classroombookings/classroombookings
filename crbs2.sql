@@ -1,11 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 3.2.0.1
+-- version 2.11.6
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Oct 18, 2009 at 03:41 PM
--- Server version: 5.1.36
--- PHP Version: 5.2.9-2
+-- Generation Time: Oct 27, 2009 at 11:32 PM
+-- Server version: 5.0.51
+-- PHP Version: 5.2.6
+
+SET FOREIGN_KEY_CHECKS=0;
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
@@ -27,12 +29,12 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
 DROP TABLE IF EXISTS `departments`;
 CREATE TABLE `departments` (
-  `department_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `department_id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(64) NOT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `colour` char(7) DEFAULT NULL COMMENT 'Hex colour value',
-  `created` date DEFAULT NULL,
-  PRIMARY KEY (`department_id`)
+  `description` varchar(255) default NULL,
+  `colour` char(7) default NULL COMMENT 'Hex colour value',
+  `created` date default NULL,
+  PRIMARY KEY  (`department_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='School departments' AUTO_INCREMENT=14 ;
 
 --
@@ -40,18 +42,18 @@ CREATE TABLE `departments` (
 --
 
 INSERT INTO `departments` (`department_id`, `name`, `description`, `colour`, `created`) VALUES
-(1, 'English', '', '#339966', '2008-12-19'),
-(2, 'Maths', '', '#FFCC00', '2008-12-19'),
-(3, 'Science', '', '#33CCCC', '2008-12-19'),
-(4, 'ICT', '', '#C0C0C0', '2008-12-19'),
-(5, 'Music', '', '#008080', '2008-12-19'),
-(6, 'History', '', '#993300', '2008-12-19'),
-(7, 'Art', '', '#FF99CC', '2008-12-19'),
-(9, 'RE', '', '#FF0000', '2008-12-19'),
-(10, 'Geography', '', '#8AE234', '2008-12-19'),
-(11, 'Languages', '', '#CC99FF', '2009-01-09'),
-(12, 'PE', '', '#000080', '2009-01-09'),
-(13, 'Technology', '', '#FFFF00', '2009-01-09');
+(1, 'English', '', '#4E9A06', '2008-12-19'),
+(2, 'Maths', '', '#EDD400', '2008-12-19'),
+(3, 'Science', '', '#729FCF', '2008-12-19'),
+(4, 'ICT', '', '#204A87', '2008-12-19'),
+(5, 'Music', '', '#F57900', '2008-12-19'),
+(6, 'History', '', '#A40000', '2008-12-19'),
+(7, 'Art', '', '#EF2929', '2008-12-19'),
+(9, 'RE', '', '#E9B96E', '2008-12-19'),
+(10, 'Geography', '', '#8F5902', '2008-12-19'),
+(11, 'Languages', '', '#AD7FA8', '2009-01-09'),
+(12, 'PE', '', '#2E3436', '2009-01-09'),
+(13, 'Technology', '', '#BABDB6', '2009-01-09');
 
 -- --------------------------------------------------------
 
@@ -100,15 +102,15 @@ INSERT INTO `departments2ldapgroups` (`department_id`, `ldapgroup_id`) VALUES
 
 DROP TABLE IF EXISTS `groups`;
 CREATE TABLE `groups` (
-  `group_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `group_id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(20) NOT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `bookahead` smallint(3) unsigned DEFAULT NULL COMMENT 'Days ahead users in this group can make a booking',
-  `quota_num` int(10) unsigned DEFAULT NULL COMMENT 'Default quota amount',
-  `quota_type` enum('day','week','month','current') DEFAULT NULL COMMENT 'Type of quota in use',
+  `description` varchar(255) default NULL,
+  `bookahead` smallint(3) unsigned default NULL COMMENT 'Days ahead users in this group can make a booking',
+  `quota_num` int(10) unsigned default NULL COMMENT 'Default quota amount',
+  `quota_type` enum('day','week','month','current') default NULL COMMENT 'Type of quota in use',
   `permissions` text COMMENT 'A PHP-serialize()''d chunk of data',
   `created` date NOT NULL COMMENT 'Date the group was created',
-  PRIMARY KEY (`group_id`),
+  PRIMARY KEY  (`group_id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Groups table with settings and permiss; InnoDB free: 9216 kB' AUTO_INCREMENT=10 ;
 
@@ -118,10 +120,9 @@ CREATE TABLE `groups` (
 
 INSERT INTO `groups` (`group_id`, `name`, `description`, `bookahead`, `quota_num`, `quota_type`, `permissions`, `created`) VALUES
 (1, 'Administrators', 'Default group for administrator users', 0, NULL, NULL, 'a:64:{i:0;s:9:"dashboard";i:1;s:18:"dashboard.viewdept";i:2;s:17:"dashboard.viewown";i:3;s:7:"account";i:4;s:17:"account.changepwd";i:5;s:9:"configure";i:6;s:10:"changeyear";i:7;s:8:"allrooms";i:8;s:8:"bookings";i:9;s:19:"bookings.create.one";i:10;s:21:"bookings.create.recur";i:11;s:23:"bookings.delete.one.own";i:12;s:29:"bookings.delete.one.roomowner";i:13;s:31:"bookings.delete.recur.roomowner";i:14;s:5:"rooms";i:15;s:9:"rooms.add";i:16;s:10:"rooms.edit";i:17;s:12:"rooms.delete";i:18;s:11:"rooms.attrs";i:19;s:18:"rooms.attrs.values";i:20;s:17:"rooms.permissions";i:21;s:8:"academic";i:22;s:5:"years";i:23;s:9:"years.add";i:24;s:10:"years.edit";i:25;s:12:"years.delete";i:26;s:7:"periods";i:27;s:11:"periods.add";i:28;s:12:"periods.edit";i:29;s:14:"periods.delete";i:30;s:5:"weeks";i:31;s:9:"weeks.add";i:32;s:10:"weeks.edit";i:33;s:12:"weeks.delete";i:34;s:19:"weeks.ayears.manage";i:35;s:16:"weeks.ayears.set";i:36;s:5:"terms";i:37;s:9:"terms.add";i:38;s:10:"terms.edit";i:39;s:12:"terms.delete";i:40;s:8:"holidays";i:41;s:12:"holidays.add";i:42;s:13:"holidays.edit";i:43;s:15:"holidays.delete";i:44;s:11:"departments";i:45;s:15:"departments.add";i:46;s:16:"departments.edit";i:47;s:18:"departments.delete";i:48;s:7:"reports";i:49;s:21:"reports.owndepartment";i:50;s:22:"reports.alldepartments";i:51;s:15:"reports.ownroom";i:52;s:16:"reports.allrooms";i:53;s:13:"reports.other";i:54;s:5:"users";i:55;s:9:"users.add";i:56;s:10:"users.edit";i:57;s:12:"users.delete";i:58;s:12:"users.import";i:59;s:6:"groups";i:60;s:10:"groups.add";i:61;s:11:"groups.edit";i:62;s:13:"groups.delete";i:63;s:11:"permissions";}', '0000-00-00'),
-(2, 'Teaching Staff', 'Teachers from LDAP', 14, 2, 'day', 'a:7:{i:0;s:9:"dashboard";i:1;s:18:"dashboard.viewdept";i:2;s:17:"dashboard.viewown";i:3;s:9:"myprofile";i:4;s:8:"bookings";i:5;s:19:"bookings.create.one";i:6;s:23:"bookings.delete.one.own";}', '0000-00-00'),
+(2, 'Teaching Staff', 'Teachers from LDAP', 14, 2, 'day', 'a:8:{i:0;s:9:"dashboard";i:1;s:18:"dashboard.viewdept";i:2;s:17:"dashboard.viewown";i:3;s:7:"account";i:4;s:17:"account.changepwd";i:5;s:8:"bookings";i:6;s:19:"bookings.create.one";i:7;s:23:"bookings.delete.one.own";}', '0000-00-00'),
 (4, 'Support staff', '', 14, 6, 'current', 'a:7:{i:0;s:9:"dashboard";i:1;s:18:"dashboard.viewdept";i:2;s:17:"dashboard.viewown";i:3;s:9:"myprofile";i:4;s:8:"bookings";i:5;s:19:"bookings.create.one";i:6;s:23:"bookings.delete.one.own";}', '2008-12-02'),
-(7, 'Guests', 'Default group for guests', 0, 1, 'current', 'a:1:{i:0;s:8:"bookings";}', '0000-00-00'),
-(9, 'Foo', '', 0, NULL, NULL, 'a:17:{i:0;s:9:"dashboard";i:1;s:18:"dashboard.viewdept";i:2;s:17:"dashboard.viewown";i:3;s:9:"myprofile";i:4;s:9:"configure";i:5;s:10:"changeyear";i:6;s:8:"allrooms";i:7;s:5:"users";i:8;s:9:"users.add";i:9;s:10:"users.edit";i:10;s:12:"users.delete";i:11;s:12:"users.import";i:12;s:6:"groups";i:13;s:10:"groups.add";i:14;s:11:"groups.edit";i:15;s:13:"groups.delete";i:16;s:11:"permissions";}', '2009-01-23');
+(7, 'Guests', 'Default group for guests', 0, 1, 'current', 'a:1:{i:0;s:8:"bookings";}', '0000-00-00');
 
 -- --------------------------------------------------------
 
@@ -153,12 +154,12 @@ INSERT INTO `groups2ldapgroups` (`group_id`, `ldapgroup_id`) VALUES
 
 DROP TABLE IF EXISTS `holidays`;
 CREATE TABLE `holidays` (
-  `holiday_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `holiday_id` int(10) unsigned NOT NULL auto_increment,
   `year_id` int(10) unsigned NOT NULL COMMENT 'The academic year that this holiday is relevant to',
   `date_start` date NOT NULL,
   `date_end` date NOT NULL,
-  `name` varchar(20) DEFAULT NULL,
-  PRIMARY KEY (`holiday_id`),
+  `name` varchar(20) default NULL,
+  PRIMARY KEY  (`holiday_id`),
   KEY `year_id` (`year_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='School holidays' AUTO_INCREMENT=6 ;
 
@@ -178,9 +179,9 @@ INSERT INTO `holidays` (`holiday_id`, `year_id`, `date_start`, `date_end`, `name
 
 DROP TABLE IF EXISTS `ldapgroups`;
 CREATE TABLE `ldapgroups` (
-  `ldapgroup_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ldapgroup_id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(104) NOT NULL COMMENT 'Name of LDAP group (not full DN, just name part)',
-  PRIMARY KEY (`ldapgroup_id`),
+  PRIMARY KEY  (`ldapgroup_id`),
   UNIQUE KEY `ldapgroup_id` (`ldapgroup_id`,`name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Group names retrieved from LDAP; InnoDB free: 9216 kB' AUTO_INCREMENT=1222 ;
 
@@ -304,14 +305,14 @@ INSERT INTO `ldapgroups` (`ldapgroup_id`, `name`) VALUES
 
 DROP TABLE IF EXISTS `periods`;
 CREATE TABLE `periods` (
-  `period_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `period_id` int(10) unsigned NOT NULL auto_increment,
   `year_id` int(10) unsigned NOT NULL,
   `time_start` time NOT NULL,
   `time_end` time NOT NULL,
   `name` varchar(20) NOT NULL,
   `days` varchar(255) NOT NULL COMMENT 'Serialize() of the days that this period is set on',
   `bookable` tinyint(1) NOT NULL COMMENT 'Boolean 1 or 0 if periods can be booked or not',
-  PRIMARY KEY (`period_id`),
+  PRIMARY KEY  (`period_id`),
   KEY `year_id` (`year_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Periods' AUTO_INCREMENT=50 ;
 
@@ -340,7 +341,7 @@ DROP TABLE IF EXISTS `quota`;
 CREATE TABLE `quota` (
   `user_id` int(10) unsigned NOT NULL,
   `quota_num` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`user_id`)
+  PRIMARY KEY  (`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Quota details';
 
 --
@@ -374,21 +375,21 @@ INSERT INTO `quota` (`user_id`, `quota_num`) VALUES
 
 DROP TABLE IF EXISTS `room-permissions`;
 CREATE TABLE `room-permissions` (
-  `entry_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `entry_id` int(10) unsigned NOT NULL auto_increment,
   `room_id` int(10) unsigned NOT NULL,
   `type` enum('e','o','u','g','d') NOT NULL COMMENT 'E: everyone; O: owner; U: user; G: group; D: department',
-  `user_id` int(10) unsigned DEFAULT NULL,
-  `group_id` int(10) unsigned DEFAULT NULL,
-  `department_id` int(10) unsigned DEFAULT NULL,
+  `user_id` int(10) unsigned default NULL,
+  `group_id` int(10) unsigned default NULL,
+  `department_id` int(10) unsigned default NULL,
   `permissions` text NOT NULL,
   `hash` char(32) NOT NULL,
-  PRIMARY KEY (`entry_id`),
+  PRIMARY KEY  (`entry_id`),
   UNIQUE KEY `hash` (`hash`),
   KEY `user_id` (`user_id`),
   KEY `group_id` (`group_id`),
   KEY `department_id` (`department_id`),
   KEY `room_id` (`room_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Permission entries for various objects on different rooms' AUTO_INCREMENT=14 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Permission entries for various objects on different rooms' AUTO_INCREMENT=15 ;
 
 --
 -- Dumping data for table `room-permissions`
@@ -409,24 +410,22 @@ INSERT INTO `room-permissions` (`entry_id`, `room_id`, `type`, `user_id`, `group
 
 DROP TABLE IF EXISTS `roomattrs-fields`;
 CREATE TABLE `roomattrs-fields` (
-  `field_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `field_id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(20) NOT NULL,
   `type` enum('text','select','check') NOT NULL COMMENT 'Text: textbox; Select: Choose one item from list; Check: Boolean on/off',
-  `options_md5` char(32) DEFAULT NULL,
-  PRIMARY KEY (`field_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Names of fields that can be assigned to rooms' AUTO_INCREMENT=19 ;
+  `options_md5` char(32) default NULL,
+  PRIMARY KEY  (`field_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Names of fields that can be assigned to rooms' AUTO_INCREMENT=20 ;
 
 --
 -- Dumping data for table `roomattrs-fields`
 --
 
 INSERT INTO `roomattrs-fields` (`field_id`, `name`, `type`, `options_md5`) VALUES
-(13, 'Text field 1', 'text', NULL),
-(14, 'Text field 2', 'text', NULL),
-(15, 'List box 1', 'select', '2fa179a7b39047609ae590d12642b797'),
-(16, 'List box 2', 'select', '307751a5b1f09e282c251c82fcaaae5c'),
-(17, 'Tick 1', 'check', NULL),
-(18, 'Tick 2', 'check', NULL);
+(13, 'Number of computers', 'text', NULL),
+(17, 'Colour printer', 'check', NULL),
+(18, 'Mono printer', 'check', NULL),
+(19, 'Scanner', 'check', NULL);
 
 -- --------------------------------------------------------
 
@@ -436,10 +435,10 @@ INSERT INTO `roomattrs-fields` (`field_id`, `name`, `type`, `options_md5`) VALUE
 
 DROP TABLE IF EXISTS `roomattrs-options`;
 CREATE TABLE `roomattrs-options` (
-  `option_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `option_id` int(10) unsigned NOT NULL auto_increment,
   `field_id` int(10) unsigned NOT NULL COMMENT 'Field that this belongs to',
   `value` varchar(50) NOT NULL,
-  PRIMARY KEY (`option_id`),
+  PRIMARY KEY  (`option_id`),
   KEY `field_id` (`field_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Options for room drop-down fields' AUTO_INCREMENT=33 ;
 
@@ -463,15 +462,15 @@ INSERT INTO `roomattrs-options` (`option_id`, `field_id`, `value`) VALUES
 
 DROP TABLE IF EXISTS `roomattrs-values`;
 CREATE TABLE `roomattrs-values` (
-  `value_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `value_id` int(10) unsigned NOT NULL auto_increment,
   `room_id` int(10) unsigned NOT NULL,
   `field_id` int(10) unsigned NOT NULL,
   `value` varchar(255) NOT NULL,
-  PRIMARY KEY (`value_id`),
+  PRIMARY KEY  (`value_id`),
   UNIQUE KEY `attr` (`room_id`,`field_id`),
   KEY `field_id` (`field_id`),
   KEY `room_id` (`room_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Actual values of room fields for each room' AUTO_INCREMENT=154 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Actual values of room fields for each room' AUTO_INCREMENT=192 ;
 
 --
 -- Dumping data for table `roomattrs-values`
@@ -483,7 +482,33 @@ INSERT INTO `roomattrs-values` (`value_id`, `room_id`, `field_id`, `value`) VALU
 (150, 4, 13, ''),
 (151, 4, 14, ''),
 (152, 4, 17, ''),
-(153, 4, 18, '');
+(153, 4, 18, ''),
+(160, 1, 15, ''),
+(161, 1, 16, ''),
+(176, 1, 13, '30'),
+(163, 1, 14, ''),
+(177, 1, 17, '1'),
+(178, 1, 18, '1'),
+(166, 2, 15, '27'),
+(167, 2, 16, '31'),
+(172, 2, 13, '7'),
+(169, 2, 14, 'Info Snippet'),
+(173, 2, 17, '1'),
+(174, 2, 18, ''),
+(175, 2, 19, ''),
+(179, 1, 19, ''),
+(180, 3, 13, '29'),
+(181, 3, 17, '1'),
+(182, 3, 18, '1'),
+(183, 3, 19, '1'),
+(184, 6, 13, '30'),
+(185, 6, 17, '1'),
+(186, 6, 18, '1'),
+(187, 6, 19, ''),
+(188, 5, 13, '15'),
+(189, 5, 17, '1'),
+(190, 5, 18, ''),
+(191, 5, 19, '');
 
 -- --------------------------------------------------------
 
@@ -493,9 +518,9 @@ INSERT INTO `roomattrs-values` (`value_id`, `room_id`, `field_id`, `value`) VALU
 
 DROP TABLE IF EXISTS `roomcategories`;
 CREATE TABLE `roomcategories` (
-  `category_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `category_id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(25) NOT NULL,
-  PRIMARY KEY (`category_id`),
+  PRIMARY KEY  (`category_id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Categories that rooms can belong to' AUTO_INCREMENT=5 ;
 
@@ -517,30 +542,30 @@ INSERT INTO `roomcategories` (`category_id`, `name`) VALUES
 
 DROP TABLE IF EXISTS `rooms`;
 CREATE TABLE `rooms` (
-  `room_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `category_id` int(10) unsigned DEFAULT NULL COMMENT 'An optional category that the room can belong to',
-  `user_id` int(10) unsigned DEFAULT NULL COMMENT 'Specifies an owner (user) of the room',
-  `order` tinyint(3) unsigned DEFAULT NULL COMMENT 'Order that the rooms appear in (optional)',
+  `room_id` int(10) unsigned NOT NULL auto_increment,
+  `category_id` int(10) unsigned default NULL COMMENT 'An optional category that the room can belong to',
+  `user_id` int(10) unsigned default NULL COMMENT 'Specifies an owner (user) of the room',
+  `order` tinyint(3) unsigned default NULL COMMENT 'Order that the rooms appear in (optional)',
   `name` varchar(20) NOT NULL,
-  `description` varchar(40) DEFAULT NULL,
+  `description` varchar(40) default NULL,
   `bookable` tinyint(1) NOT NULL COMMENT 'Boolean 1 or 0',
-  `photo` char(32) DEFAULT NULL COMMENT 'An md5 hash that references the file that is stored',
-  `created` date DEFAULT NULL COMMENT 'Date the entry was created',
-  PRIMARY KEY (`room_id`),
+  `photo` char(32) default NULL COMMENT 'An md5 hash that references the file that is stored',
+  `created` date default NULL COMMENT 'Date the entry was created',
+  PRIMARY KEY  (`room_id`),
   KEY `user_id` (`user_id`),
   KEY `category_id` (`category_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='School rooms' AUTO_INCREMENT=6 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='School rooms' AUTO_INCREMENT=7 ;
 
 --
 -- Dumping data for table `rooms`
 --
 
 INSERT INTO `rooms` (`room_id`, `category_id`, `user_id`, `order`, `name`, `description`, `bookable`, `photo`, `created`) VALUES
-(1, 1, 121, NULL, 'ICT1', 'ICT Suite / Eve Winstanley', 1, '0', NULL),
-(2, 2, 1, NULL, 'RM42', NULL, 1, NULL, NULL),
-(3, 1, NULL, NULL, 'ICT2', 'Room 13 / Chris Hudson', 1, '0', NULL),
-(4, NULL, NULL, NULL, 'Foobar', 'Foo3', 0, '0', NULL),
-(5, 2, NULL, NULL, 'Tech Suite', 'Tech Suite', 0, NULL, '2009-02-13');
+(1, 1, 121, NULL, 'ICT1', 'ICT Suite / Eve Winstanley', 1, '14ae70cf0379e7.#.JPG', NULL),
+(2, NULL, 116, NULL, 'Room 16', '', 0, '14ae7116cd7f20.#.JPG', NULL),
+(3, 1, 127, NULL, 'ICT2', 'Room 13 / Chris Hudson', 1, '0', NULL),
+(6, 1, NULL, NULL, 'ICT3', '', 1, '0', '2009-10-26'),
+(5, 2, 1, NULL, 'Tech Suite', 'Tech Suite', 1, '0', '2009-02-13');
 
 -- --------------------------------------------------------
 
@@ -550,16 +575,16 @@ INSERT INTO `rooms` (`room_id`, `category_id`, `user_id`, `order`, `name`, `desc
 
 DROP TABLE IF EXISTS `settings-auth`;
 CREATE TABLE `settings-auth` (
-  `preauthkey` char(40) DEFAULT NULL COMMENT 'SHA1 hash to be used as preauth key',
-  `preauthgroup_id` int(10) unsigned DEFAULT NULL COMMENT 'Default group for accounts created automatically via preauth',
-  `preauthemail` varchar(50) DEFAULT NULL COMMENT 'Email domain for users created via preauth',
-  `ldap` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT 'Boolean 1 or 0 for LDAP auth status',
-  `ldaphost` varchar(50) DEFAULT NULL COMMENT 'LDAP server hostname',
-  `ldapport` int(5) unsigned DEFAULT NULL COMMENT 'LDAP server TCP port',
+  `preauthkey` char(40) default NULL COMMENT 'SHA1 hash to be used as preauth key',
+  `preauthgroup_id` int(10) unsigned default NULL COMMENT 'Default group for accounts created automatically via preauth',
+  `preauthemail` varchar(50) default NULL COMMENT 'Email domain for users created via preauth',
+  `ldap` tinyint(1) unsigned NOT NULL default '0' COMMENT 'Boolean 1 or 0 for LDAP auth status',
+  `ldaphost` varchar(50) default NULL COMMENT 'LDAP server hostname',
+  `ldapport` int(5) unsigned default NULL COMMENT 'LDAP server TCP port',
   `ldapbase` text COMMENT 'Base DNs to search in LDAP',
   `ldapfilter` text COMMENT 'LDAP search query filter',
-  `ldapgroup_id` int(10) unsigned DEFAULT NULL COMMENT 'Default group for LDAP accounts',
-  `ldaploginupdate` tinyint(1) unsigned DEFAULT NULL COMMENT 'Boolean. Update user details on every login?'
+  `ldapgroup_id` int(10) unsigned default NULL COMMENT 'Default group for LDAP accounts',
+  `ldaploginupdate` tinyint(1) unsigned default NULL COMMENT 'Boolean. Update user details on every login?'
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='LDAP configuration';
 
 --
@@ -567,7 +592,7 @@ CREATE TABLE `settings-auth` (
 --
 
 INSERT INTO `settings-auth` (`preauthkey`, `preauthgroup_id`, `preauthemail`, `ldap`, `ldaphost`, `ldapport`, `ldapbase`, `ldapfilter`, `ldapgroup_id`, `ldaploginupdate`) VALUES
-('5faeb3797924c7598daf85cd70816a2c66be6994', 7, 'bishopbarrington.net', 1, 'bbs-svr-001', 389, 'ou=teaching staff, ou=bbs, ou=establishments, dc=bbarrington, dc=internal; ou=system administrators, ou=bbs, ou=establishments, dc=bbarrington, dc=internal', '(& (| (!(displayname=Administrator*)) (!(displayname=Admin*)) ) (cn=%u) )', 7, 0);
+('0cac28841351b26707087c54ae8d5e060d487903', 7, 'bishopbarrington.net', 1, 'bbs-svr-001', 389, 'ou=teaching staff, ou=bbs, ou=establishments, dc=bbarrington, dc=internal; ou=system administrators, ou=bbs, ou=establishments, dc=bbarrington, dc=internal', '(& (| (!(displayname=Administrator*)) (!(displayname=Admin*)) ) (cn=%u) )', 7, 0);
 
 -- --------------------------------------------------------
 
@@ -577,19 +602,19 @@ INSERT INTO `settings-auth` (`preauthkey`, `preauthgroup_id`, `preauthemail`, `l
 
 DROP TABLE IF EXISTS `settings-main`;
 CREATE TABLE `settings-main` (
-  `schoolname` varchar(100) DEFAULT NULL COMMENT 'Name of school',
-  `schoolurl` varchar(255) DEFAULT NULL COMMENT 'Web address for school',
-  `bd_mode` enum('room','day') DEFAULT NULL COMMENT 'Mode of display for room booking table',
-  `bd_col` enum('periods','rooms','days') DEFAULT NULL COMMENT 'Columns on the booking table',
-  `room_order` enum('alpha','order') DEFAULT NULL COMMENT 'How to display rooms in the booking view'
+  `schoolname` varchar(100) default NULL COMMENT 'Name of school',
+  `schoolurl` varchar(255) default NULL COMMENT 'Web address for school',
+  `tt_view` enum('room','day') default NULL COMMENT 'Mode of display for room booking table',
+  `tt_cols` enum('periods','rooms','days') default NULL COMMENT 'Columns on the booking table',
+  `room_order` enum('alpha','order') default NULL COMMENT 'How to display rooms in the booking view'
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Global app settings';
 
 --
 -- Dumping data for table `settings-main`
 --
 
-INSERT INTO `settings-main` (`schoolname`, `schoolurl`, `bd_mode`, `bd_col`, `room_order`) VALUES
-('Bishop Barrington School Sports With Mathematics College', '', 'day', 'periods', 'alpha');
+INSERT INTO `settings-main` (`schoolname`, `schoolurl`, `tt_view`, `tt_cols`, `room_order`) VALUES
+('Bishop Barrington School', '', 'room', 'periods', 'alpha');
 
 -- --------------------------------------------------------
 
@@ -599,12 +624,12 @@ INSERT INTO `settings-main` (`schoolname`, `schoolurl`, `bd_mode`, `bd_col`, `ro
 
 DROP TABLE IF EXISTS `terms`;
 CREATE TABLE `terms` (
-  `term_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `term_id` int(10) unsigned NOT NULL auto_increment,
   `year_id` int(10) unsigned NOT NULL COMMENT 'The academic year that this term belongs to',
   `date_start` date NOT NULL COMMENT 'Start date of the term',
   `date_end` date NOT NULL COMMENT 'End date of the term',
   `name` varchar(40) NOT NULL COMMENT 'Name of the term',
-  PRIMARY KEY (`term_id`),
+  PRIMARY KEY  (`term_id`),
   UNIQUE KEY `uniquedates` (`date_start`,`date_end`),
   UNIQUE KEY `date_start` (`date_start`),
   UNIQUE KEY `date_end` (`date_end`),
@@ -628,31 +653,31 @@ INSERT INTO `terms` (`term_id`, `year_id`, `date_start`, `date_end`, `name`) VAL
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
-  `user_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(10) unsigned NOT NULL auto_increment,
   `group_id` int(10) unsigned NOT NULL COMMENT 'Group that the user is a member of',
-  `enabled` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Boolean 1 or 0',
+  `enabled` tinyint(1) NOT NULL default '0' COMMENT 'Boolean 1 or 0',
   `username` varchar(104) NOT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `password` char(40) DEFAULT NULL COMMENT 'SHA1 hash of password',
-  `displayname` varchar(64) DEFAULT NULL,
-  `cookiekey` char(40) DEFAULT NULL COMMENT 'SHA1 hash if a cookie is required',
-  `lastlogin` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Date the user last logged in',
-  `lastactivity` datetime DEFAULT NULL COMMENT 'Last time a page was accessed by this user',
-  `ldap` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT 'Boolean 1 or 0 if user should authenticate via LDAP',
+  `email` varchar(255) default NULL,
+  `password` char(40) default NULL COMMENT 'SHA1 hash of password',
+  `displayname` varchar(64) default NULL,
+  `cookiekey` char(40) default NULL COMMENT 'SHA1 hash if a cookie is required',
+  `lastlogin` timestamp NOT NULL default '0000-00-00 00:00:00' COMMENT 'Date the user last logged in',
+  `lastactivity` datetime default NULL COMMENT 'Last time a page was accessed by this user',
+  `ldap` tinyint(1) unsigned NOT NULL default '0' COMMENT 'Boolean 1 or 0 if user should authenticate via LDAP',
   `created` date NOT NULL COMMENT 'Date the user was created',
-  PRIMARY KEY (`user_id`),
+  PRIMARY KEY  (`user_id`),
   UNIQUE KEY `username` (`username`),
   KEY `ldap` (`ldap`),
   KEY `group_id` (`group_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Main users table' AUTO_INCREMENT=127 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Main users table' AUTO_INCREMENT=130 ;
 
 --
 -- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `password`, `displayname`, `cookiekey`, `lastlogin`, `lastactivity`, `ldap`, `created`) VALUES
-(1, 1, 1, 'admin', 'craig.rodway@gmail.com', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Craig Rodway', NULL, '2009-10-16 13:44:03', '2009-10-16 13:44:03', 0, '0000-00-00'),
-(12, 9, 1, 'craig.rodway', 'craig.rodway@bishopbarrington.net', NULL, 'Mr Rodway', NULL, '2009-05-19 11:41:06', '2009-05-19 11:43:17', 1, '2009-01-09'),
+(1, 1, 1, 'admin', 'craig.rodway@gmail.com', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Craig Rodway', NULL, '2009-10-27 23:13:52', '2009-10-27 23:22:10', 0, '0000-00-00'),
+(12, 7, 1, 'craig.rodway', 'craig.rodway@bishopbarrington.net', NULL, 'Mr Rodway', NULL, '2009-05-19 11:41:06', '2009-05-19 11:43:17', 1, '2009-01-09'),
 (19, 2, 1, 'test.one', 'test.one@bishopbarrington.net', NULL, 'Mr T One', NULL, '2009-05-19 11:55:07', '2009-05-19 11:55:14', 1, '2009-01-14'),
 (22, 2, 1, 'test.three', 'test.three@bishopbarrington.net', NULL, 'Mr T Three', NULL, '2009-01-14 10:56:57', '0000-00-00 00:00:00', 1, '2009-01-14'),
 (24, 2, 1, 'test.two', 'test.two@bishopbarrington.net', NULL, 'Mr T Two', NULL, '2009-01-26 16:45:49', '0000-00-00 00:00:00', 1, '2009-01-26'),
@@ -660,14 +685,16 @@ INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `pas
 (113, 2, 0, 'j.gent100', 'j.gent100@bishopbarrington.net', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'j.gent100', NULL, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 0, '2009-01-30'),
 (114, 2, 0, 'k.hammerton100', 'k.hammerton100@bishopbarrington.net', 'be8ec20d52fdf21c23e83ba2bb7446a7fecb32ac', 'k.hammerton100', NULL, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 0, '2009-01-30'),
 (115, 2, 0, 'l.johnson100', 'l.johnson100@bishopbarrington.net', '3a56bca418737e68a7620591abd0e7e8484458a6', 'l.johnson100', NULL, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 0, '2009-01-30'),
-(116, 2, 0, 'm.bennett103', 'm.bennett103@bishopbarrington.net', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'm.bennett103', NULL, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 0, '2009-01-30'),
-(118, 2, 0, 'p.beighton100', 'p.beighton100@bishopbarrington.net', '32ba707d8ae992ced8648716fbd88002fc5be03a', 'p.beighton100', NULL, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 0, '2009-01-30'),
+(116, 2, 0, 'm.bennett103', 'm.bennett103@bishopbarrington.net', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Mike Bennett', NULL, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 0, '2009-01-30'),
+(118, 2, 0, 'p.beighton100', 'p.beighton100@bishopbarrington.net', '32ba707d8ae992ced8648716fbd88002fc5be03a', 'Phillip Beighton', NULL, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 0, '2009-01-30'),
 (120, 2, 0, 'h.smith104', 'h.smith104@bishopbarrington.net', 'c06538faae9975cce73fc613a8370ba3ffb3d302', 'h.smith104', NULL, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 0, '2009-01-30'),
-(121, 2, 0, 'a.staff100', 'a.staff100@bishopbarrington.net', 'ef20a06d2c45dd9f6a58eacaa6b36d6fc89870a6', 'a.staff100', NULL, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 0, '2009-01-30'),
+(121, 2, 0, 'a.staff100', 'a.staff100@bishopbarrington.net', 'ef20a06d2c45dd9f6a58eacaa6b36d6fc89870a6', 'Adrian Staff', NULL, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 0, '2009-01-30'),
 (122, 2, 0, 'm.stokoe102', 'm.stokoe102@bishopbarrington.net', 'deaae441b2d1596d06f01725f930ed2f2e7277bd', 'm.stokoe102', NULL, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 0, '2009-01-30'),
 (123, 2, 0, 'j.thompson106', 'j.thompson106@bishopbarrington.net', '78c94605b024fc545b9100d2734dc4a4ae8a8335', 'j.thompson106', NULL, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 0, '2009-01-30'),
 (125, 2, 0, 'c.wearmouth100', 'c.wearmouth100@bishopbarrington.net', '9e907431a8d31fefe3c2d341ff8826624c954f15', 'c.wearmouth100', NULL, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 0, '2009-01-30'),
-(126, 2, 0, 'e.winstanley100', 'e.winstanley100@bishopbarrington.net', 'ea157601840a5b4953c2e95f5fd27223291122d6', 'e.winstanley100', NULL, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 0, '2009-01-30');
+(126, 2, 0, 'e.winstanley100', 'e.winstanley100@bishopbarrington.net', 'ea157601840a5b4953c2e95f5fd27223291122d6', 'e.winstanley100', NULL, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 0, '2009-01-30'),
+(127, 2, 1, 'teacher', 'teacher@bishopbarrington.net', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'John Doe', NULL, '2009-10-27 13:18:01', '2009-10-27 13:19:11', 0, '2009-10-18'),
+(129, 1, 0, 'smithj', '', '41d78584e31c36ffe3724d8ea37084b68179d198', 'smithj', NULL, '0000-00-00 00:00:00', NULL, 0, '2009-10-25');
 
 -- --------------------------------------------------------
 
@@ -711,7 +738,7 @@ CREATE TABLE `usersactive` (
 --
 
 INSERT INTO `usersactive` (`user_id`, `timestamp`) VALUES
-(1, 1255697043);
+(1, 1256685730);
 
 -- --------------------------------------------------------
 
@@ -734,45 +761,45 @@ CREATE TABLE `weekdates` (
 --
 
 INSERT INTO `weekdates` (`week_id`, `year_id`, `date`) VALUES
-(11, 1, '2008-09-08'),
-(12, 1, '2008-09-15'),
-(11, 1, '2008-09-22'),
-(12, 1, '2008-09-29'),
-(11, 1, '2008-10-06'),
-(12, 1, '2008-10-13'),
-(11, 1, '2008-10-20'),
-(12, 1, '2008-11-03'),
-(11, 1, '2008-11-10'),
-(12, 1, '2008-11-17'),
-(11, 1, '2008-11-24'),
-(12, 1, '2008-12-01'),
-(11, 1, '2008-12-08'),
-(12, 1, '2008-12-15'),
-(11, 1, '2009-01-05'),
-(12, 1, '2009-01-12'),
-(11, 1, '2009-01-19'),
-(12, 1, '2009-01-26'),
-(11, 1, '2009-02-02'),
-(12, 1, '2009-02-09'),
-(11, 1, '2009-02-23'),
-(12, 1, '2009-03-02'),
-(11, 1, '2009-03-09'),
-(12, 1, '2009-03-16'),
-(11, 1, '2009-03-23'),
-(12, 1, '2009-03-30'),
-(11, 1, '2009-04-20'),
-(12, 1, '2009-04-27'),
-(11, 1, '2009-05-04'),
-(12, 1, '2009-05-11'),
-(11, 1, '2009-05-18'),
-(12, 1, '2009-06-01'),
-(11, 1, '2009-06-08'),
-(12, 1, '2009-06-15'),
-(11, 1, '2009-06-22'),
-(12, 1, '2009-06-29'),
 (11, 1, '2009-07-06'),
+(11, 1, '2009-07-20'),
+(11, 1, '2009-06-22'),
 (12, 1, '2009-07-13'),
-(11, 1, '2009-07-20');
+(11, 1, '2009-06-08'),
+(12, 1, '2009-06-29'),
+(11, 1, '2009-05-18'),
+(12, 1, '2009-06-15'),
+(11, 1, '2009-05-04'),
+(12, 1, '2009-06-01'),
+(11, 1, '2009-04-20'),
+(12, 1, '2009-05-11'),
+(11, 1, '2009-03-23'),
+(12, 1, '2009-04-27'),
+(11, 1, '2009-03-09'),
+(12, 1, '2009-03-30'),
+(11, 1, '2009-02-23'),
+(12, 1, '2009-03-16'),
+(11, 1, '2009-02-02'),
+(12, 1, '2009-03-02'),
+(11, 1, '2009-01-19'),
+(12, 1, '2009-02-09'),
+(11, 1, '2009-01-05'),
+(12, 1, '2009-01-26'),
+(11, 1, '2008-12-08'),
+(12, 1, '2009-01-12'),
+(11, 1, '2008-11-24'),
+(12, 1, '2008-12-15'),
+(11, 1, '2008-11-10'),
+(12, 1, '2008-12-01'),
+(11, 1, '2008-10-20'),
+(12, 1, '2008-11-17'),
+(11, 1, '2008-10-06'),
+(12, 1, '2008-11-03'),
+(11, 1, '2008-09-22'),
+(12, 1, '2008-10-13'),
+(11, 1, '2008-09-08'),
+(12, 1, '2008-09-29'),
+(12, 1, '2008-09-15');
 
 -- --------------------------------------------------------
 
@@ -782,12 +809,12 @@ INSERT INTO `weekdates` (`week_id`, `year_id`, `date`) VALUES
 
 DROP TABLE IF EXISTS `weeks`;
 CREATE TABLE `weeks` (
-  `week_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `week_id` int(10) unsigned NOT NULL auto_increment,
   `year_id` int(10) unsigned NOT NULL,
   `name` varchar(20) NOT NULL,
-  `colour` char(7) DEFAULT NULL COMMENT 'Hex colour value including hash',
-  `created` date DEFAULT NULL,
-  PRIMARY KEY (`week_id`),
+  `colour` char(7) default NULL COMMENT 'Hex colour value including hash',
+  `created` date default NULL,
+  PRIMARY KEY  (`week_id`),
   KEY `year_id` (`year_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Week definitions for timetable weeks' AUTO_INCREMENT=13 ;
 
@@ -796,8 +823,8 @@ CREATE TABLE `weeks` (
 --
 
 INSERT INTO `weeks` (`week_id`, `year_id`, `name`, `colour`, `created`) VALUES
-(11, 1, 'Red Week', '#FF0000', '2009-01-25'),
-(12, 1, 'Blue Week', '#0000FF', '2009-01-25');
+(11, 1, 'Red Week', '#EF2929', '2009-01-25'),
+(12, 1, 'Blue Week', '#3465A4', '2009-01-25');
 
 -- --------------------------------------------------------
 
@@ -807,12 +834,12 @@ INSERT INTO `weeks` (`week_id`, `year_id`, `name`, `colour`, `created`) VALUES
 
 DROP TABLE IF EXISTS `years`;
 CREATE TABLE `years` (
-  `year_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `year_id` int(10) unsigned NOT NULL auto_increment,
   `date_start` date NOT NULL,
   `date_end` date NOT NULL,
   `name` varchar(20) NOT NULL,
-  `active` tinyint(1) unsigned DEFAULT '0',
-  PRIMARY KEY (`year_id`),
+  `active` tinyint(1) unsigned default '0',
+  PRIMARY KEY  (`year_id`),
   UNIQUE KEY `active` (`active`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Academic year definitions' AUTO_INCREMENT=7 ;
 
@@ -824,3 +851,5 @@ INSERT INTO `years` (`year_id`, `date_start`, `date_end`, `name`, `active`) VALU
 (1, '2008-09-08', '2009-07-23', '2008 - 2009', 1),
 (5, '2009-09-07', '2010-07-23', '2009 - 2010', NULL),
 (6, '2007-09-01', '2008-07-24', '2007 - 2008', NULL);
+
+SET FOREIGN_KEY_CHECKS=1;

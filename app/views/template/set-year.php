@@ -3,8 +3,7 @@
 	NULL,
 	array('uri' => $this->uri->uri_string())
 	) ?>
-<div>
-	<label for="workingyear_id" title="Change the working academic year for this session, allowing you to configure items for other academic years without affecting the running of the system.">Change working academic year:</label>
+	<label for="workingyear_id" title="Change the working academic year for this session, allowing you to configure items for other academic years without affecting the running of the system."><strong>Change working academic year:</strong></label>
 	<select name="workingyear_id" id="workingyear_id" onchange="this.form.submit()" >
 	<?php
 	$w = FALSE;
@@ -22,6 +21,6 @@
 	}
 	?>
 	</select>
-	<input type="submit" value="Change" />
-</div>
+	<input type="submit" value="Change" id="btnchangeyear" />
 </form>
+<script type="text/javascript">$('#btnchangeyear').hide();</script>

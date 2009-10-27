@@ -9,9 +9,11 @@
 // http://www.squidfingers.com | http://www.podlob.com
 //////////////////////////////////////////////////////////////////
 
-var qTipTag = "a,label,input,span"; //Which tag do you want to qTip-ize? Keep it lowercase!//
-var qTipX = 0; //This is qTip's X offset//
+var qTipTag = "label,input,span"; //Which tag do you want to qTip-ize? Keep it lowercase!//
+var qTipX = 15; //This is qTip's X offset//
 var qTipY = 15; //This is qTip's Y offset//
+
+var pagewidth = $(window).width();
 
 //There's No need to edit anything below this line//
 tooltip = {
@@ -73,7 +75,19 @@ tooltip.move = function (evt) {
 		x = evt.pageX;
 		y = evt.pageY;
 	}
-	this.tip.style.left = (x + this.offsetX) + "px";
+	
+	//alert($(this.tip).width());
+	
+	
+	//var total = x + this.offsetX + $(this.tip).width();
+	//alert("X: " + x + "\n\nOffsetX:" + this.offsetX + "\n\nWidth: " + $(this.tip).width() + "\n\nTotal:" + total);
+	
+	if( (x + (this.offsetX * 2) + 315) > pagewidth ){
+		this.tip.style.left = ((x - this.offsetX) - 315) + "px";
+	} else {
+		this.tip.style.left = (x + this.offsetX) + "px";
+	}
+	
 	this.tip.style.top = (y + this.offsetY) + "px";
 }
 

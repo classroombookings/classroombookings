@@ -51,11 +51,7 @@ $t = 1;
 			echo form_input($input);
 			$t++;
 			?>
-			<script type="text/javascript"><!--
-			new Control.ColorPicker('colour');
-			// -->
-			</script>
-			<?php /* <div id="cp"></div>
+			<div id="cp"></div>
 			<script type="text/javascript"><!--
 			$(document).ready(function(){
 				$('#cp').colorPicker({
@@ -64,7 +60,7 @@ $t = 1;
 				});
 				$('#colour').css("display", "none");
 			});
-			// --></script> */ ?>
+			// --></script>
 		</td>
 	</tr>
 	

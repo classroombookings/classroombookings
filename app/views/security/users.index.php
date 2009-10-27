@@ -60,6 +60,10 @@ if($users != 0){
 
 <?php echo $this->pagination->create_links() ?>
 
+
+<div id="test">TEst div</div>
+<a class="facebox" href="#test">Test</div>
+
 <script type='text/javascript'>
 /*$(function(){
 	$('a[rel*=facebox]').click(function(){
@@ -75,10 +79,20 @@ if($users != 0){
 	$.get('blah.html', function(data) { $.facebox(data) })
 }) */
 
-$('a[rel*=facebox]').attr("href", $(this).attr("href") + "/ajax");
-jQuery(document).ready(function($){
+
+$(document).ready(function($){
+	$('.facebox').boxy({title:'Effective Permissions'});
+});
+
+
+//$('a[class*=facebox]').attr("href", $(this).attr("href") + "/ajax");
+/*jQuery(document).ready(function($){
 	$('a[class*=facebox]').facebox();
-}); /* WHEN JS LIB WAS JQUERY, THIS ONE WORKED */
+});*/ /* WHEN JS LIB WAS JQUERY, THIS ONE WORKED */
+
+
+
+
 
 
 /* $(function(){

@@ -129,8 +129,8 @@ class Configure extends Controller {
 		
 		$this->form_validation->set_rules('schoolname', 'School name', 'required|max_length[100]|trim');
 		$this->form_validation->set_rules('schoolurl', 'Website address', 'max_length[255]|prep_url|trim');
-		$this->form_validation->set_rules('bd_mode', 'Booking display mode', 'required');
-		$this->form_validation->set_rules('bd_col', 'Booking display columns', 'required');
+		$this->form_validation->set_rules('tt_view', 'Timetable view', 'required');
+		$this->form_validation->set_rules('tt_cols', 'Timteable columns', 'required');
 		$this->form_validation->set_rules('room_order', 'Room display order', 'required');
 		$this->form_validation->set_error_delimiters('<li>', '</li>');
 		
@@ -144,8 +144,8 @@ class Configure extends Controller {
 			
 			$data['schoolname']		= $this->input->post('schoolname');
 			$data['schoolurl']		= $this->input->post('schoolurl');
-			$data['bd_mode'] 		= $this->input->post('bd_mode');
-			$data['bd_col']			= $this->input->post('bd_col');
+			$data['tt_view'] 		= $this->input->post('tt_view');
+			$data['tt_cols']		= $this->input->post('tt_cols');
 			$data['room_order']		= $this->input->post('room_order');
 			
 			$this->settings->save('main', $data);

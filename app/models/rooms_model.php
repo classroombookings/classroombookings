@@ -97,7 +97,15 @@ class Rooms_model extends Model{
 			}
 			
 			// Getting one room
-			$sql = 'SELECT * FROM rooms WHERE room_id = ? LIMIT 1';
+			$sql = 'SELECT
+						rooms.*,
+						IFNULL(users.displayname, users.username) AS owner_name,
+						rcs.name AS cat_name
+					FROM rooms 
+					LEFT JOIN users ON rooms.user_id = users.user_id
+					LEFT JOIN roomcategories AS rcs ON rooms.category_id = rcs.category_id
+					WHERE rooms.room_id = ? 
+					LIMIT 1';
 			$query = $this->db->query($sql, array($room_id));
 			
 			if($query->num_rows() == 1){
@@ -152,9 +160,15 @@ class Rooms_model extends Model{
 	/**
 	 * Get the list of rooms arranged in categories
 	 *
+	 * @param	bookable	int		Only show bookable rooms?
 	 * @return mixed	Array of rooms in categories on success, 0 on failure
 	 */
-	function get_in_categories(){
+	function get_in_categories($bookable = FALSE){
+		
+		$where = '';
+		if($bookable == TRUE){
+			$where = 'WHERE rooms.bookable = 1';
+		}
 		
 		$sql = 'SELECT 
 					rooms.*, 
@@ -163,6 +177,7 @@ class Rooms_model extends Model{
 				FROM rooms
 				LEFT JOIN roomcategories AS rcs ON rooms.category_id = rcs.category_id
 				LEFT JOIN users ON rooms.user_id = users.user_id
+				' . $where . '
 				ORDER BY rcs.name ASC, rooms.name ASC';
 		
 		$query = $this->db->query($sql);
@@ -511,7 +526,7 @@ class Rooms_model extends Model{
 		
 		if ($field_id == NULL){
 			
-			$this->db->orderby('name ASC, type ASC');
+			$this->db->orderby('type ASC, name ASC');
 			$query = $this->db->get('roomattrs-fields');
 			
 			if($query->num_rows() > 0){
@@ -734,6 +749,42 @@ class Rooms_model extends Model{
 			return FALSE;
 		}
 		
+		$sql = "SELECT 
+					fs.name, 
+					fs.type, 
+					CASE 
+						WHEN fs.type = 'select' THEN os.value
+						WHEN fs.type = 'text' THEN vs.value
+						WHEN fs.type = 'check' THEN vs.value
+					END	AS value
+				FROM `roomattrs-fields` AS fs, `roomattrs-values` AS vs
+				LEFT JOIN rooms ON vs.room_id = rooms.room_id
+				LEFT JOIN `roomattrs-options` AS os ON vs.value = os.option_id
+				WHERE rooms.room_id = ?
+				AND fs.field_id = vs.field_id
+				ORDER BY fs.type ASC";
+		
+		$query = $this->db->query($sql, array($room_id));
+		
+		if($query->num_rows() > 0){
+			
+			return $query->result();
+			
+		} else {
+			
+			$this->lasterr = 'No values exist for the supplied room';
+			return array();
+			
+		}
+	
+	}
+	/*function get_attr_values($room_id){
+		
+		if(empty($room_id) OR !is_numeric($room_id)){
+			$this->lasterr = 'Invalid Room ID';
+			return FALSE;
+		}
+		
 		$sql = 'SELECT field_id, value FROM `roomattrs-values` WHERE room_id = ?';
 		$query = $this->db->query($sql, array($room_id));
 		
@@ -753,7 +804,7 @@ class Rooms_model extends Model{
 			
 		}
 		
-	}
+	}*/
 	
 	
 	

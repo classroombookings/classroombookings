@@ -45,7 +45,7 @@ $t = 1;
 			unset($input);
 			$input['accesskey'] = 'S';
 			$input['name'] = 'date_start';
-			$input['id'] = 'date_start';
+			$input['id'] = 'input_date_start';
 			$input['size'] = '15';
 			$input['maxlength'] = '10';
 			$input['tabindex'] = $t;
@@ -54,7 +54,7 @@ $t = 1;
 			echo form_input($input);
 			$t++;
 			?>
-			<div id="calendar_date_start"></div>
+			<div class="datepicker" id="date_start"></div>
 		</td>
 	</tr>
 	
@@ -68,7 +68,7 @@ $t = 1;
 			unset($input);
 			$input['accesskey'] = 'E';
 			$input['name'] = 'date_end';
-			$input['id'] = 'date_end';
+			$input['id'] = 'input_date_end';
 			$input['size'] = '15';
 			$input['maxlength'] = '10';
 			$input['tabindex'] = $t;
@@ -77,7 +77,7 @@ $t = 1;
 			echo form_input($input);
 			$t++;
 			?>
-			<div id="calendar_date_end"></div>
+			<div class="datepicker" id="date_end"></div>
 		</td>
 	</tr>
 	
@@ -121,6 +121,20 @@ $t = 1;
 
 
 <script type="text/javascript">
+$(function(){
+	$(".date").hide();
+	$(".datepicker").datepicker({
+		firstDat: 1,
+		dateFormat: 'yy-mm-dd',
+		onSelect: function(dateText, inst){$('#input_' + this.id).val(dateText)},
+	});
+	
+});
+
+
+	
+	
+	
 /* $.extend(DateInput.DEFAULT_OPTS, {
 	stringToDate: function(string){
 		var matches;
@@ -143,6 +157,7 @@ $(function(){
 	$(".date").date_input();
 }); */
 
+/* Calendar View, deprecated..
 document.observe('dom:loaded',function(){
 	Calendar.setup({
 		dateField:'date_start',
@@ -155,4 +170,6 @@ document.observe('dom:loaded',function(){
 	});
 	$('date_end').hide();
 });
+*/
+
 </script>

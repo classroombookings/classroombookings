@@ -125,7 +125,7 @@ class Years extends Controller {
 			$data['date_end'] = $this->input->post('date_end');
 			$data['active'] = ($this->input->post('active') == '1') ? 1 : NULL;
 			
-			print_r($data);
+			#print_r($data);
 			
 			if($year_id == NULL){
 				
@@ -147,6 +147,12 @@ class Years extends Controller {
 					$this->msg->add('err', sprintf($this->lang->line('YEARS_EDIT_FAIL', $this->years_model->lasterr)));
 				}
 				
+			}
+			
+			// Update session data if active year was set
+			if($data['active'] == 1){
+				$this->session->set_userdata('year_active', $this->years_model->get_active_id());
+				$this->session->set_userdata('year_working', $this->years_model->get_active_id());
 			}
 			
 			// All done, redirect!

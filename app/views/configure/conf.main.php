@@ -54,29 +54,29 @@ $t = 1;
 	
 	<tr>
 		<td class="caption">
-			<label for="booking-display" class="r" accesskey="D" title="This is the style in which the main booking table will be displayed."><u>D</u>isplay mode</label>
+			<label class="r" accesskey="D" title="This is the style in which the main booking table will be displayed.">Timetable <u>v</u>iew</label>
 		</td>
 		<td class="field">
-			<label for="bd_day" class="check">
+			<label for="view_day" class="check">
 			<?php
 			unset($check);
-			$check['name'] = 'bd_mode';
-			$check['id'] = 'bd_day';
+			$check['name'] = 'tt_view';
+			$check['id'] = 'view_day';
 			$check['value'] = 'day';
-			$check['checked'] = set_radio($check['name'], $check['value'], ($main->bd_mode == $check['value']));
+			$check['checked'] = set_radio($check['name'], $check['value'], ($main->tt_view == $check['value']));
 			$check['tabindex'] = $t;
 			echo form_radio($check);
 			$t++;
 			?>One day at a time
 			</label>
-			<label for="bd_room" class="check">
+			<label for="view_room" class="check">
 			<?php
 			#$ = @field($this->validation->username);
 			unset($check);
-			$check['name'] = 'bd_mode';
-			$check['id'] = 'bd_room';
+			$check['name'] = 'tt_view';
+			$check['id'] = 'view_room';
 			$check['value'] = 'room';
-			$check['checked'] = set_radio($check['name'], $check['value'], ($main->bd_mode == $check['value']));
+			$check['checked'] = set_radio($check['name'], $check['value'], ($main->tt_view == $check['value']));
 			$check['tabindex'] = $t;
 			echo form_radio($check);
 			$t++;
@@ -94,10 +94,10 @@ $t = 1;
 			<label for="col_periods" class="check">
 			<?php
 			unset($check);
-			$check['name'] = 'bd_col';
+			$check['name'] = 'tt_cols';
 			$check['id'] = 'col_periods';
 			$check['value'] = 'periods';
-			$check['checked'] = set_radio('bd_col', 'periods', ($main->bd_col == $check['value']));
+			$check['checked'] = set_radio('bd_col', 'periods', ($main->tt_cols == $check['value']));
 			$check['tabindex'] = $t;
 			echo form_radio($check);
 			$t++;
@@ -106,16 +106,16 @@ $t = 1;
 			<label for="col_days" class="check">
 			<?php
 			unset($check);
-			$check['name'] = 'bd_col';
+			$check['name'] = 'tt_cols';
 			$check['id'] = 'col_days';
 			$check['value'] = 'days';
-			$check['checked'] = set_radio('bd_col', 'days', ($main->bd_col == $check['value']));
+			$check['checked'] = set_radio('bd_col', 'days', ($main->tt_cols == $check['value']));
 			$check['tabindex'] = $t;
 			echo form_radio($check);
 			$t++;
 			?>Days
 			</label>
-			<label for="col_rooms" class="check">
+			<!-- <label for="col_rooms" class="check">
 			<?php
 			unset($check);
 			$check['name'] = 'bd_col';
@@ -126,7 +126,7 @@ $t = 1;
 			echo form_radio($check);
 			$t++;
 			?>Rooms
-			</label>
+			</label> -->
 		</td>
 	</tr>
 	
@@ -174,18 +174,19 @@ $t = 1;
 </form>
 
 <script type="text/javascript">
-function bd_day(){
+function tt_day(){
 	$("#col_periods").removeAttr("disabled");
 	$("#col_days").attr("disabled","disabled");
-	$("#col_rooms").removeAttr("disabled");
+	$("#col_rooms").attr("disabled","disabled");
+	$("#col_periods").attr("checked", "checked");
 }
-function bd_room(){
+function tt_room(){
 	$("#col_periods").removeAttr("disabled");
-	$("#col_days").removeAttr("disabled","disabled");
+	$("#col_days").removeAttr("disabled");
 	$("#col_rooms").attr("disabled", "disabled");
 }
-$("#bd_day").bind("click", function(e){ bd_day(); });
-$("#bd_room").bind("click", function(e){ bd_room(); });
-if($("#bd_day").attr("checked")){ bd_day(); }
-if($("#bd_room").attr("checked")){ bd_room(); }
+$("#view_day").bind("click", function(e){ tt_day(); });
+$("#view_room").bind("click", function(e){ tt_room(); });
+if($("#view_day").attr("checked")){ tt_day(); }
+if($("#view_room").attr("checked")){ tt_room(); }
 </script>

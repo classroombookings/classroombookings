@@ -11,6 +11,9 @@ if(isset($sidebar)){
 } else {
 	$class = 'without-side';
 }
+
+// Can change academic year?
+$changeyear = ($this->auth->logged_in() && $this->auth->check('changeyear', TRUE));
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -58,16 +61,23 @@ if(isset($sidebar)){
 		<script type="text/javascript" src="js/jquery.cookie.js"></script>
 		<script type="text/javascript" src="js/jquery-ui-1.7.2.custom.min.js"></script>
 		<script type="text/javascript" src="js/qTip.js"></script>
-		<script type="text/javascript" src="js/facebox.js"></script>
-		<!-- <script type="text/javascript" src="js/tabber-minimized.js"></script>
+		<!-- <script type="text/javascript" src="js/facebox.js"></script> -->
+		<script type="text/javascript" src="js/jquery.boxy.js"></script>
 		<script type="text/javascript" src="js/syronex-colorpicker-mod.js"></script>
+		<script type="text/javascript" src="js/ajax.js"></script>
+		<!-- <script type="text/javascript" src="js/tabber-minimized.js"></script>
+		
 		<script type="text/javascript" src="js/jquery.date_input.min.js"></script>
 		<script type="text/javascript" src="js/timepicker.js"></script>
 		<script type="text/javascript" src="js/jquery.autocomplete.js"></script> -->
+		
+		<script type="text/javascript">jQuery.fx.off = true;</script>
 	</head>
 	
 	
 	<body>
+	
+		<div id="ajaxload">Loading...</div>
 		
 		<div id="page" class="fluid">
 			
@@ -79,8 +89,8 @@ if(isset($sidebar)){
 				<div class="right column grid_4" id="head-account">
 					<div class="cell pad"><?php
 						if($this->auth->logged_in()){
-							echo sprintf('<span>Logged in as %s</span>', anchor('account', $this->session->userdata('display')));
-							echo sprintf(' - <span>%s</span>', anchor('account/logout', 'Logout'));
+							echo sprintf('<span>Logged in as <strong>%s</strong></span>', anchor('account', $this->session->userdata('display')));
+							echo sprintf(' &mdash; <span>%s</span>', anchor('account/logout', 'Logout'));
 						} else {
 							echo sprintf('<span>%s</span>', anchor('account/login', 'Login'));
 						}
@@ -121,10 +131,23 @@ if(isset($sidebar)){
 			<!-- // #head -->
 			
 			
-			<?php if(isset($subnav)): ?>
+			<?php if(isset($subnav) OR $changeyear == TRUE): ?>
 			<!-- #subhead -->
 			<div class="row" id="subhead">
+			
+				<!-- area to change the academic year, if appropriate -->
+				<!-- #subhead-year -->
+				<div class="right column grid_6" id="subhead-year">
+					<div class="cell pad"><?php
+						if($changeyear == TRUE){
+						$years = $this->years_model->get_dropdown();
+						$this->load->view('template/set-year', array('years' => $years));
+						}
+					?></div>
+				</div>
+				<!-- // #subhead-year -->
 				
+				<div class="row">
 				<!-- #subhead-main -->
 				<div class="column grid_12p" id="subhead-main">
 					<div class="cell pad">
@@ -138,6 +161,7 @@ if(isset($sidebar)){
 					</div>
 				</div>
 				<!-- // #subhead-main -->
+				</div>
 				
 			</div>
 			<!-- // #subhead -->
@@ -180,8 +204,8 @@ if(isset($sidebar)){
 			<div class="row">
 				
 				<?php if(isset($sidebar)): ?>
-				<div class="right column grid_3" id="main-sidebar">
-					<div class="cell pad"><h1>Sidebar</h1>
+				<div class="column grid_3" id="main-sidebar">
+					<div class="cell"><!-- <h1>Sidebar</h1> -->
 					<?php echo $sidebar ?>
 					</div>
 				</div>
@@ -204,6 +228,8 @@ if(isset($sidebar)){
 				</div>
 				<?php endif; ?>
 			</div>
+			
+			
 			
 			
 			<!-- #footer -->

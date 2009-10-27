@@ -374,6 +374,55 @@ class Manage extends Controller{
 	
 	
 	
+	
+	
+	// ---------- INFO ---------- //
+	
+	
+	
+	
+	function info($room_id = NULL){
+		
+		$ajax = (array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER));
+		
+		$room = $this->rooms_model->get($room_id);
+		if($room == FALSE){
+			$error = $this->msg->err('Could not load the specified room. Please check the ID and try again.');
+		}
+		
+		if($ajax == TRUE){
+			
+			// Return HTML fragment of room info
+			
+			if(isset($error)){
+				echo $error;
+			} else {
+				$this->load->view('rooms/info', array('room' => $room));
+			}
+			
+		} else {
+			
+			// Show actual page
+			
+			$tpl['title'] = 'Room Information';
+			$tpl['pagetitle'] = $tpl['title'];
+			
+			if(isset($error)){
+				$tpl['body'] = $error;
+			} else {
+				$tpl['body'] = $this->load->view('rooms/info', array('room' => $room), TRUE);
+			}
+			
+			$this->load->view($this->tpl, $tpl);
+			
+		}
+		
+	}
+	
+	
+	
+	
+	
 	// ---------- PERMISSIONS BELOW ---------- //
 	
 	

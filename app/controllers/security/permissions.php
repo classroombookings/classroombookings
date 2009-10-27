@@ -109,7 +109,9 @@ class Permissions extends Controller {
 	 * @param	int		user_id		ID of user to find info on
 	 * @param	bool	ajax		Whether the request is via ajax or a normal page
 	 */
-	function effective($user_id = NULL, $ajax = FALSE){
+	function effective($user_id = NULL){
+	
+		$ajax = (array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER));
 		
 		$tpl['title'] = 'Effective user permissions';
 		
@@ -127,9 +129,7 @@ class Permissions extends Controller {
 			$this->load->view($this->tpl, $tpl);
 		} else {
 			$this->output->enable_profiler(FALSE);
-			echo '<p style="text-align:left;">';
 			$this->load->view('security/permissions.effective.php', $body);
-			echo '</p>';
 		}
 		
 	}

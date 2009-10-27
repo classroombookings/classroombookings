@@ -1,4 +1,4 @@
-/*
+/*	
 Kuler 610400
 
 282828
@@ -51,9 +51,12 @@ div#subhead a:hover, div#subhead a.current{
 	-moz-border-radius:5px;
 	-webkit-border-radius:5px;
 }
+div#subhead a.current{
+	font-weight:bold;
+}
 
 /* Main area */
-div#main-body div h1, div#main-sidebar div h1{
+div#main-body div h1, div#main-sidebar div h1, div#facebox h1, .boxy-wrapper h1{
 	color:#60AA37;
 }
 
@@ -79,6 +82,17 @@ div#qTip{
 }
 
 
+
+div#ajaxload{
+	background-color:#fff9d7;
+}
+
+
+
+.boxy-wrapper .title-bar { background:#41545E; }
+
+
+/* Messages */
 /* ERROR */
 div.msg.err{
 	background-color:#FBE6F2;
@@ -107,6 +121,24 @@ div.msg.yes{
 	background-color:#FFF3A8;
 	border-color:#e2c822;
 }
+
+
+
+
+/* misc divs */
+.extra{ background:#D6D5B8; }
+
+
+
+
+/* Bookings - room list */
+.bookings-roomlist ul li:hover{
+	background:#EBEACC;
+}
+.bookings-roomlist ul li.current{
+	background:#D6D5B8;
+}
+
 
 
 

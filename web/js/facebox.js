@@ -63,7 +63,6 @@
 (function($) {
   $.facebox = function(data, klass) {
     $.facebox.loading()
-
     if (data.ajax) fillFaceboxFromAjax(data.ajax)
     else if (data.image) fillFaceboxFromImage(data.image)
     else if (data.div) fillFaceboxFromHref(data.div)
@@ -80,7 +79,7 @@
       opacity      : 0,
       overlay      : true,
       loadingImage : 'img/jquery/facebox/loading.gif',
-      closeImage   : 'img/jquery/facebox/closelabel.gif',
+      closeImage   : 'img/jquery/facebox/closelabelr.gif',
       imageTypes   : [ 'png', 'jpg', 'jpeg', 'gif' ],
       faceboxHtml  : '\
     <div id="facebox" style="display:none;"> \
@@ -271,7 +270,7 @@
   }
 
   function fillFaceboxFromAjax(href, klass) {
-    $.get(href + "/ajax", function(data) { $.facebox.reveal(data, klass) })
+    $.get(href, function(data) { $.facebox.reveal(data, klass) })
   }
 
   function skipOverlay() {

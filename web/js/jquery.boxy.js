@@ -81,7 +81,7 @@ function Boxy(element, options) {
         if (jQuery.browser.msie && jQuery.browser.version < 7) {
             this.options.fixed = false; // IE6 doesn't support fixed positioning
         } else {
-            this.boxy.addClass('fixed');
+            this.boxy.addClass('bfixed');
         }
     }
     
@@ -111,7 +111,7 @@ jQuery.extend(Boxy, {
     DEFAULTS: {
         title:                  null,           // titlebar text. titlebar will not be visible if not set.
         closeable:              true,           // display close link in titlebar?
-        draggable:              true,           // can this dialog be dragged?
+        draggable:              false,           // can this dialog be dragged?
         clone:                  false,          // clone content prior to insertion into dialog?
         actuator:               null,           // element which opened this dialog
         center:                 true,           // center dialog in viewport?
@@ -142,11 +142,11 @@ jQuery.extend(Boxy, {
     //   cache: cache retrieved content? default: false
     //   filter: jQuery selector used to filter remote content
     load: function(url, options) {
-        
+	
         options = options || {};
         
         var ajax = {
-            url: url, type: 'GET', dataType: 'html', cache: false, success: function(html) {
+            url: url, type: 'GET', dataType: 'html', success: function(html) {
                 html = jQuery(html);
                 if (options.filter) html = jQuery(options.filter, html);
                 new Boxy(html, options);

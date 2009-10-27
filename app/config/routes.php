@@ -43,4 +43,7 @@
 $route['default_controller'] = "dashboard";
 $route['scaffolding_trigger'] = "crbsdev";
 
+// Room information
+$route['rooms/info/(:num)'] = 'rooms/manage/info/$1';
+
 ?>
