@@ -266,6 +266,12 @@ class Years extends Controller {
 		$uri = $this->input->post('uri');
 		$year_id = $this->input->post('workingyear_id');
 		$this->session->set_userdata('year_working', $year_id);
+		
+		delete_cookie('cal_month');
+		delete_cookie('cal_year');
+		$this->session->set_userdata('cal_month', NULL);
+		$this->session->set_userdata('cal_year', NULL);
+		
 		redirect($uri);
 	}
 	

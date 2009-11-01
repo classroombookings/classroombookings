@@ -23,7 +23,7 @@
 				
 				echo '<li class="room ' .$current . '">';
 				echo '<a href="' . $roomurl . '" rel="room">' . $room->name . '</a>';
-				echo '<a href="' . $roominfo . '" class="ui-icon ui-icon-info" rel="facebox">a</a>';
+				echo '<a href="' . $roominfo . '" class="ui-icon ui-icon-info" rel="facebox"></a>';
 				echo '<span>' . $room->owner_name . '</span>';
 				echo '</li>';
 			}
@@ -34,7 +34,12 @@
 
 	
 	<div id="date" class="bookings-cal">
-		<?php echo $cal ?>
+		<div id="cal"><?php echo $cal ?></div>
+		<div class="weeks-legend"><strong>Legend: </strong><?php
+			foreach($weeks as $week){
+				echo sprintf('<span class="week_%d">%s</span>', $week->week_id, $week->name);
+			}
+		?></div>
 	</div>
 	
 	
@@ -43,11 +48,13 @@
 
 
 <script type="text/javascript">
+// Room/Date tabs
 $(function() {
-	$("#tabs").tabs();
+	$("#tabs").tabs({cookie:{expires:7,name:'tab.bookings'}});
 });
 
 
+// Room information box
 $(document).ready(function($){
 	$('a[rel*=facebox]').boxy({title:'Room Information'});
 });
@@ -69,7 +76,7 @@ $('a[rel*=room]').bind("click", function(e){
 	return false;
 });
 
-// Load room, set UI classes
+// Load room timetable via AJAX and set classes on LIs
 function roomajax(url, li){
 	//$('#tt').html(ajax_load).load(url);
 	//$('#tt').load(url);
@@ -77,4 +84,13 @@ function roomajax(url, li){
 	$('ul.bookings-roomlist li').removeClass("current");
 	li.addClass("current");
 }
+
+// Set up calendar month navigation links
+function calnavlinks(){
+	$('a[rel*=calmonth]').bind("click", function(e){
+		crbsajax($(e.currentTarget).attr("href"), 'cal', calnavlinks);
+		return false;
+	});
+}
+calnavlinks();
 </script>

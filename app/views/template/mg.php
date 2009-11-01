@@ -50,6 +50,7 @@ $changeyear = ($this->auth->logged_in() && $this->auth->check('changeyear', TRUE
 			foreach($weeks as $week){
 				$cssarr[] = 'table tr.week_%1$d td{background:%2$s;color:%3$s}';
 				$cssarr[] = '.week_%1$d{background:%2$s;color:%3$s}';
+				$cssarr[] = '.week_%1$d_fg{color:%2$s}';
 				$css = implode("\n", $cssarr);
 				unset($cssarr);
 				echo sprintf($css, $week->week_id, $week->colour, (isdark($week->colour)) ? '#fff' : '#000');
@@ -61,12 +62,12 @@ $changeyear = ($this->auth->logged_in() && $this->auth->check('changeyear', TRUE
 		<script type="text/javascript" src="js/jquery.cookie.js"></script>
 		<script type="text/javascript" src="js/jquery-ui-1.7.2.custom.min.js"></script>
 		<script type="text/javascript" src="js/qTip.js"></script>
-		<!-- <script type="text/javascript" src="js/facebox.js"></script> -->
 		<script type="text/javascript" src="js/jquery.boxy.js"></script>
 		<script type="text/javascript" src="js/syronex-colorpicker-mod.js"></script>
 		<script type="text/javascript" src="js/ajax.js"></script>
-		<!-- <script type="text/javascript" src="js/tabber-minimized.js"></script>
 		
+		<!-- <script type="text/javascript" src="js/tabber-minimized.js"></script>
+		<script type="text/javascript" src="js/facebox.js"></script>
 		<script type="text/javascript" src="js/jquery.date_input.min.js"></script>
 		<script type="text/javascript" src="js/timepicker.js"></script>
 		<script type="text/javascript" src="js/jquery.autocomplete.js"></script> -->
@@ -168,10 +169,9 @@ $changeyear = ($this->auth->logged_in() && $this->auth->check('changeyear', TRUE
 			<?php endif; ?>
 			
 			
-			<br />
 			
 			
-			<div class="row">
+			<div class="row" id="logocont">
 				
 				<div class="column grid_6" id="middle-logo">
 					<p class="cell">
@@ -204,7 +204,7 @@ $changeyear = ($this->auth->logged_in() && $this->auth->check('changeyear', TRUE
 			<div class="row">
 				
 				<?php if(isset($sidebar)): ?>
-				<div class="column grid_3" id="main-sidebar">
+				<div class="right column grid_3" id="main-sidebar">
 					<div class="cell"><!-- <h1>Sidebar</h1> -->
 					<?php echo $sidebar ?>
 					</div>

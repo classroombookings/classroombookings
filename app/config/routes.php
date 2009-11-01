@@ -43,7 +43,12 @@
 $route['default_controller'] = "dashboard";
 $route['scaffolding_trigger'] = "crbsdev";
 
-// Room information
+/* CRBS-related URI routing */
+
+// Room info
 $route['rooms/info/(:num)'] = 'rooms/manage/info/$1';
+
+// Purely for changing the month in the calendar picker
+$route['bookings/calendar/(:any)'] = 'bookings/calendar/$1';
 
 ?>

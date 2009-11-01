@@ -6,7 +6,10 @@
 @import "../smoothness/jquery-ui-1.7.2.custom.css";
 
 /* Remove outer border from tabs */
-div#tabs{border:0;}
+div#tabs{ border:0; }
+
+/* Tell firefox to always show the scroll bar */
+html{overflow-y: scroll;}
 
 table tr td, table th td, input, select, textarea{font:11px/1.5 Arial,Verdana,Helvetica,Arial,'Liberation Sans',FreeSans,sans-serif}
 
@@ -52,6 +55,10 @@ div#subhead-main div{
 }
 div#subhead-year{
 	text-align:right;
+}
+
+div#logocont{
+	margin-top:10px;
 }
 
 /* Footer */
@@ -267,6 +274,47 @@ table.ccmonth tr.wr td{
 
 
 
+/* Calendar chooser for /Bookings/Side... */
+table.ccb{
+	margin-top:4px;
+}
+table.ccb tr.head th, table.ccb tr td{
+	text-align:center;
+	vertical-align:middle !important;
+	padding:3px;
+}
+/* Heading row (month selector) */
+table.ccb tr.head th{
+	font-size:110%;
+}
+table.ccb tr.head th a{
+	display:block;
+	vertical-align:middle;
+}
+table.ccb tr.head th a img{
+	vertical-align:middle;
+}
+table.ccb tr.wr td{
+	font-weight:bold;
+}
+/* All Cells */
+table.ccb tr td{
+	border:1px solid #fff;
+	border-width:2px 0;
+}
+
+
+div.weeks-legend strong{ display:block; clear:both; }
+div.weeks-legend span{
+	padding:2px 4px;
+	margin:6px 6px 3px 0;
+	font-size:95%;
+	display:block;
+	float:left;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+}
+
 
 /* Message box - Base class */
 div.msg{
@@ -336,7 +384,7 @@ div#ajaxload img{
 
 
 
-/* Bookings page, room list */
+/* Bookings page, sidebar, room list */
 div.bookings-roomlist h4{
 	margin:0;
 }
@@ -360,4 +408,8 @@ div.bookings-roomlist h4{
 	width:16px;
 	height:16px;
 	background-image:url(../smoothness/images/ui-icons_2e83ff_256x240.png);
+}
+.bookings-roomlist a{
+	text-decoration:none;
+	font-weight:bold;
 }

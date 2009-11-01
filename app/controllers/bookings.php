@@ -17,13 +17,14 @@
 */
 
 /*
-	Note about storing Room ID/Date in session/cookie.
+	Note about storing Room ID/Date in session/cookie (_store() method)
 	
 	Once one fragment is loaded with one piece of data (e.g. room),
 	CRBS needs to know this for when the timetable gets loaded with
 	another piece of data (e.g. date).
 	
-	When loading it via one piece of data, it retrieves the other, stored, piece.
+	When loading it via one piece of data, it retrieves the other stored piece
+	in order to generate the proper timetable.
 */
 
 
@@ -36,10 +37,22 @@ class Bookings extends Controller {
 
 	function Bookings(){
 		parent::Controller();
+		
+		// Required models
 		$this->load->helper('cookie');
 		$this->load->model('rooms_model');
 		$this->load->model('years_model');
-		$this->load->library('calendar');
+		
+		// Calendar preferences (+ load template from a view file)
+		$prefs['start_day'] = 'monday';
+		$prefs['month_type'] = 'long';
+		$prefs['day_type'] = 'abr';
+		$prefs['show_next_prev'] = TRUE;
+		$prefs['next_prev_url'] = site_url('bookings/calendar');
+		$prefs['template'] = $this->load->view('bookings/side/caltemplate', NULL, TRUE);
+		$this->load->library('calendar', $prefs);
+		
+		// Misc things
 		$this->tpl = $this->config->item('template');
 		$this->output->enable_profiler($this->config->item('profiler'));
 		$this->ajax = (array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER));
@@ -91,20 +104,29 @@ class Bookings extends Controller {
 		// Vars for sidebar (Room list)
 		$bookable = !($this->auth->check('allrooms', TRUE));
 		
-		// Academic stuff
-		$year_id = $this->session->userdata('year_working');
-		$year = $this->years_model->get($year_id);
-		$months = $this->weeks_model->get_months($year->date_start, $year->date_end);
-		$dates = $this->weeks_model->get_dates(NULL, $year_id, 'date');
-		$sidebar['cal'] = $this->calendar->generate($months[0][0], $months[0][1], $dates, NULL, NULL);
+		// Get academic info
+		$academic = $this->_get_academic();
+		
+		// Load up the calendar picker!
+		$url_month = $this->_get('cal_month');
+		$url_year = $this->_get('cal_year');
+		if(empty($url_month) && empty($url_year)){
+			$calm = date('m');
+			$caly = date('Y');
+		} else {
+			$calm = $url_month;
+			$caly = $url_year;
+		}
+		$sidebar['cal'] = $this->calendar->generate_sidebar($caly, $calm, NULL, $academic['dates'], $academic['months']);
 		
 		$sidebar['rooms'] = $this->rooms_model->get_in_categories($bookable);
 		$sidebar['cats'] = $this->rooms_model->get_categories_dropdown();
 		$sidebar['cats'][-1] = 'Uncategorised';
 		$sidebar['room_id'] = $room_id;
+		$sidebar['weeks'] = $academic['weeks'];
 		
 		$tpl['title'] = 'Room View';
-		$tpl['sidebar'] = $this->load->view('bookings/room/side-rooms', $sidebar, TRUE);
+		$tpl['sidebar'] = $this->load->view('bookings/side/side-main', $sidebar, TRUE);
 		$tpl['body'] = '<div id="tt">getting timetable for room id ' . $room_id . '</div>';
 		
 		$this->load->view($this->tpl, $tpl);
@@ -114,7 +136,7 @@ class Bookings extends Controller {
 	
 	
 	/**
-	 * Timetable View: Day
+	 * Timetable View: Day-at-a-time
 	 **/
 	function _index_day(){
 		$tpl['pagetitle'] = 'Day View';
@@ -125,7 +147,7 @@ class Bookings extends Controller {
 	
 	
 	/** 
-	 * Web-accessible page for loading a room.
+	 * Web-accessible page for loading timetable for a room.
 	 *
 	 * Can be loaded via AJAX or direct
 	 */
@@ -137,10 +159,17 @@ class Bookings extends Controller {
 		if($this->ajax){
 			
 			// Return the timetable HTML fragment via Ajax
-			echo "<p>You requested Room ID $room_id via AJAX.</p>";
-			echo "<pre>";
-			echo var_export($this->rooms_model->get($room_id), TRUE);
-			echo "</pre>";
+			#echo "<p>You requested Room ID $room_id via AJAX.</p>";
+			#echo "<pre>";
+			#echo var_export($this->rooms_model->get($room_id), TRUE);
+			#echo "</pre>";
+			
+			// To load the new timetable HTML fragment
+			$data['room_id'] = $room_id;
+			$data['date'] = $this->_get('date');
+			// Call to bookings_model->tt($data);
+			
+			echo "This will be the new timetable view with the stored date but for Room ID $room_id.";
 			
 		} else {
 			
@@ -154,6 +183,94 @@ class Bookings extends Controller {
 	
 	
 	
+	/**
+	 * Change the calendar-picker month.
+	 *
+	 * 1) Store requested year & month.
+	 * 2) If requested via AJAX, return the HTML. Otherwise, re-load booking page.
+	 */
+	function calendar($url_year, $url_month){
+		
+		$err = FALSE;
+		
+		// Check the date is OK
+		if(checkdate($url_month, 1, $url_year) == TRUE){
+			// Yes! Store them.
+			$this->_store('cal_year', $url_year);
+			$this->_store('cal_month', $url_month);
+		} else {
+			// Nada! Set to current month/year
+			$err = TRUE;
+			$this->lasterr = 'Invalid date selected.';
+			$url_year = date('Y');
+			$url_month = date('m');
+		}
+		
+		// Get academic information
+		$academic = $this->_get_academic();
+		
+		// Decide how to output the calendar
+		if($this->ajax){
+			
+			// Respond with the calendar HTML
+			echo $this->calendar->generate_sidebar($url_year, $url_month, NULL, $academic['dates'], $academic['months']);
+			
+			// Send them an error if appropriate
+			if($err == TRUE){ echo $this->msg->err($this->lasterr); }
+			
+		} else {
+			
+			if($err == FALSE){
+				
+				// Re-load the main bookings page.
+				// The requested month & year have been stored, and will be fetched on page-load.
+				return $this->index();
+				
+			} else {
+				
+				// Add a flashdata error message and redirect to the main bookings page
+				$this->msg->add('err', $this->lasterr);
+				redirect('bookings');
+				
+			}
+			
+		}
+		
+	}
+	
+	
+	
+	
+	/**
+	 * Retrieve a load of important academic details and return in an array.
+	 *
+	 * Made into a function here as data is used in more than 1 place.
+	 */
+	function _get_academic(){
+		$data = array();
+		
+		// Get the working academic year
+		$data['year_id'] = $this->session->userdata('year_working');
+		// Get info about the year
+		$data['year'] = $this->years_model->get($data['year_id']);
+		// Get the start and end months of the year
+		$data['months'] = $this->weeks_model->get_months($data['year']->date_start, $data['year']->date_end);
+		// Get the week dates and the week_id of them
+		$data['dates'] = $this->weeks_model->get_dates(NULL, $data['year_id'], 'date');
+		// Get the academic weeks
+		$data['weeks'] = $this->weeks_model->get(NULL, NULL, $data['year_id']);
+		
+		return $data;
+	}
+	
+	
+	
+	
+	/**
+	 * Store a piece of data in 'memory' - session and cookie
+	 *
+	 * See the note at the top of this file for why.
+	 */
 	function _store($key, $value){
 		// Put in session
 		$this->session->set_userdata($key, $value);
@@ -167,7 +284,27 @@ class Bookings extends Controller {
 	
 	
 	
+	/**
+	 * Get a piece of stored data from 'memory' - session or cookie
+	 *
+	 * See the note at the top of this file for why.
+	 */
+	function _get($key){
+		// Try to get from session first
+		$value = $this->session->userdata($key);
+		
+		// Failing that, get from cookie instead
+		if(empty($value)){
+			$value = get_cookie($key);
+		}
+		
+		// Send back whatever value we got
+		return $value;
+	}
+	
+	
+	
+	
 }
 
-
-?>
+/* End of file: /app/controllers/bookings.php */

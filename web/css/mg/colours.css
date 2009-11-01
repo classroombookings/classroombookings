@@ -132,6 +132,7 @@ div.msg.yes{
 
 
 /* Bookings - room list */
+div.bookings-roomlist h4{ color:#60AA37; }
 .bookings-roomlist ul li:hover{
 	background:#EBEACC;
 }
@@ -139,6 +140,19 @@ div.msg.yes{
 	background:#D6D5B8;
 }
 
+
+
+/* Calendar chooser for /Bookings/Side... */
+table.ccb tr.head th{
+	background:#D6D5B8;
+}
+table.ccb tr.wr td{
+	background:#EBEACC;
+	color:#000;
+}
+table.ccb tr td{
+	color:#aaa;
+}
 
 
 

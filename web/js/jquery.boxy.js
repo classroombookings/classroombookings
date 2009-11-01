@@ -425,6 +425,10 @@ Boxy.prototype = {
     
     // Make this boxy instance visible
     show: function() {
+		
+		// CR 2009-10-31. Put in middle of page just before showing.
+		this.center();
+		
         if (this.visible) return;
         if (this.options.modal) {
             var self = this;

@@ -752,11 +752,16 @@ class Rooms_model extends Model{
 		$sql = "SELECT 
 					fs.name, 
 					fs.type, 
+					fs.field_id,
 					CASE 
 						WHEN fs.type = 'select' THEN os.value
 						WHEN fs.type = 'text' THEN vs.value
 						WHEN fs.type = 'check' THEN vs.value
-					END	AS value
+					END	AS value,
+					CASE
+						WHEN fs.type = 'select' THEN vs.value
+						ELSE NULL
+					END AS option_id
 				FROM `roomattrs-fields` AS fs, `roomattrs-values` AS vs
 				LEFT JOIN rooms ON vs.room_id = rooms.room_id
 				LEFT JOIN `roomattrs-options` AS os ON vs.value = os.option_id
@@ -889,4 +894,4 @@ class Rooms_model extends Model{
 	
 }
 
-/* End of file: app/models/rooms_model.php */
+/* End of file: /app/models/rooms_model.php */

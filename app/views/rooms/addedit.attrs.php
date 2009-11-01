@@ -10,7 +10,15 @@ echo form_open('rooms/manage/save_attrs', NULL, array('room_id' => $room_id));
 $t = 1;
 
 // Get room attribute values
-$values = $room->attrs;
+#$values = $room->attrs;
+
+foreach($room->attrs as $field){
+	if($field->type == 'select'){
+		$values[$field->field_id] = $field->option_id;
+	} else {
+		$values[$field->field_id] = $field->value;
+	}
+}
 
 ?>
 

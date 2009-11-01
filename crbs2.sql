@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Oct 27, 2009 at 11:32 PM
+-- Generation Time: Nov 01, 2009 at 11:23 PM
 -- Server version: 5.0.51
 -- PHP Version: 5.2.6
 
@@ -415,7 +415,7 @@ CREATE TABLE `roomattrs-fields` (
   `type` enum('text','select','check') NOT NULL COMMENT 'Text: textbox; Select: Choose one item from list; Check: Boolean on/off',
   `options_md5` char(32) default NULL,
   PRIMARY KEY  (`field_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Names of fields that can be assigned to rooms' AUTO_INCREMENT=20 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Names of fields that can be assigned to rooms' AUTO_INCREMENT=21 ;
 
 --
 -- Dumping data for table `roomattrs-fields`
@@ -423,6 +423,7 @@ CREATE TABLE `roomattrs-fields` (
 
 INSERT INTO `roomattrs-fields` (`field_id`, `name`, `type`, `options_md5`) VALUES
 (13, 'Number of computers', 'text', NULL),
+(20, 'Dropdown', 'select', 'e3b9f91422c68deefb7a78b32dfc70d5'),
 (17, 'Colour printer', 'check', NULL),
 (18, 'Mono printer', 'check', NULL),
 (19, 'Scanner', 'check', NULL);
@@ -440,7 +441,7 @@ CREATE TABLE `roomattrs-options` (
   `value` varchar(50) NOT NULL,
   PRIMARY KEY  (`option_id`),
   KEY `field_id` (`field_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Options for room drop-down fields' AUTO_INCREMENT=33 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Options for room drop-down fields' AUTO_INCREMENT=36 ;
 
 --
 -- Dumping data for table `roomattrs-options`
@@ -452,7 +453,10 @@ INSERT INTO `roomattrs-options` (`option_id`, `field_id`, `value`) VALUES
 (29, 15, 'Three'),
 (30, 16, 'Four'),
 (31, 16, 'Five'),
-(32, 16, 'Six');
+(32, 16, 'Six'),
+(33, 20, 'Tom'),
+(34, 20, 'Dick'),
+(35, 20, 'Harry');
 
 -- --------------------------------------------------------
 
@@ -470,7 +474,7 @@ CREATE TABLE `roomattrs-values` (
   UNIQUE KEY `attr` (`room_id`,`field_id`),
   KEY `field_id` (`field_id`),
   KEY `room_id` (`room_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Actual values of room fields for each room' AUTO_INCREMENT=192 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Actual values of room fields for each room' AUTO_INCREMENT=231 ;
 
 --
 -- Dumping data for table `roomattrs-values`
@@ -491,11 +495,11 @@ INSERT INTO `roomattrs-values` (`value_id`, `room_id`, `field_id`, `value`) VALU
 (178, 1, 18, '1'),
 (166, 2, 15, '27'),
 (167, 2, 16, '31'),
-(172, 2, 13, '7'),
+(226, 2, 13, '7'),
 (169, 2, 14, 'Info Snippet'),
-(173, 2, 17, '1'),
-(174, 2, 18, ''),
-(175, 2, 19, ''),
+(228, 2, 17, '1'),
+(229, 2, 18, ''),
+(230, 2, 19, ''),
 (179, 1, 19, ''),
 (180, 3, 13, '29'),
 (181, 3, 17, '1'),
@@ -508,7 +512,8 @@ INSERT INTO `roomattrs-values` (`value_id`, `room_id`, `field_id`, `value`) VALU
 (188, 5, 13, '15'),
 (189, 5, 17, '1'),
 (190, 5, 18, ''),
-(191, 5, 19, '');
+(191, 5, 19, ''),
+(227, 2, 20, '35');
 
 -- --------------------------------------------------------
 
@@ -676,7 +681,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `password`, `displayname`, `cookiekey`, `lastlogin`, `lastactivity`, `ldap`, `created`) VALUES
-(1, 1, 1, 'admin', 'craig.rodway@gmail.com', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Craig Rodway', NULL, '2009-10-27 23:13:52', '2009-10-27 23:22:10', 0, '0000-00-00'),
+(1, 1, 1, 'admin', 'craig.rodway@gmail.com', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Craig Rodway', NULL, '2009-11-01 23:14:08', '2009-11-01 23:22:42', 0, '0000-00-00'),
 (12, 7, 1, 'craig.rodway', 'craig.rodway@bishopbarrington.net', NULL, 'Mr Rodway', NULL, '2009-05-19 11:41:06', '2009-05-19 11:43:17', 1, '2009-01-09'),
 (19, 2, 1, 'test.one', 'test.one@bishopbarrington.net', NULL, 'Mr T One', NULL, '2009-05-19 11:55:07', '2009-05-19 11:55:14', 1, '2009-01-14'),
 (22, 2, 1, 'test.three', 'test.three@bishopbarrington.net', NULL, 'Mr T Three', NULL, '2009-01-14 10:56:57', '0000-00-00 00:00:00', 1, '2009-01-14'),
@@ -693,7 +698,7 @@ INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `pas
 (123, 2, 0, 'j.thompson106', 'j.thompson106@bishopbarrington.net', '78c94605b024fc545b9100d2734dc4a4ae8a8335', 'j.thompson106', NULL, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 0, '2009-01-30'),
 (125, 2, 0, 'c.wearmouth100', 'c.wearmouth100@bishopbarrington.net', '9e907431a8d31fefe3c2d341ff8826624c954f15', 'c.wearmouth100', NULL, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 0, '2009-01-30'),
 (126, 2, 0, 'e.winstanley100', 'e.winstanley100@bishopbarrington.net', 'ea157601840a5b4953c2e95f5fd27223291122d6', 'e.winstanley100', NULL, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 0, '2009-01-30'),
-(127, 2, 1, 'teacher', 'teacher@bishopbarrington.net', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'John Doe', NULL, '2009-10-27 13:18:01', '2009-10-27 13:19:11', 0, '2009-10-18'),
+(127, 2, 1, 'teacher', 'teacher@bishopbarrington.net', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'John Doe', NULL, '2009-11-01 23:10:47', '2009-11-01 23:14:03', 0, '2009-10-18'),
 (129, 1, 0, 'smithj', '', '41d78584e31c36ffe3724d8ea37084b68179d198', 'smithj', NULL, '0000-00-00 00:00:00', NULL, 0, '2009-10-25');
 
 -- --------------------------------------------------------
@@ -738,7 +743,7 @@ CREATE TABLE `usersactive` (
 --
 
 INSERT INTO `usersactive` (`user_id`, `timestamp`) VALUES
-(1, 1256685730);
+(1, 1257117762);
 
 -- --------------------------------------------------------
 
@@ -799,7 +804,47 @@ INSERT INTO `weekdates` (`week_id`, `year_id`, `date`) VALUES
 (12, 1, '2008-10-13'),
 (11, 1, '2008-09-08'),
 (12, 1, '2008-09-29'),
-(12, 1, '2008-09-15');
+(12, 1, '2008-09-15'),
+(13, 5, '2010-07-19'),
+(13, 5, '2010-07-05'),
+(13, 5, '2010-06-21'),
+(13, 5, '2010-06-07'),
+(13, 5, '2010-05-17'),
+(13, 5, '2010-05-03'),
+(13, 5, '2010-04-19'),
+(13, 5, '2010-03-22'),
+(13, 5, '2010-03-08'),
+(13, 5, '2010-02-22'),
+(13, 5, '2010-02-01'),
+(13, 5, '2010-01-18'),
+(13, 5, '2010-01-04'),
+(13, 5, '2009-12-07'),
+(13, 5, '2009-11-23'),
+(13, 5, '2009-11-09'),
+(13, 5, '2009-10-19'),
+(13, 5, '2009-10-05'),
+(13, 5, '2009-09-21'),
+(13, 5, '2009-09-07'),
+(14, 5, '2010-07-12'),
+(14, 5, '2010-06-28'),
+(14, 5, '2010-06-14'),
+(14, 5, '2010-05-24'),
+(14, 5, '2010-05-10'),
+(14, 5, '2010-04-26'),
+(14, 5, '2010-03-29'),
+(14, 5, '2010-03-15'),
+(14, 5, '2010-03-01'),
+(14, 5, '2010-02-08'),
+(14, 5, '2010-01-25'),
+(14, 5, '2010-01-11'),
+(14, 5, '2009-12-14'),
+(14, 5, '2009-11-30'),
+(14, 5, '2009-11-16'),
+(14, 5, '2009-11-02'),
+(14, 5, '2009-10-12'),
+(14, 5, '2009-09-28'),
+(14, 5, '2009-09-14'),
+(16, 5, '2009-10-26');
 
 -- --------------------------------------------------------
 
@@ -816,7 +861,7 @@ CREATE TABLE `weeks` (
   `created` date default NULL,
   PRIMARY KEY  (`week_id`),
   KEY `year_id` (`year_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Week definitions for timetable weeks' AUTO_INCREMENT=13 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Week definitions for timetable weeks' AUTO_INCREMENT=17 ;
 
 --
 -- Dumping data for table `weeks`
@@ -824,7 +869,9 @@ CREATE TABLE `weeks` (
 
 INSERT INTO `weeks` (`week_id`, `year_id`, `name`, `colour`, `created`) VALUES
 (11, 1, 'Red Week', '#EF2929', '2009-01-25'),
-(12, 1, 'Blue Week', '#3465A4', '2009-01-25');
+(12, 1, 'Blue Week', '#3465A4', '2009-01-25'),
+(13, 5, 'Red Week', '#EF2929', '2009-11-01'),
+(14, 5, 'Blue Week', '#3465A4', '2009-11-01');
 
 -- --------------------------------------------------------
 
@@ -848,8 +895,8 @@ CREATE TABLE `years` (
 --
 
 INSERT INTO `years` (`year_id`, `date_start`, `date_end`, `name`, `active`) VALUES
-(1, '2008-09-08', '2009-07-23', '2008 - 2009', 1),
-(5, '2009-09-07', '2010-07-23', '2009 - 2010', NULL),
+(1, '2008-09-08', '2009-07-23', '2008 - 2009', NULL),
+(5, '2009-09-07', '2010-07-23', '2009 - 2010', 1),
 (6, '2007-09-01', '2008-07-24', '2007 - 2008', NULL);
 
 SET FOREIGN_KEY_CHECKS=1;

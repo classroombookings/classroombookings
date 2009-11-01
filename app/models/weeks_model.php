@@ -42,7 +42,7 @@ class Weeks_model extends Model{
 		
 		if ($week_id == NULL) {
 		
-			// Getting all departments
+			// Getting all weeks
 			$this->db->select('*', FALSE);
 			$this->db->from('weeks');
 			if($year_id != NULL){

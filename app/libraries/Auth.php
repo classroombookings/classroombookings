@@ -385,6 +385,10 @@ class Auth{
 				$query = $this->CI->db->query($sql, array($cookiekey, $user->user_id));
 			}
 			
+			// Delete some cookies that might have been left over that we don't want
+			delete_cookie("cal_month");
+			delete_cookie("cal_year");
+			
 			// Done all we needed to do.
 			// TODO: Should we check the session data has actually been set before returning success?
 			return TRUE;
