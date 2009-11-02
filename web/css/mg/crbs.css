@@ -302,6 +302,10 @@ table.ccb tr td{
 	border:1px solid #fff;
 	border-width:2px 0;
 }
+/* Cells that have no days */
+table.ccb tr.week td.noday{
+	background:#fff;
+}
 
 
 div.weeks-legend strong{ display:block; clear:both; }

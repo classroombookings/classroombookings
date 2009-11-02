@@ -16,7 +16,7 @@
    {week_row_end}</tr>{/week_row_end}
 
    {cal_row_start}<tr{rowclass}>{/cal_row_start}
-   {cal_cell_start}<td>{/cal_cell_start}
+   {cal_cell_start}<td{classblank}>{/cal_cell_start}
 
    {cal_cell_content}<a href="{content}" rel="date">{day}</a>{/cal_cell_content}
    {cal_cell_content_today}<a href="{content}" rel="date" class="current">{day}</a></div>{/cal_cell_content_today}

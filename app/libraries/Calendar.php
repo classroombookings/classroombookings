@@ -494,22 +494,26 @@ class CI_Calendar {
 						$temp = ($is_current_month == TRUE AND $day == $cur_day) ? $this->temp['cal_cell_no_content_today'] : $this->temp['cal_cell_no_content'];
 						$out .= str_replace('{day}', $day, $temp);
 					}
+					// CR 2009-11-02. Cells without days
+					$out = str_replace('{classblank}', '', $out);
 				}
 				else
 				{
 					// Blank cells
 					$out .= $this->temp['cal_cell_blank'];
+					// CR 2009-11-02. Cells without days
+					$out = str_replace('{classblank}', ' class="noday"', $out);
 				}
 				
 				// CR 2009-01-24
 				// Valid monday of this month week?
 				$crbs_date = mktime(0, 0, 0, $month, $day, $year);
 				#echo date("Y-m-d (N)", $crbs_date);
-				$crbs_daynum = date("N", $crbs_date);
+				/* $crbs_daynum = date("N", $crbs_date);
 				if($crbs_daynum == 1 && $day > 0){
 					$crbs_mondate = date("Y-m-d", $crbs_date);
 					$crbs_mon = 1;
-				}
+				} */
 				
 				
 				$out .= ($is_current_month == TRUE AND $day == $cur_day) ? $this->temp['cal_cell_end_today'] : $this->temp['cal_cell_end'];					  	
@@ -530,7 +534,7 @@ class CI_Calendar {
 			// Got monday - see if there is a week configured for it
 			if($weekdates != NULL && array_key_exists($crbs_m, $weekdates)){
 				// Apply class to the row that will set the BG colour
-				$rowclass = sprintf(' class="week_%d"', $weekdates[$crbs_m]);
+				$rowclass = sprintf(' class="week week_%d"', $weekdates[$crbs_m]);
 				#echo $rowclass;
 				$out = str_replace('{rowclass}', $rowclass, $out);
 			} else {
