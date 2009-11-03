@@ -18,10 +18,10 @@
    {cal_row_start}<tr{rowclass}>{/cal_row_start}
    {cal_cell_start}<td{classblank}>{/cal_cell_start}
 
-   {cal_cell_content}<a href="{content}" rel="date">{day}</a>{/cal_cell_content}
-   {cal_cell_content_today}<a href="{content}" rel="date" class="current">{day}</a></div>{/cal_cell_content_today}
+   {cal_cell_content}<a href="{content}" rel="caldate">{day}</a>{/cal_cell_content}
+   {cal_cell_content_today}<a href="{content}" rel="caldate" class="current">{day}</a></div>{/cal_cell_content_today}
 
-   {cal_cell_no_content}{day}{/cal_cell_no_content}
+   {cal_cell_no_content}<span>{day}</span>{/cal_cell_no_content}
    {cal_cell_no_content_today}<div class="highlight">{day}</div>{/cal_cell_no_content_today}
 
    {cal_cell_blank}&nbsp;{/cal_cell_blank}

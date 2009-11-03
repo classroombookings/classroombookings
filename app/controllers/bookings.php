@@ -86,17 +86,18 @@ class Bookings extends Controller {
 	 * Not public - can only be called by other methods in this controller.
 	 *
 	 * @param	room_id		ID of room to load. If none given, retrieve from session/cookie
+	 * @param	week		First date of week to load. If none, same as above.
 	 */
-	function _index_room($room_id = NULL){
+	function _index_room($room_id = NULL, $week = NULL){
 		
 		// No room_id in param?
 		if($room_id == NULL){
-			// Get it from session..
-			$room_id = $this->session->userdata('room_id');
-			if(!$room_id){
-				// Get it from cookie..
-				$room_id = get_cookie('room_id');
-			}
+			$room_id = $this->_get('crbsb.room_id');
+		}
+		
+		// No week in param?
+		if($week == NULL){
+			$week = $this->_get('crbsb.week');
 		}
 		
 		#echo var_dump($room_id);
@@ -117,7 +118,11 @@ class Bookings extends Controller {
 			$calm = $url_month;
 			$caly = $url_year;
 		}
-		$sidebar['cal'] = $this->calendar->generate_sidebar($caly, $calm, NULL, $academic['dates'], $academic['months']);
+		
+		// Get the actual requested date (for current highlighting)
+		$cur = $this->_get('crbsb.week_requested_date');
+		
+		$sidebar['cal'] = $this->calendar->generate_sidebar($caly, $calm, $academic, $cur);
 		
 		$sidebar['rooms'] = $this->rooms_model->get_in_categories($bookable);
 		$sidebar['cats'] = $this->rooms_model->get_categories_dropdown();
@@ -125,9 +130,9 @@ class Bookings extends Controller {
 		$sidebar['room_id'] = $room_id;
 		$sidebar['weeks'] = $academic['weeks'];
 		
-		$tpl['title'] = 'Room View';
+		$tpl['title'] = 'Bookings (Room/Week View)';
 		$tpl['sidebar'] = $this->load->view('bookings/side/side-main', $sidebar, TRUE);
-		$tpl['body'] = '<div id="tt">getting timetable for room id ' . $room_id . '</div>';
+		$tpl['body'] = '<div id="tt">getting timetable for week beginning ' . $week . ' and room ID ' . $room_id . '</div>';
 		
 		$this->load->view($this->tpl, $tpl);
 	}
@@ -138,10 +143,48 @@ class Bookings extends Controller {
 	/**
 	 * Timetable View: Day-at-a-time
 	 **/
-	function _index_day(){
-		$tpl['pagetitle'] = 'Day View';
+	/* function _index_day(){
+		
+		// No date in param?
+		if($date == NULL){
+			// Get it from session..
+			$date = $this->_get('crbsb.date');
+		}
+		
+		// Vars for sidebar (Room list)
+		$bookable = !($this->auth->check('allrooms', TRUE));
+		
+		// Get academic info
+		$academic = $this->_get_academic();
+		
+		// Get room ID from session
+		$room_id = $this->_get('crbsb.room_id');
+		
+		// Load up the calendar picker!
+		$url_month = $this->_get('cal_month');
+		$url_year = $this->_get('cal_year');
+		if(empty($url_month) && empty($url_year)){
+			$calm = date('m');
+			$caly = date('Y');
+		} else {
+			$calm = $url_month;
+			$caly = $url_year;
+		}
+		$sidebar['cal'] = $this->calendar->generate_sidebar($caly, $calm, $academic);
+		
+		$sidebar['rooms'] = $this->rooms_model->get_in_categories($bookable);
+		$sidebar['cats'] = $this->rooms_model->get_categories_dropdown();
+		$sidebar['cats'][-1] = 'Uncategorised';
+		$sidebar['room_id'] = $room_id;
+		$sidebar['weeks'] = $academic['weeks'];
+		
+		$tpl['title'] = 'Bookings';
+		$tpl['sidebar'] = $this->load->view('bookings/side/side-main', $sidebar, TRUE);
+		$tpl['body'] = '<div id="tt">getting timetable for date ' . $date . ' and room ' . $room_id . '</div>';
+		
 		$this->load->view($this->tpl, $tpl);
-	}
+		
+	} */
 	
 	
 	
@@ -154,27 +197,66 @@ class Bookings extends Controller {
 	function room($room_id){
 	
 		// Store requested room ID in session and cookie
-		$this->_store('room_id', $room_id);
+		$this->_store('crbsb.room_id', $room_id);
+		
+		$data['room_id'] = $room_id;
+		$data['week'] = $this->_get('crbsb.week');
 		
 		if($this->ajax){
 			
 			// Return the timetable HTML fragment via Ajax
-			#echo "<p>You requested Room ID $room_id via AJAX.</p>";
-			#echo "<pre>";
-			#echo var_export($this->rooms_model->get($room_id), TRUE);
-			#echo "</pre>";
-			
-			// To load the new timetable HTML fragment
-			$data['room_id'] = $room_id;
-			$data['date'] = $this->_get('date');
 			// Call to bookings_model->tt($data);
 			
-			echo "This will be the new timetable view with the stored date but for Room ID $room_id.";
+			echo "[R] Loading timetable...";
+			print_r($data);
+			
+			#echo "This will be the new timetable view with the stored date but for Room ID $room_id.";
 			
 		} else {
 			
 			// No AJAX, just load the actual page but with a room ID
-			return $this->_index_room($room_id);
+			return $this->_index_room($data['room_id'], $data['week']);
+			
+		}
+		
+	}
+	
+	
+	
+	
+	/** 
+	 * Function for loading a calendar for a week (used for choosing a date/week in the room view)
+	 *
+	 * Can be loaded via AJAX or directly.
+	 */
+	function week($date){
+		
+		// Put the actual requested day in the session
+		$this->_store('crbsb.week_requested_date', $date);
+		
+		// Find start of week of requested date
+		$dateparts = explode('-', $date);
+		$crbs_date = mktime(0, 0, 0, $dateparts[1], $dateparts[2], $dateparts[0]);
+		if( date("w", $crbs_date) == 1 ){
+			$crbs_m = date("Y-m-d", $crbs_date);
+		} else {
+			$crbs_m = date("Y-m-d", strtotime("last Monday", $crbs_date));
+		}
+		
+		// Store week date in session and cookie
+		$this->_store('crbsb.week', $crbs_m);
+		
+		$data['room_id'] = $this->_get('crbsb.room_id');
+		$data['week'] = $crbs_m;
+		
+		if($this->ajax){
+			
+			echo "[W] Loading timetable...";
+			print_r($data);
+			
+		} else {
+			
+			return $this->_index_room($data['room_id'], $data['week']);
 			
 		}
 		
@@ -212,10 +294,12 @@ class Bookings extends Controller {
 		// Decide how to output the calendar
 		if($this->ajax){
 			
+			// Get the actual date requested before if any (to set class)
+			$cur = $this->_get('crbsb.week_requested_date');
 			// Respond with the calendar HTML
-			echo $this->calendar->generate_sidebar($url_year, $url_month, NULL, $academic['dates'], $academic['months']);
+			echo $this->calendar->generate_sidebar($url_year, $url_month, $academic, $cur);
 			
-			// Send them an error if appropriate
+			// Send them an error as well if appropriate
 			if($err == TRUE){ echo $this->msg->err($this->lasterr); }
 			
 		} else {

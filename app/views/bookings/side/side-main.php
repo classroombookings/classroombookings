@@ -91,6 +91,13 @@ function calnavlinks(){
 		crbsajax($(e.currentTarget).attr("href"), 'cal', calnavlinks);
 		return false;
 	});
+	$('a[rel*=caldate]').bind("click", function(e){
+		crbsajax($(e.currentTarget).attr("href"), 'tt');
+		$('a[rel*=caldate]').removeClass("current");
+		$(e.currentTarget).addClass("current");
+		return false;
+	});
+	//$('a[rel*=caldate]').removeClass("current");
 }
 calnavlinks();
 </script>

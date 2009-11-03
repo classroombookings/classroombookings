@@ -16,6 +16,7 @@ D6D5B8
 6D7D7F
 41545E
 grey borders aaaaaa
+green headings 60AA37
 */
 
 html,body{
@@ -153,9 +154,13 @@ table.ccb tr.wr td{
 table.ccb tr td{
 	color:#aaa;
 }
+table.ccb tr td a:hover, table.ccb tr td a.current{
+	background:#D6D5B8;
+	color:#000;
+}
 
 
-
+/* Can't remember what these are for. */
 .bg-red{background:#FBE6F2;}
 .bg-yellow{background:#fff9d7;padding:0.5em}
 .bg-info{background:#E6FBF2;}

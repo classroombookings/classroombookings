@@ -1,24 +1,23 @@
 <NotepadPlus>
     <Session activeView="0">
-        <mainView activeIndex="4">
-            <File firstVisibleLine="189" xOffset="0" scrollWidth="847" startPos="5954" endPos="5954" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\controllers\bookings.php" />
+        <mainView activeIndex="6">
+            <File firstVisibleLine="93" xOffset="0" scrollWidth="868" startPos="3192" endPos="3201" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\controllers\bookings.php" />
             <File firstVisibleLine="855" xOffset="0" scrollWidth="749" startPos="22050" endPos="22050" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\models\rooms_model.php" />
-            <File firstVisibleLine="158" xOffset="0" scrollWidth="1183" startPos="6336" endPos="6336" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\views\template\mg.php" />
+            <File firstVisibleLine="26" xOffset="0" scrollWidth="1183" startPos="1895" endPos="1895" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\views\template\mg.php" />
             <File firstVisibleLine="739" xOffset="0" scrollWidth="1323" startPos="22348" endPos="22348" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\controllers\rooms\manage.php">
                 <Mark line="383" />
             </File>
-            <File firstVisibleLine="281" xOffset="0" scrollWidth="924" startPos="6108" endPos="6108" selMode="0" lang="CSS" filename="C:\wamp\www\projects\crbs2\web\css\mg\crbs.css" />
-            <File firstVisibleLine="413" xOffset="0" scrollWidth="3542" startPos="13574" endPos="13574" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\libraries\Calendar.php">
+            <File firstVisibleLine="287" xOffset="0" scrollWidth="924" startPos="6158" endPos="6158" selMode="0" lang="CSS" filename="C:\wamp\www\projects\crbs2\web\css\mg\crbs.css" />
+            <File firstVisibleLine="501" xOffset="0" scrollWidth="3542" startPos="15967" endPos="15967" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\libraries\Calendar.php">
                 <Mark line="99" />
                 <Mark line="339" />
             </File>
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="588" startPos="145" endPos="145" selMode="0" lang="Javascript" filename="C:\wamp\www\projects\crbs2\web\js\ajax.js" />
-            <File firstVisibleLine="118" xOffset="0" scrollWidth="560" startPos="2135" endPos="2135" selMode="0" lang="CSS" filename="C:\wamp\www\projects\crbs2\web\css\mg\colours.css" />
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="1547" startPos="671" endPos="671" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\views\bookings\side\caltemplate.php" />
-            <File firstVisibleLine="333" xOffset="0" scrollWidth="1113" startPos="1124" endPos="1124" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\models\weeks_model.php" />
+            <File firstVisibleLine="124" xOffset="0" scrollWidth="560" startPos="2126" endPos="2126" selMode="0" lang="CSS" filename="C:\wamp\www\projects\crbs2\web\css\mg\colours.css" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1547" startPos="1208" endPos="1208" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\views\bookings\side\caltemplate.php" />
+            <File firstVisibleLine="126" xOffset="0" scrollWidth="1113" startPos="3660" endPos="3660" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\models\weeks_model.php" />
             <File firstVisibleLine="12" xOffset="0" scrollWidth="525" startPos="1897" endPos="1897" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\config\routes.php" />
             <File firstVisibleLine="250" xOffset="0" scrollWidth="1085" startPos="8447" endPos="8447" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\controllers\academic\years.php" />
-            <File firstVisibleLine="20" xOffset="0" scrollWidth="700" startPos="1118" endPos="1118" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\views\bookings\side\side-main.php" />
+            <File firstVisibleLine="61" xOffset="0" scrollWidth="700" startPos="2683" endPos="2683" selMode="0" lang="PHP" filename="C:\wamp\www\projects\crbs2\app\views\bookings\side\side-main.php" />
         </mainView>
         <subView activeIndex="0" />
     </Session>

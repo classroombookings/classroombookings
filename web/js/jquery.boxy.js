@@ -453,6 +453,8 @@ Boxy.prototype = {
                 });
             }
         }
+		// CR 2009-10-31. Put in middle of page just before showing.
+		this.center();
         this.boxy.stop().css({opacity: 1}).show();
         this.visible = true;
         this._fire('afterShow');

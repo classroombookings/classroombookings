@@ -337,17 +337,24 @@ class CI_Calendar {
 	 * @param	array	the data to be shown in the calendar cells
 	 * @return	string
 	 */
-	function generate_sidebar($year = '', $month = '', $data = array(), $weekdates = NULL, $months)
+	function generate_sidebar($year = '', $month = '', $academic, $cur = NULL)
 	{
 		
-		// Put in readable format
+		/* CR 2009-11-02. Get things from the academic info array */
+		// Dates of the weeks (date => id)
+		$weekdates = $academic['dates'];
+		// Get the months in the year
+		$months = $academic['months'];
+		
+		// Put months array in readable format used in this method
 		if(is_array($months)){
 			foreach($months as $m){
 				$newmonths[] = "{$m[0]}/{$m[1]}";
 			}
 			$months = $newmonths;
 		}
-		#print_r($months);
+		
+		
 		
 		// Set and validate the supplied month/year
 		if ($year == '')
@@ -478,14 +485,46 @@ class CI_Calendar {
 
 			for ($i = 0; $i < 7; $i++)
 			{
-				$out .= ($is_current_month == TRUE AND $day == $cur_day) ? $this->temp['cal_cell_start_today'] : $this->temp['cal_cell_start'];
-			
+				
+				
+				// CR 2009-01-24
+				// Valid monday of this month week?
+				$crbs_date = mktime(0, 0, 0, $month, $day, $year);
+				#echo date("Y-m-d (N)", $crbs_date);
+				/* $crbs_daynum = date("N", $crbs_date);
+				if($crbs_daynum == 1 && $day > 0){
+					$crbs_mondate = date("Y-m-d", $crbs_date);
+					$crbs_mon = 1;
+				} */
+				// CR 2009-01-25
+				// Find the monday of this week
+				if( date("w", $crbs_date) == 1 ){
+					$crbs_m = date("Y-m-d", $crbs_date);
+				} else {
+					$crbs_m = date("Y-m-d", strtotime("last Monday", $crbs_date));
+				}
+				
+				#echo $crbs_m;
+				if(array_key_exists($crbs_m, $weekdates)){
+					$data[$day] = site_url('bookings/week/' . date('Y-m-d', $crbs_date));
+				}
+				
+				#echo "Cur: $cur";
+				#echo "Actual: " . date('Y-m-d', $crbs_date);
+				#echo "|\n";
+				
+				#$out .= (date('Y-m-d', $crbs_date) == $cur) ? $this->temp['cal_cell_start_today'] : $this->temp['cal_cell_start'];
+				#$out .= ($is_current_month == TRUE AND $day == $cur_day) ? $this->temp['cal_cell_start_today'] : $this->temp['cal_cell_start'];
+				$out .= $this->temp['cal_cell_start'];
+				
 				if ($day > 0 AND $day <= $total_days)
 				{ 					
 					if (isset($data[$day]))
 					{	
 						// Cells with content
-						$temp = ($is_current_month == TRUE AND $day == $cur_day) ? $this->temp['cal_cell_content_today'] : $this->temp['cal_cell_content'];
+						#$temp = ($is_current_month == TRUE AND $day == $cur_day) ? $this->temp['cal_cell_content_today'] : $this->temp['cal_cell_content'];
+						// CR 2009-11-02. Match for 'today' if $cur matches..
+						$temp = (date('Y-m-d', $crbs_date) == $cur) ? $this->temp['cal_cell_content_today'] : $this->temp['cal_cell_content'];
 						$out .= str_replace('{day}', $day, str_replace('{content}', $data[$day], $temp));
 					}
 					else
@@ -505,28 +544,11 @@ class CI_Calendar {
 					$out = str_replace('{classblank}', ' class="noday"', $out);
 				}
 				
-				// CR 2009-01-24
-				// Valid monday of this month week?
-				$crbs_date = mktime(0, 0, 0, $month, $day, $year);
-				#echo date("Y-m-d (N)", $crbs_date);
-				/* $crbs_daynum = date("N", $crbs_date);
-				if($crbs_daynum == 1 && $day > 0){
-					$crbs_mondate = date("Y-m-d", $crbs_date);
-					$crbs_mon = 1;
-				} */
+
 				
 				
 				$out .= ($is_current_month == TRUE AND $day == $cur_day) ? $this->temp['cal_cell_end_today'] : $this->temp['cal_cell_end'];					  	
 				$day++;
-			}
-			
-			
-			// CR 2009-01-25
-			// Find the monday of this week
-			if( date("w", $crbs_date) == 1 ){
-				$crbs_m = date("Y-m-d", $crbs_date);
-			} else {
-				$crbs_m = date("Y-m-d", strtotime("last Monday", $crbs_date));
 			}
 			
 			#echo $crbs_m;
