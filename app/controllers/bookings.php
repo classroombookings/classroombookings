@@ -42,6 +42,7 @@ class Bookings extends Controller {
 		$this->load->helper('cookie');
 		$this->load->model('rooms_model');
 		$this->load->model('years_model');
+		$this->load->model('bookings_model');
 		
 		// Calendar preferences (+ load template from a view file)
 		$prefs['start_day'] = 'monday';
@@ -92,12 +93,34 @@ class Bookings extends Controller {
 		
 		// No room_id in param?
 		if($room_id == NULL){
+			
 			$room_id = $this->_get('crbsb.room_id');
+		
+			if(empty($room_id)){
+				echo "Checking if owner..";
+				$pwn3d = $this->rooms_model->owned_by($this->session->userdata('user_id'));
+				echo var_dump($pwn3d);
+				if($pwn3d != FALSE){
+					$room_id = $pwn3d[0];
+				}
+			}
+			
 		}
+		echo $room_id;
+		/*
+			TODO: set a default room_id.
+			If user is room owner, set that.
+			Otherwise, choose first alphabetical room they have permission for
+		*/
+		
 		
 		// No week in param?
 		if($week == NULL){
 			$week = $this->_get('crbsb.week');
+			if(empty($week)){
+				$week = $this->_get_monday(date('Y-m-d'));
+				$this->_store('crbsb.week', $week);
+			}
 		}
 		
 		#echo var_dump($room_id);
@@ -119,11 +142,10 @@ class Bookings extends Controller {
 			$caly = $url_year;
 		}
 		
-		// Get the actual requested date (for current highlighting)
+		// Get the actual requested date (for date highlighting in sidebar calendar)
 		$cur = $this->_get('crbsb.week_requested_date');
 		
 		$sidebar['cal'] = $this->calendar->generate_sidebar($caly, $calm, $academic, $cur);
-		
 		$sidebar['rooms'] = $this->rooms_model->get_in_categories($bookable);
 		$sidebar['cats'] = $this->rooms_model->get_categories_dropdown();
 		$sidebar['cats'][-1] = 'Uncategorised';
@@ -132,8 +154,28 @@ class Bookings extends Controller {
 		
 		$tpl['title'] = 'Bookings (Room/Week View)';
 		$tpl['sidebar'] = $this->load->view('bookings/side/side-main', $sidebar, TRUE);
-		$tpl['body'] = '<div id="tt">getting timetable for week beginning ' . $week . ' and room ID ' . $room_id . '</div>';
 		
+		// Container for timetable
+		$tpl['body'] = '<div id="tt">';
+		
+		// Load up timetable
+		$data['room_id'] = $room_id;
+		$data['week'] = $week;
+		$timetable = $this->bookings_model->timetable($data);
+		
+		if($timetable == FALSE){
+			
+			// Timetable returned false, show an error.
+			$tpl['alert'] = $this->msg->err($this->bookings_model->lasterr);
+			
+		} else {
+			
+			// Add timetable to page.
+			$tpl['body'] .= $timetable;
+			
+		}
+		
+		$tpl['body'] .= '</div>';
 		$this->load->view($this->tpl, $tpl);
 	}
 	
@@ -192,7 +234,7 @@ class Bookings extends Controller {
 	/** 
 	 * Web-accessible page for loading timetable for a room.
 	 *
-	 * Can be loaded via AJAX or direct
+	 * Can be loaded via AJAX or directly.
 	 */
 	function room($room_id){
 	
@@ -204,13 +246,16 @@ class Bookings extends Controller {
 		
 		if($this->ajax){
 			
-			// Return the timetable HTML fragment via Ajax
-			// Call to bookings_model->tt($data);
+			// Fetch timetable
+			$timetable = $this->bookings_model->timetable($data);
 			
-			echo "[R] Loading timetable...";
-			print_r($data);
-			
-			#echo "This will be the new timetable view with the stored date but for Room ID $room_id.";
+			if($timetable == FALSE){
+				$data['error'] = $this->bookings_model->lasterr;
+				$this->load->view('parts/ajaxerr', $data);
+			} else {
+				// Return the timetable HTML fragment via Ajax
+				echo $timetable;
+			}
 			
 		} else {
 			
@@ -251,11 +296,20 @@ class Bookings extends Controller {
 		
 		if($this->ajax){
 			
-			echo "[W] Loading timetable...";
-			print_r($data);
+			// Fetch timetable
+			$timetable = $this->bookings_model->timetable($data);
+			
+			if($timetable == FALSE){
+				$data['error'] = $this->bookings_model->lasterr;
+				$this->load->view('parts/ajaxerr', $data);
+			} else {
+				// Return the timetable HTML fragment via Ajax
+				echo $timetable;
+			}
 			
 		} else {
 			
+			// No AJAX, just load the actual page but with a week date
 			return $this->_index_room($data['room_id'], $data['week']);
 			
 		}
@@ -384,6 +438,24 @@ class Bookings extends Controller {
 		
 		// Send back whatever value we got
 		return $value;
+	}
+	
+	
+	
+	
+	/**
+	 * Get monday of a date
+	 */
+	function _get_monday($date){
+		// Find start of week of requested date
+		$dateparts = explode('-', $date);
+		$crbs_date = mktime(0, 0, 0, $dateparts[1], $dateparts[2], $dateparts[0]);
+		if( date("w", $crbs_date) == 1 ){
+			$crbs_m = date("Y-m-d", $crbs_date);
+		} else {
+			$crbs_m = date("Y-m-d", strtotime("last Monday", $crbs_date));
+		}
+		return $crbs_m;
 	}
 	
 	

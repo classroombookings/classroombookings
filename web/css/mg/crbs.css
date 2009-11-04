@@ -1,7 +1,7 @@
 @import "../buttons.css";
-/*@import "../facebox.css";*/
+@import "../facebox.css";
 @import "../jcolour.css";
-@import "../boxy.css";
+/* @import "../boxy.css"; */
 
 @import "../smoothness/jquery-ui-1.7.2.custom.css";
 
@@ -334,15 +334,20 @@ div.weeks-legend span{
 
 /* Message box - Base class */
 div.msg{
-	background-position:5px 50%;
+	background-position:5px 5px;
 	background-repeat:no-repeat;
 	color:#000;
-	padding:5px 5px 5px 26px !important;
+	padding:2px 0 0 26px !important;
 	border-style:solid;
-	border-width:2px;
+	border-width:0;
+	min-height:28px;
 	/*border-left-width:8px;*/
 	font-size:120%;
 	margin:10px;
+}
+div.msg strong{
+	margin:0;
+	padding:0;
 }
 /* ERROR */
 div.msg.err{

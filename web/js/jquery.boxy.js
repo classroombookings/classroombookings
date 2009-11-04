@@ -86,7 +86,7 @@ function Boxy(element, options) {
     }
     
     if (this.options.center && Boxy._u(this.options.x, this.options.y)) {
-        this.center();
+        //this.center();
     } else {
         this.moveTo(
             Boxy._u(this.options.x) ? this.options.x : Boxy.DEFAULT_X,
@@ -114,7 +114,7 @@ jQuery.extend(Boxy, {
         draggable:              false,           // can this dialog be dragged?
         clone:                  false,          // clone content prior to insertion into dialog?
         actuator:               null,           // element which opened this dialog
-        center:                 true,           // center dialog in viewport?
+        center:                 false,           // center dialog in viewport?
         show:                   true,           // show dialog immediately?
         modal:                  false,          // make dialog modal?
         fixed:                  true,           // use fixed positioning, if supported? absolute positioning used otherwise
@@ -128,8 +128,8 @@ jQuery.extend(Boxy, {
         beforeUnload:           Boxy.EF         // callback fired after dialog is unloaded. executed in context of Boxy instance.
     },
     
-    DEFAULT_X:          50,
-    DEFAULT_Y:          50,
+    DEFAULT_X:          100,
+    DEFAULT_Y:          100,
     zIndex:             1337,
     dragConfigured:     false, // only set up one drag handler for all boxys
     resizeConfigured:   false,
@@ -145,6 +145,7 @@ jQuery.extend(Boxy, {
 	
         options = options || {};
         
+		console.log("- - - - START");
         var ajax = {
             url: url, type: 'GET', dataType: 'html', success: function(html) {
                 html = jQuery(html);
@@ -295,6 +296,7 @@ Boxy.prototype = {
                 
     // Returns the dimensions of the entire boxy dialog as [width,height]
     getSize: function() {
+		console.log("getSize: " + this.boxy.width() + " x " + this.boxy.height());
         return [this.boxy.width(), this.boxy.height()];
     },
     
@@ -348,8 +350,13 @@ Boxy.prototype = {
     
     // Move this dialog (x-coord only)
     moveToX: function(x) {
-        if (typeof x == 'number') this.boxy.css({left: x});
-        else this.centerX();
+        if (typeof x == 'number') {
+			this.boxy.css({left: x});
+			console.log("CSS Left: " + x);
+		} else {
+			this.centerX();
+			console.log("this.centerX()");
+		}
         return this;
     },
     
@@ -362,8 +369,12 @@ Boxy.prototype = {
     
     // Move this dialog so that it is centered at (x,y)
     centerAt: function(x, y) {
+		console.log("centerAt() Visible: " + this.visible);
+		console.log("centerAt() X val: " + x);
+		console.log("centerAt() Y val: " + y);
         var s = this[this.visible ? 'getSize' : 'estimateSize']();
-        if (typeof x == 'number') this.moveToX(x - s[0] / 2);
+		console.log("Size 0: " + s[0]);
+        if (typeof x == 'number'){ console.log("MoveToX: " + x - s[0] / 2); this.moveToX(x - s[0] / 2);  }
         if (typeof y == 'number') this.moveToY(y - s[1] / 2);
         return this;
     },
@@ -379,6 +390,7 @@ Boxy.prototype = {
     // Center this dialog in the viewport
     // axis is optional, can be 'x', 'y'.
     center: function(axis) {
+		console.log("Function center() called");
         var v = Boxy._viewport();
         var o = this.options.fixed ? [0, 0] : [v.left, v.top];
         if (!axis || axis == 'x') this.centerAt(o[0] + v.width / 2, null);
@@ -427,7 +439,7 @@ Boxy.prototype = {
     show: function() {
 		
 		// CR 2009-10-31. Put in middle of page just before showing.
-		this.center();
+		//this.center();
 		
         if (this.visible) return;
         if (this.options.modal) {
@@ -453,8 +465,6 @@ Boxy.prototype = {
                 });
             }
         }
-		// CR 2009-10-31. Put in middle of page just before showing.
-		this.center();
         this.boxy.stop().css({opacity: 1}).show();
         this.visible = true;
         this._fire('afterShow');

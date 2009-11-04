@@ -62,12 +62,13 @@ $changeyear = ($this->auth->logged_in() && $this->auth->check('changeyear', TRUE
 		<script type="text/javascript" src="js/jquery.cookie.js"></script>
 		<script type="text/javascript" src="js/jquery-ui-1.7.2.custom.min.js"></script>
 		<script type="text/javascript" src="js/qTip.js"></script>
-		<script type="text/javascript" src="js/jquery.boxy.js"></script>
+		<!-- <script type="text/javascript" src="js/jquery.boxy.js"></script> -->
+		<script type="text/javascript" src="js/facebox.js"></script>
 		<script type="text/javascript" src="js/syronex-colorpicker-mod.js"></script>
 		<script type="text/javascript" src="js/ajax.js"></script>
 		
 		<!-- <script type="text/javascript" src="js/tabber-minimized.js"></script>
-		<script type="text/javascript" src="js/facebox.js"></script>
+		
 		<script type="text/javascript" src="js/jquery.date_input.min.js"></script>
 		<script type="text/javascript" src="js/timepicker.js"></script>
 		<script type="text/javascript" src="js/jquery.autocomplete.js"></script> -->
@@ -191,7 +192,9 @@ $changeyear = ($this->auth->logged_in() && $this->auth->check('changeyear', TRUE
 				<div class="row">
 					<div class="column grid_12p" id="middle-alert">
 						<!-- <p class="bp cell">status message/alert</p> -->
-						<?php echo $this->session->flashdata('flash'); ?>&nbsp;
+						<div id="alert">
+							<?php echo (isset($alert)) ? $alert : $this->session->flashdata('flash'); ?>
+						</div>&nbsp;
 					</div>
 				</div>
 				

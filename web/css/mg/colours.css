@@ -60,6 +60,7 @@ div#subhead a.current{
 div#main-body div h1, div#main-sidebar div h1, div#facebox h1, .boxy-wrapper h1{
 	color:#60AA37;
 }
+h1.err{ color:#D893A1; }
 
 /* Footer */
 div#footer div.cell{

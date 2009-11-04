@@ -6,7 +6,10 @@ function crbsajax(url, el, f){
 			$('#'+el).html(r);
 			if(f){f();}
 		},
-		beforeSend: function(){$('#ajaxload').show();},
+		beforeSend: function(){
+			$('#alert').html("");
+			$('#ajaxload').show();
+		},
 		error: function(){
 			$('#ajaxload').hide();
 			alert('An error occured while fetching remote data.');

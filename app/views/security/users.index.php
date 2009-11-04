@@ -81,7 +81,8 @@ if($users != 0){
 
 
 $(document).ready(function($){
-	$('.facebox').boxy({title:'Effective Permissions'});
+	//$('.facebox').boxy({title:'Effective Permissions'});
+	$('.facebox').facebox();
 });
 
 

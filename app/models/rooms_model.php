@@ -128,6 +128,33 @@ class Rooms_model extends Model{
 	
 	
 	/**
+	 * Get Room IDs of rooms that the user owns
+	 *
+	 * @param	int		User ID
+	 * @return	array
+	 */
+	function owned_by($user_id){
+		
+		$rooms = FALSE;
+		
+		$sql = 'SELECT room_id FROM rooms WHERE user_id = ? ORDER BY name ASC';
+		$query = $this->db->query($sql, array($user_id));
+		
+		if($query->num_rows() > 0){
+			$result = $query->result();
+			foreach($result as $row){
+				$rooms[] = $row->room_id;
+			}
+		}
+		
+		return (is_array($rooms)) ? $rooms : FALSE;
+		
+	}
+	
+	
+	
+	
+	/**
 	 * Get list of room categories in array format of cat_id => name
 	 *
 	 * @param bool $none	Add an entry of index -1 and name of None

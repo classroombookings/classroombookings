@@ -13,7 +13,12 @@ if(!empty($room->photo)){
 	$path = "upload/$filename";
 	$tablewidth = '300';
 ?>
+<div style="width:760px">
 <img src="<?php echo $path ?>" alt="" style="float:left;clear:none;" />
+<?php
+} else {
+?>
+<div style="width:400px;">
 <?php } ?>
 
 <table class="list" cellpadding="5" style="float:right;clear:none;display:block;">
@@ -58,3 +63,6 @@ if(!empty($room->photo)){
 	</tr>
 	<?php endforeach; ?>
 </table>
+
+
+</div>

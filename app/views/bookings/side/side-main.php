@@ -56,7 +56,8 @@ $(function() {
 
 // Room information box
 $(document).ready(function($){
-	$('a[rel*=facebox]').boxy({title:'Room Information'});
+	//$('a[rel*=facebox]').boxy({title:'Room Information'});
+	$('a[rel*=facebox]').facebox();
 });
 
 
@@ -86,6 +87,7 @@ function roomajax(url, li){
 }
 
 // Set up calendar month navigation links
+// In a function as it's called during a callback
 function calnavlinks(){
 	$('a[rel*=calmonth]').bind("click", function(e){
 		crbsajax($(e.currentTarget).attr("href"), 'cal', calnavlinks);
