@@ -45,6 +45,8 @@ $route['scaffolding_trigger'] = "crbsdev";
 
 /* CRBS-related URI routing */
 
+$route['account/main'] = 'account';
+
 // Room info
 $route['rooms/info/(:num)'] = 'rooms/manage/info/$1';
 

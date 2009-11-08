@@ -199,7 +199,8 @@ $t_word = array('Everyone', 'Room owner', 'User', 'Group', 'Department');
 		<td width="50">&nbsp;</td>
 		
 		<!-- right col : permissions -->
-		<td valign="top">
+		<td valign="top" id="permchecks">
+			<div id="toggleall" style="display:none">(<a href="javascript:toggle()" id="toggleall">Toggle All</a>)</div>
 			<?php
 			unset($checks);
 			$checks['options'] = $permissions['room'];
@@ -225,3 +226,14 @@ $this->load->view('parts/buttons', array('buttons' => $buttons));
 
 
 </form>
+
+
+
+<script type="text/javascript">
+$('#toggleall').show();
+ticked = false;
+function toggle(){
+	$("#permchecks input:checkbox").attr('checked', !ticked);
+	ticked = !ticked;
+}
+</script>

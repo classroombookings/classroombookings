@@ -490,13 +490,15 @@ class Manage extends Controller{
 		} else {
 			
 			$data['room_id'] = $room_id;
-			$data['permissions'] = serialize($this->input->post($perms));
 			
-			// Unique permissions hash
-			$data['hash'] = md5(sprintf('%d:%s:%d', $data['room_id'], $data['type'], $object_id));	#, $data['permissions']));
+			// Unique permissions ref. This is so the same permissions aren't entered twice
+			$data['entry_ref'] = sprintf('%d:%s:%d', $data['room_id'], $data['type'], $object_id);	#, $data['permissions']));
+			
+			#print_r($data);
+			#die();
 			
 			// Add to the database
-			$add = $this->rooms_model->add_permission_entry($data);
+			$add = $this->rooms_model->add_permission_entry($data, $this->input->post($perms));
 			
 			if($add == TRUE){
 				$this->msg->add('info', $this->lang->line('ROOMS_PERMS_ADD_OK'));
@@ -516,9 +518,9 @@ class Manage extends Controller{
 	/**
 	 * Delete a room permission entry
 	 *
-	 * @param	int		entry_id	Permission entry ID to delete
+	 * @param	int		entry_ref	Permission entry ID to delete
 	 */
-	function delete_permission($entry_id = NULL){
+	function delete_permission($entry_ref = NULL){
 		
 		$this->auth->check('rooms.permissions');
 		
@@ -538,28 +540,28 @@ class Manage extends Controller{
 			
 		} else {
 			
-			if($entry_id == NULL){
+			if($entry_ref == NULL){
 				
 				$tpl['title'] = 'Delete permission entry';
 				$tpl['pagetitle'] = $tpl['title'];
-				$tpl['body'] = $this->msg->err('Cannot find the permission entry or no permission ID given.');
+				$tpl['body'] = $this->msg->err('Cannot find the permission entry or no permission entry reference given.');
 				
 			} else {
 				
 				// Get room info so we can present the confirmation page with a name
-				$entry = $this->rooms_model->get_permission_entry($entry_id);
+				$entry = $this->rooms_model->get_permission_entry($entry_ref);
 				
 				if($entry == FALSE){
 					
 					$tpl['title'] = 'Delete permission entry';
 					$tpl['pagetitle'] = $tpl['title'];
-					$tpl['body'] = $this->msg->err('Could not find that permission entry or no entry ID given.');
+					$tpl['body'] = $this->msg->err('Could not find that permission entry or no entry reference given.');
 					
 				} else {
 					
 					// Initialise page
 					$body['action'] = 'rooms/manage/delete_permission';
-					$body['id'] = $entry_id;
+					$body['id'] = $entry_ref;
 					$body['cancel'] = sprintf('rooms/manage/edit/%d/%s', $this->session->userdata('editing_room_id'), 'permissions');
 					#$body['text'] = 'If you delete this room, all bookings made on it and its permissions will also be removed.';
 					$tpl['title'] = 'Delete permission entry';

@@ -31,6 +31,7 @@ class Account_model extends Model{
 	function subnav(){
 		$subnav = array();
 		// Other pages in this parent section
+		$subnav[] = array('account/main', 'My Account', 'account');
 		$subnav[] = array('account/activebookings', 'Active bookings', 'account');
 		$subnav[] = array('account/previousbookings', 'Previous bookings', 'account');
 		$subnav[] = array('account/changepassword', 'Change password', 'account.changepwd');

@@ -57,6 +57,7 @@ class Auth{
 	 * @param return TRUE: Just return the boolean answer. FALSE: Redirect/show error page/stop execution
 	 */
 	function check($action, $return = FALSE){
+		
 		// Get group ID
 		$group_id = $this->CI->session->userdata('group_id');
 		// If no group, then guest group (always 0)
@@ -109,6 +110,7 @@ class Auth{
 			exit;
 			
 		}
+		
 	}
 	
 	

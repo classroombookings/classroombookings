@@ -58,6 +58,9 @@ $changeyear = ($this->auth->logged_in() && $this->auth->check('changeyear', TRUE
 			}
 			?>
 		</style>
+		<script type="text/javascript">
+		var baseurl = "<?php echo $this->config->item('base_url').'web/'; ?>";
+		</script>
 		<script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
 		<script type="text/javascript" src="js/jquery.cookie.js"></script>
 		<script type="text/javascript" src="js/jquery-ui-1.7.2.custom.min.js"></script>
@@ -91,7 +94,7 @@ $changeyear = ($this->auth->logged_in() && $this->auth->check('changeyear', TRUE
 				<div class="right column grid_4" id="head-account">
 					<div class="cell pad"><?php
 						if($this->auth->logged_in()){
-							echo sprintf('<span>Logged in as <strong>%s</strong></span>', anchor('account', $this->session->userdata('display')));
+							echo sprintf('<span>Logged in as <strong>%s</strong></span>', anchor('account/main', $this->session->userdata('display')));
 							echo sprintf(' &mdash; <span>%s</span>', anchor('account/logout', 'Logout'));
 						} else {
 							echo sprintf('<span>%s</span>', anchor('account/login', 'Login'));
@@ -261,7 +264,10 @@ $changeyear = ($this->auth->logged_in() && $this->auth->check('changeyear', TRUE
  * i - index of href array to check uri segment to
  */
 function dolink($seg, $href, $text, $i = 0){
-	$hrefarr = explode('/', $href);
+	$hrefarr = (strpos($href, '/') === FALSE) ? array($href) : explode('/', $href);
+	#echo $hrefarr[$i] . "/ ";
+	#echo "Seg: $seg/ ";
+	#$hrefarr = explode('/', $href);
 	$link = '<li><a href="%s"%s>%s</a></li>';
 	$sel = ($seg == $hrefarr[$i]) ? ' class="current"' : '';
 	return sprintf($link, site_url($href), $sel, $text);

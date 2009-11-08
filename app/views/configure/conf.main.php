@@ -55,6 +55,7 @@ $t = 1;
 	<tr>
 		<td class="caption">
 			<label class="r" accesskey="D" title="This is the style in which the main booking table will be displayed.">Timetable <u>v</u>iew</label>
+			<p class="tip">This is the style in which the main booking table will be displayed.</p>
 		</td>
 		<td class="field">
 			<label for="view_day" class="check">
@@ -89,6 +90,7 @@ $t = 1;
 	<tr>
 		<td class="caption">
 			<label class="r" accesskey="C" title="This controls what information is displayed in columns on your bookings table - the other option will be displayed in the rows."><u>C</u>olumn item</label>
+			<p class="tip">This controls what information is displayed in columns on your bookings table - the other option will be displayed in the rows.</p>
 		</td>
 		<td class="field">
 			<label for="col_periods" class="check">
@@ -97,7 +99,7 @@ $t = 1;
 			$check['name'] = 'tt_cols';
 			$check['id'] = 'col_periods';
 			$check['value'] = 'periods';
-			$check['checked'] = set_radio('bd_col', 'periods', ($main->tt_cols == $check['value']));
+			$check['checked'] = set_radio('tt_cols', 'periods', ($main->tt_cols == $check['value']));
 			$check['tabindex'] = $t;
 			echo form_radio($check);
 			$t++;
@@ -109,7 +111,7 @@ $t = 1;
 			$check['name'] = 'tt_cols';
 			$check['id'] = 'col_days';
 			$check['value'] = 'days';
-			$check['checked'] = set_radio('bd_col', 'days', ($main->tt_cols == $check['value']));
+			$check['checked'] = set_radio('tt_cols', 'days', ($main->tt_cols == $check['value']));
 			$check['tabindex'] = $t;
 			echo form_radio($check);
 			$t++;
@@ -121,7 +123,7 @@ $t = 1;
 			$check['name'] = 'bd_col';
 			$check['id'] = 'col_rooms';
 			$check['value'] = 'rooms';
-			$check['checked'] = set_radio('bd_col', 'rooms', ($main->bd_col == $check['value']));
+			$check['checked'] = set_radio('bd_col', 'rooms', ($main->tt_cols == $check['value']));
 			$check['tabindex'] = $t;
 			echo form_radio($check);
 			$t++;
@@ -133,6 +135,7 @@ $t = 1;
 	<tr>
 		<td class="caption">
 			<label class="r" accesskey="O" title="Set which order rooms are displayed in - alphabetically by name or by the order that you set on each room.">Room <u>o</u>rder</label>
+			<p class="tip">Set which order rooms are displayed in - alphabetically by name or by the order that you set on each room.</p>
 		</td>
 		<td class="field">
 			<label for="order_alpha" class="check">

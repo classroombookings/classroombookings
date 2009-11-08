@@ -41,7 +41,6 @@ class Bookings extends Controller {
 		// Required models
 		$this->load->helper('cookie');
 		$this->load->model('rooms_model');
-		$this->load->model('years_model');
 		$this->load->model('bookings_model');
 		
 		// Calendar preferences (+ load template from a view file)
@@ -94,19 +93,23 @@ class Bookings extends Controller {
 		// No room_id in param?
 		if($room_id == NULL){
 			
+			// Try and find stored one
 			$room_id = $this->_get('crbsb.room_id');
-		
+			
 			if(empty($room_id)){
+				// Nothing - is user a room owner?
 				echo "Checking if owner..";
 				$pwn3d = $this->rooms_model->owned_by($this->session->userdata('user_id'));
 				echo var_dump($pwn3d);
 				if($pwn3d != FALSE){
+					// They are!
+					echo "They are!";
 					$room_id = $pwn3d[0];
 				}
 			}
 			
 		}
-		echo $room_id;
+		#echo $room_id;
 		/*
 			TODO: set a default room_id.
 			If user is room owner, set that.

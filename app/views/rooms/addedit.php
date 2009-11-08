@@ -21,4 +21,4 @@ if($room_id != NULL && $this->auth->check('rooms.attrs.values', TRUE) && !empty(
 	);
 }
 
-$this->load->view('parts/pagetabs', array('tabs' => $tabs));
+$this->load->view('parts/pagetabs', array('tabs' => $tabs, 'cookie' => 'tab.roomedit'));

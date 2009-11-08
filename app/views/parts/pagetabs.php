@@ -1,5 +1,9 @@
 <?php
 $tablink = '<li><a href="%s">%s</a></li>';
+$cookiestr = '';
+if(isset($cookie)){
+	$cookiestr = "{cookie:{expires:7,name:'$cookie'}}";
+}
 ?>
 
 
@@ -29,6 +33,6 @@ $tablink = '<li><a href="%s">%s</a></li>';
 
 <script type="text/javascript">
 $(function() {
-	$("#tabs").tabs();
+	$("#tabs").tabs(<?php echo $cookiestr; ?>);
 });
 </script>

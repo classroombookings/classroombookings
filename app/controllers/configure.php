@@ -112,6 +112,7 @@ class Configure extends Controller {
 			redirect('configure/authentication');
 		}
 		
+		$body['sidebar'] = $this->load->view('configure/conf.ldap-groups.side.php', NULL, TRUE);
 		$body['auth'] = $this->settings->get_all('auth');
 		$body['groups'] = $this->security->get_groups_dropdown();
 		$body['ldapgroups'] = $this->security->get_ldap_groups();

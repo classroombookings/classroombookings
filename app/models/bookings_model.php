@@ -85,6 +85,11 @@ class Bookings_model extends Model{
 		}
 		
 		$html = "Timetable. Room ID $room_id; Week beginning $week";
+		
+		$check = $this->rooms_model->permission_check($this->session->userdata('user_id'), $room_id);
+		$html .= '<pre>' . var_export($check, TRUE) . '</pre>';
+		$html .= $this->rooms_model->lasterr;
+		
 		return $html;
 	}
 	

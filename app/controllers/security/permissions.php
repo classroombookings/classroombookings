@@ -39,6 +39,7 @@ class Permissions extends Controller {
 		$links[] = array('security/groups', 'Manage groups');
 		$links[] = array('security/permissions', 'Change group permissions', TRUE); */
 		
+		$body['sidebar'] = $this->load->view('security/permissions.side.php', NULL, TRUE);
 		$body['tab'] = ($tab == NULL) ? $this->session->flashdata('tab') : $tab;
 		$body['groups'] = $this->security->get_groups_dropdown();
 		$body['permissions'] = $this->config->item('permissions');
@@ -121,7 +122,7 @@ class Permissions extends Controller {
 		} else {
 			$user = $this->security->get_user($user_id);
 			$body['user_permissions'] = $this->security->get_user_permissions($user_id);
-			$tpl['pagetitle'] = 'Effective permissions for ' . $user->display2;
+			$tpl['pagetitle'] = 'Effective permissions for ' . $user->displayname;
 			$tpl['body'] = $this->load->view('security/permissions.effective.php', $body, TRUE);
 		}
 		

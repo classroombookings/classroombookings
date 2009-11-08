@@ -97,15 +97,33 @@ class Security extends Model{
 			}
 			
 			// Getting one user
-			$sql = 'SELECT users.*, quota.quota_num, groups.quota_type FROM users, quota, groups
-					WHERE users.user_id = ? 
-					AND users.group_id = groups.group_id
+			$sql = 'SELECT 
+						users.user_id, 
+						users.group_id,
+						users.enabled,
+						users.username,
+						users.email,
+						IFNULL(users.displayname, users.username) AS displayname,
+						users.lastlogin,
+						users.lastactivity,
+						users.ldap,
+						users.created,
+						groups.quota_type,
+						IFNULL(quota.quota_num, groups.quota_num) AS quota_num,
+						GROUP_CONCAT(DISTINCT(u2d.department_id)) AS departments
+					FROM users
+					LEFT JOIN groups ON users.group_id = groups.group_id
+					LEFT JOIN quota ON users.user_id = quota.user_id
+					LEFT JOIN users2departments u2d ON users.user_id = u2d.user_id
+					WHERE users.user_id = ?
+					GROUP BY users.user_id
 					LIMIT 1';
 			$query = $this->db->query($sql, array($user_id));
 			
 			if($query->num_rows() == 1){
 				$user = $query->row();
-				$user->display2 = ($user->displayname) ? $user->displayname : $user->username;
+				$user->departments = explode(',', $user->departments);
+				#$user->display2 = ($user->displayname) ? $user->displayname : $user->username;
 				return $user;
 			} else {
 				return FALSE;
@@ -230,8 +248,11 @@ class Security extends Model{
 		$sql = 'DELETE FROM users2departments WHERE user_id = ?';
 		$query = $this->db->query($sql, array($user_id));
 		
+		#print_r($departments);
+		#echo var_dump(count($departments));
+		
 		// If LDAP groups were assigned then insert into DB
-		if(count($departments) > 0){
+		if(!empty($departments)){
 			$sql = 'INSERT INTO users2departments (user_id, department_id) VALUES ';
 			foreach($departments as $department_id){
 				$sql .= sprintf("(%d,%d),", $user_id, $department_id);

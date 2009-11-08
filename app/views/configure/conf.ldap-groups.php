@@ -5,9 +5,6 @@ echo form_open('configure/get_ldap_groups', array('name' => 'form_confldapgroups
 $t = 1;
 ?>
 
-<p>Use this page to retrieve the user groups from your LDAP server so you can automatically assign LDAP users in their groups to a single group and multiple departments within Classroombookings. This only needs to be done on first configuration and if you change your LDAP groups.</p>
-<p>This will use the settings you configured in the <em>Authentication</em> tab, but you must supply a username and password here that has the appropriate permissions to retrieve all the groups.</p>
-
 <table class="form" cellpadding="6" cellspacing="0" border="0" width="100%">
 	
 	<tr class="h"><td colspan="2">LDAP bind settings</td></tr>
@@ -15,6 +12,7 @@ $t = 1;
 	<tr>
 		<td class="caption">
 			<label for="ldapbase" class="r" accesskey="D" title="Separate multiple DNs to search with a semicolon">Base <u>D</u>Ns</label>
+			<p class="tip">Separate multiple DNs to search with a semicolon.</p>
 		</td>
 		<td class="field">
 		  <?php
@@ -78,6 +76,7 @@ $t = 1;
 	<tr>
 		<td class="caption">
 			<label for="clear" accesskey="C" title="Remove the groups you previously imported and start from fresh."><u>C</u>lear</label>
+			<p class="tip">Remove the groups you previously imported and start from fresh.</p>
 		</td>
 		<td class="field">
 			<label for="clear" class="check">
@@ -98,6 +97,7 @@ $t = 1;
 	<tr>
 		<td class="caption">
 			<label for="ignorespecial" accesskey="I" title="Ignore groups with special characters like {."><u>I</u>gnore special chars</label>
+			<p class="tip">Ignore groups with special characters like {.</p>
 		</td>
 		<td class="field">
 			<label for="ignorespecial" class="check">

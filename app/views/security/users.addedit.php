@@ -78,19 +78,21 @@ $t = 1;
 	<tr>
 		<td class="caption">
 			<label for="group_id" class="r" accesskey="G">Permission <u>g</u>roup</label>
+			<p class="tip">Select the permission group that this user should belong to.</p>
 		</td>
 		<td class="field">
 			<?php
 			echo form_dropdown('group_id', $groups, set_value('group_id', (isset($user->group_id) ? $user->group_id : 0)), 'tabindex="'.$t.'"');
 			$t++;
 			?>
-			<p class="tip">Select the permission group that this user should belong to.</p>
+			
 		</td>
 	</tr>
 	
 	<tr>
 		<td class="caption">
 			<label for="enabled" accesskey="E"><u>E</u>nabled</label>
+			<p class="tip">Untick this box to prevent the user logging in. This also affects LDAP users.</p>
 		</td>
 		<td class="field">
 			<label for="enabled" class="check">
@@ -105,13 +107,14 @@ $t = 1;
 			$t++;
 			?>
 			</label>
-			<p class="tip">Untick this box to prevent the user logging in. This also affects LDAP users.</p>
+			
 		</td>
 	</tr>
 	
 	<tr>
 		<td class="caption">
 			<label for="ldap" accesskey="L"><u>L</u>DAP user</label>
+			<p class="tip">Specify if this user should authenticate via LDAP or Classroombookings.</p>
 		</td>
 		<td class="field">
 			<label for="ldap" class="check">
@@ -126,7 +129,7 @@ $t = 1;
 			$t++;
 			?>
 			</label>
-			<p class="tip">Specify if this user should authenticate via LDAP or Classroombookings.</p>
+			
 		</td>
 	</tr>
 	
@@ -174,13 +177,19 @@ $t = 1;
 	
 	<tr>
 		<td class="caption">
-			<label for="department_id" accesskey="T">Department</label>
+			<label for="departments" accesskey="T">Departments</label>
 		</td>
 		<td class="field">
+			<select name="departments[]" id="departments" size="10" multiple="multiple" tabindex="<?php echo $t ?>">
 			<?php
-			echo @form_dropdown('deptartment_id', $departments, @set_select('department_id', $user->department_id), 'tabindex="'.$t.'"');
+			foreach($departments as $did => $dname){
+				$selected = (in_array($did, $user->departments)) ? ' selected="selected"' : '';
+				echo '<option value="' . $did . '"' . $selected . '>' . $dname . '</option>';
+			}
+			#echo @form_dropdown('deptartments[]', $departments, @set_select('departments[]', $user->department_id), 'tabindex="'.$t.'"');
 			$t++;
 			?>
+			</select>
 		</td>
 	</tr>
 	

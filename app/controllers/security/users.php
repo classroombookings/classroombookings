@@ -154,8 +154,15 @@ class Users extends Controller {
 		
 		$tpl['subnav'] = $this->security->subnav();
 		$tpl['title'] = 'Edit user';
-		$tpl['pagetitle'] = ($body['user']->displayname == FALSE) ? 'Edit ' . $body['user']->username : 'Edit ' . $body['user']->displayname;
-		$tpl['body'] = $this->load->view('security/users.addedit.php', $body, TRUE);
+		
+		if($body['user']){
+			#$tpl['pagetitle'] = ($body['user']->displayname == FALSE) ? 'Edit ' . $body['user']->username : 'Edit ' . $body['user']->displayname;
+			$tpl['pagetitle'] = 'Edit ' . $body['user']->displayname;
+			$tpl['body'] = $this->load->view('security/users.addedit.php', $body, TRUE);
+		} else {
+			$tpl['pagetitle'] = 'Error loading user';
+			$tpl['body'] = $this->security->lasterr;
+		}
 		
 		$this->load->view($this->tpl, $tpl);
 	}
@@ -194,7 +201,7 @@ class Users extends Controller {
 			$data['displayname'] = $this->input->post('displayname');
 			$data['email'] = $this->input->post('email');
 			$data['group_id'] = $this->input->post('group_id');
-			//$data['department_id'] = $this->input->post('department_id');
+			$data['departments'] = $this->input->post('departments');
 			$data['enabled'] = ($this->input->post('enabled') == '1') ? 1 : 0;
 			$data['ldap'] = ($this->input->post('ldap') == '1') ? 1 : 0;
 			// Only set password if supplied.
@@ -202,7 +209,7 @@ class Users extends Controller {
 				$data['password'] = sha1($this->input->post('password1'));
 			}
 			
-			
+			#die(print_r($data));
 			
 			if($user_id == NULL){
 				

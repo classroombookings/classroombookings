@@ -192,6 +192,14 @@ class Rooms_model extends Model{
 	 */
 	function get_in_categories($bookable = FALSE){
 		
+		$user_id = $this->session->userdata('user_id');
+		
+		// Does user have permission to view all rooms regardless of permissions?
+		$allrooms = $this->auth->check('allrooms', TRUE);
+		
+		// If user is exempt from room permissions, don't restrict by bookability flag..
+		if($allrooms == TRUE){ $bookable = FALSE; }
+		
 		$where = '';
 		if($bookable == TRUE){
 			$where = 'WHERE rooms.bookable = 1';
@@ -213,11 +221,18 @@ class Rooms_model extends Model{
 			$rooms = array();
 			$result = $query->result();
 			foreach($result as $row){
-				if($row->category_id == NULL){ $row->category_id = -1; }
-				if(!array_key_exists($row->category_id, $rooms)){
-					$rooms[$row->category_id] = array();
+				// Do = can view this room?
+				// If user can view all rooms, then yes...
+				$do = $allrooms;
+				// If user can view all rooms, then yes; otherwise check for user's permission
+				$do = ($allrooms) ? TRUE : $this->permission_check($user_id, $row->room_id, 'bookings.view');
+				if($do){
+					if($row->category_id == NULL){ $row->category_id = -1; }
+					if(!array_key_exists($row->category_id, $rooms)){
+						$rooms[$row->category_id] = array();
+					}
+					array_push($rooms[$row->category_id], $row);
 				}
-				array_push($rooms[$row->category_id], $row);
 			}
 			return $rooms;
 		} else {
@@ -335,6 +350,75 @@ class Rooms_model extends Model{
 	
 	
 	/**
+	 * Check permissions for a supplied user
+	 *
+	 * @param	int		user_id		User ID to check
+	 * @param	int		room_Id		Room ID to check against
+	 * @param	string	permission	Optional permission name to check (returns bool)
+	 * @return	mixed
+	 */
+	function permission_check($user_id, $room_id, $permission = NULL){
+		
+		// If user is exempt from room permissions, then just return TRUE
+		if($this->auth->check('allrooms', TRUE)){
+			return TRUE;
+		}
+		
+		$sql = 'SELECT rps.* 
+				FROM users, `room-permissions` rps
+				LEFT JOIN rooms ON rps.room_id = rooms.room_id
+				WHERE rps.room_id = %1$s AND users.user_id = %2$s
+				%3$s
+				AND(
+					(rps.type = "e") OR
+					(rps.type = "o" AND rooms.user_id = %2$s) OR
+					(rps.type = "u" AND rps.user_id = %2$s) OR
+					(rps.type = "g" AND rps.group_id = users.group_id) OR
+					(rps.type = "d" AND rps.department_id = ANY(
+						SELECT DISTINCT(department_id) FROM users2departments u2d WHERE u2d.user_id = %2$s)
+					)
+				);';
+		
+		// Replace tokens in SQL query
+		
+		$sqlextra = '';
+		if($permission != NULL){
+			$sqlextra = 'AND rps.permission = ' . $this->db->escape($permission);
+		}
+		
+		$sql = sprintf($sql, $this->db->escape($room_id), $this->db->escape($user_id), $sqlextra);
+		
+		$query = $this->db->query($sql);
+		
+		if($query->num_rows() > 0){
+			
+			// Got permissions for user on room
+			
+			if($permission == NULL){
+				// No single permission supplied, so return what they can do..
+				foreach($query->result() as $row){
+					$perms[] = array($row->entry_ref, $row->permission);
+				}
+				return $perms;
+			} else {
+				// Single permission was given and rows returned...
+				return TRUE;
+			}
+			
+		} else {
+			
+			// Failed. Denied!
+			$this->lasterr = 'User has no permissions on the given room.';
+			return FALSE;
+			
+		}
+		
+	}
+	
+	
+	
+	
+	/**
 	 * Get room permission entries for a single room
 	 *
 	 * @param	int		room_id		Room ID to get permissions for
@@ -342,26 +426,41 @@ class Rooms_model extends Model{
 	 */
 	function get_permissions($room_id){
 		
-		$sql = 'SELECT 
-					`room-permissions`.entry_id, 
-					`room-permissions`.type, 
-					`room-permissions`.user_id, 
-					`room-permissions`.group_id, 
-					`room-permissions`.department_id, 
-					`room-permissions`.permissions,
-					IFNULL(users.displayname, users.username) AS user_name,
+		$sql = "SELECT 
+					rps.entry_ref,
+					rps.type, 
+					rps.user_id, 
+					rps.group_id, 
+					rps.department_id, 
+					GROUP_CONCAT(DISTINCT(rps.permission)) AS ps,
+					CASE
+						WHEN type = 'e' THEN 0
+						WHEN type = 'o' THEN uo.user_id
+						WHEN type =' u' THEN uu.user_id
+						WHEN type = 'd' THEN departments.department_id
+						WHEN type = 'g' THEN groups.group_id
+					END AS object_id,
 					departments.name AS department_name,
-					groups.name AS group_name
-				FROM `room-permissions`
-				LEFT JOIN users ON `room-permissions`.user_id = users.user_id
-				LEFT JOIN departments ON `room-permissions`.department_id = departments.department_id
-				LEFT JOIN groups ON `room-permissions`.group_id = groups.group_id
-				WHERE room_id = ?';
+					groups.name AS group_name,
+					rooms.name AS room_name,
+					CASE
+						WHEN type = 'o' THEN IFNULL(uo.displayname, uo.username)
+						WHEN type = 'u' THEN IFNULL(uu.displayname, uu.username)
+					END AS user_name
+				FROM `room-permissions` rps
+				LEFT JOIN rooms ON rps.room_id = rooms.room_id
+				LEFT JOIN users uu ON rps.user_id = uu.user_id
+				LEFT JOIN users uo ON rooms.user_id = uo.user_id
+				LEFT JOIN departments ON rps.department_id = departments.department_id
+				LEFT JOIN groups ON rps.group_id = groups.group_id
+				WHERE rps.room_id = ?
+				GROUP BY rps.entry_ref";
 		
 		$query = $this->db->query($sql, $room_id);
 		
 		if($query->num_rows() > 0){
 			
+			// Final array to return
 			$entries = array();
 			$result = $query->result();
 			
@@ -370,30 +469,40 @@ class Rooms_model extends Model{
 				
 				#print_r($entry);
 				
-				$e['type'] = $entry->type;
-				$e['permissions'] = unserialize($entry->permissions);
+				// Temporary array for single entry
+				$e = array();
 				
+				// Keys applicable to all types
+				$e['type'] = $entry->type;
+				$e['permissions'] = explode(',', $entry->ps);
+				$e['room_name'] = $entry->room_name;
+				
+				// Set keys based on type
 				switch($entry->type){
+					case 'o':
+						$e['object_id'] = $entry->object_id;
+						$e['object_name'] = $entry->user_name;
+						break;
 					case 'u':
 						$e['object_id'] = $entry->user_id;
 						$e['object_name'] = $entry->user_name;
-					break;
+						break;
 					case 'g':
 						$e['object_id'] = $entry->group_id;
 						$e['object_name'] = $entry->group_name;
-					break;
+						break;
 					case 'd':
 						$e['object_id'] = $entry->department_id;
 						$e['object_name'] = $entry->department_name;
-					break;
+						break;
 				}
 				
-				$entries[$entry->entry_id] = $e;
+				// Add this entry to final array and then clear this one
+				$entries[$entry->entry_ref] = $e;
 				unset($e);
 				
 			}
 			
-			#print_r($entries);
 			return $entries;
 			
 		} else {
@@ -409,42 +518,61 @@ class Rooms_model extends Model{
 	
 	
 	/**
-	 * Get a single room permission entry by ID
+	 * Get a single room permission entry by reference
 	 *
-	 * @param	entry_id		Permission entry ID
+	 * @param	entry_id		Permission entry reference
 	 * @return	array
 	 */
-	function get_permission_entry($entry_id){
+	function get_permission_entry($entry_ref){
 		
-		if(empty($entry_id)){
-			$this->lasterr = 'No entry ID supplied';
+		if(empty($entry_ref)){
+			$this->lasterr = 'No entry reference supplied';
 			return FALSE;
 		}
 		
-		$sql = 'SELECT 
-					`room-permissions`.entry_id, 
-					`room-permissions`.type, 
-					`room-permissions`.user_id, 
-					`room-permissions`.group_id, 
-					`room-permissions`.department_id, 
-					`room-permissions`.permissions,
-					IFNULL(users.displayname, users.username) AS user_name,
+		$sql = "SELECT 
+					rps.entry_ref,
+					rps.type, 
+					rps.user_id, 
+					rps.group_id, 
+					rps.department_id, 
+					GROUP_CONCAT(rps.permission) AS ps,
+					CASE
+						WHEN type = 'e' THEN 0
+						WHEN type = 'o' THEN uo.user_id
+						WHEN type =' u' THEN uu.user_id
+						WHEN type = 'g' THEN groups.group_id
+						WHEN type = 'd' THEN departments.department_id
+					END AS object_id,
+					CASE
+						WHEN type = 'o' THEN IFNULL(uo.displayname, uo.username)
+						WHEN type = 'u' THEN IFNULL(uu.displayname, uu.username)
+					END AS user_name,
 					departments.name AS department_name,
 					groups.name AS group_name,
 					rooms.name AS room_name
-				FROM `room-permissions`
-				LEFT JOIN users ON `room-permissions`.user_id = users.user_id
-				LEFT JOIN departments ON `room-permissions`.department_id = departments.department_id
-				LEFT JOIN groups ON `room-permissions`.group_id = groups.group_id
-				LEFT JOIN rooms ON `room-permissions`.room_id = rooms.room_id
-				WHERE `room-permissions`.entry_id = ? LIMIT 1';
+				FROM `room-permissions` rps
+				LEFT JOIN rooms ON rps.room_id = rooms.room_id
+				LEFT JOIN users uu ON rps.user_id = uu.user_id
+				LEFT JOIN users uo ON rooms.user_id = uo.user_id
+				LEFT JOIN departments ON rps.department_id = departments.department_id
+				LEFT JOIN groups ON rps.group_id = groups.group_id
+				WHERE rps.entry_ref = ?
+				GROUP BY entry_ref
+				LIMIT 1";
 		
-		$query = $this->db->query($sql, $entry_id);
+		$query = $this->db->query($sql, $entry_ref);
 		
 		if($query->num_rows() == 1){
+			
 			// Got one entry
 			$entry = $query->row();
 			
+			// Create array of permissions from GROUP_CONCAT()d list
+			$entry->permissions = explode(',', $entry->ps);
+			unset($entry->ps);
+			
+			// Human-readable type
 			$typename = $this->types[$entry->type];
 			$format = "%s '%s'";
 			
@@ -452,23 +580,26 @@ class Rooms_model extends Model{
 				case 'e':
 				case 'o':
 					$entry->nicename = $typename;
-				break;
+					break;
 				case 'u':
 					$entry->nicename = sprintf($format, strtolower($typename), $entry->user_name);
-				break;
+					break;
 				case 'g':
 					$entry->nicename = sprintf($format, strtolower($typename), $entry->group_name);
-				break;
+					break;
 				case 'd':
 					$entry->nicename = sprintf($format, strtolower($typename), $entry->department_name);
-				break;
+					break;
 			}
 			
 			return $entry;
 			
 		} else {
+			
+			// Couldn't load via that ref
 			$this->lasterr = 'No entries found for that ID';
 			return FALSE;
+			
 		}
 		
 	}
@@ -479,31 +610,40 @@ class Rooms_model extends Model{
 	/**
 	 * Add a permission entry to a room
 	 *
-	 * @param	data	Array of table cols => values
+	 * @param	globl			Array of main information (IDs, object type)
+	 * @param	permissions		Array of permissions
 	 * @return	bool/int		ID of new permission entry on success
 	 */
-	function add_permission_entry($data){
+	function add_permission_entry($global, $permissions){
 		
-		if(empty($data)){
-			$this->lasterr = 'Data array empty!';
+		if(empty($global) && empty($permissions)){
+			$this->lasterr = 'No data supplied, unable to add entry.';
 			return FALSE;
 		}
 		
 		// Check if this combination already exists
-		$sql = 'SELECT entry_id FROM `room-permissions` WHERE hash = ? LIMIT 1';
-		$query = $this->db->query($sql, $data['hash']);
+		$sql = 'SELECT DISTINCT entry_ref FROM `room-permissions` WHERE entry_ref = ? LIMIT 1';
+		$query = $this->db->query($sql, $global['entry_ref']);
 		if($query->num_rows() == 1){
 			$this->lasterr = 'That combination of permissions already exists for this room.';
 			return FALSE;
 		}
 		
-		// Add to database
-		$add = $this->db->insert('room-permissions', $data);
-		$entry_id = $this->db->insert_id();
+		// Set up the main fields in each entry
+		$entry = $global;
 		
-		// Check result of insert
-		if($add != FALSE){
-			return $entry_id;
+		$fails = 0;
+		
+		// Go through each permission, set the entry permission name, and insert into DB
+		foreach($permissions as $perm){
+			$entry['permission'] = $perm;
+			$add = $this->db->insert('room-permissions', $entry);
+			(!$add) ? $fails++ : $fails;
+		}
+		
+		// Check result of inserts
+		if($fails == 0){
+			return TRUE;
 		} else {
 			$this->lasterr = 'Database error when adding entry.';
 			return FALSE;
@@ -517,14 +657,14 @@ class Rooms_model extends Model{
 	/**
 	 * Delete a room permission entry from the database
 	 *
-	 * @param	entry_id	Entry ID to delete
+	 * @param	entry_ref	Entry ref to delete
 	 */
-	function delete_permission($entry_id){
+	function delete_permission($entry_ref){
 		
-		$sql = 'DELETE FROM `room-permissions` WHERE entry_id = ? LIMIT 1';
-		$query = $this->db->query($sql, array($entry_id));
+		$sql = 'DELETE FROM `room-permissions` WHERE entry_ref = ?';
+		$query = $this->db->query($sql, array($entry_ref));
 		
-		if($this->db->affected_rows() != 1){
+		if($this->db->affected_rows() < 1){
 			$this->lasterr = 'Could not delete room permission entry. Does it exist?';
 			return FALSE;
 		} else {

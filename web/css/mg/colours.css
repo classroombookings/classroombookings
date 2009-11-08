@@ -160,6 +160,11 @@ table.ccb tr td a:hover, table.ccb tr td a.current{
 	color:#000;
 }
 
+/* List table heading */
+table.list tr.heading td{
+	background:#D6D5B8;	/*#D6DFF7;*/
+}
+
 
 /* Can't remember what these are for. */
 .bg-red{background:#FBE6F2;}

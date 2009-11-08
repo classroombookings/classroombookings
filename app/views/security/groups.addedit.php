@@ -65,6 +65,7 @@ $t = 1;
 	<tr>
 		<td class="caption">
 			<label for="ldapgroups" class="r" accesskey="L"><u>L</u>DAP Groups</label>
+			<p class="tip">Users who belong to the selected LDAP group(s) will be put in this classroombookings group.<br />The selected group(s) will not be available to assign to other groups, becuase a user can only be a member of one group.</p>
 		</td>
 		<td class="field">
 			<select name="ldapgroups[]" id="ldapgroups" size="20" tabindex="<?php echo $t ?>" multiple="multiple">
@@ -77,7 +78,7 @@ $t = 1;
 			$t++;
 			?>
 			</select>
-			<p class="tip">Users who belong to the selected LDAP group(s) will be put in this classroombookings group.<br />The selected group(s) will not be available to assign to other groups, becuase a user can only be a member of one group.</p>
+			
 		</td>
 	</tr>
 	<?php } ?>
@@ -85,7 +86,10 @@ $t = 1;
 	<tr class="h"><td colspan="2">Other options</td></tr>
 	
 	<tr>
-		<td class="caption"><label for="daysahead">Booking ahead</label></td>
+		<td class="caption">
+			<label for="daysahead">Booking ahead</label>
+			<p class="tip">The number of days ahead users can create a booking. Leave blank to allow bookings at any time in the future.</p>
+		</td>
 		<td class="field">
 			<?php
 		  	unset($input);
@@ -96,12 +100,15 @@ $t = 1;
 			$input['value'] = @set_value($input['name'], $group->bookahead);
 			echo form_input($input);
 			?>
-			<p class="tip">The number of days ahead users can create a booking. Leave blank to allow bookings at any time in the future.</p>
+			
 		</td>
 	</tr>
 	
 	<tr>
-		<td class="caption"><label for="quota_num">Booking quota</label></td>
+		<td class="caption">
+			<label for="quota_num">Booking quota</label>
+			<p class="tip">The number of bookings a user in this group can make in a given period of time.</p>
+		</td>
 		<td class="field">
 			<?php
 			unset($input);
@@ -167,7 +174,7 @@ $t = 1;
 			echo form_radio($radio);
 			?>Per month
 			</label>
-			<p class="tip">The number of bookings a user in this group can make in a given period of time.</p>
+			
 		</td>
 	</tr>
 

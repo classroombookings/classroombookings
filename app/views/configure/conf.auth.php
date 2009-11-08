@@ -12,6 +12,7 @@ $t = 1;
 	<tr>
 		<td class="caption">
 			<label for="preauth" accesskey="P" title="Enable pre-authentication support. Tick this box to enable it, click Save, then the key will be generated and displayed below."><u>P</u>re-authentication</label>
+			<p class="tip">Enable pre-authentication support. Tick this box to enable it, click Save, then the key will be generated and displayed below.</p>
 		</td>
 		<td class="field">
 			<label for="preauth" class="check">
@@ -37,6 +38,7 @@ $t = 1;
 	<tr class="preauth">
 		<td class="caption">
 			<label for="preauthgroup_id" class="r" accesskey="U" title="Choose a group that users created automatically via preauth will belong to.">Default gro<u>u</u>p</label>
+			<p class="tip">Choose a group that users created automatically via preauth will belong to.</p>
 		</td>
 		<td class="field">
 			<?php
@@ -48,6 +50,7 @@ $t = 1;
 	<tr class="preauth">
 		<td class="caption">
 			<label for="preauthemail" class="r" accesskey="E" title="Default email address domain applied to users created via preauthentication."><u>E</u>mail domain</label>
+			<p class="tip">Default email address domain applied to users created via preauthentication.</p>
 		</td>
 		<td class="field">
 			<?php
@@ -67,6 +70,7 @@ $t = 1;
 	<tr class="preauth">
 		<td class="caption">
 			<label title="Please read the documentation on how to use the pre-authentication key.">Pre-auth key</label>
+			<p class="tip">Please read the documentation on how to use the pre-authentication key.</p>
 		</td>
 		<td class="field">
 			<?php echo $auth->preauthkey ?>
@@ -86,6 +90,7 @@ $t = 1;
 	<tr>
 		<td class="caption">
 			<label for="ldap" accesskey="L" title="If you enable LDAP authentication, users who attempt to login with LDAP credentials will be added to Classroombookings if successful. Ensure you set the Default group below to ensure they inherit the correct permissions."><u>L</u>DAP</label>
+			<p class="tip">If you enable LDAP authentication, users who attempt to login with LDAP credentials will be added to Classroombookings if successful. Ensure you set the Default group below to ensure they inherit the correct permissions.</p>
 		</td>
 		<td class="field">
 			<label for="ldap" class="check">
@@ -113,6 +118,7 @@ $t = 1;
 	<tr class="ldap">
 		<td class="caption">
 			<label for="ldaphost" class="r" accesskey="H" title="The LDAP hostname or IP address. If specifying a hostname, please ensure that the server can resolve it via DNS."><u>H</u>ostname</label>
+			<p class="tip">The LDAP hostname or IP address. If specifying a hostname, please ensure that the server can resolve it via DNS.</p>
 		</td>
 		<td class="field">
 		  <?php
@@ -133,6 +139,7 @@ $t = 1;
 	<tr class="ldap">
 		<td class="caption">
 			<label for="ldapport" class="r" accesskey="C" title="TCP port used to communicate with the LDAP port on, use 389 if unsure.">T<u>C</u>P Port</label>
+			<p class="tip">TCP port used to communicate with the LDAP port on, use 389 if unsure.</p>
 		</td>
 		<td class="field">
 		  <?php
@@ -153,6 +160,7 @@ $t = 1;
 	<tr class="ldap">
 		<td class="caption">
 			<label for="ldapbase" class="r" accesskey="D" title="Separate multiple DNs to search with a semicolon">Base <u>D</u>Ns</label>
+			<p class="tip">Separate multiple DNs to search with a semicolon.</p>
 		</td>
 		<td class="field">
 		  <?php
@@ -174,6 +182,7 @@ $t = 1;
 	<tr class="ldap">
 		<td class="caption">
 			<label for="ldapfilter" class="r" accesskey="F" title="LDAP query filter. %u is where the supplied username will be replaced. Leave as default if unsure.">LDAP query filter</label>
+			<p class="tip">LDAP query filter. %u is where the supplied username will be replaced. Leave as default if unsure.</p>
 		</td>
 		<td class="field">
 		  <?php
@@ -196,6 +205,7 @@ $t = 1;
 	<tr class="ldap">
 		<td class="caption">
 			<label for="ldapgroup_id" class="r" accesskey="G" title="This is the group that users who authenticate via LDAP will become members of automatically.">Default CRBS group</label>
+			<p class="tip">This is the group that users who authenticate via LDAP will become members of automatically.</p>
 		</td>
 		<td class="field">
 			<?php
@@ -208,6 +218,7 @@ $t = 1;
 	<tr>
 		<td class="caption">
 			<label for="ldaploginupdate" accesskey="T" title="If this option is enabled, the user details (display name, group and department membership) will be updated with their LDAP info every time they login; potentially un-doing any customisations you made to the user.">Upda<u>t</u>e details on login</label>
+			<p class="tip">If this option is enabled, the user details (display name, group and department membership) will be updated with their LDAP info every time they login; potentially un-doing any customisations you made to the user.</p>
 		</td>
 		<td class="field">
 			<label for="ldaploginupdate" class="check">
@@ -228,6 +239,7 @@ $t = 1;
 	<tr class="ldap">
 		<td class="caption">
 			<label for="ldaptestuser" accesskey="U" title="Enter a username to test the LDAP settings with, and click Test LDAP.">Test username</label>
+			<p class="tip">Enter a username to test the LDAP settings with, and click Test LDAP.</p>
 		</td>
 		<td class="field">
 		  <?php
