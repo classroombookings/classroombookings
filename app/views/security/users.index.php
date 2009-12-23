@@ -61,9 +61,6 @@ if($users != 0){
 <?php echo $this->pagination->create_links() ?>
 
 
-<div id="test">TEst div</div>
-<a class="facebox" href="#test">Test</div>
-
 <script type='text/javascript'>
 /*$(function(){
 	$('a[rel*=facebox]').click(function(){

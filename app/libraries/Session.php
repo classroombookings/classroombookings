@@ -43,6 +43,7 @@ class CI_Session {
     * Regenerates session id
     */
     function regenerate_id(){
+		log_message('debug', 'Regenerating session ID');
         // copy old session data, including its id
         $old_session_id = session_id();
         $old_session_data = $_SESSION;
@@ -146,9 +147,19 @@ class CI_Session {
         // check if session id needs regeneration
         if ( $this->_session_id_expired() )
         {
+			
+			// CR 2009-12-11: XHR calls were causing problems. Don't re-generate if XHR.
+			
+			log_message('debug', 'Session: ID has expired');
             // regenerate session id (session data stays the
             // same, but old session storage is destroyed)
-            $this->regenerate_id();
+			#if(array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER)){
+			if(IS_XHR){
+				log_message('debug', 'Session: Not regenerating ID, loaded via XHR call');
+			} else {
+				log_message('debug', 'Session: Normal HTTP call, regenerating ID');
+				$this->regenerate_id();
+			}
         }
         
         // delete old flashdata (from last request)

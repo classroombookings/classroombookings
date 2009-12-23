@@ -50,6 +50,7 @@ $changeyear = ($this->auth->logged_in() && $this->auth->check('changeyear', TRUE
 			foreach($weeks as $week){
 				$cssarr[] = 'table tr.week_%1$d td{background:%2$s;color:%3$s}';
 				$cssarr[] = '.week_%1$d{background:%2$s;color:%3$s}';
+				$cssarr[] = '.week_%1$d a{color:%3$s !important}';
 				$cssarr[] = '.week_%1$d_fg{color:%2$s}';
 				$css = implode("\n", $cssarr);
 				unset($cssarr);
@@ -59,19 +60,27 @@ $changeyear = ($this->auth->logged_in() && $this->auth->check('changeyear', TRUE
 			?>
 		</style>
 		<script type="text/javascript">
-		var baseurl = "<?php echo $this->config->item('base_url').'web/'; ?>";
+		var baseurl = "<?php echo $this->config->item('base_url').'web/' ?>";
+		var siteurl = "<?php echo site_url() ?>/";
 		</script>
 		<script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
 		<script type="text/javascript" src="js/jquery.cookie.js"></script>
 		<script type="text/javascript" src="js/jquery-ui-1.7.2.custom.min.js"></script>
 		<script type="text/javascript" src="js/qTip.js"></script>
-		<!-- <script type="text/javascript" src="js/jquery.boxy.js"></script> -->
 		<script type="text/javascript" src="js/facebox.js"></script>
 		<script type="text/javascript" src="js/syronex-colorpicker-mod.js"></script>
 		<script type="text/javascript" src="js/ajax.js"></script>
+		<?php
+		// Load additional javascript requested by controller
+		if(isset($js)){
+			foreach($js as $j){
+				echo '<script type="text/javascript" src="js/' . $j .'"></script>';
+				echo "\n";
+			}
+		}
+		?>
 		
 		<!-- <script type="text/javascript" src="js/tabber-minimized.js"></script>
-		
 		<script type="text/javascript" src="js/jquery.date_input.min.js"></script>
 		<script type="text/javascript" src="js/timepicker.js"></script>
 		<script type="text/javascript" src="js/jquery.autocomplete.js"></script> -->

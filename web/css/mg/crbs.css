@@ -76,6 +76,29 @@ div#footer p{
 
 
 
+/* Navigation header for bookings page */
+div#navheader{
+	padding:5px;
+	margin-bottom:10px;
+	-moz-border-radius:4px;
+	-webkit-border-radius:4px;
+}
+div#navheader table{
+	margin:0;
+}
+div#navheader table tr td{
+	font-size:100%;
+	font-weight:bold;
+}
+div#navheader a{
+	text-decoration:none;
+}
+div#navheader a:hover{
+	text-decoration:underline;
+}
+
+
+
 
 /* Tooltips */
 div#qTip{

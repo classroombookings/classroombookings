@@ -215,7 +215,7 @@ class Weeks_model extends Model{
 			$sql = 'SELECT week_id, date 
 					FROM weekdates 
 					WHERE year_id = ? 
-					ORDER BY week_id ASC, date ASC';
+					ORDER BY date ASC';
 			$query = $this->db->query($sql, array($year_id));
 			
 			if($query->num_rows() > 0){
@@ -371,6 +371,40 @@ class Weeks_model extends Model{
 		array_push($months, array(date('Y', $end), date('m', $end)));
 		
 		return $months;
+		
+	}
+	
+	
+	
+	
+	/**
+	 * Get a week object by its start date
+	 */
+	function get_by_date($start_date){
+		
+		// Check date is a valid date first
+		list($y, $m, $d) = @explode('-', $start_date);
+		$check = checkdate($m, $d, $y);
+		if(!$check){
+			$this->lasterr = sprintf('Not a valid date: %s.', $start_date);
+			return FALSE;
+		}
+		
+		// Query the DB to find the week
+		$sql = 'SELECT * FROM weeks
+				LEFT JOIN weekdates USING (week_id)
+				WHERE weekdates.date = ?
+				LIMIT 1';
+		
+		$query = $this->db->query($sql, array($start_date));
+		
+		if($query->num_rows() == 1){
+			return $query->row();
+		} else {
+			$this->lasterr = sprintf('No configured weeks found which start on the supplied date of %s.',
+				$start_date);
+			return FALSE;
+		}
 		
 	}
 	

@@ -187,7 +187,7 @@ class Rooms_model extends Model{
 	/**
 	 * Get the list of rooms arranged in categories
 	 *
-	 * @param	bookable	int		Only show bookable rooms?
+	 * @param	bookable	bool	Only show bookable rooms?
 	 * @return mixed	Array of rooms in categories on success, 0 on failure
 	 */
 	function get_in_categories($bookable = FALSE){
@@ -198,7 +198,9 @@ class Rooms_model extends Model{
 		$allrooms = $this->auth->check('allrooms', TRUE);
 		
 		// If user is exempt from room permissions, don't restrict by bookability flag..
-		if($allrooms == TRUE){ $bookable = FALSE; }
+		if($allrooms == TRUE){
+			$bookable = FALSE;
+		}
 		
 		$where = '';
 		if($bookable == TRUE){
@@ -408,7 +410,7 @@ class Rooms_model extends Model{
 		} else {
 			
 			// Failed. Denied!
-			$this->lasterr = 'User has no permissions on the given room.';
+			$this->lasterr = sprintf('User (ID %d) has no permissions on Room ID %d.', $user_id, $room_id);
 			return FALSE;
 			
 		}

@@ -32,7 +32,6 @@ class Bookings extends Controller {
 
 
 	var $tpl;
-	var $ajax;
 	
 
 	function Bookings(){
@@ -55,7 +54,6 @@ class Bookings extends Controller {
 		// Misc things
 		$this->tpl = $this->config->item('template');
 		$this->output->enable_profiler($this->config->item('profiler'));
-		$this->ajax = (array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER));
 	}
 	
 	
@@ -86,36 +84,49 @@ class Bookings extends Controller {
 	 * Not public - can only be called by other methods in this controller.
 	 *
 	 * @param	room_id		ID of room to load. If none given, retrieve from session/cookie
-	 * @param	week		First date of week to load. If none, same as above.
+	 * @param	week		First date of week to load. If none, get from session/cookie
 	 */
-	function _index_room($room_id = NULL, $week = NULL){
+	private function _index_room($room_id = NULL, $week = NULL){
+		
+		log_message('debug', 'Bookings _index_room() method');
+		
+		// Var for sidebar (Room list)
+		$bookable = !($this->auth->check('allrooms', TRUE));
+		
+		log_message('debug', 'Set $bookable variable');
+		
+		// Get all the available rooms (for user's permissions)
+		$available_rooms = $this->rooms_model->get_in_categories($bookable);
+		
+		log_message('debug', 'Got available rooms');
 		
 		// No room_id in param?
 		if($room_id == NULL){
-			
 			// Try and find stored one
 			$room_id = $this->_get('crbsb.room_id');
-			
 			if(empty($room_id)){
 				// Nothing - is user a room owner?
-				echo "Checking if owner..";
+				#echo "Checking if owner..";
 				$pwn3d = $this->rooms_model->owned_by($this->session->userdata('user_id'));
-				echo var_dump($pwn3d);
+				#echo var_dump($pwn3d);
 				if($pwn3d != FALSE){
 					// They are!
-					echo "They are!";
+					#echo "They are!";
 					$room_id = $pwn3d[0];
+				} else {
+					// No!
+					#echo "Not a room owner. Last resort, getting first available room...";
+					$room = current($available_rooms);
+					if(!empty($room)){
+						$room_id = $room[0]->room_id;
+					}
 				}
 			}
-			
 		}
-		#echo $room_id;
-		/*
-			TODO: set a default room_id.
-			If user is room owner, set that.
-			Otherwise, choose first alphabetical room they have permission for
-		*/
+		// Room ID is now hopefully set. If not, then user has no permission to see any rooms..
+		$this->_store('crbsb.room_id', $room_id);
 		
+		log_message('debug', 'Stored data crbsb.room_id');
 		
 		// No week in param?
 		if($week == NULL){
@@ -126,15 +137,18 @@ class Bookings extends Controller {
 			}
 		}
 		
-		#echo var_dump($room_id);
-		
-		// Vars for sidebar (Room list)
-		$bookable = !($this->auth->check('allrooms', TRUE));
 		
 		// Get academic info
 		$academic = $this->_get_academic();
 		
-		// Load up the calendar picker!
+		// If we had a week supplied, load the calendar for the month in that week
+		if(!empty($week)){
+			list($y, $m, $d) = explode('-', $week);
+			$calm = $m;
+			$caly = $y;
+		}
+		
+		// Load up the calendar picker with any overriding choices!
 		$url_month = $this->_get('cal_month');
 		$url_year = $this->_get('cal_year');
 		if(empty($url_month) && empty($url_year)){
@@ -148,15 +162,19 @@ class Bookings extends Controller {
 		// Get the actual requested date (for date highlighting in sidebar calendar)
 		$cur = $this->_get('crbsb.week_requested_date');
 		
+		// Set up the sidebar
 		$sidebar['cal'] = $this->calendar->generate_sidebar($caly, $calm, $academic, $cur);
-		$sidebar['rooms'] = $this->rooms_model->get_in_categories($bookable);
+		$sidebar['rooms'] = $available_rooms;
 		$sidebar['cats'] = $this->rooms_model->get_categories_dropdown();
 		$sidebar['cats'][-1] = 'Uncategorised';
 		$sidebar['room_id'] = $room_id;
 		$sidebar['weeks'] = $academic['weeks'];
 		
+		// Main page info
 		$tpl['title'] = 'Bookings (Room/Week View)';
 		$tpl['sidebar'] = $this->load->view('bookings/side/side-main', $sidebar, TRUE);
+		
+		log_message('debug', 'Assigned sidebar to main template variable');
 		
 		// Container for timetable
 		$tpl['body'] = '<div id="tt">';
@@ -165,6 +183,8 @@ class Bookings extends Controller {
 		$data['room_id'] = $room_id;
 		$data['week'] = $week;
 		$timetable = $this->bookings_model->timetable($data);
+		
+		log_message('debug', 'Called timetable() method on bookings_model');
 		
 		if($timetable == FALSE){
 			
@@ -179,6 +199,9 @@ class Bookings extends Controller {
 		}
 		
 		$tpl['body'] .= '</div>';
+		$tpl['body'] .= $this->load->view('bookings/javascript', NULL, TRUE);
+		$tpl['js'] = array('crbs-bookings.js');
+		
 		$this->load->view($this->tpl, $tpl);
 	}
 	
@@ -235,11 +258,13 @@ class Bookings extends Controller {
 	
 	
 	/** 
-	 * Web-accessible page for loading timetable for a room.
+	 * Web-accessible page for loading timetable for a room. (in room view only)
 	 *
 	 * Can be loaded via AJAX or directly.
 	 */
 	function room($room_id){
+		
+		$this->auth->check('bookings');
 	
 		// Store requested room ID in session and cookie
 		$this->_store('crbsb.room_id', $room_id);
@@ -247,7 +272,7 @@ class Bookings extends Controller {
 		$data['room_id'] = $room_id;
 		$data['week'] = $this->_get('crbsb.week');
 		
-		if($this->ajax){
+		if(IS_XHR){
 			
 			// Fetch timetable
 			$timetable = $this->bookings_model->timetable($data);
@@ -279,6 +304,8 @@ class Bookings extends Controller {
 	 */
 	function week($date){
 		
+		$this->auth->check('bookings');
+		
 		// Put the actual requested day in the session
 		$this->_store('crbsb.week_requested_date', $date);
 		
@@ -297,7 +324,9 @@ class Bookings extends Controller {
 		$data['room_id'] = $this->_get('crbsb.room_id');
 		$data['week'] = $crbs_m;
 		
-		if($this->ajax){
+		#print_r($data);
+		
+		if(IS_XHR){
 			
 			// Fetch timetable
 			$timetable = $this->bookings_model->timetable($data);
@@ -345,11 +374,11 @@ class Bookings extends Controller {
 			$url_month = date('m');
 		}
 		
-		// Get academic information
-		$academic = $this->_get_academic();
-		
 		// Decide how to output the calendar
-		if($this->ajax){
+		if(IS_XHR){
+			
+			// Get academic information
+			$academic = $this->_get_academic();
 			
 			// Get the actual date requested before if any (to set class)
 			$cur = $this->_get('crbsb.week_requested_date');
@@ -419,6 +448,7 @@ class Bookings extends Controller {
 		$cookie['expire'] = 60 * 60 * 24 * 14;		// 14 days
 		$cookie['name'] = $key;
 		$cookie['value'] = $value;
+		#echo "Storing..." . var_export($cookie, TRUE);
 		set_cookie($cookie);
 	}
 	

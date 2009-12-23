@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 2.11.6
+-- version 3.2.0.1
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Nov 08, 2009 at 09:51 PM
--- Server version: 5.0.51
--- PHP Version: 5.2.6
+-- Generation Time: Dec 23, 2009 at 12:52 PM
+-- Server version: 5.1.37
+-- PHP Version: 5.3.0
 
 SET FOREIGN_KEY_CHECKS=0;
 
@@ -31,13 +31,13 @@ START TRANSACTION;
 --
 
 DROP TABLE IF EXISTS `departments`;
-CREATE TABLE `departments` (
-  `department_id` int(10) unsigned NOT NULL auto_increment,
+CREATE TABLE IF NOT EXISTS `departments` (
+  `department_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
-  `description` varchar(255) default NULL,
-  `colour` char(7) default NULL COMMENT 'Hex colour value',
-  `created` date default NULL,
-  PRIMARY KEY  (`department_id`)
+  `description` varchar(255) DEFAULT NULL,
+  `colour` char(7) DEFAULT NULL COMMENT 'Hex colour value',
+  `created` date DEFAULT NULL,
+  PRIMARY KEY (`department_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='School departments' AUTO_INCREMENT=14 ;
 
 --
@@ -65,7 +65,7 @@ INSERT INTO `departments` (`department_id`, `name`, `description`, `colour`, `cr
 --
 
 DROP TABLE IF EXISTS `departments2ldapgroups`;
-CREATE TABLE `departments2ldapgroups` (
+CREATE TABLE IF NOT EXISTS `departments2ldapgroups` (
   `department_id` int(10) unsigned NOT NULL,
   `ldapgroup_id` int(10) unsigned NOT NULL,
   UNIQUE KEY `unique` (`department_id`,`ldapgroup_id`),
@@ -104,18 +104,18 @@ INSERT INTO `departments2ldapgroups` (`department_id`, `ldapgroup_id`) VALUES
 --
 
 DROP TABLE IF EXISTS `groups`;
-CREATE TABLE `groups` (
-  `group_id` int(10) unsigned NOT NULL auto_increment,
+CREATE TABLE IF NOT EXISTS `groups` (
+  `group_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
-  `description` varchar(255) default NULL,
-  `bookahead` smallint(3) unsigned default NULL COMMENT 'Days ahead users in this group can make a booking',
-  `quota_num` int(10) unsigned default NULL COMMENT 'Default quota amount',
-  `quota_type` enum('day','week','month','current') default NULL COMMENT 'Type of quota in use',
+  `description` varchar(255) DEFAULT NULL,
+  `bookahead` smallint(3) unsigned DEFAULT NULL COMMENT 'Days ahead users in this group can make a booking',
+  `quota_num` int(10) unsigned DEFAULT NULL COMMENT 'Default quota amount',
+  `quota_type` enum('day','week','month','current') DEFAULT NULL COMMENT 'Type of quota in use',
   `permissions` text COMMENT 'A PHP-serialize()''d chunk of data',
   `created` date NOT NULL COMMENT 'Date the group was created',
-  PRIMARY KEY  (`group_id`),
+  PRIMARY KEY (`group_id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Groups table with settings and permiss; InnoDB free: 9216 kB' AUTO_INCREMENT=10 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Groups table with settings and permiss; InnoDB free: 9216 kB' AUTO_INCREMENT=8 ;
 
 --
 -- Dumping data for table `groups`
@@ -134,7 +134,7 @@ INSERT INTO `groups` (`group_id`, `name`, `description`, `bookahead`, `quota_num
 --
 
 DROP TABLE IF EXISTS `groups2ldapgroups`;
-CREATE TABLE `groups2ldapgroups` (
+CREATE TABLE IF NOT EXISTS `groups2ldapgroups` (
   `group_id` int(10) unsigned NOT NULL,
   `ldapgroup_id` int(10) unsigned NOT NULL,
   UNIQUE KEY `ldapgroup_id` (`ldapgroup_id`),
@@ -156,13 +156,13 @@ INSERT INTO `groups2ldapgroups` (`group_id`, `ldapgroup_id`) VALUES
 --
 
 DROP TABLE IF EXISTS `holidays`;
-CREATE TABLE `holidays` (
-  `holiday_id` int(10) unsigned NOT NULL auto_increment,
+CREATE TABLE IF NOT EXISTS `holidays` (
+  `holiday_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `year_id` int(10) unsigned NOT NULL COMMENT 'The academic year that this holiday is relevant to',
   `date_start` date NOT NULL,
   `date_end` date NOT NULL,
-  `name` varchar(20) default NULL,
-  PRIMARY KEY  (`holiday_id`),
+  `name` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`holiday_id`),
   KEY `year_id` (`year_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='School holidays' AUTO_INCREMENT=6 ;
 
@@ -181,10 +181,10 @@ INSERT INTO `holidays` (`holiday_id`, `year_id`, `date_start`, `date_end`, `name
 --
 
 DROP TABLE IF EXISTS `ldapgroups`;
-CREATE TABLE `ldapgroups` (
-  `ldapgroup_id` int(10) unsigned NOT NULL auto_increment,
+CREATE TABLE IF NOT EXISTS `ldapgroups` (
+  `ldapgroup_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(104) NOT NULL COMMENT 'Name of LDAP group (not full DN, just name part)',
-  PRIMARY KEY  (`ldapgroup_id`),
+  PRIMARY KEY (`ldapgroup_id`),
   UNIQUE KEY `ldapgroup_id` (`ldapgroup_id`,`name`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Group names retrieved from LDAP; InnoDB free: 9216 kB' AUTO_INCREMENT=1222 ;
 
@@ -307,15 +307,15 @@ INSERT INTO `ldapgroups` (`ldapgroup_id`, `name`) VALUES
 --
 
 DROP TABLE IF EXISTS `periods`;
-CREATE TABLE `periods` (
-  `period_id` int(10) unsigned NOT NULL auto_increment,
+CREATE TABLE IF NOT EXISTS `periods` (
+  `period_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `year_id` int(10) unsigned NOT NULL,
   `time_start` time NOT NULL,
   `time_end` time NOT NULL,
   `name` varchar(20) NOT NULL,
   `days` varchar(255) NOT NULL COMMENT 'Serialize() of the days that this period is set on',
   `bookable` tinyint(1) NOT NULL COMMENT 'Boolean 1 or 0 if periods can be booked or not',
-  PRIMARY KEY  (`period_id`),
+  PRIMARY KEY (`period_id`),
   KEY `year_id` (`year_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Periods' AUTO_INCREMENT=59 ;
 
@@ -350,10 +350,10 @@ INSERT INTO `periods` (`period_id`, `year_id`, `time_start`, `time_end`, `name`,
 --
 
 DROP TABLE IF EXISTS `quota`;
-CREATE TABLE `quota` (
+CREATE TABLE IF NOT EXISTS `quota` (
   `user_id` int(10) unsigned NOT NULL,
   `quota_num` int(10) unsigned NOT NULL,
-  PRIMARY KEY  (`user_id`)
+  PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Quota details';
 
 --
@@ -386,22 +386,22 @@ INSERT INTO `quota` (`user_id`, `quota_num`) VALUES
 --
 
 DROP TABLE IF EXISTS `room-permissions`;
-CREATE TABLE `room-permissions` (
-  `row_id` int(10) unsigned NOT NULL auto_increment,
+CREATE TABLE IF NOT EXISTS `room-permissions` (
+  `row_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `entry_ref` varchar(10) NOT NULL COMMENT 'Unique reference for this entry',
   `room_id` int(10) unsigned NOT NULL,
   `type` enum('e','o','u','g','d') NOT NULL COMMENT 'E: everyone; O: owner; U: user; G: group; D: department',
-  `user_id` int(10) unsigned default NULL,
-  `group_id` int(10) unsigned default NULL,
-  `department_id` int(10) unsigned default NULL,
+  `user_id` int(10) unsigned DEFAULT NULL,
+  `group_id` int(10) unsigned DEFAULT NULL,
+  `department_id` int(10) unsigned DEFAULT NULL,
   `permission` varchar(50) NOT NULL COMMENT 'A single permission',
-  PRIMARY KEY  (`row_id`),
+  PRIMARY KEY (`row_id`),
   KEY `user_id` (`user_id`),
   KEY `group_id` (`group_id`),
   KEY `department_id` (`department_id`),
   KEY `room_id` (`room_id`),
   KEY `entry_ref` (`entry_ref`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Permission entries for various objects on different rooms' AUTO_INCREMENT=88 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Permission entries for various objects on different rooms' AUTO_INCREMENT=92 ;
 
 --
 -- Dumping data for table `room-permissions`
@@ -413,7 +413,11 @@ INSERT INTO `room-permissions` (`row_id`, `entry_ref`, `room_id`, `type`, `user_
 (79, '1:e:0', 1, 'e', NULL, NULL, NULL, 'bookings.create.one'),
 (80, '1:o:0', 1, 'o', NULL, NULL, NULL, 'bookings.create.recur'),
 (85, '2:e:0', 2, 'e', NULL, NULL, NULL, 'bookings.view'),
-(87, '1:d:2', 1, 'd', NULL, NULL, 2, 'bookings.create.recur');
+(87, '1:d:2', 1, 'd', NULL, NULL, 2, 'bookings.create.recur'),
+(88, '3:g:2', 3, 'g', NULL, 2, NULL, 'bookings.view'),
+(89, '3:g:2', 3, 'g', NULL, 2, NULL, 'bookings.create.one'),
+(90, '6:e:0', 6, 'e', NULL, NULL, NULL, 'bookings.view'),
+(91, '5:e:0', 5, 'e', NULL, NULL, NULL, 'bookings.view');
 
 -- --------------------------------------------------------
 
@@ -422,12 +426,12 @@ INSERT INTO `room-permissions` (`row_id`, `entry_ref`, `room_id`, `type`, `user_
 --
 
 DROP TABLE IF EXISTS `roomattrs-fields`;
-CREATE TABLE `roomattrs-fields` (
-  `field_id` int(10) unsigned NOT NULL auto_increment,
+CREATE TABLE IF NOT EXISTS `roomattrs-fields` (
+  `field_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
   `type` enum('text','select','check') NOT NULL COMMENT 'Text: textbox; Select: Choose one item from list; Check: Boolean on/off',
-  `options_md5` char(32) default NULL,
-  PRIMARY KEY  (`field_id`)
+  `options_md5` char(32) DEFAULT NULL,
+  PRIMARY KEY (`field_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Names of fields that can be assigned to rooms' AUTO_INCREMENT=21 ;
 
 --
@@ -448,11 +452,11 @@ INSERT INTO `roomattrs-fields` (`field_id`, `name`, `type`, `options_md5`) VALUE
 --
 
 DROP TABLE IF EXISTS `roomattrs-options`;
-CREATE TABLE `roomattrs-options` (
-  `option_id` int(10) unsigned NOT NULL auto_increment,
+CREATE TABLE IF NOT EXISTS `roomattrs-options` (
+  `option_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `field_id` int(10) unsigned NOT NULL COMMENT 'Field that this belongs to',
   `value` varchar(50) NOT NULL,
-  PRIMARY KEY  (`option_id`),
+  PRIMARY KEY (`option_id`),
   KEY `field_id` (`field_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Options for room drop-down fields' AUTO_INCREMENT=36 ;
 
@@ -472,12 +476,12 @@ INSERT INTO `roomattrs-options` (`option_id`, `field_id`, `value`) VALUES
 --
 
 DROP TABLE IF EXISTS `roomattrs-values`;
-CREATE TABLE `roomattrs-values` (
-  `value_id` int(10) unsigned NOT NULL auto_increment,
+CREATE TABLE IF NOT EXISTS `roomattrs-values` (
+  `value_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `room_id` int(10) unsigned NOT NULL,
   `field_id` int(10) unsigned NOT NULL,
   `value` varchar(255) NOT NULL,
-  PRIMARY KEY  (`value_id`),
+  PRIMARY KEY (`value_id`),
   UNIQUE KEY `attr` (`room_id`,`field_id`),
   KEY `field_id` (`field_id`),
   KEY `room_id` (`room_id`)
@@ -517,10 +521,10 @@ INSERT INTO `roomattrs-values` (`value_id`, `room_id`, `field_id`, `value`) VALU
 --
 
 DROP TABLE IF EXISTS `roomcategories`;
-CREATE TABLE `roomcategories` (
-  `category_id` int(10) unsigned NOT NULL auto_increment,
+CREATE TABLE IF NOT EXISTS `roomcategories` (
+  `category_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(25) NOT NULL,
-  PRIMARY KEY  (`category_id`),
+  PRIMARY KEY (`category_id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Categories that rooms can belong to' AUTO_INCREMENT=5 ;
 
@@ -541,17 +545,17 @@ INSERT INTO `roomcategories` (`category_id`, `name`) VALUES
 --
 
 DROP TABLE IF EXISTS `rooms`;
-CREATE TABLE `rooms` (
-  `room_id` int(10) unsigned NOT NULL auto_increment,
-  `category_id` int(10) unsigned default NULL COMMENT 'An optional category that the room can belong to',
-  `user_id` int(10) unsigned default NULL COMMENT 'Specifies an owner (user) of the room',
-  `order` tinyint(3) unsigned default NULL COMMENT 'Order that the rooms appear in (optional)',
+CREATE TABLE IF NOT EXISTS `rooms` (
+  `room_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `category_id` int(10) unsigned DEFAULT NULL COMMENT 'An optional category that the room can belong to',
+  `user_id` int(10) unsigned DEFAULT NULL COMMENT 'Specifies an owner (user) of the room',
+  `order` tinyint(3) unsigned DEFAULT NULL COMMENT 'Order that the rooms appear in (optional)',
   `name` varchar(20) NOT NULL,
-  `description` varchar(40) default NULL,
+  `description` varchar(40) DEFAULT NULL,
   `bookable` tinyint(1) NOT NULL COMMENT 'Boolean 1 or 0',
-  `photo` char(32) default NULL COMMENT 'An md5 hash that references the file that is stored',
-  `created` date default NULL COMMENT 'Date the entry was created',
-  PRIMARY KEY  (`room_id`),
+  `photo` char(32) DEFAULT NULL COMMENT 'An md5 hash that references the file that is stored',
+  `created` date DEFAULT NULL COMMENT 'Date the entry was created',
+  PRIMARY KEY (`room_id`),
   KEY `user_id` (`user_id`),
   KEY `category_id` (`category_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='School rooms' AUTO_INCREMENT=7 ;
@@ -561,11 +565,11 @@ CREATE TABLE `rooms` (
 --
 
 INSERT INTO `rooms` (`room_id`, `category_id`, `user_id`, `order`, `name`, `description`, `bookable`, `photo`, `created`) VALUES
-(1, 1, 1, NULL, 'ICT1', 'ICT Suite / Eve Winstanley', 1, '14ae70cf0379e7.#.JPG', NULL),
-(2, NULL, 1, NULL, 'Room 16', '', 0, '14ae7116cd7f20.#.JPG', NULL),
-(3, 1, 127, NULL, 'ICT2', 'Room 13', 1, '0', NULL),
-(5, 2, 1, NULL, 'Tech Suite', 'Tech Suite', 1, '0', '2009-02-13'),
-(6, 1, 1, NULL, 'ICT3', '', 1, '0', '2009-10-26');
+(1, 1, NULL, NULL, 'ICT1', 'ICT Suite / Eve Winstanley', 1, '14ae70cf0379e7.#.JPG', NULL),
+(2, NULL, NULL, NULL, 'Room 16', '', 0, '14ae7116cd7f20.#.JPG', NULL),
+(3, 1, 1, NULL, 'ICT2', 'Room 13', 1, '0', NULL),
+(5, 2, NULL, NULL, 'Tech Suite', 'Tech Suite', 1, '0', '2009-02-13'),
+(6, 1, NULL, NULL, 'ICT3', '', 1, '0', '2009-10-26');
 
 -- --------------------------------------------------------
 
@@ -574,17 +578,17 @@ INSERT INTO `rooms` (`room_id`, `category_id`, `user_id`, `order`, `name`, `desc
 --
 
 DROP TABLE IF EXISTS `settings-auth`;
-CREATE TABLE `settings-auth` (
-  `preauthkey` char(40) default NULL COMMENT 'SHA1 hash to be used as preauth key',
-  `preauthgroup_id` int(10) unsigned default NULL COMMENT 'Default group for accounts created automatically via preauth',
-  `preauthemail` varchar(50) default NULL COMMENT 'Email domain for users created via preauth',
-  `ldap` tinyint(1) unsigned NOT NULL default '0' COMMENT 'Boolean 1 or 0 for LDAP auth status',
-  `ldaphost` varchar(50) default NULL COMMENT 'LDAP server hostname',
-  `ldapport` int(5) unsigned default NULL COMMENT 'LDAP server TCP port',
+CREATE TABLE IF NOT EXISTS `settings-auth` (
+  `preauthkey` char(40) DEFAULT NULL COMMENT 'SHA1 hash to be used as preauth key',
+  `preauthgroup_id` int(10) unsigned DEFAULT NULL COMMENT 'Default group for accounts created automatically via preauth',
+  `preauthemail` varchar(50) DEFAULT NULL COMMENT 'Email domain for users created via preauth',
+  `ldap` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT 'Boolean 1 or 0 for LDAP auth status',
+  `ldaphost` varchar(50) DEFAULT NULL COMMENT 'LDAP server hostname',
+  `ldapport` int(5) unsigned DEFAULT NULL COMMENT 'LDAP server TCP port',
   `ldapbase` text COMMENT 'Base DNs to search in LDAP',
   `ldapfilter` text COMMENT 'LDAP search query filter',
-  `ldapgroup_id` int(10) unsigned default NULL COMMENT 'Default group for LDAP accounts',
-  `ldaploginupdate` tinyint(1) unsigned default NULL COMMENT 'Boolean. Update user details on every login?'
+  `ldapgroup_id` int(10) unsigned DEFAULT NULL COMMENT 'Default group for LDAP accounts',
+  `ldaploginupdate` tinyint(1) unsigned DEFAULT NULL COMMENT 'Boolean. Update user details on every login?'
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='LDAP configuration';
 
 --
@@ -592,7 +596,7 @@ CREATE TABLE `settings-auth` (
 --
 
 INSERT INTO `settings-auth` (`preauthkey`, `preauthgroup_id`, `preauthemail`, `ldap`, `ldaphost`, `ldapport`, `ldapbase`, `ldapfilter`, `ldapgroup_id`, `ldaploginupdate`) VALUES
-('b36f16bef59e4e2ca3ae95392d4e180cb0b95b55', 7, 'bishopbarrington.net', 0, 'bbs-svr-001', 389, 'ou=teaching staff, ou=bbs, ou=establishments, dc=bbarrington, dc=internal; ou=system administrators, ou=bbs, ou=establishments, dc=bbarrington, dc=internal', '(& (| (!(displayname=Administrator*)) (!(displayname=Admin*)) ) (cn=%u) )', 7, 0);
+('b36f16bef59e4e2ca3ae95392d4e180cb0b95b55', 7, 'bishopbarrington.net', 1, 'bbs-svr-001', 389, 'ou=teaching staff, ou=bbs, ou=establishments, dc=bbarrington, dc=internal; ou=system administrators, ou=bbs, ou=establishments, dc=bbarrington, dc=internal', '(& (| (!(displayname=Administrator*)) (!(displayname=Admin*)) ) (cn=%u) )', 7, 0);
 
 -- --------------------------------------------------------
 
@@ -601,12 +605,12 @@ INSERT INTO `settings-auth` (`preauthkey`, `preauthgroup_id`, `preauthemail`, `l
 --
 
 DROP TABLE IF EXISTS `settings-main`;
-CREATE TABLE `settings-main` (
-  `schoolname` varchar(100) default NULL COMMENT 'Name of school',
-  `schoolurl` varchar(255) default NULL COMMENT 'Web address for school',
-  `tt_view` enum('room','day') default NULL COMMENT 'Mode of display for room booking table',
-  `tt_cols` enum('periods','rooms','days') default NULL COMMENT 'Columns on the booking table',
-  `room_order` enum('alpha','order') default NULL COMMENT 'How to display rooms in the booking view'
+CREATE TABLE IF NOT EXISTS `settings-main` (
+  `schoolname` varchar(100) DEFAULT NULL COMMENT 'Name of school',
+  `schoolurl` varchar(255) DEFAULT NULL COMMENT 'Web address for school',
+  `tt_view` enum('room','day') DEFAULT NULL COMMENT 'Mode of display for room booking table',
+  `tt_cols` enum('periods','rooms','days') DEFAULT NULL COMMENT 'Columns on the booking table',
+  `room_order` enum('alpha','order') DEFAULT NULL COMMENT 'How to display rooms in the booking view'
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Global app settings';
 
 --
@@ -614,7 +618,7 @@ CREATE TABLE `settings-main` (
 --
 
 INSERT INTO `settings-main` (`schoolname`, `schoolurl`, `tt_view`, `tt_cols`, `room_order`) VALUES
-('Bishop Barrington School Sports with Mathematics College', 'http://www.bishopbarrington.net/', 'room', 'periods', 'alpha');
+('Bishop Barrington School Sports with Mathematics College', '', 'room', 'periods', 'alpha');
 
 -- --------------------------------------------------------
 
@@ -623,13 +627,13 @@ INSERT INTO `settings-main` (`schoolname`, `schoolurl`, `tt_view`, `tt_cols`, `r
 --
 
 DROP TABLE IF EXISTS `terms`;
-CREATE TABLE `terms` (
-  `term_id` int(10) unsigned NOT NULL auto_increment,
+CREATE TABLE IF NOT EXISTS `terms` (
+  `term_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `year_id` int(10) unsigned NOT NULL COMMENT 'The academic year that this term belongs to',
   `date_start` date NOT NULL COMMENT 'Start date of the term',
   `date_end` date NOT NULL COMMENT 'End date of the term',
   `name` varchar(40) NOT NULL COMMENT 'Name of the term',
-  PRIMARY KEY  (`term_id`),
+  PRIMARY KEY (`term_id`),
   UNIQUE KEY `uniquedates` (`date_start`,`date_end`),
   UNIQUE KEY `date_start` (`date_start`),
   UNIQUE KEY `date_end` (`date_end`),
@@ -652,31 +656,31 @@ INSERT INTO `terms` (`term_id`, `year_id`, `date_start`, `date_end`, `name`) VAL
 --
 
 DROP TABLE IF EXISTS `users`;
-CREATE TABLE `users` (
-  `user_id` int(10) unsigned NOT NULL auto_increment,
-  `group_id` int(10) unsigned NOT NULL default '0' COMMENT 'Group that the user is a member of',
-  `enabled` tinyint(1) NOT NULL default '0' COMMENT 'Boolean 1 or 0',
+CREATE TABLE IF NOT EXISTS `users` (
+  `user_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `group_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Group that the user is a member of',
+  `enabled` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Boolean 1 or 0',
   `username` varchar(104) NOT NULL,
-  `email` varchar(255) default NULL,
-  `password` char(40) default NULL COMMENT 'SHA1 hash of password',
-  `displayname` varchar(64) default NULL,
-  `cookiekey` char(40) default NULL COMMENT 'SHA1 hash if a cookie is required',
-  `lastlogin` timestamp NOT NULL default '0000-00-00 00:00:00' COMMENT 'Date the user last logged in',
-  `lastactivity` datetime default NULL COMMENT 'Last time a page was accessed by this user',
-  `ldap` tinyint(1) unsigned NOT NULL default '0' COMMENT 'Boolean 1 or 0 if user should authenticate via LDAP',
+  `email` varchar(255) DEFAULT NULL,
+  `password` char(40) DEFAULT NULL COMMENT 'SHA1 hash of password',
+  `displayname` varchar(64) DEFAULT NULL,
+  `cookiekey` char(40) DEFAULT NULL COMMENT 'SHA1 hash if a cookie is required',
+  `lastlogin` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Date the user last logged in',
+  `lastactivity` datetime DEFAULT NULL COMMENT 'Last time a page was accessed by this user',
+  `ldap` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT 'Boolean 1 or 0 if user should authenticate via LDAP',
   `created` date NOT NULL COMMENT 'Date the user was created',
-  PRIMARY KEY  (`user_id`),
+  PRIMARY KEY (`user_id`),
   UNIQUE KEY `username` (`username`),
   KEY `ldap` (`ldap`),
   KEY `group_id` (`group_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Main users table' AUTO_INCREMENT=130 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Main users table' AUTO_INCREMENT=131 ;
 
 --
 -- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `password`, `displayname`, `cookiekey`, `lastlogin`, `lastactivity`, `ldap`, `created`) VALUES
-(1, 1, 1, 'admin', 'craig.rodway@gmail.com', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Craig Rodway', NULL, '2009-11-08 16:47:40', '2009-11-08 21:49:54', 0, '0000-00-00'),
+(1, 1, 1, 'admin', 'craig.rodway@gmail.com', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Craig Rodway', NULL, '2009-12-23 12:50:37', '2009-12-23 12:51:31', 0, '0000-00-00'),
 (12, 7, 1, 'craig.rodway', 'craig.rodway@bishopbarrington.net', NULL, 'Mr Rodway', NULL, '2009-05-19 11:41:06', '2009-05-19 11:43:17', 1, '2009-01-09'),
 (19, 2, 1, 'test.one', 'test.one@bishopbarrington.net', NULL, 'Mr T One', NULL, '2009-05-19 11:55:07', '2009-05-19 11:55:14', 1, '2009-01-14'),
 (22, 2, 1, 'test.three', 'test.three@bishopbarrington.net', NULL, 'Mr T Three', NULL, '2009-01-14 10:56:57', '0000-00-00 00:00:00', 1, '2009-01-14'),
@@ -693,8 +697,9 @@ INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `pas
 (123, 2, 0, 'j.thompson106', 'j.thompson106@bishopbarrington.net', '78c94605b024fc545b9100d2734dc4a4ae8a8335', 'j.thompson106', NULL, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 0, '2009-01-30'),
 (125, 2, 0, 'c.wearmouth100', 'c.wearmouth100@bishopbarrington.net', '9e907431a8d31fefe3c2d341ff8826624c954f15', 'c.wearmouth100', NULL, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 0, '2009-01-30'),
 (126, 2, 0, 'e.winstanley100', 'e.winstanley100@bishopbarrington.net', 'ea157601840a5b4953c2e95f5fd27223291122d6', 'e.winstanley100', NULL, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 0, '2009-01-30'),
-(127, 2, 1, 'john.doe', 'teacher@bishopbarrington.net', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'John Doe', NULL, '2009-11-08 19:44:44', '2009-11-08 21:50:05', 0, '2009-10-18'),
-(129, 1, 0, 'smithj', '', '41d78584e31c36ffe3724d8ea37084b68179d198', 'smithj', NULL, '0000-00-00 00:00:00', NULL, 0, '2009-10-25');
+(127, 2, 1, 'john.doe', 'teacher@bishopbarrington.net', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'John Doe', NULL, '2009-12-09 14:35:13', '2009-12-09 14:35:43', 0, '2009-10-18'),
+(129, 1, 0, 'smithj', '', '41d78584e31c36ffe3724d8ea37084b68179d198', 'smithj', NULL, '0000-00-00 00:00:00', NULL, 0, '2009-10-25'),
+(130, 2, 1, 'teacher', 'teacher@bishopbarrington.net', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Teacher', NULL, '2009-12-10 09:03:45', '2009-12-10 12:04:40', 0, '2009-12-09');
 
 -- --------------------------------------------------------
 
@@ -703,7 +708,7 @@ INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `pas
 --
 
 DROP TABLE IF EXISTS `users2departments`;
-CREATE TABLE `users2departments` (
+CREATE TABLE IF NOT EXISTS `users2departments` (
   `user_id` int(10) unsigned NOT NULL,
   `department_id` int(10) unsigned NOT NULL,
   KEY `department_id` (`department_id`),
@@ -730,7 +735,7 @@ INSERT INTO `users2departments` (`user_id`, `department_id`) VALUES
 --
 
 DROP TABLE IF EXISTS `usersactive`;
-CREATE TABLE `usersactive` (
+CREATE TABLE IF NOT EXISTS `usersactive` (
   `user_id` int(10) unsigned NOT NULL,
   `timestamp` int(11) unsigned NOT NULL,
   UNIQUE KEY `user_id` (`user_id`)
@@ -740,8 +745,6 @@ CREATE TABLE `usersactive` (
 -- Dumping data for table `usersactive`
 --
 
-INSERT INTO `usersactive` (`user_id`, `timestamp`) VALUES
-(1, 1257716994);
 
 -- --------------------------------------------------------
 
@@ -750,7 +753,7 @@ INSERT INTO `usersactive` (`user_id`, `timestamp`) VALUES
 --
 
 DROP TABLE IF EXISTS `weekdates`;
-CREATE TABLE `weekdates` (
+CREATE TABLE IF NOT EXISTS `weekdates` (
   `week_id` int(10) unsigned NOT NULL,
   `year_id` int(10) unsigned NOT NULL,
   `date` date NOT NULL,
@@ -817,6 +820,8 @@ INSERT INTO `weekdates` (`week_id`, `year_id`, `date`) VALUES
 (14, 5, '2009-11-30'),
 (13, 5, '2009-12-07'),
 (14, 5, '2009-12-14'),
+(15, 5, '2009-12-21'),
+(15, 5, '2009-12-28'),
 (13, 5, '2010-01-04'),
 (14, 5, '2010-01-11'),
 (13, 5, '2010-01-18'),
@@ -829,6 +834,8 @@ INSERT INTO `weekdates` (`week_id`, `year_id`, `date`) VALUES
 (14, 5, '2010-03-15'),
 (13, 5, '2010-03-22'),
 (14, 5, '2010-03-29'),
+(15, 5, '2010-04-05'),
+(15, 5, '2010-04-12'),
 (13, 5, '2010-04-19'),
 (14, 5, '2010-04-26'),
 (13, 5, '2010-05-03'),
@@ -850,15 +857,15 @@ INSERT INTO `weekdates` (`week_id`, `year_id`, `date`) VALUES
 --
 
 DROP TABLE IF EXISTS `weeks`;
-CREATE TABLE `weeks` (
-  `week_id` int(10) unsigned NOT NULL auto_increment,
+CREATE TABLE IF NOT EXISTS `weeks` (
+  `week_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `year_id` int(10) unsigned NOT NULL,
   `name` varchar(20) NOT NULL,
-  `colour` char(7) default NULL COMMENT 'Hex colour value including hash',
-  `created` date default NULL,
-  PRIMARY KEY  (`week_id`),
+  `colour` char(7) DEFAULT NULL COMMENT 'Hex colour value including hash',
+  `created` date DEFAULT NULL,
+  PRIMARY KEY (`week_id`),
   KEY `year_id` (`year_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Week definitions for timetable weeks' AUTO_INCREMENT=15 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Week definitions for timetable weeks' AUTO_INCREMENT=16 ;
 
 --
 -- Dumping data for table `weeks`
@@ -867,8 +874,9 @@ CREATE TABLE `weeks` (
 INSERT INTO `weeks` (`week_id`, `year_id`, `name`, `colour`, `created`) VALUES
 (11, 1, 'Red Week', '#EF2929', '2009-01-25'),
 (12, 1, 'Blue Week', '#3465A4', '2009-01-25'),
-(13, 5, 'Red Week', '#EF2929', '2009-11-01'),
-(14, 5, 'Blue Week', '#3465A4', '2009-11-01');
+(13, 5, 'Red Week', '#CC0000', '2009-11-01'),
+(14, 5, 'Blue Week', '#3465A4', '2009-11-01'),
+(15, 5, 'Holiday', '#BABDB6', '2009-12-10');
 
 -- --------------------------------------------------------
 
@@ -877,13 +885,13 @@ INSERT INTO `weeks` (`week_id`, `year_id`, `name`, `colour`, `created`) VALUES
 --
 
 DROP TABLE IF EXISTS `years`;
-CREATE TABLE `years` (
-  `year_id` int(10) unsigned NOT NULL auto_increment,
+CREATE TABLE IF NOT EXISTS `years` (
+  `year_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `date_start` date NOT NULL,
   `date_end` date NOT NULL,
   `name` varchar(20) NOT NULL,
-  `active` tinyint(1) unsigned default '0',
-  PRIMARY KEY  (`year_id`),
+  `active` tinyint(1) unsigned DEFAULT '0',
+  PRIMARY KEY (`year_id`),
   UNIQUE KEY `active` (`active`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Academic year definitions' AUTO_INCREMENT=7 ;
 
@@ -904,15 +912,15 @@ INSERT INTO `years` (`year_id`, `date_start`, `date_end`, `name`, `active`) VALU
 -- Constraints for table `departments2ldapgroups`
 --
 ALTER TABLE `departments2ldapgroups`
-  ADD CONSTRAINT `departments2ldapgroups_ibfk_2` FOREIGN KEY (`ldapgroup_id`) REFERENCES `ldapgroups` (`ldapgroup_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `departments2ldapgroups_ibfk_1` FOREIGN KEY (`department_id`) REFERENCES `departments` (`department_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `departments2ldapgroups_ibfk_1` FOREIGN KEY (`department_id`) REFERENCES `departments` (`department_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `departments2ldapgroups_ibfk_2` FOREIGN KEY (`ldapgroup_id`) REFERENCES `ldapgroups` (`ldapgroup_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `groups2ldapgroups`
 --
 ALTER TABLE `groups2ldapgroups`
-  ADD CONSTRAINT `groups2ldapgroups_ibfk_2` FOREIGN KEY (`ldapgroup_id`) REFERENCES `ldapgroups` (`ldapgroup_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `groups2ldapgroups_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `groups2ldapgroups_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `groups2ldapgroups_ibfk_2` FOREIGN KEY (`ldapgroup_id`) REFERENCES `ldapgroups` (`ldapgroup_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `holidays`
@@ -951,15 +959,15 @@ ALTER TABLE `roomattrs-options`
 -- Constraints for table `roomattrs-values`
 --
 ALTER TABLE `roomattrs-values`
-  ADD CONSTRAINT `roomattrs@002dvalues_ibfk_2` FOREIGN KEY (`field_id`) REFERENCES `roomattrs-fields` (`field_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `roomattrs@002dvalues_ibfk_1` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`room_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `roomattrs@002dvalues_ibfk_1` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`room_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `roomattrs@002dvalues_ibfk_2` FOREIGN KEY (`field_id`) REFERENCES `roomattrs-fields` (`field_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `rooms`
 --
 ALTER TABLE `rooms`
-  ADD CONSTRAINT `rooms_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `rooms_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `roomcategories` (`category_id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `rooms_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `roomcategories` (`category_id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `rooms_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `terms`
@@ -977,8 +985,8 @@ ALTER TABLE `users`
 -- Constraints for table `users2departments`
 --
 ALTER TABLE `users2departments`
-  ADD CONSTRAINT `users2departments_ibfk_2` FOREIGN KEY (`department_id`) REFERENCES `departments` (`department_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `users2departments_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `users2departments_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `users2departments_ibfk_2` FOREIGN KEY (`department_id`) REFERENCES `departments` (`department_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `usersactive`
@@ -990,8 +998,8 @@ ALTER TABLE `usersactive`
 -- Constraints for table `weekdates`
 --
 ALTER TABLE `weekdates`
-  ADD CONSTRAINT `weekdates_ibfk_2` FOREIGN KEY (`week_id`) REFERENCES `weeks` (`week_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `weekdates_ibfk_1` FOREIGN KEY (`year_id`) REFERENCES `years` (`year_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `weekdates_ibfk_1` FOREIGN KEY (`year_id`) REFERENCES `years` (`year_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `weekdates_ibfk_2` FOREIGN KEY (`week_id`) REFERENCES `weeks` (`week_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `weeks`
@@ -1002,3 +1010,7 @@ ALTER TABLE `weeks`
 SET FOREIGN_KEY_CHECKS=1;
 
 COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

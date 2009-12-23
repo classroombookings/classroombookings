@@ -272,6 +272,12 @@ class Years extends Controller {
 		$this->session->set_userdata('cal_month', NULL);
 		$this->session->set_userdata('cal_year', NULL);
 		
+		// Prevent endless loop when changing year - clear all booking-navigation related stuff
+		$this->session->set_userdata('crbsb.week', NULL);
+		$this->session->set_userdata('crbsb.week_requested_date', NULL);
+		delete_cookie('crbsb.week');
+		delete_cookie('crbsb.week_requested_date');
+		
 		redirect($uri);
 	}
 	

@@ -383,14 +383,14 @@ class Manage extends Controller{
 	
 	function info($room_id = NULL){
 		
-		$ajax = (array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER));
+		#$ajax = (array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER));
 		
 		$room = $this->rooms_model->get($room_id);
 		if($room == FALSE){
 			$error = $this->msg->err('Could not load the specified room. Please check the ID and try again.');
 		}
 		
-		if($ajax == TRUE){
+		if(IS_XHR){
 			
 			// Return HTML fragment of room info
 			

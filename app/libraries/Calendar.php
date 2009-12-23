@@ -517,6 +517,10 @@ class CI_Calendar {
 				#$out .= ($is_current_month == TRUE AND $day == $cur_day) ? $this->temp['cal_cell_start_today'] : $this->temp['cal_cell_start'];
 				$out .= $this->temp['cal_cell_start'];
 				
+				if(empty($cur)){
+					$cur = date('Y-m-d');
+				}
+				
 				if ($day > 0 AND $day <= $total_days)
 				{ 					
 					if (isset($data[$day]))
@@ -556,7 +560,7 @@ class CI_Calendar {
 			// Got monday - see if there is a week configured for it
 			if($weekdates != NULL && array_key_exists($crbs_m, $weekdates)){
 				// Apply class to the row that will set the BG colour
-				$rowclass = sprintf(' class="week week_%d"', $weekdates[$crbs_m]);
+				$rowclass = sprintf(' class="week week_%d ws_%s"', $weekdates[$crbs_m], $crbs_m);
 				#echo $rowclass;
 				$out = str_replace('{rowclass}', $rowclass, $out);
 			} else {

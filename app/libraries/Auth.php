@@ -58,6 +58,8 @@ class Auth{
 	 */
 	function check($action, $return = FALSE){
 		
+		log_message('debug', 'Auth: Checking if user can do ' . $action . '.');
+		
 		// Get group ID
 		$group_id = $this->CI->session->userdata('group_id');
 		// If no group, then guest group (always 0)
@@ -431,11 +433,15 @@ class Auth{
 		$this->CI->session->unset_userdata($sessdata);
 		
 		// Destroy session
-		$this->CI->session->sess_destroy();
+		@$this->CI->session->sess_destroy();
 		
 		// Remove cookies too
 		delete_cookie("crbs_key");
 		delete_cookie("crbs_user_id");
+		delete_cookie("crbsb.room_id");
+		delete_cookie("crbsb.week");
+		delete_cookie("crbsb.week_requested_date");
+		delete_cookie("tab.bookings");
 		
 		// NULLify the cookie key in the DB
 		$sql = 'UPDATE users SET cookiekey = NULL WHERE user_id = ?';

@@ -157,7 +157,7 @@ table.ccb tr td{
 }
 table.ccb tr td a:hover, table.ccb tr td a.current{
 	background:#D6D5B8;
-	color:#000;
+	color:#000 !important;
 }
 
 /* List table heading */
