@@ -39,7 +39,7 @@ foreach($room->attrs as $field){
 		$data['name'] = sprintf('fields[%d]', $attr->field_id);
 		$data['attr'] = $attr;
 		$data['t'] = $t; 
-		$data['values'] = $values;	//array();		// This needs to be a 2D array of the values for this room's fields
+		$data['values'] = (isset($values)) ? $values : array();	//array();		// This needs to be a 2D array of the values for this room's fields
 			// Like [field_id] = actual value
 		switch($attr->type){
 			case 'text':

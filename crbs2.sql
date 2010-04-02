@@ -3,16 +3,11 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Dec 23, 2009 at 12:52 PM
+-- Generation Time: Apr 02, 2010 at 12:31 PM
 -- Server version: 5.1.37
 -- PHP Version: 5.3.0
 
-SET FOREIGN_KEY_CHECKS=0;
-
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
-
-SET AUTOCOMMIT=0;
-START TRANSACTION;
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -680,7 +675,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 --
 
 INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `password`, `displayname`, `cookiekey`, `lastlogin`, `lastactivity`, `ldap`, `created`) VALUES
-(1, 1, 1, 'admin', 'craig.rodway@gmail.com', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Craig Rodway', NULL, '2009-12-23 12:50:37', '2009-12-23 12:51:31', 0, '0000-00-00'),
+(1, 1, 1, 'admin', 'craig.rodway@gmail.com', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Craig Rodway', NULL, '2010-01-11 15:36:24', '2010-01-11 15:37:20', 0, '0000-00-00'),
 (12, 7, 1, 'craig.rodway', 'craig.rodway@bishopbarrington.net', NULL, 'Mr Rodway', NULL, '2009-05-19 11:41:06', '2009-05-19 11:43:17', 1, '2009-01-09'),
 (19, 2, 1, 'test.one', 'test.one@bishopbarrington.net', NULL, 'Mr T One', NULL, '2009-05-19 11:55:07', '2009-05-19 11:55:14', 1, '2009-01-14'),
 (22, 2, 1, 'test.three', 'test.three@bishopbarrington.net', NULL, 'Mr T Three', NULL, '2009-01-14 10:56:57', '0000-00-00 00:00:00', 1, '2009-01-14'),
@@ -745,6 +740,8 @@ CREATE TABLE IF NOT EXISTS `usersactive` (
 -- Dumping data for table `usersactive`
 --
 
+INSERT INTO `usersactive` (`user_id`, `timestamp`) VALUES
+(1, 1263224264);
 
 -- --------------------------------------------------------
 
@@ -1006,10 +1003,6 @@ ALTER TABLE `weekdates`
 --
 ALTER TABLE `weeks`
   ADD CONSTRAINT `weeks_ibfk_1` FOREIGN KEY (`year_id`) REFERENCES `years` (`year_id`) ON DELETE CASCADE;
-
-SET FOREIGN_KEY_CHECKS=1;
-
-COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
