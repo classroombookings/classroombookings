@@ -1,0 +1,45 @@
+/**
+ * crbs-grey
+ */
+
+body, table.ccb tr.wr td{ background-color: #d3d7cf; /*L*/ }
+table.ccb tr.wr td{ color:#000; }
+
+div#header,
+div#menu ul li a:hover,
+div#menu ul li a.current{ 
+	background:#2e3436; /*D*/ color:#fff;
+}
+
+div#header a{ color:#fff; }
+
+div#menu ul li a,
+table.list tr.heading td,
+table.form tr.h td, table.checks tr.h td,
+.bookings-roomlist ul li:hover{
+	background:#555753; /*M*/ color:#fff;
+}
+
+
+/* Bookings - room list */
+div.bookings-roomlist h4{ color:#2e3436; }
+.bookings-roomlist ul li.current{ background:#555753; }
+
+.bookings-roomlist ul li.current a,
+.bookings-roomlist ul li.current span,
+.bookings-roomlist ul li:hover a,
+.bookings-roomlist ul li:hover span{ color:#fff; }
+
+
+
+/* Calendar chooser for /Bookings/Side... */
+table.ccb tr.head th{
+	background:#fff;
+}
+table.ccb tr td{
+	color:#aaa;
+}
+table.ccb tr td a:hover, table.ccb tr td a.current{
+	background:#2e3436;
+	color:#fff !important;
+}

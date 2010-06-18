@@ -1,0 +1,15 @@
+/**
+ * crbs-original
+ */
+
+body{ background-color: #616C73; /*L*/ }
+
+div#header,
+div#menu ul li a:hover{
+	background:#262222; /*D*/ 
+	color:#fff;
+}
+
+div#header a{ color:#fff; }
+
+div#menu ul li a{ background:#475259; /*M*/ color:#fff; }
