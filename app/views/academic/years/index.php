@@ -19,7 +19,10 @@ if($years != 0){
 	foreach($years as $year) {
 	?>
 	<tr>
-		<td align="center" width="20"><?php if($year->active == 1){ ?><img src="img/ico/f_yes.gif" width="16" height="16" alt="Active" /><?php } ?></td>
+		<td align="center" width="20">
+			<?php $img = ($year->active == 1) ? 'ico/f_yes.gif' : 's.gif'; ?>
+			<img src="img/<?php echo $img ?>" width="16" height="16" alt="" />
+		</td>
 		<td><?php echo anchor('academic/years/edit/'.$year->year_id, $year->name) ?></td>
 		<td><?php echo date("l jS F Y", todate($year->date_start)) ?></td>
 		<td><?php echo date("l jS F Y", todate($year->date_end)) ?></td>

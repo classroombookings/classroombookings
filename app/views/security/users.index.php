@@ -8,8 +8,7 @@ if($users != 0){
 	<col /><col /><col />
 	<thead>
 	<tr class="heading">
-		<td class="h" title="Username">Username</td>
-		<td class="h" title="Name">Display name</td>
+		<td class="h" title="User">User</td>
 		<td class="h" title="Name">Group</td>
 		<td class="h" title="Quota">Quota</td>
 		<td class="h" title="Lastlogin">Last login</td>
@@ -24,8 +23,8 @@ if($users != 0){
 	foreach ($users as $user) {
 	?>
 	<tr class="tr<?php echo ($i & 1); echo ($user->enabled == 0) ? ' disabled' : NULL; ?>">
-		<td class="t"><?php echo anchor('security/users/edit/'.$user->user_id, $user->username) ?></td>
-		<td class="m"><?php echo $user->displayname ?>&nbsp;</td>
+		<td class="t"><?php echo anchor('security/users/edit/'.$user->user_id, $user->displayname) ?></td>
+		<!-- <td class="m"><?php echo $user->displayname ?>&nbsp;</td> -->
 		<td class="m"><?php echo $user->groupname ?>&nbsp;</td>
 		<td class="m"><?php
 		if($user->quota_type == NULL){
@@ -45,7 +44,7 @@ if($users != 0){
 		<td class="m"><?php echo mysqlhuman($user->lastlogin, "d/m/Y H:i") ?>&nbsp;</td>
 		<td class="m"><?php echo mysqlhuman($user->lastactivity, "d/m/Y H:i") ?>&nbsp;</td>
 		<td class="m"><?php echo ($user->ldap == 1) ? 'LDAP' : 'Local'; ?></td>
-		<td class="il" width="270">
+		<td class="il">
 		<?php
 		$actiondata[0] = array('security/users/view/'.$user->user_id, 'Report', 'magnifier_sm.gif');
 		$actiondata[1] = array('security/permissions/effective/'.$user->user_id, 'Effective permissions', 'key-sm.gif', 'facebox');

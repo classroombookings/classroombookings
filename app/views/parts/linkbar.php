@@ -8,10 +8,9 @@ $items = $_ci_vars;
 $items_count = count($items);
 
 $html = "";
-$html .= '<ul class="linkbar">';
+$html .= '<ul class="linkbar h">';
 $i = 0;
 foreach($items as $item){
-	
 	// Class applied
 	$class = ($i < $items_count -1) ? ' class="ibl"' : '';
 	// Format

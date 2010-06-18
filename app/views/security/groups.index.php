@@ -5,12 +5,11 @@ if($groups != 0){
 ?>
 
 <table class="list" width="100%" cellpadding="0" cellspacing="0" border="0">
-	<col /><col /><col />
 	<thead>
 	<tr class="heading">
 		<td class="h" title="Name">Group name</td>
 		<td class="h" title="Description">Description</td>
-		<td class="h" title="Usercount">Number of users</td>
+		<td class="h" title="Usercount">Users</td>
 		<td class="h" title="Quota">Quota</td>
 		<td class="h" title="Ahead">Booking ahead</td>
 		<td class="h" title="X">&nbsp;</td>

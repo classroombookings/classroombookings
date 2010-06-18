@@ -1,7 +1,7 @@
 <?php
 
 $lang['AUTH_FAIL_USERPASS'] = 'Incorrect username and/or password';
-$lang['AUTH_OK'] = 'Congratulations! You are now logged in.';
+$lang['AUTH_OK'] = 'You are now logged in.';
 
 $lang['AUTH_LOGOUT_OK'] = 'You have been successfully logged out.';
 $lang['AUTH_LOGOUT_FAIL'] = 'Your logout request was unsuccessful. Please close all browser windows to ensure your session is closed properly.';
