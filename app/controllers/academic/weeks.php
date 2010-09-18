@@ -38,7 +38,7 @@ class Weeks extends Controller {
 	function index(){
 		$this->auth->check('weeks');
 		
-		$links[] = array('academic/weeks/add', 'Add a new week');
+		$links[] = array('academic/weeks/add', 'Add a new week', 'add');
 		/*$links[] = array('academic/main', 'Academic setup');
 		$links[] = array('academic/years', 'Years');
 		$links[] = array('academic/terms', 'Term dates');

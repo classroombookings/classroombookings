@@ -4,11 +4,11 @@
 if($groups != 0){
 ?>
 
-<table class="list" width="100%" cellpadding="0" cellspacing="0" border="0">
+<table class="list">
+	<col /><col /><col /><col /><col />
 	<thead>
 	<tr class="heading">
 		<td class="h" title="Name">Group name</td>
-		<td class="h" title="Description">Description</td>
 		<td class="h" title="Usercount">Users</td>
 		<td class="h" title="Quota">Quota</td>
 		<td class="h" title="Ahead">Booking ahead</td>
@@ -21,9 +21,14 @@ if($groups != 0){
 	foreach ($groups as $group) {
 	?>
 	<tr>
-		<td class="t"><?php echo anchor('security/groups/edit/'.$group->group_id, $group->name) ?></td>
-		<td class="m"><span title="<?php echo $group->description ?>"><?php echo word_limiter($group->description, 5) ?>&nbsp;</span></td>
+		
+		<td class="x">
+			<strong><?php echo anchor('security/groups/edit/'.$group->group_id, $group->name) ?></strong><br />
+			<span title="<?php echo $group->description ?>"><?php echo word_limiter($group->description, 5) ?>&nbsp;</span>
+		</td>
+		
 		<td class="x"><?php echo $group->usercount ?>&nbsp;</td>
+		
 		<td class="x"><?php
 		if($group->quota_type == NULL){
 			$q = 'Unlimited';
@@ -38,15 +43,17 @@ if($groups != 0){
 		}
 		echo $q;
 		?></td>
+		
 		<td class="x"><?php echo ($group->bookahead != 0) ? $group->bookahead . ' days' : 'No Limit';  ?></td>
-		<td class="il">
-		<?php
-		$actiondata[0] = array('security/users/ingroup/'.$group->group_id, 'View users', 'user_orange-sm.gif' );
-		$actiondata[1] = array('security/permissions/forgroup/'.$group->group_id, 'Edit permissions', 'key-sm.gif' );
-		$actiondata[2] = array('security/groups/delete/'.$group->group_id, 'Delete', 'cross_sm.gif' );
-		$this->load->view('parts/listactions', $actiondata);
-		#$this->load->view('parts/delete', array('url' => 'security/users/delete/'.$user->user_id));
+		
+		<td class="il"><?php
+			unset($actiondata);
+			$actiondata[] = array('security/users/ingroup/'.$group->group_id, ' ', 'user_orange-sm.gif' );
+			$actiondata[] = array('security/permissions/forgroup/'.$group->group_id, ' ', 'key-sm.gif' );
+			$actiondata[] = array('security/groups/delete/'.$group->group_id, ' ', 'cross_sm.gif' );
+			$this->load->view('parts/linkbar', $actiondata);
 		?></td>
+		
 	</tr>
 	<?php $i++; } ?>
 	</tbody>

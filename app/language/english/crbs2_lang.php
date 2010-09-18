@@ -82,8 +82,13 @@ $lang['W_YEAR'] = 'Year';
 $lang['W_YEARS'] = 'Years';
 $lang['W_FIELD'] = 'Field';
 
+// Login/out terminology
+$lang['LOGIN'] = 'Log in';		// Could be 'Sign in'...
+$lang['LOGOUT'] = 'Log out';		// Could be 'Sign out'...
+
 // Actions
 $lang['ACTION_ADD'] = 'Add';
+$lang['ACTION_NEW'] = 'New';
 $lang['ACTION_SAVE'] = 'Save';
 $lang['ACTION_DELETE'] = 'Delete';
 $lang['ACTION_CANCEL'] = 'Cancel';

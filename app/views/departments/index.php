@@ -25,8 +25,9 @@ if($departments != 0){
 		<td class="x"><?php #echo $department->usercount ?>&nbsp;</td>
 		<td class="il">
 		<?php
-		$actiondata[0] = array('departments/delete/'.$department->department_id, 'Delete', 'cross_sm.gif' );
-		$this->load->view('parts/listactions', $actiondata);
+		unset($actiondata);
+		$actiondata[] = array('departments/delete/'.$department->department_id, ' ', 'cross_sm.gif', 'Delete department');
+		$this->load->view('parts/linkbar', $actiondata);
 		#$this->load->view('parts/delete', array('url' => 'security/users/delete/'.$user->user_id));
 		?></td>
 	</tr>

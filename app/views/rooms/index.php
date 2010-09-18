@@ -40,9 +40,9 @@ if($rooms != 0){
 				<?php
 				unset($actiondata);
 				#$actiondata[] = array('rooms/permissions/'.$room->room_id, 'Edit permissions', 'key-sm.gif' );
-				$actiondata[] = array('rooms/manage/info/'.$room->room_id, 'View info', 'roominfo-sm.gif');
-				$actiondata[] = array('rooms/manage/delete/'.$room->room_id, 'Delete', 'cross_sm.gif' );
-				$this->load->view('parts/listactions', $actiondata);
+				$actiondata[] = array('rooms/manage/info/'.$room->room_id, ' ', 'roominfo-sm.gif');
+				$actiondata[] = array('rooms/manage/delete/'.$room->room_id, ' ', 'cross_sm.gif' );
+				$this->load->view('parts/linkbar', $actiondata);
 				?></td>
 			</tr>
 			<?php

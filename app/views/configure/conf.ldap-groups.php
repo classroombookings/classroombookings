@@ -5,9 +5,10 @@ echo form_open('configure/get_ldap_groups', array('name' => 'form_confldapgroups
 $t = 1;
 ?>
 
-<table class="form" cellpadding="6" cellspacing="0" border="0" width="100%">
+<div class="grey"><div>
+<table class="form" width="100%">
 	
-	<tr class="h"><td colspan="2">LDAP bind settings</td></tr>
+	<tr class="h"><td colspan="2"><div>LDAP bind settings</div></td></tr>
 	
 	<tr>
 		<td class="caption">
@@ -114,33 +115,34 @@ $t = 1;
 			</label>
 		</td>
 	</tr>
-	
+</table>
+</div></div>
+
+
+<table class="form" width="100%">	
 	<?php
 	unset($buttons);
-	$buttons[] = array('submit', 'positive', 'Get groups', 'arr-circle1.gif', $t);
+	$buttons[] = array('submit', 'ok', 'Get groups', $t);
 	$this->load->view('parts/buttons', array('buttons' => $buttons));
 	?>
-	
-	<tr><td colspan="2">&nbsp;</td></tr>
-	
-	<tr class="h"><td colspan="2">LDAP groups (<?php echo count($ldapgroups) ?>)</td></tr>
-	
-	<tr>
-		<td colspan="2">
-		<table class="list" width="99%" cellpadding="0" cellspacing="0" border="0">
-		<?php
-		if(count($ldapgroups) > 0){
-			foreach($ldapgroups as $group){
-				echo sprintf('<tr><td class="m">%s</td></tr>', $group);
-			}
-		} else {
-			echo '<p>No groups exist at the moment.</p>';
-		}
-		?>
-		</table>
-		</td>
-	</tr>
-
 </table>
 
+
 </form>
+
+
+<div class="grey"><div>
+
+<h3>LDAP Groups</h3>
+<table class="list" width="99%" cellpadding="0" cellspacing="0" border="0">
+	<?php
+	if(count($ldapgroups) > 0){
+		foreach($ldapgroups as $group){
+			echo sprintf('<tr><td class="m">%s</td></tr>', $group);
+		}
+	} else {
+		echo '<p>No groups exist at the moment.</p>';
+	}
+	?>
+</table>
+</div></div>

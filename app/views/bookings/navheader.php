@@ -5,6 +5,7 @@ if($mode == 'week'){
 		$nicedate = date('l jS F Y', strtotime($week_start));
 		$title = sprintf($title, $nicedate, $week->name);
 		$class = 'week_' . $week->week_id;
+		$col_contrast = (isdark($week->colour)) ? 'fff' : '000';
 	} else {
 		$title = '(No week configured)';
 		$class = 'bg-red';
@@ -19,19 +20,27 @@ if($mode == 'week'){
 ?>
 
 <div id="navheader" class="<?php echo $class ?>">
-	<table width="100%">
+
+	<table>
 		<tr>
-			
-			<td align="left" width="150">
-				<?php if($prev['href'] != NULL){ echo anchor($prev['href'], $prev['text'], 'rel="navheader" id="'.$prev_day.'"'); } ?>
+			<td class="nav">
+				<?php
+				if($prev['href'] != NULL){
+					$prev['text'] = '<img src="img/nav-arr-left-' . $col_contrast . '.png" />';
+					echo anchor($prev['href'], $prev['text'], 'rel="navheader" id="'.$prev_day.'"');
+				}
+				?>
 			</td>
-			
-			<td align="center"><?php echo $title ?></td>
-			
-			<td align="right" width="150">
-				<?php if($next['href'] != NULL){ echo anchor($next['href'], $next['text'], 'rel="navheader" id="'.$next_day.'"'); } ?>
+			<td class="nav">
+				<?php
+				if($next['href'] != NULL){
+					$next['text'] = '<img src="img/nav-arr-right-' . $col_contrast . '.png" />';
+					echo anchor($next['href'], $next['text'], 'rel="navheader" id="'.$next_day.'"');
+				}
+				?>
 			</td>
-			
+			<td class="text"><?php echo $title ?></td>
 		</tr>
 	</table>
+	
 </div>

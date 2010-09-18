@@ -5,14 +5,14 @@ echo form_open('configure/save_main');
 $t = 1;
 ?>
 
-
-<table class="form" cellpadding="6" cellspacing="0" border="0" width="100%">
+<div class="grey"><div>
+<table class="form">
 	
-	<tr class="h"><td colspan="2">School Information</td></tr>
+	<tr class="h"><td colspan="2"><div>School Information</div></td></tr>
 	
 	<tr>
 		<td class="caption">
-			<label for="schoolname" class="r" accesskey="N" title="The school name will appear beneath the Classroombookings logo at the top of the page.">School <u>n</u>ame</label>
+			<label for="schoolname" class="r" accesskey="N" title="The school name will appear beneath the Classroombookings logo at the top of the page.">School name</label>
 		</td>
 		<td class="field">
 		  <?php
@@ -32,7 +32,7 @@ $t = 1;
 	
 	<tr>
 		<td class="caption">
-			<label for="schoolurl" class="r" accesskey="W"><u>W</u>ebsite address</label>
+			<label for="schoolurl" accesskey="W">Website address</label>
 		</td>
 		<td class="field">
 		  <?php
@@ -50,11 +50,18 @@ $t = 1;
 		</td>
 	</tr>
 	
-	<tr class="h"><td colspan="2">Booking display settings</td></tr>
+</table>
+</div></div>
+
+
+<div class="grey"><div>
+<table class="form">
+	
+	<tr class="h"><td colspan="2"><div>Booking display settings</div></td></tr>
 	
 	<tr>
 		<td class="caption">
-			<label class="r" accesskey="D" title="This is the style in which the main booking table will be displayed.">Timetable <u>v</u>iew</label>
+			<label class="r" accesskey="D" title="This is the style in which the main booking table will be displayed.">Timetable view</label>
 			<p class="tip">This is the style in which the main booking table will be displayed.</p>
 		</td>
 		<td class="field">
@@ -89,7 +96,7 @@ $t = 1;
 	
 	<tr>
 		<td class="caption">
-			<label class="r" accesskey="C" title="This controls what information is displayed in columns on your bookings table - the other option will be displayed in the rows."><u>C</u>olumn item</label>
+			<label class="r" accesskey="C" title="This controls what information is displayed in columns on your bookings table - the other option will be displayed in the rows.">Column item</label>
 			<p class="tip">This controls what information is displayed in columns on your bookings table - the other option will be displayed in the rows.</p>
 		</td>
 		<td class="field">
@@ -134,7 +141,7 @@ $t = 1;
 	
 	<tr>
 		<td class="caption">
-			<label class="r" accesskey="O" title="Set which order rooms are displayed in - alphabetically by name or by the order that you set on each room.">Room <u>o</u>rder</label>
+			<label class="r" accesskey="O" title="Set which order rooms are displayed in - alphabetically by name or by the order that you set on each room.">Room order</label>
 			<p class="tip">Set which order rooms are displayed in - alphabetically by name or by the order that you set on each room.</p>
 		</td>
 		<td class="field">
@@ -164,16 +171,22 @@ $t = 1;
 			</label>
 		</td>
 	</tr>
+</table>
+</div></div>
+
+<table class="form">
 	
 	<?php
 	unset($buttons);
-	$buttons[] = array('submit', 'positive', 'Save main settings', 'disk1.gif', $t);
+	$buttons[] = array('submit', 'ok', 'Save main settings', 'disk1.gif', $t);
 	#$buttons[] = array('submit', '', 'Save and add another', 'add.gif', $t+1);
 	#$buttons[] = array('cancel', 'negative', 'Cancel', 'arr-left.gif', $t+2, site_url('dashboard'));
 	$this->load->view('parts/buttons', array('buttons' => $buttons));
 	?>
 
 </table>
+
+
 </form>
 
 <script type="text/javascript">

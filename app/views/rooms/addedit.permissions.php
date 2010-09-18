@@ -33,8 +33,8 @@ $t_word = array('Everyone', 'Room owner', 'User', 'Group', 'Department');
 				<td class="il">
 				<?php
 				unset($actiondata);
-				$actiondata[] = array('rooms/manage/delete_permission/'.$entry_id, 'Delete', 'cross_sm.gif' );
-				$this->load->view('parts/listactions', $actiondata);
+				$actiondata[] = array('rooms/manage/delete_permission/'.$entry_id, ' ', 'cross_sm.gif', 'Delete this permission');
+				$this->load->view('parts/linkbar', $actiondata);
 				?>	
 				</td>
 			</tr>
@@ -218,9 +218,9 @@ $t_word = array('Everyone', 'Room owner', 'User', 'Group', 'Department');
 	
 <?php
 unset($buttons);
-$buttons[] = array('submit', 'positive', 'Add permission entry', 'disk1.gif', $t);
+$buttons[] = array('submit', 'ok', 'Add permission entry', $t);
 #$buttons[] = array('submit', '', 'Save and add another', 'add.gif', $t+1);
-$buttons[] = array('cancel', 'negative', 'Cancel', 'arr-left.gif', $t+2, site_url('rooms/manage'));
+$buttons[] = array('link', 'cancel', 'Cancel', $t+1, site_url('rooms/manage'));
 $this->load->view('parts/buttons', array('buttons' => $buttons));
 ?>
 

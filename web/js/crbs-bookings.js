@@ -10,13 +10,41 @@ $(document).ready(function($){
 	$("#tabs").tabs({cookie:{expires: 7, name: 'tab.bookings'}});
 	
 	// Room information box
-	$('a[rel*=facebox]').facebox();
+	//$('a[rel*=facebox]').facebox();
+	$('a[rel*=boxy]').bind("click", function(e){
+		var url = $(e.currenTarget).attr("href");
+		Boxy.load($(this).attr("href"), {cache: true, title: 'Room Information'});
+		return false;
+	});
+	//new Boxy("<p>Test</p>", {title: 'Test'});
 	
 	/* XHR calls for loading rooms */
 
-	// Room LI element click event
-	$('li[class*=room]').bind("click", function(e){
-		roomajax($(e.currentTarget).find('a[rel*=room]').attr("href"), $(e.currentTarget));
+	// Room element clicking
+	$('table#sb-roomlist tr[rel*=room] td').bind("click", function(e){
+		if(e.target.className != "i"){
+			var a = $(e.currentTarget).parent().find('a[rel*=room]');
+			var url = a.attr("href");
+			var id = a.attr("id");
+			id = id.split('-');
+			id = id[1];
+			console.log(url);
+			console.log(id);
+			roomajax(url, id);
+			//return false;
+		} else {
+			//alert("clicked on i");
+			//e.preventDefault();
+			//e.stopPropagation();
+			//return false;
+		}
+	});
+	
+	$('table#sb-roomlist tr[rel*=room] td').bind("mouseover", function(e){
+		$(e.currentTarget).parent().addClass("hover");
+	});
+	$('table#sb-roomlist tr[rel*=room] td').bind("mouseout", function(e){
+		$(e.currentTarget).parent().removeClass("hover");
 	});
 
 	// Room A element click event
@@ -39,14 +67,15 @@ $(document).ready(function($){
 /* XHR function to load a room timetable into the container */
 
 // Load room timetable via AJAX and set classes on LIs
-function roomajax(url, li){
+function roomajax(url, id){
 	//$('#tt').html(ajax_load).load(url);
 	//$('#tt').load(url);
-	crbsajax(url, 'tt', function(){ navheaderlinks(); });
-	$('ul.bookings-roomlist li').removeClass("current");
-	li.addClass("current");
+	crbsajax(url, 'tt', function(){
+		$('#sb-roomlist tr').removeClass("current");
+		$('table#sb-roomlist tr.room-' + id).addClass("current");
+		navheaderlinks();
+	});
 }
-
 
 
 function updatelinks(){
@@ -72,6 +101,7 @@ function calnavlinks(){
 	//$('a[rel*=caldate]').removeClass("current");
 	
 }
+
 
 
 
@@ -123,6 +153,7 @@ function navheaderlinks(){
 	});
 	
 }
+
 
 
 

@@ -10,13 +10,10 @@ echo form_open('security/groups/save', NULL, array('group_id' => $group_id));
 $t = 1;
 ?>
 
-<?php if($group_id == NULL){ ?>
-<p>Please fill in the required fields below to add a new group to the system.</p>
-<?php } ?>
-
-<table class="form" cellpadding="6" cellspacing="0" border="0" width="100%">
+<div class="grey"><div>
+<table class="form" width="100%">
 	
-	<tr class="h"><td colspan="2">Group details</td></tr>
+	<tr class="h"><td colspan="2"><div>Group details</div></td></tr>
 	
 	<tr>
 		<td class="caption">
@@ -82,8 +79,13 @@ $t = 1;
 		</td>
 	</tr>
 	<?php } ?>
+</table>
+</div></div>
 
-	<tr class="h"><td colspan="2">Other options</td></tr>
+<div class="grey"><div>
+<table class="form" width="100%">
+	
+	<tr class="h"><td colspan="2"><div>Other options</div></td></tr>
 	
 	<tr>
 		<td class="caption">
@@ -177,7 +179,10 @@ $t = 1;
 			
 		</td>
 	</tr>
+</table>
+</div></div>
 
+<table class="form" width="100%">
 	<?php
 	if($group_id == NULL){
 		$submittext = 'Add group';
@@ -185,11 +190,12 @@ $t = 1;
 		$submittext = 'Save group';
 	}
 	unset($buttons);
-	$buttons[] = array('submit', 'positive', $submittext, 'disk1.gif', $t);
+	$buttons[] = array('submit', 'ok', $submittext, $t);
 	#$buttons[] = array('submit', '', 'Save and add another', 'add.gif', $t+1);
-	$buttons[] = array('cancel', 'negative', 'Cancel', 'arr-left.gif', $t+2, site_url('security/groups'));
+	#$buttons[] = array('cancel', 'negative', 'Cancel', 'arr-left.gif', $t+2, site_url('security/groups'));
 	$this->load->view('parts/buttons', array('buttons' => $buttons));
 	?>
-
 </table>
+
+
 </form>

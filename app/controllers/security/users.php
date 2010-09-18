@@ -56,8 +56,8 @@ class Users extends Controller {
 		$tpl['title'] = 'Users';
 		
 		// Links just for this page
-		$links[] = array('security/users/add', 'Add a new user');
-		$links[] = array('security/users/import', 'Import from file');
+		$links[] = array('security/users/add', 'Add a new user', 'add');
+		$links[] = array('security/users/import', 'Import from file', 'table-upload');
 		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
 		
 		// Pagination setting (others are defined in /app/config/pagination.php)
@@ -220,6 +220,10 @@ class Users extends Controller {
 				$add = $this->security->add_user($data);
 				
 				if($add == TRUE){
+					// Set quota if needed
+					if($this->input->post('quota')){
+						$this->quota->set_quota_u($add, $this->input->post('quota'));
+					}
 					$message = ($data['enabled'] == 1) ? 'SECURITY_USER_ADD_OK_ENABLED' : 'SECURITY_USER_ADD_OK_DISABLED';
 					$this->msg->add('info', $this->lang->line($message));
 				} else {
@@ -231,19 +235,16 @@ class Users extends Controller {
 				// Updating existing user
 				$edit = $this->security->edit_user($user_id, $data);
 				if($edit == TRUE){
+					// Update quota if needed
+					if($this->input->post('quota')){
+						$this->quota->set_quota_u($user_id, $this->input->post('quota'));
+					}
 					$message = ($data['enabled'] == 1) ? 'SECURITY_USER_EDIT_OK_ENABLED' : 'SECURITY_USER_EDIT_OK_DISABLED';
 					$this->msg->add('info', $this->lang->line($message));
 				} else {
 					$this->msg->add('err', sprintf($this->lang->line('SECURITY_USER_EDIT_FAIL', $this->security->lasterr)));
 				}
 				
-			}
-			
-			
-			// Set quota
-			if($this->input->post('quota')){
-				$user_id = (is_numeric($add)) ? $add : $data['user_id'];
-				$this->quota->set_quota_u($user_id, (int) $this->input->post('quota'));
 			}
 			
 			
@@ -270,7 +271,7 @@ class Users extends Controller {
 		
 		if($stage == 0){
 			
-			$links[] = array('security/users/import', 'Start import again');
+			$links[] = array('security/users/import', 'Start import again', 'table-upload');
 			$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
 			
 			$body['groups'] = $this->security->get_groups_dropdown();

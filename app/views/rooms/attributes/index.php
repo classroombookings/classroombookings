@@ -23,8 +23,9 @@ if($attrs != 0){
 		<td class="x"><?php unset($attr->options[-1]); echo (isset($attr->options)) ? implode(", ", $attr->options) : ''; ?></td>
 		<td class="il">
 		<?php
-		$actiondata[0] = array('rooms/attributes/delete/'.$attr->field_id, 'Delete', 'cross_sm.gif' );
-		$this->load->view('parts/listactions', $actiondata);
+		unset($actiondata);
+		$actiondata[] = array('rooms/attributes/delete/'.$attr->field_id, ' ', 'cross_sm.gif' );
+		$this->load->view('parts/linkbar', $actiondata);
 		?></td>
 	</tr>
 	<?php $i++; } ?>

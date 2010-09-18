@@ -21,8 +21,9 @@ if($weeks != 0){
 		<td class="x"><?php echo anchor('academic/weeks/edit/'.$week->week_id, $week->name) ?></td>
 		<td class="il">
 		<?php
-		$actiondata[0] = array('academic/weeks/delete/'.$week->week_id, 'Delete', 'cross_sm.gif' );
-		$this->load->view('parts/listactions', $actiondata);
+		unset($actiondata);
+		$actiondata[] = array('academic/weeks/delete/'.$week->week_id, ' ', 'cross_sm.gif', 'Delete week');
+		$this->load->view('parts/linkbar', $actiondata);
 		#$this->load->view('parts/delete', array('url' => 'security/users/delete/'.$user->user_id));
 		?></td>
 	</tr>

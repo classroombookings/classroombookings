@@ -22,13 +22,14 @@ echo form_open_multipart('rooms/manage/save', NULL, array('room_id' => $room_id)
 $t = 1;
 ?>
 
-<table class="form" cellpadding="6" cellspacing="0" border="0" width="100%">
+<div class="grey"><div>
+<table class="form">
 	
-	<tr class="h"><td colspan="2">Room information</td></tr>
+	<tr class="h"><td colspan="2"><div>Room information</div></td></tr>
 	
 	<tr>
 		<td class="caption">
-			<label for="name" class="r" accesskey="N"><u>N</u>ame</label>
+			<label for="name" class="r" accesskey="N">Name</label>
 		</td>
 		<td class="field">
 			<?php
@@ -48,7 +49,7 @@ $t = 1;
 	
 	<tr>
 		<td class="caption">
-			<label for="name" accesskey="D" title="Enter a description of this room"><u>D</u>escription</label>
+			<label for="name" accesskey="D" title="Enter a description of this room">Description</label>
 		</td>
 		<td class="field">
 			<?php
@@ -68,7 +69,7 @@ $t = 1;
 	
 	<tr>
 		<td class="caption">
-			<label for="category" accesskey="C" title="Choose a category for this room to belong to or type a new one"><u>C</u>ategory</label>
+			<label for="category" accesskey="C" title="Choose a category for this room to belong to or type a new one">Category</label>
 		</td>
 		<td class="field">
 			<?php
@@ -81,7 +82,7 @@ $t = 1;
 	
 	<tr>
 		<td class="caption">
-			<label for="user_id" accesskey="O" title="Select the owner for this room from the list of users"><u>O</u>wner</label>
+			<label for="user_id" accesskey="O" title="Select the owner for this room from the list of users">Owner</label>
 		</td>
 		<td class="field">
 			<?php
@@ -91,9 +92,10 @@ $t = 1;
 		</td>
 	</tr>
 	
+	
 	<tr>
 		<td class="caption">
-			<label for="bookable" accesskey="B" title="Untick this box to prevent the room from showing the bookings list and to prevent bookings."><u>B</u>ookable</label>
+			<label for="bookable" accesskey="B" title="Untick this box to prevent the room from showing the bookings list and to prevent bookings.">Bookable</label>
 		</td>
 		<td class="field">
 			<label for="bookable" class="check">
@@ -111,7 +113,36 @@ $t = 1;
 		</td>
 	</tr>
 	
-	<tr class="h"><td colspan="2">Room photo</td></tr>
+	
+	<tr>
+		<td class="caption">
+			<label for="capacity" accesskey="Y" title="Total people capacity of this room. Leave empty for unlimited.">Capacity</label>
+		</td>
+		<td class="field">
+			<?php
+			unset($input);
+			$input['accesskey'] = 'Y';
+			$input['name'] = 'capacity';
+			$input['id'] = 'capacity';
+			$input['size'] = '5';
+			$input['maxlength'] = '5';
+			$input['tabindex'] = $t;
+			$input['value'] = @set_value($input['name'], $room->capacity);
+			echo form_input($input);
+			$t++;
+			?>
+			</label>
+		</td>
+	</tr>
+
+</table>
+</div></div>
+
+
+<div class="grey"><div>
+<table class="form">
+	
+	<tr class="h"><td colspan="2"><div>Room photo</div></td></tr>
 	
 	<?php if(isset($path_err)){ ?>
 	
@@ -187,6 +218,11 @@ $t = 1;
 	
 	<?php } ?>
 	
+</table>
+</div></div>
+
+<table class="form">
+	
 	<?php
 	if($room_id == NULL){
 		$submittext = 'Add room';
@@ -194,14 +230,17 @@ $t = 1;
 		$submittext = 'Save room';
 	}
 	unset($buttons);
-	$buttons[] = array('submit', 'positive', $submittext, 'disk1.gif', $t);
+	$buttons[] = array('submit', 'ok', $submittext, $t);
 	#$buttons[] = array('submit', '', 'Save and add another', 'add.gif', $t+1);
-	$buttons[] = array('cancel', 'negative', 'Cancel', 'arr-left.gif', $t+2, site_url('rooms/manage'));
+	$buttons[] = array('link', 'cancel', 'Cancel', $t+2, site_url('rooms/manage'));
 	$this->load->view('parts/buttons', array('buttons' => $buttons));
 	?>
 	
 </table>
+
+
 </form>
+
 
 <script type="text/javascript">
 $("#category_id").change(function(){

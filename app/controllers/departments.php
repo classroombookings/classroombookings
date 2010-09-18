@@ -37,7 +37,7 @@ class Departments extends Controller {
 	
 	function index(){
 		$this->auth->check('departments');
-		$links[0] = array('departments/add', 'Add a new department');
+		$links[0] = array('departments/add', 'Add a new department', 'add');
 		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
 		
 		// Get list of departments

@@ -10,9 +10,10 @@ echo form_open('security/users/save', NULL, array('user_id' => $user_id));
 $t = 1;
 ?>
 
-<table class="form" cellpadding="6" cellspacing="0" border="0" width="100%">
+<div class="grey"><div>
+<table class="form" width="100%">
 	
-	<tr class="h"><td colspan="2">User details</td></tr>
+	<tr class="h"><td colspan="2"><div>User details</div></td></tr>
 	
 	<tr>
 		<td class="caption">
@@ -219,6 +220,11 @@ $t = 1;
 	
 	<?php } ?>
 	
+</table>
+</div></div>
+
+
+<table class="form" width="100%">
 	<?php
 	if($user_id == NULL){
 		$submittext = 'Add user';
@@ -226,11 +232,12 @@ $t = 1;
 		$submittext = 'Save user';
 	}
 	unset($buttons);
-	$buttons[] = array('submit', 'positive', $submittext, 'disk1.gif', $t);
+	$buttons[] = array('submit', 'ok', $submittext, $t);
 	#$buttons[] = array('submit', '', 'Save and add another', 'add.gif', $t+1);
 	#$buttons[] = array('cancel', 'negative', 'Cancel', 'arr-left.gif', $t+2, site_url('security/users'));
 	$this->load->view('parts/buttons', array('buttons' => $buttons));
 	?>
-
 </table>
+
+
 </form>

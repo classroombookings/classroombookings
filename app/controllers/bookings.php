@@ -200,7 +200,7 @@ class Bookings extends Controller {
 		
 		$tpl['body'] .= '</div>';
 		$tpl['body'] .= $this->load->view('bookings/javascript', NULL, TRUE);
-		$tpl['js'] = array('crbs-bookings.js');
+		$tpl['js'] = array('js/crbs-bookings.js');
 		
 		$this->load->view($this->tpl, $tpl);
 	}

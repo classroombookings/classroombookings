@@ -28,12 +28,12 @@ if($years != 0){
 		<td><?php echo date("l jS F Y", todate($year->date_end)) ?></td>
 		<td class="il">
 		<?php
-		if($year->active != 1){
-			$actiondata[0] = array('academic/years/activate/'.$year->year_id, 'Make active', 'tick_sm.gif');
-		}
-		$actiondata[1] = array('academic/years/delete/'.$year->year_id, 'Delete', 'cross_sm.gif');
-		$this->load->view('parts/listactions', $actiondata);
 		unset($actiondata);
+		if($year->active != 1){
+			$actiondata[] = array('academic/years/activate/'.$year->year_id, ' ', 'tick_sm.gif', 'Make active year');
+		}
+		$actiondata[] = array('academic/years/delete/'.$year->year_id, ' ', 'cross_sm.gif', 'Delete year');
+		$this->load->view('parts/linkbar', $actiondata);
 		?></td>
 	</tr>
 	<?php $i++; } ?>

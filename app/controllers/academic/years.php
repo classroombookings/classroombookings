@@ -38,7 +38,7 @@ class Years extends Controller {
 	function index(){
 		$this->auth->check('years');
 		
-		$links[] = array('academic/years/add', 'Add a new academic year');
+		$links[] = array('academic/years/add', 'Add a new academic year', 'add');
 		/*$links[] = array('academic/main', 'Academic setup');
 		$links[] = array('academic/years', 'Years', TRUE);
 		$links[] = array('academic/terms', 'Term dates');

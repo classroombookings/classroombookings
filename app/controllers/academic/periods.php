@@ -38,7 +38,7 @@ class Periods extends Controller {
 	function index(){
 		$this->auth->check('periods');
 		
-		$links[] = array('academic/periods/add', 'Add a new period');
+		$links[] = array('academic/periods/add', 'Add a new period', 'add');
 		/*$links[] = array('academic/main', 'Academic setup');
 		$links[] = array('academic/years', 'Years');
 		$links[] = array('academic/terms', 'Term dates');

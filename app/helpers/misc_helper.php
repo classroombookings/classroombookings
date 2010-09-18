@@ -22,6 +22,8 @@ function isdark($colour){
 }
 
 
+
+
 /**
  * Small image filename
  *
@@ -33,6 +35,8 @@ function image_small($name){
 }
 
 
+
+
 /**
  * Large image filename
  *
@@ -41,4 +45,42 @@ function image_small($name){
  */
 function image_large($name){
 	return str_replace('#', 'lg', $name);
+}
+
+
+
+
+/**
+ * Language helper. Just make it shorter!
+ */
+function lang($language_key = NULL, $variable = NULL){
+	$CI =& get_instance();
+	#$CI->lang->load('crbs2','English');
+	
+	if (!empty($variable)){
+		return sprintf($CI->lang->line($language_key),$variable);
+	}
+	
+	return $CI->lang->line($language_key);
+}
+
+
+
+
+/**
+ * Menu link helper. Crates menu links.
+ *
+ * seg1 - the segment of the current URI at the position we want
+ * href - path/to/url (gets truned into array)
+ * text - text of link
+ * i - index of href array to check uri segment to
+ */
+function dolink($seg, $href, $text, $i = 0){
+	$hrefarr = (strpos($href, '/') === FALSE) ? array($href) : explode('/', $href);
+	#echo $hrefarr[$i] . "/ ";
+	#echo "Seg: $seg/ ";
+	#$hrefarr = explode('/', $href);
+	$link = '<li%s><a href="%s">%s</a></li>';
+	$sel = ($seg == $hrefarr[$i]) ? ' class="current"' : '';
+	return sprintf($link, $sel, site_url($href), $text);
 }

@@ -129,9 +129,9 @@ class Bookings_model extends Model{
 		$nav['week'] = $week;
 		$nav['week_start'] = $week_start;
 		$nav['prev']['text'] = '&lt; Previous Week';
-		$nav['prev']['href'] = (!empty($week_prev)) ? site_url('bookings/week/' . $week_prev) : NULL;
+		$nav['prev']['href'] = (!empty($week_prev)) ? 'bookings/week/' . $week_prev : NULL;
 		$nav['next']['text'] = 'Next Week &gt;';
-		$nav['next']['href'] = (!empty($week_next)) ? site_url('bookings/week/' . $week_next) : NULL;
+		$nav['next']['href'] = (!empty($week_next)) ? 'bookings/week/' . $week_next : NULL;
 		$nav = $this->load->view('bookings/navheader', $nav, TRUE);
 		
 		$html .= $nav;

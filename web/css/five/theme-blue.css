@@ -1,0 +1,18 @@
+div#header{ background:#2C4056; color:#fff; }
+
+div#menu{ background:#507AAA; color:#fff; }
+
+#menutabs li a{ color:#fff; text-decoration:none; }
+#menutabs li a:hover{ background:#759FCF; color:#fff; }
+#menutabs li.current a{ background:#fff; color:#333; }
+
+a:hover{ color:#C61A1A }
+a{ color:#2a56a5; }
+
+
+/* /Bookings sidebar */
+table#sb-roomlist tr.current td,
+table#sb-roomlist tr.hover td{
+	background:#FFFFDD;
+	cursor:pointer;
+}

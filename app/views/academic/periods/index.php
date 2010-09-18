@@ -53,9 +53,9 @@ if($periods != 0){
 		?></td>
 		<td class="il">
 		<?php
-		$actiondata[] = array('academic/periods/delete/'.$period->period_id, 'Delete', 'cross_sm.gif');
-		$this->load->view('parts/listactions', $actiondata);
 		unset($actiondata);
+		$actiondata[] = array('academic/periods/delete/'.$period->period_id, ' ', 'cross_sm.gif', 'Delete period');
+		$this->load->view('parts/linkbar', $actiondata);
 		?></td>
 	</tr>
 	<?php $i++; } ?>

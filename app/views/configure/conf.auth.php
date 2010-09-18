@@ -5,9 +5,10 @@ echo form_open('configure/save_auth', array('name' => 'form_confauth', 'id' => '
 $t = 1;
 ?>
 
-<table class="form" cellpadding="6" cellspacing="0" border="0" width="100%">
+<div class="grey"><div>
+<table class="form" width="100%">
 	
-	<tr class="h"><td colspan="2">Pre-authentication</td></tr>
+	<tr class="h"><td colspan="2"><div>Pre-authentication</div></td></tr>
 	
 	<tr>
 		<td class="caption">
@@ -82,10 +83,16 @@ $t = 1;
 	}
 	?>
 	
+</table>
+</div></div>
 
 	
 	
-	<tr class="h"><td colspan="2">LDAP/Active Directory</td></tr>
+	<!-- <tr class="h"><td colspan="2">LDAP/Active Directory</td></tr> -->
+<div class="grey"><div>
+<table class="form" width="100%">
+
+	<tr class="h"><td colspan="2"><div>LDAP/Active Directory</div></td></tr>
 	
 	<tr>
 		<td class="caption">
@@ -284,18 +291,22 @@ $t = 1;
 	}
 	?>
 	
-	
+</table>
+</div></div>
+
+
+<table class="form" width="100%">
 	<?php
 	unset($buttons);
-	$buttons[] = array('submit', 'positive', 'Save authentication settings', 'disk1.gif', $t);
-	$buttons[] = array('other', 'positive', 'Test LDAP', 'control-double.gif', $t+1);
+	$buttons[] = array('submit', 'ok', 'Save authentication settings', $t);
+	$buttons[] = array('button', 'misc', 'Test LDAP', $t+1, '', 'test-ldap');
 	$this->load->view('parts/buttons', array('buttons' => $buttons));
 	?>
-	
-
 </table>
 
+
 </form>
+
 
 <script type="text/javascript">
 $("#test-ldap").bind("click", function(e){

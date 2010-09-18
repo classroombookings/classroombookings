@@ -39,7 +39,7 @@ class Attributes extends Controller{
 		
 		$this->auth->check('rooms.attrs');
 		
-		$links[] = array('rooms/attributes/add', 'Add a new field');
+		$links[] = array('rooms/attributes/add', 'Add a new attribute', 'add');
 		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
 		
 		// Get list of room attributes

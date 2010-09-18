@@ -57,8 +57,7 @@ class Manage extends Controller{
 		
 		$this->auth->check('rooms');
 		
-		$links[] = array('rooms/manage/add', 'Add a new room');
-		#$links[] = array('rooms/manage/attributes', 'Room attributes');
+		$links[] = array('rooms/manage/add', 'Add a new room', 'add');
 		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
 		
 		$body['rooms'] = $this->rooms_model->get_in_categories();
@@ -173,6 +172,7 @@ class Manage extends Controller{
 		$this->form_validation->set_rules('user_id', 'Room owner', 'required|integer');
 		$this->form_validation->set_rules('category_id', 'Category', 'required');
 		$this->form_validation->set_rules('bookable', 'Bookable', 'exact_length[1]');
+		$this->form_validation->set_rules('capacity', 'Capacity', 'numeric|trim|max_length[5]');
 		$this->form_validation->set_error_delimiters('<li>', '</li>');
 		
 		$data = array();
@@ -263,6 +263,7 @@ class Manage extends Controller{
 			$data['description'] = $this->input->post('description');
 			$data['bookable'] = ((int)$this->input->post('bookable') == 1) ? 1 : 0;
 			$data['user_id'] = ((int)$this->input->post('user_id') != -1) ? (int)$this->input->post('user_id') : NULL;
+			$data['capacity'] = $this->input->post('capacity');
 			
 			#var_dump($data);
 			

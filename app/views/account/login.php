@@ -14,10 +14,10 @@ echo form_open(
 $t = 1;
 ?>
 
-
-<table class="form" cellpadding="6" cellspacing="0" border="0">
+<div class="grey" style="width:50%;margin:40px auto 0 auto;"><div>
+<table class="form">
 	<tr>
-		<td class="caption"><label for="username" class="r" accesskey="U"><u>U</u>sername</label></td>
+		<td class="caption"><label for="username" class="r" accesskey="U">Username</label></td>
 		<td class="field"><?php
 			unset($input);
 			$input['accesskey'] = 'U';
@@ -34,7 +34,7 @@ $t = 1;
 	
 	
 	<tr>
-		<td class="caption"><label for="password" class="r" accesskey="P"><u>P</u>assword</label></td>
+		<td class="caption"><label for="password" class="r" accesskey="P">Password</label></td>
 		<td class="field"><?php
 			unset($input);
 			$input['accesskey'] = 'P';
@@ -67,12 +67,17 @@ $t = 1;
 		</td>
 	</tr>
 	
+</table>
+</div></div>
+
+<div style="width:50%;margin:0 auto;">
+<table class="form">
 	<?php
 	unset($buttons);
-	$buttons[] = array('submit', 'positive', 'Login', 'key2.gif', $t);
+	$buttons[] = array('submit', 'ok', lang('LOGIN'), $t);
 	$this->load->view('parts/buttons', array('buttons' => $buttons));
 	?>
-
 </table>
+</div>
 
 </form>

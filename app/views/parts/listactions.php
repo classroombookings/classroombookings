@@ -3,7 +3,7 @@ $items = $_ci_vars;
 $items_count = count($items);
 
 $html = "";
-#$html .= '<ul class="iconbar">';
+$html .= '<ul class="linkbar">';
 $i = 0;
 foreach($items as $item){
 	

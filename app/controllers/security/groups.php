@@ -39,8 +39,7 @@ class Groups extends Controller {
 		
 		$tpl['subnav'] = $this->security->subnav();
 		
-		$links[] = array('security/groups/add', 'Add a new group');
-		$links[] = array('security/users/import', 'Import from file');
+		$links[] = array('security/groups/add', 'Add a new group', 'add');
 		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
 		
 		// Get list of users
