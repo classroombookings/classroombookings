@@ -13,6 +13,6 @@ $config['theme'] = 'blue';
 
 $config['profiler'] = FALSE;
 
-$config['log_threshold'] = 4;
+$config['log_threshold'] = 0;
 
 ?>

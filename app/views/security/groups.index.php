@@ -48,9 +48,9 @@ if($groups != 0){
 		
 		<td class="il"><?php
 			unset($actiondata);
-			$actiondata[] = array('security/users/ingroup/'.$group->group_id, ' ', 'user_orange-sm.gif' );
-			$actiondata[] = array('security/permissions/forgroup/'.$group->group_id, ' ', 'key-sm.gif' );
-			$actiondata[] = array('security/groups/delete/'.$group->group_id, ' ', 'cross_sm.gif' );
+			$actiondata[] = array('security/users/ingroup/'.$group->group_id, ' ', 'user_orange-sm.gif', 'Show users in this group' );
+			$actiondata[] = array('security/permissions/forgroup/'.$group->group_id, ' ', 'key-sm.gif', 'View permissions for group' );
+			$actiondata[] = array('security/groups/delete/'.$group->group_id, ' ', 'cross_sm.gif', 'Delete group' );
 			$this->load->view('parts/linkbar', $actiondata);
 		?></td>
 		

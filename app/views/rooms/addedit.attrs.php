@@ -61,8 +61,8 @@ foreach($room->attrs as $field){
 	<?php
 	$submittext = $this->lang->line('ACTION_SAVE') . ' ' . strtolower($this->lang->line('W_ATTRIBUTES'));
 	unset($buttons);
-	$buttons[] = array('submit', 'positive', $submittext, 'disk1.gif', $t);
-	$buttons[] = array('cancel', 'negative', $this->lang->line('ACTION_CANCEL'), 'arr-left.gif', $t+2, site_url('rooms/manage'));
+	$buttons[] = array('submit', 'ok', $submittext, $t);
+	$buttons[] = array('link', 'cancel', $this->lang->line('ACTION_CANCEL'), $t+1, site_url('rooms/manage'));
 	$this->load->view('parts/buttons', array('buttons' => $buttons));
 	?>
 	

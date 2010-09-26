@@ -243,7 +243,7 @@ $t = 1;
 
 
 <script type="text/javascript">
-$("#category_id").change(function(){
+_jsQ.push(function(){
 	if(this.value == -2){
 		var newcat = prompt("Enter a name for the new category you wish to add.");
 		if(newcat != 0){

@@ -340,6 +340,11 @@ class CI_Calendar {
 	function generate_sidebar($year = '', $month = '', $academic, $cur = NULL)
 	{
 		
+		// Check that $academic is an array of data. If not, fail.
+		if(!is_array($academic)){
+			return FALSE;
+		}
+		
 		/* CR 2009-11-02. Get things from the academic info array */
 		// Dates of the weeks (date => id)
 		$weekdates = $academic['dates'];

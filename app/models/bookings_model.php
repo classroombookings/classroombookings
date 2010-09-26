@@ -94,9 +94,17 @@ class Bookings_model extends Model{
 		$room = $this->rooms_model->get($room_id);
 		$week = $this->weeks_model->get_by_date($week_start);
 		
+		// Get year ID
+		$year_id = $this->session->userdata('year_working');
+		if($year_id == FALSE){
+			// If not in session, get active one configured.
+			$year_id = $this->years_model->get_active_id();
+		}
+		
 		// Get the weeks in the current working academic year.
 		// Prevents non-weeks from being linked to in the nav header
-		$weeks_in_year = $this->weeks_model->get_dates(NULL, $this->session->userdata('year_working'), 'date');
+		$weeks_in_year = $this->weeks_model->get_dates(NULL, $year_id, 'date');
+		if(!is_array($weeks_in_year)){ $weeks_in_year = array(); }
 		
 		// Check if provided date is in the academic year
 		if(!array_key_exists($week_start, $weeks_in_year)){

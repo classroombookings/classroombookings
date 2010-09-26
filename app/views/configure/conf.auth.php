@@ -309,15 +309,17 @@ $t = 1;
 
 
 <script type="text/javascript">
-$("#test-ldap").bind("click", function(e){
-    var w = window.open("about:blank","ldaptestwin","width=640,height=400,toolbar=0,location=0,menubar=0,scrollbars=1,resizable=1");
-	var oldaction = $("#form_confauth").attr("action");
-	var oldtarget = $("#form_confauth").attr("target");
-	$("#form_confauth").attr("action","<?php echo site_url("configure/test_ldap") ?>");
-	$("#form_confauth").attr("target","ldaptestwin");
-	$("#form_confauth").submit();
-	$("#form_confauth").attr("action",oldaction);
-	$("#form_confauth").attr("target",oldtarget);
+_jsQ.push(function(){
+	$("#test-ldap").bind("click", function(e){
+		var w = window.open("about:blank","ldaptestwin","width=640,height=400,toolbar=0,location=0,menubar=0,scrollbars=1,resizable=1");
+		var oldaction = $("#form_confauth").attr("action");
+		var oldtarget = $("#form_confauth").attr("target");
+		$("#form_confauth").attr("action","<?php echo site_url("configure/test_ldap") ?>");
+		$("#form_confauth").attr("target","ldaptestwin");
+		$("#form_confauth").submit();
+		$("#form_confauth").attr("action",oldaction);
+		$("#form_confauth").attr("target",oldtarget);
+	});
 });
 
 /* 

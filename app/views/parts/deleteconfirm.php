@@ -15,8 +15,8 @@ if(isset($text)){ echo $this->msg->warn($text); }
 	<?php
 	$t = 1;
 	unset($buttons);
-	$buttons[] = array('submit', 'positive', 'Delete', 'f_err.gif', $t);
-	$buttons[] = array('cancel', 'negative', 'Cancel', 'arr-left.gif', $t+2, site_url($cancel));
+	$buttons[] = array('submit', 'ok', 'Delete', $t);
+	$buttons[] = array('link', 'cancel', 'Cancel', $t+1, site_url($cancel));
 	$this->load->view('parts/buttons', array('buttons' => $buttons));
 	?>
 	</table>

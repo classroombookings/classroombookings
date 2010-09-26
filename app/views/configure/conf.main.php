@@ -178,7 +178,7 @@ $t = 1;
 	
 	<?php
 	unset($buttons);
-	$buttons[] = array('submit', 'ok', 'Save main settings', 'disk1.gif', $t);
+	$buttons[] = array('submit', 'ok', 'Save main settings', $t);
 	#$buttons[] = array('submit', '', 'Save and add another', 'add.gif', $t+1);
 	#$buttons[] = array('cancel', 'negative', 'Cancel', 'arr-left.gif', $t+2, site_url('dashboard'));
 	$this->load->view('parts/buttons', array('buttons' => $buttons));
@@ -201,8 +201,10 @@ function tt_room(){
 	$("#col_days").removeAttr("disabled");
 	$("#col_rooms").attr("disabled", "disabled");
 }
-$("#view_day").bind("click", function(e){ tt_day(); });
-$("#view_room").bind("click", function(e){ tt_room(); });
-if($("#view_day").attr("checked")){ tt_day(); }
-if($("#view_room").attr("checked")){ tt_room(); }
+_jsQ.push(function(){
+	$("#view_day").bind("click", function(e){ tt_day(); });
+	$("#view_room").bind("click", function(e){ tt_room(); });
+	if($("#view_day").attr("checked")){ tt_day(); }
+	if($("#view_room").attr("checked")){ tt_room(); }
+});
 </script>

@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 3.2.0.1
+-- version 3.2.4
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Apr 02, 2010 at 12:31 PM
--- Server version: 5.1.37
--- PHP Version: 5.3.0
+-- Generation Time: Sep 26, 2010 at 11:41 PM
+-- Server version: 5.1.41
+-- PHP Version: 5.3.1
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
@@ -25,7 +25,6 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 -- Table structure for table `departments`
 --
 
-DROP TABLE IF EXISTS `departments`;
 CREATE TABLE IF NOT EXISTS `departments` (
   `department_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
@@ -59,7 +58,6 @@ INSERT INTO `departments` (`department_id`, `name`, `description`, `colour`, `cr
 -- Table structure for table `departments2ldapgroups`
 --
 
-DROP TABLE IF EXISTS `departments2ldapgroups`;
 CREATE TABLE IF NOT EXISTS `departments2ldapgroups` (
   `department_id` int(10) unsigned NOT NULL,
   `ldapgroup_id` int(10) unsigned NOT NULL,
@@ -98,7 +96,6 @@ INSERT INTO `departments2ldapgroups` (`department_id`, `ldapgroup_id`) VALUES
 -- Table structure for table `groups`
 --
 
-DROP TABLE IF EXISTS `groups`;
 CREATE TABLE IF NOT EXISTS `groups` (
   `group_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
@@ -117,10 +114,10 @@ CREATE TABLE IF NOT EXISTS `groups` (
 --
 
 INSERT INTO `groups` (`group_id`, `name`, `description`, `bookahead`, `quota_num`, `quota_type`, `permissions`, `created`) VALUES
+(0, 'Guests', 'Default group for guests', 0, 1, 'current', 'a:2:{i:0;s:9:"dashboard";i:1;s:8:"bookings";}', '0000-00-00'),
 (1, 'Administrators', 'Default group for administrator users', 0, NULL, NULL, 'a:64:{i:0;s:9:"dashboard";i:1;s:18:"dashboard.viewdept";i:2;s:17:"dashboard.viewown";i:3;s:7:"account";i:4;s:17:"account.changepwd";i:5;s:9:"configure";i:6;s:10:"changeyear";i:7;s:8:"allrooms";i:8;s:8:"bookings";i:9;s:19:"bookings.create.one";i:10;s:21:"bookings.create.recur";i:11;s:23:"bookings.delete.one.own";i:12;s:29:"bookings.delete.one.roomowner";i:13;s:31:"bookings.delete.recur.roomowner";i:14;s:5:"rooms";i:15;s:9:"rooms.add";i:16;s:10:"rooms.edit";i:17;s:12:"rooms.delete";i:18;s:11:"rooms.attrs";i:19;s:18:"rooms.attrs.values";i:20;s:17:"rooms.permissions";i:21;s:8:"academic";i:22;s:5:"years";i:23;s:9:"years.add";i:24;s:10:"years.edit";i:25;s:12:"years.delete";i:26;s:7:"periods";i:27;s:11:"periods.add";i:28;s:12:"periods.edit";i:29;s:14:"periods.delete";i:30;s:5:"weeks";i:31;s:9:"weeks.add";i:32;s:10:"weeks.edit";i:33;s:12:"weeks.delete";i:34;s:19:"weeks.ayears.manage";i:35;s:16:"weeks.ayears.set";i:36;s:5:"terms";i:37;s:9:"terms.add";i:38;s:10:"terms.edit";i:39;s:12:"terms.delete";i:40;s:8:"holidays";i:41;s:12:"holidays.add";i:42;s:13:"holidays.edit";i:43;s:15:"holidays.delete";i:44;s:11:"departments";i:45;s:15:"departments.add";i:46;s:16:"departments.edit";i:47;s:18:"departments.delete";i:48;s:7:"reports";i:49;s:21:"reports.owndepartment";i:50;s:22:"reports.alldepartments";i:51;s:15:"reports.ownroom";i:52;s:16:"reports.allrooms";i:53;s:13:"reports.other";i:54;s:5:"users";i:55;s:9:"users.add";i:56;s:10:"users.edit";i:57;s:12:"users.delete";i:58;s:12:"users.import";i:59;s:6:"groups";i:60;s:10:"groups.add";i:61;s:11:"groups.edit";i:62;s:13:"groups.delete";i:63;s:11:"permissions";}', '0000-00-00'),
 (2, 'Teaching Staff', 'Teachers from LDAP', 14, 2, 'day', 'a:8:{i:0;s:9:"dashboard";i:1;s:18:"dashboard.viewdept";i:2;s:17:"dashboard.viewown";i:3;s:7:"account";i:4;s:17:"account.changepwd";i:5;s:8:"bookings";i:6;s:19:"bookings.create.one";i:7;s:23:"bookings.delete.one.own";}', '0000-00-00'),
-(4, 'Support staff', '', 14, 6, 'current', 'a:7:{i:0;s:9:"dashboard";i:1;s:18:"dashboard.viewdept";i:2;s:17:"dashboard.viewown";i:3;s:9:"myprofile";i:4;s:8:"bookings";i:5;s:19:"bookings.create.one";i:6;s:23:"bookings.delete.one.own";}', '2008-12-02'),
-(7, 'Guests', 'Default group for guests', 0, 1, 'current', 'a:1:{i:0;s:8:"bookings";}', '0000-00-00');
+(4, 'Support staff', '', 14, 6, 'current', 'a:7:{i:0;s:9:"dashboard";i:1;s:18:"dashboard.viewdept";i:2;s:17:"dashboard.viewown";i:3;s:9:"myprofile";i:4;s:8:"bookings";i:5;s:19:"bookings.create.one";i:6;s:23:"bookings.delete.one.own";}', '2008-12-02');
 
 -- --------------------------------------------------------
 
@@ -128,7 +125,6 @@ INSERT INTO `groups` (`group_id`, `name`, `description`, `bookahead`, `quota_num
 -- Table structure for table `groups2ldapgroups`
 --
 
-DROP TABLE IF EXISTS `groups2ldapgroups`;
 CREATE TABLE IF NOT EXISTS `groups2ldapgroups` (
   `group_id` int(10) unsigned NOT NULL,
   `ldapgroup_id` int(10) unsigned NOT NULL,
@@ -150,7 +146,6 @@ INSERT INTO `groups2ldapgroups` (`group_id`, `ldapgroup_id`) VALUES
 -- Table structure for table `holidays`
 --
 
-DROP TABLE IF EXISTS `holidays`;
 CREATE TABLE IF NOT EXISTS `holidays` (
   `holiday_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `year_id` int(10) unsigned NOT NULL COMMENT 'The academic year that this holiday is relevant to',
@@ -175,7 +170,6 @@ INSERT INTO `holidays` (`holiday_id`, `year_id`, `date_start`, `date_end`, `name
 -- Table structure for table `ldapgroups`
 --
 
-DROP TABLE IF EXISTS `ldapgroups`;
 CREATE TABLE IF NOT EXISTS `ldapgroups` (
   `ldapgroup_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(104) NOT NULL COMMENT 'Name of LDAP group (not full DN, just name part)',
@@ -301,7 +295,6 @@ INSERT INTO `ldapgroups` (`ldapgroup_id`, `name`) VALUES
 -- Table structure for table `periods`
 --
 
-DROP TABLE IF EXISTS `periods`;
 CREATE TABLE IF NOT EXISTS `periods` (
   `period_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `year_id` int(10) unsigned NOT NULL,
@@ -344,7 +337,6 @@ INSERT INTO `periods` (`period_id`, `year_id`, `time_start`, `time_end`, `name`,
 -- Table structure for table `quota`
 --
 
-DROP TABLE IF EXISTS `quota`;
 CREATE TABLE IF NOT EXISTS `quota` (
   `user_id` int(10) unsigned NOT NULL,
   `quota_num` int(10) unsigned NOT NULL,
@@ -372,7 +364,8 @@ INSERT INTO `quota` (`user_id`, `quota_num`) VALUES
 (122, 10),
 (123, 10),
 (125, 10),
-(126, 10);
+(126, 10),
+(130, 2);
 
 -- --------------------------------------------------------
 
@@ -380,7 +373,6 @@ INSERT INTO `quota` (`user_id`, `quota_num`) VALUES
 -- Table structure for table `room-permissions`
 --
 
-DROP TABLE IF EXISTS `room-permissions`;
 CREATE TABLE IF NOT EXISTS `room-permissions` (
   `row_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `entry_ref` varchar(10) NOT NULL COMMENT 'Unique reference for this entry',
@@ -396,23 +388,31 @@ CREATE TABLE IF NOT EXISTS `room-permissions` (
   KEY `department_id` (`department_id`),
   KEY `room_id` (`room_id`),
   KEY `entry_ref` (`entry_ref`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Permission entries for various objects on different rooms' AUTO_INCREMENT=92 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Permission entries for various objects on different rooms' AUTO_INCREMENT=107 ;
 
 --
 -- Dumping data for table `room-permissions`
 --
 
 INSERT INTO `room-permissions` (`row_id`, `entry_ref`, `room_id`, `type`, `user_id`, `group_id`, `department_id`, `permission`) VALUES
-(77, '1:g:7', 1, 'g', NULL, 7, NULL, 'bookings.view'),
 (78, '1:e:0', 1, 'e', NULL, NULL, NULL, 'bookings.view'),
 (79, '1:e:0', 1, 'e', NULL, NULL, NULL, 'bookings.create.one'),
-(80, '1:o:0', 1, 'o', NULL, NULL, NULL, 'bookings.create.recur'),
-(85, '2:e:0', 2, 'e', NULL, NULL, NULL, 'bookings.view'),
-(87, '1:d:2', 1, 'd', NULL, NULL, 2, 'bookings.create.recur'),
 (88, '3:g:2', 3, 'g', NULL, 2, NULL, 'bookings.view'),
 (89, '3:g:2', 3, 'g', NULL, 2, NULL, 'bookings.create.one'),
 (90, '6:e:0', 6, 'e', NULL, NULL, NULL, 'bookings.view'),
-(91, '5:e:0', 5, 'e', NULL, NULL, NULL, 'bookings.view');
+(92, '1:d:4', 1, 'd', NULL, NULL, 4, 'bookings.create.one'),
+(93, '1:d:4', 1, 'd', NULL, NULL, 4, 'bookings.create.recur'),
+(94, '1:d:4', 1, 'd', NULL, NULL, 4, 'bookings.delete.own.one'),
+(95, '1:d:4', 1, 'd', NULL, NULL, 4, 'bookings.delete.own.recur'),
+(96, '1:d:4', 1, 'd', NULL, NULL, 4, 'bookings.edit.one'),
+(97, '1:d:4', 1, 'd', NULL, NULL, 4, 'bookings.edit.recur'),
+(98, '1:o:0', 1, 'o', NULL, NULL, NULL, 'bookings.delete.other.one'),
+(99, '1:o:0', 1, 'o', NULL, NULL, NULL, 'bookings.delete.other.recur'),
+(102, '5:d:13', 5, 'd', NULL, NULL, 13, 'bookings.view'),
+(103, '5:d:13', 5, 'd', NULL, NULL, 13, 'bookings.create.one'),
+(104, '5:d:13', 5, 'd', NULL, NULL, 13, 'bookings.delete.own.one'),
+(105, '5:d:13', 5, 'd', NULL, NULL, 13, 'bookings.edit.one'),
+(106, '5:o:0', 5, 'o', NULL, NULL, NULL, 'bookings.delete.other.one');
 
 -- --------------------------------------------------------
 
@@ -420,7 +420,6 @@ INSERT INTO `room-permissions` (`row_id`, `entry_ref`, `room_id`, `type`, `user_
 -- Table structure for table `roomattrs-fields`
 --
 
-DROP TABLE IF EXISTS `roomattrs-fields`;
 CREATE TABLE IF NOT EXISTS `roomattrs-fields` (
   `field_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
@@ -446,7 +445,6 @@ INSERT INTO `roomattrs-fields` (`field_id`, `name`, `type`, `options_md5`) VALUE
 -- Table structure for table `roomattrs-options`
 --
 
-DROP TABLE IF EXISTS `roomattrs-options`;
 CREATE TABLE IF NOT EXISTS `roomattrs-options` (
   `option_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `field_id` int(10) unsigned NOT NULL COMMENT 'Field that this belongs to',
@@ -470,7 +468,6 @@ INSERT INTO `roomattrs-options` (`option_id`, `field_id`, `value`) VALUES
 -- Table structure for table `roomattrs-values`
 --
 
-DROP TABLE IF EXISTS `roomattrs-values`;
 CREATE TABLE IF NOT EXISTS `roomattrs-values` (
   `value_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `room_id` int(10) unsigned NOT NULL,
@@ -515,7 +512,6 @@ INSERT INTO `roomattrs-values` (`value_id`, `room_id`, `field_id`, `value`) VALU
 -- Table structure for table `roomcategories`
 --
 
-DROP TABLE IF EXISTS `roomcategories`;
 CREATE TABLE IF NOT EXISTS `roomcategories` (
   `category_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(25) NOT NULL,
@@ -539,7 +535,6 @@ INSERT INTO `roomcategories` (`category_id`, `name`) VALUES
 -- Table structure for table `rooms`
 --
 
-DROP TABLE IF EXISTS `rooms`;
 CREATE TABLE IF NOT EXISTS `rooms` (
   `room_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `category_id` int(10) unsigned DEFAULT NULL COMMENT 'An optional category that the room can belong to',
@@ -548,6 +543,7 @@ CREATE TABLE IF NOT EXISTS `rooms` (
   `name` varchar(20) NOT NULL,
   `description` varchar(40) DEFAULT NULL,
   `bookable` tinyint(1) NOT NULL COMMENT 'Boolean 1 or 0',
+  `capacity` int(10) unsigned DEFAULT NULL,
   `photo` char(32) DEFAULT NULL COMMENT 'An md5 hash that references the file that is stored',
   `created` date DEFAULT NULL COMMENT 'Date the entry was created',
   PRIMARY KEY (`room_id`),
@@ -559,12 +555,12 @@ CREATE TABLE IF NOT EXISTS `rooms` (
 -- Dumping data for table `rooms`
 --
 
-INSERT INTO `rooms` (`room_id`, `category_id`, `user_id`, `order`, `name`, `description`, `bookable`, `photo`, `created`) VALUES
-(1, 1, NULL, NULL, 'ICT1', 'ICT Suite / Eve Winstanley', 1, '14ae70cf0379e7.#.JPG', NULL),
-(2, NULL, NULL, NULL, 'Room 16', '', 0, '14ae7116cd7f20.#.JPG', NULL),
-(3, 1, 1, NULL, 'ICT2', 'Room 13', 1, '0', NULL),
-(5, 2, NULL, NULL, 'Tech Suite', 'Tech Suite', 1, '0', '2009-02-13'),
-(6, 1, NULL, NULL, 'ICT3', '', 1, '0', '2009-10-26');
+INSERT INTO `rooms` (`room_id`, `category_id`, `user_id`, `order`, `name`, `description`, `bookable`, `capacity`, `photo`, `created`) VALUES
+(1, 1, NULL, NULL, 'ICT1', 'ICT Suite', 1, 0, '14ae70cf0379e7.#.JPG', NULL),
+(2, NULL, NULL, NULL, 'Room 16', '', 0, 7, '14ae7116cd7f20.#.JPG', NULL),
+(3, 1, 1, NULL, 'ICT2', 'Room 13', 1, NULL, '0', NULL),
+(5, 2, NULL, NULL, 'RM39', 'Tech Suite', 1, 0, '0', '2009-02-13'),
+(6, 1, NULL, NULL, 'ICT3', '', 1, NULL, '0', '2009-10-26');
 
 -- --------------------------------------------------------
 
@@ -572,7 +568,6 @@ INSERT INTO `rooms` (`room_id`, `category_id`, `user_id`, `order`, `name`, `desc
 -- Table structure for table `settings-auth`
 --
 
-DROP TABLE IF EXISTS `settings-auth`;
 CREATE TABLE IF NOT EXISTS `settings-auth` (
   `preauthkey` char(40) DEFAULT NULL COMMENT 'SHA1 hash to be used as preauth key',
   `preauthgroup_id` int(10) unsigned DEFAULT NULL COMMENT 'Default group for accounts created automatically via preauth',
@@ -591,7 +586,7 @@ CREATE TABLE IF NOT EXISTS `settings-auth` (
 --
 
 INSERT INTO `settings-auth` (`preauthkey`, `preauthgroup_id`, `preauthemail`, `ldap`, `ldaphost`, `ldapport`, `ldapbase`, `ldapfilter`, `ldapgroup_id`, `ldaploginupdate`) VALUES
-('b36f16bef59e4e2ca3ae95392d4e180cb0b95b55', 7, 'bishopbarrington.net', 1, 'bbs-svr-001', 389, 'ou=teaching staff, ou=bbs, ou=establishments, dc=bbarrington, dc=internal; ou=system administrators, ou=bbs, ou=establishments, dc=bbarrington, dc=internal', '(& (| (!(displayname=Administrator*)) (!(displayname=Admin*)) ) (cn=%u) )', 7, 0);
+('d0d8f0ee9eac304cf400133cd1fdeea3447d6d8b', 7, 'bishopbarrington.net', 1, 'bbs-svr-001', 389, 'ou=teaching staff, ou=bbs, ou=establishments, dc=bbarrington, dc=internal; ou=system administrators, ou=bbs, ou=establishments, dc=bbarrington, dc=internal', '(& (| (!(displayname=Administrator*)) (!(displayname=Admin*)) ) (cn=%u) )', 7, 0);
 
 -- --------------------------------------------------------
 
@@ -599,7 +594,6 @@ INSERT INTO `settings-auth` (`preauthkey`, `preauthgroup_id`, `preauthemail`, `l
 -- Table structure for table `settings-main`
 --
 
-DROP TABLE IF EXISTS `settings-main`;
 CREATE TABLE IF NOT EXISTS `settings-main` (
   `schoolname` varchar(100) DEFAULT NULL COMMENT 'Name of school',
   `schoolurl` varchar(255) DEFAULT NULL COMMENT 'Web address for school',
@@ -621,7 +615,6 @@ INSERT INTO `settings-main` (`schoolname`, `schoolurl`, `tt_view`, `tt_cols`, `r
 -- Table structure for table `terms`
 --
 
-DROP TABLE IF EXISTS `terms`;
 CREATE TABLE IF NOT EXISTS `terms` (
   `term_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `year_id` int(10) unsigned NOT NULL COMMENT 'The academic year that this term belongs to',
@@ -650,7 +643,6 @@ INSERT INTO `terms` (`term_id`, `year_id`, `date_start`, `date_end`, `name`) VAL
 -- Table structure for table `users`
 --
 
-DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
   `user_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `group_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Group that the user is a member of',
@@ -675,8 +667,8 @@ CREATE TABLE IF NOT EXISTS `users` (
 --
 
 INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `password`, `displayname`, `cookiekey`, `lastlogin`, `lastactivity`, `ldap`, `created`) VALUES
-(1, 1, 1, 'admin', 'craig.rodway@gmail.com', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Craig Rodway', NULL, '2010-01-11 15:36:24', '2010-01-11 15:37:20', 0, '0000-00-00'),
-(12, 7, 1, 'craig.rodway', 'craig.rodway@bishopbarrington.net', NULL, 'Mr Rodway', NULL, '2009-05-19 11:41:06', '2009-05-19 11:43:17', 1, '2009-01-09'),
+(1, 1, 1, 'admin', 'craig.rodway@gmail.com', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Craig Rodway', NULL, '2010-09-26 22:05:56', '2010-09-26 23:40:25', 0, '0000-00-00'),
+(12, 2, 1, 'craig.rodway', 'craig.rodway@bishopbarrington.net', NULL, 'Mr Rodway', NULL, '2009-05-19 11:41:06', '2009-05-19 11:43:17', 0, '2009-01-09'),
 (19, 2, 1, 'test.one', 'test.one@bishopbarrington.net', NULL, 'Mr T One', NULL, '2009-05-19 11:55:07', '2009-05-19 11:55:14', 1, '2009-01-14'),
 (22, 2, 1, 'test.three', 'test.three@bishopbarrington.net', NULL, 'Mr T Three', NULL, '2009-01-14 10:56:57', '0000-00-00 00:00:00', 1, '2009-01-14'),
 (24, 2, 1, 'test.two', 'test.two@bishopbarrington.net', NULL, 'Mr T Two', NULL, '2009-01-26 16:45:49', '0000-00-00 00:00:00', 1, '2009-01-26'),
@@ -694,7 +686,7 @@ INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `pas
 (126, 2, 0, 'e.winstanley100', 'e.winstanley100@bishopbarrington.net', 'ea157601840a5b4953c2e95f5fd27223291122d6', 'e.winstanley100', NULL, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 0, '2009-01-30'),
 (127, 2, 1, 'john.doe', 'teacher@bishopbarrington.net', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'John Doe', NULL, '2009-12-09 14:35:13', '2009-12-09 14:35:43', 0, '2009-10-18'),
 (129, 1, 0, 'smithj', '', '41d78584e31c36ffe3724d8ea37084b68179d198', 'smithj', NULL, '0000-00-00 00:00:00', NULL, 0, '2009-10-25'),
-(130, 2, 1, 'teacher', 'teacher@bishopbarrington.net', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Teacher', NULL, '2009-12-10 09:03:45', '2009-12-10 12:04:40', 0, '2009-12-09');
+(130, 2, 1, 'teacher', 'teacher@bishopbarrington.net', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Teacher', NULL, '2010-09-26 17:20:35', '2010-09-26 17:20:22', 0, '2009-12-09');
 
 -- --------------------------------------------------------
 
@@ -702,7 +694,6 @@ INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `pas
 -- Table structure for table `users2departments`
 --
 
-DROP TABLE IF EXISTS `users2departments`;
 CREATE TABLE IF NOT EXISTS `users2departments` (
   `user_id` int(10) unsigned NOT NULL,
   `department_id` int(10) unsigned NOT NULL,
@@ -721,7 +712,9 @@ INSERT INTO `users2departments` (`user_id`, `department_id`) VALUES
 (19, 2),
 (19, 2),
 (19, 4),
-(127, 2);
+(127, 2),
+(130, 4),
+(130, 13);
 
 -- --------------------------------------------------------
 
@@ -729,7 +722,6 @@ INSERT INTO `users2departments` (`user_id`, `department_id`) VALUES
 -- Table structure for table `usersactive`
 --
 
-DROP TABLE IF EXISTS `usersactive`;
 CREATE TABLE IF NOT EXISTS `usersactive` (
   `user_id` int(10) unsigned NOT NULL,
   `timestamp` int(11) unsigned NOT NULL,
@@ -741,7 +733,7 @@ CREATE TABLE IF NOT EXISTS `usersactive` (
 --
 
 INSERT INTO `usersactive` (`user_id`, `timestamp`) VALUES
-(1, 1263224264);
+(1, 1285540849);
 
 -- --------------------------------------------------------
 
@@ -749,7 +741,6 @@ INSERT INTO `usersactive` (`user_id`, `timestamp`) VALUES
 -- Table structure for table `weekdates`
 --
 
-DROP TABLE IF EXISTS `weekdates`;
 CREATE TABLE IF NOT EXISTS `weekdates` (
   `week_id` int(10) unsigned NOT NULL,
   `year_id` int(10) unsigned NOT NULL,
@@ -817,8 +808,6 @@ INSERT INTO `weekdates` (`week_id`, `year_id`, `date`) VALUES
 (14, 5, '2009-11-30'),
 (13, 5, '2009-12-07'),
 (14, 5, '2009-12-14'),
-(15, 5, '2009-12-21'),
-(15, 5, '2009-12-28'),
 (13, 5, '2010-01-04'),
 (14, 5, '2010-01-11'),
 (13, 5, '2010-01-18'),
@@ -831,8 +820,6 @@ INSERT INTO `weekdates` (`week_id`, `year_id`, `date`) VALUES
 (14, 5, '2010-03-15'),
 (13, 5, '2010-03-22'),
 (14, 5, '2010-03-29'),
-(15, 5, '2010-04-05'),
-(15, 5, '2010-04-12'),
 (13, 5, '2010-04-19'),
 (14, 5, '2010-04-26'),
 (13, 5, '2010-05-03'),
@@ -853,7 +840,6 @@ INSERT INTO `weekdates` (`week_id`, `year_id`, `date`) VALUES
 -- Table structure for table `weeks`
 --
 
-DROP TABLE IF EXISTS `weeks`;
 CREATE TABLE IF NOT EXISTS `weeks` (
   `week_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `year_id` int(10) unsigned NOT NULL,
@@ -862,7 +848,7 @@ CREATE TABLE IF NOT EXISTS `weeks` (
   `created` date DEFAULT NULL,
   PRIMARY KEY (`week_id`),
   KEY `year_id` (`year_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Week definitions for timetable weeks' AUTO_INCREMENT=16 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Week definitions for timetable weeks' AUTO_INCREMENT=15 ;
 
 --
 -- Dumping data for table `weeks`
@@ -872,8 +858,7 @@ INSERT INTO `weeks` (`week_id`, `year_id`, `name`, `colour`, `created`) VALUES
 (11, 1, 'Red Week', '#EF2929', '2009-01-25'),
 (12, 1, 'Blue Week', '#3465A4', '2009-01-25'),
 (13, 5, 'Red Week', '#CC0000', '2009-11-01'),
-(14, 5, 'Blue Week', '#3465A4', '2009-11-01'),
-(15, 5, 'Holiday', '#BABDB6', '2009-12-10');
+(14, 5, 'Blue Week', '#3465A4', '2009-11-01');
 
 -- --------------------------------------------------------
 
@@ -881,7 +866,6 @@ INSERT INTO `weeks` (`week_id`, `year_id`, `name`, `colour`, `created`) VALUES
 -- Table structure for table `years`
 --
 
-DROP TABLE IF EXISTS `years`;
 CREATE TABLE IF NOT EXISTS `years` (
   `year_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `date_start` date NOT NULL,

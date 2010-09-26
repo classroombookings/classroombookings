@@ -9,6 +9,9 @@ h1,h2,h3,h4,h5,h6{
 }
 
 
+.hidden{ display: none; }
+
+
 /* All links */
 a{ text-decoration:none; }
 a:hover{ text-decoration:underline; }
@@ -434,9 +437,9 @@ table#cc tr td{
 		border:1px solid #dfdfdf;
 	}
 	table.ccmonth th.heading{
-		padding:0.3em;
+		padding:0.2em 0;
 		background:#dfdfdf;
-		font-size:115%;
+		font-size:100%;
 	}
 	table.ccmonth tr.wr td{font-weight:bold;}
 	table.ccmonth tr td{
@@ -446,12 +449,12 @@ table#cc tr td{
 	}
 	table.ccmonth tr td label, table.ccmonth tr td span{
 		margin:0em;
-		padding:0.5em;
+		padding:0.3em;
 		display:block;
 		border:0px solid blue;
 	}
 	table.ccmonth tr.wr td{
-		padding:0.5em !important;
+		padding:0.3em !important;
 	}
 
 

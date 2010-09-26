@@ -23,4 +23,4 @@
 	</select>
 	<input type="submit" value="Change" id="btnchangeyear" />
 </form>
-<script type="text/javascript">$('#btnchangeyear').hide();</script>
+<script type="text/javascript">_jsQ.push(function(){ $('#btnchangeyear').hide(); });</script>

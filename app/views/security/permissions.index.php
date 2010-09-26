@@ -20,7 +20,7 @@ foreach($groups as $group_id => $group_name){
 <!-- #tabs -->
 <div id="tabs">
 
-	<ul>
+	<ul class="hidden">
 		<?php
 		foreach($groups as $group_id => $group_name){
 			$class = '';
@@ -226,7 +226,5 @@ foreach($groups as $group_id => $group_name){
 
 
 <script type="text/javascript">
-$(function() {
-	$("#tabs").tabs();
-});
+_jsQ.push(function(){ $("#tabs").tabs(); $("#tabs .hidden").show(); });
 </script>

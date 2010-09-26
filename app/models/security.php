@@ -583,6 +583,9 @@ class Security extends Model{
 	
 	
 	function get_group_permissions($group_id = NULL){
+	
+		#echo $group_id;
+		#die();
 		
 		if($group_id === NULL){
 			

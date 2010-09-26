@@ -47,18 +47,19 @@ $t = 1;
 			$input['size'] = '10';
 			$input['maxlength'] = '7';
 			$input['tabindex'] = $t;
+			$input['class'] = 'hidden';
 			$input['value'] = @set_value('colour', $week->colour);
 			echo form_input($input);
 			$t++;
 			?>
 			<div id="cp"></div>
 			<script type="text/javascript"><!--
-			$(document).ready(function(){
+			_jsQ.push(function(){
 				$('#cp').colorPicker({
 					activeColour: '<?php echo $input['value'] ?>',
 					click: function(c){$('#colour').val(c);}
 				});
-				$('#colour').css("display", "none");
+				$('#colour').hide();
 			});
 			// --></script>
 		</td>

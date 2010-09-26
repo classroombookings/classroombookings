@@ -1,4 +1,4 @@
-<div id="tabs" class="bookings-sidetabs">
+<div id="tabs" class="bookings-sidetabs hidden">
 	
 	
 	<ul>

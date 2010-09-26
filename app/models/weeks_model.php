@@ -286,7 +286,7 @@ class Weeks_model extends Model{
 		// Calendar preferences (+ load template from a view file)
 		$prefs['start_day'] = 'monday';
 		$prefs['month_type'] = 'long';
-		$prefs['day_type'] = 'short';
+		$prefs['day_type'] = 'abr';
 		$prefs['template'] = $this->load->view('academic/weeks/caltemplate', NULL, TRUE);
 		$this->load->library('calendar', $prefs);
 		

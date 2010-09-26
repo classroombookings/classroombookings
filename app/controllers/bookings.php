@@ -54,6 +54,7 @@ class Bookings extends Controller {
 		// Misc things
 		$this->tpl = $this->config->item('template');
 		$this->output->enable_profiler($this->config->item('profiler'));
+		
 	}
 	
 	
@@ -73,6 +74,8 @@ class Bookings extends Controller {
 			case 'day': return $this->_index_day(); break;
 			case 'room': return $this->_index_room(); break;
 		}
+		
+		print_r($_SESSION);
 	}
 	
 	
@@ -128,18 +131,41 @@ class Bookings extends Controller {
 		
 		log_message('debug', 'Stored data crbsb.room_id');
 		
-		// No week in param?
-		if($week == NULL){
-			$week = $this->_get('crbsb.week');
-			if(empty($week)){
-				$week = $this->_get_monday(date('Y-m-d'));
-				$this->_store('crbsb.week', $week);
-			}
-		}
 		
 		
 		// Get academic info
 		$academic = $this->_get_academic();
+		#print_r($academic);
+		
+		// Are we currently in the academic year?
+		$time_now = strtotime(now());
+		$time_year_start = strtotime($academic['year']->date_start);
+		$time_year_end = strtotime($academic['year']->date_end);
+		$inacademicyear = ($time_now >= $time_year_start && $time_now <= $time_year_end);
+		
+		
+		// No week in param?
+		if($week == NULL){
+			log_message('debug', 'No week in parameter. Getting from cookie.');
+			$week = $this->_get('crbsb.week');
+			log_message('debug', 'Cookie is: ' . $week);
+			if(empty($week)){
+				log_message('debug', 'No week in cookie. Setting and storing.');
+				// If current date is within working academic year, use now. If not, use start of academic year.
+				
+
+				
+				if($inacademicyear){
+					$week = $this->_get_monday(date('Y-m-d'));
+					log_message('debug', 'Week set to now: ' . $week);
+				} else {
+					$week = $this->_get_monday($academic['year']->date_start);
+					log_message('debug', 'Week set to start of academic year: ' . $week);
+				}
+				$this->_store('crbsb.week', $week);
+			}
+		}
+		
 		
 		// If we had a week supplied, load the calendar for the month in that week
 		if(!empty($week)){
@@ -152,8 +178,14 @@ class Bookings extends Controller {
 		$url_month = $this->_get('cal_month');
 		$url_year = $this->_get('cal_year');
 		if(empty($url_month) && empty($url_year)){
-			$calm = date('m');
-			$caly = date('Y');
+			// Set appropriate date depending if we're currently in the year or not
+			if($inacademicyear){
+				$calm = date('m');
+				$caly = date('Y');
+			} else {
+				$calm = date('m', $time_year_start);
+				$caly = date('Y', $time_year_start);
+			}
 		} else {
 			$calm = $url_month;
 			$caly = $url_year;
@@ -200,7 +232,7 @@ class Bookings extends Controller {
 		
 		$tpl['body'] .= '</div>';
 		$tpl['body'] .= $this->load->view('bookings/javascript', NULL, TRUE);
-		$tpl['js'] = array('js/crbs-bookings.js');
+		$tpl['js'] = array('js/crbs-bookings.js?');
 		
 		$this->load->view($this->tpl, $tpl);
 	}
@@ -419,14 +451,27 @@ class Bookings extends Controller {
 	function _get_academic(){
 		$data = array();
 		
-		// Get the working academic year
+		// Retrieve academic year
 		$data['year_id'] = $this->session->userdata('year_working');
+		if($data['year_id'] === FALSE){
+			// If not in session, get active one configured.
+			$data['year_id'] = $this->years_model->get_active_id();
+		}
+		
+		if(empty($data['year_id']) OR !is_numeric($data['year_id'])){
+			$this->err = 'No academic year is currently configured.';
+			return FALSE;
+		}
+		
+		// Get the working academic year
+		#$data['year_id'] = $this->session->userdata('year_working');
 		// Get info about the year
 		$data['year'] = $this->years_model->get($data['year_id']);
 		// Get the start and end months of the year
 		$data['months'] = $this->weeks_model->get_months($data['year']->date_start, $data['year']->date_end);
 		// Get the week dates and the week_id of them
 		$data['dates'] = $this->weeks_model->get_dates(NULL, $data['year_id'], 'date');
+		if(!is_array($data['dates'])){ $data['dates'] = array(); }
 		// Get the academic weeks
 		$data['weeks'] = $this->weeks_model->get(NULL, NULL, $data['year_id']);
 		

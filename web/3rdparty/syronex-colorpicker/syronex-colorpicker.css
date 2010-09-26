@@ -1,0 +1,23 @@
+.jColorSelect {
+	overflow:hidden; /* for IE6 */
+	border:1px solid #d9dcdd;
+}
+.jColorSelect div{
+	background:url(syronex-colorpicker.gif) no-repeat;
+	float:left;
+	width:13px;
+	height:13px;
+	cursor:pointer;
+	overflow:hidden; /* for IE6 */
+	border:1px solid #666666;
+	margin:1px;
+}
+
+.jColorSelect .checkwht {
+	cursor:default;	
+	background-position:-13px 0;
+}
+.jColorSelect .checkblk {
+	cursor:default;	
+	background-position:-26px 0;
+}

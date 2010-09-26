@@ -49,7 +49,7 @@ $t = 1;
 			$input['size'] = '15';
 			$input['maxlength'] = '10';
 			$input['tabindex'] = $t;
-			$input['class'] = 'date';
+			$input['class'] = 'date_input';
 			$input['value'] = @set_value($input['name'], $year->date_start);
 			echo form_input($input);
 			$t++;
@@ -72,7 +72,7 @@ $t = 1;
 			$input['size'] = '15';
 			$input['maxlength'] = '10';
 			$input['tabindex'] = $t;
-			$input['class'] = 'date';
+			$input['class'] = 'date_input';
 			$input['value'] = @set_value($input['name'], $year->date_end);
 			echo form_input($input);
 			$t++;
@@ -110,8 +110,8 @@ $t = 1;
 		$submittext = $this->lang->line('ACTION_SAVE') . ' ' . strtolower($this->lang->line('W_YEAR'));
 	}
 	unset($buttons);
-	$buttons[] = array('submit', 'positive', $submittext, 'disk1.gif', $t);
-	$buttons[] = array('cancel', 'negative', $this->lang->line('ACTION_CANCEL'), 'arr-left.gif', $t+2, site_url('academic/years'));
+	$buttons[] = array('submit', 'ok', $submittext, $t);
+	$buttons[] = array('link', 'cancel', $this->lang->line('ACTION_CANCEL'), $t+2, site_url('academic/years'));
 	$this->load->view('parts/buttons', array('buttons' => $buttons));
 	?>
 	
@@ -121,55 +121,31 @@ $t = 1;
 
 
 <script type="text/javascript">
-$(function(){
-	$(".date").hide();
-	$(".datepicker").datepicker({
-		firstDat: 1,
-		dateFormat: 'yy-mm-dd',
-		onSelect: function(dateText, inst){$('#input_' + this.id).val(dateText)},
-	});
+_jsQ.push(function(){
+	
+	$.extend(DateInput.DEFAULT_OPTS, {
+		
+		start_of_week: 1,
+		
+		stringToDate: function(string) {
+			var matches;
+			if (matches = string.match(/^(\d{4,4})-(\d{2,2})-(\d{2,2})$/)) {
+			  return new Date(matches[1], matches[2] - 1, matches[3]);
+			} else {
+			  return null;
+			};
+		},
+
+		dateToString: function(date) {
+			var month = (date.getMonth() + 1).toString();
+			var dom = date.getDate().toString();
+			if (month.length == 1) month = "0" + month;
+			if (dom.length == 1) dom = "0" + dom;
+			return date.getFullYear() + "-" + month + "-" + dom;
+			}
+		});
+	
+	$($.date_input.initialize);
 	
 });
-
-
-	
-	
-	
-/* $.extend(DateInput.DEFAULT_OPTS, {
-	stringToDate: function(string){
-		var matches;
-		if(matches = string.match(/^(\d{4,4})-(\d{2,2})-(\d{2,2})$/)){
-			return new Date(matches[1], matches[2] - 1, matches[3]);
-		} else {
-			return null;
-		};
-	},
-	dateToString: function(date){
-		var month = (date.getMonth() + 1).toString();
-		var dom = date.getDate().toString();
-		if (month.length == 1) month = "0" + month;
-		if (dom.length == 1) dom = "0" + dom;
-		return date.getFullYear() + "-" + month + "-" + dom;
-	}
-});
-
-$(function(){
-	$(".date").date_input();
-}); */
-
-/* Calendar View, deprecated..
-document.observe('dom:loaded',function(){
-	Calendar.setup({
-		dateField:'date_start',
-		parentElement:'calendar_date_start'
-	});
-	$('date_start').hide();
-	Calendar.setup({
-		dateField:'date_end',
-		parentElement:'calendar_date_end'
-	});
-	$('date_end').hide();
-});
-*/
-
 </script>

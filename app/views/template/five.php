@@ -31,14 +31,17 @@ if(!isset($sidebar)){
 }
 
 // Can change academic year?
-$changeyear = ($this->auth->logged_in() && $this->auth->check('changeyear', TRUE));
-?>
-<!DOCTYPE html>
+#$changeyear = ($this->auth->logged_in() && $this->auth->check('changeyear', TRUE));
+$changeyear = $this->auth->check('changeyear', TRUE);
+?><!DOCTYPE html>
 <html lang="en">
 <head>
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <base href="<?php echo $this->config->item('base_url').'web/'; ?>" />
 <title>Classroombookings | <?php echo $title ?></title>
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <meta name="author" content="Craig A Rodway" />
 <link rel="shortcut icon" type="image/x-icon" href="favicon2.ico" />
 <link rel="icon" type="image/x-icon" href="favicon2.ico" />
@@ -49,6 +52,8 @@ $changeyear = ($this->auth->logged_in() && $this->auth->check('changeyear', TRUE
 <link rel="stylesheet" href="css/five/theme-<?php echo $this->config->item('theme') ?>.css" />
 <link rel="stylesheet" href="3rdparty/tipsy-0.1.7/stylesheets/tipsy.css" />
 <link rel="stylesheet" href="3rdparty/boxy-0.1.4/stylesheets/boxy.css" />
+<link rel="stylesheet" href="3rdparty/syronex-colorpicker/syronex-colorpicker.css" />
+<link rel="stylesheet" href="3rdparty/date_input/date_input.css" />
 <style type="text/css"><?php
 	$weeks = $this->weeks_model->get();
 	if(!empty($weeks)){
@@ -64,34 +69,27 @@ $changeyear = ($this->auth->logged_in() && $this->auth->check('changeyear', TRUE
 		}
 	}
 ?></style>
+<noscript>
+<style type="text/css">.hidden{ display:block; }</style>
+</noscript>
 <script type="text/javascript">
 var baseurl = "<?php echo $this->config->item('base_url').'web/' ?>";
 var siteurl = "<?php echo site_url() ?>/";
-</script>
-<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
-<script type="text/javascript" src="js/jquery-ui-1.8.2.custom.min.js"></script>
-<script type="text/javascript" src="3rdparty/tipsy-0.1.7/javascripts/jquery.tipsy.js"></script>
-<script type="text/javascript" src="3rdparty/boxy-0.1.4/javascripts/jquery.boxy.js"></script>
-<script type="text/javascript" src="js/jquery.cookie.js"></script>
-<script type="text/javascript" src="js/syronex-colorpicker-mod.js"></script>
-<script type="text/javascript" src="js/ajax.js"></script>
-<?php
-// Load additional javascript requested by controller
-if(isset($js) && is_array($js)){
-	foreach($js as $j){
-		echo '<script type="text/javascript" src="' . $j .'"></script>';
-		echo "\n";
-	}
-}
-?>
-<script type="text/javascript">
-//jQuery.fx.off = true;
+var _jsQ = [];
 </script>
 </head>
 <body>
 
 
 	<div id="ajaxload">Loading...</div>
+	
+	<?php if($changeyear){
+		echo '<div id="changeyear" class="hidden">';
+		$years = $this->years_model->get_dropdown();
+		$this->load->view('template/set-year', array('years' => $years));
+		echo '</div>';
+	}
+	?>
 	
 	
 	<!-- header. for darker colour -->
@@ -117,6 +115,11 @@ if(isset($js) && is_array($js)){
 					echo sprintf(' &mdash; <span>%s</span>', anchor('account/logout', lang('LOGOUT')));
 				} else {
 					echo sprintf('<span>%s</span>', anchor('account/login', lang('LOGIN')));
+				}
+				
+				if($changeyear){
+					printf(' &mdash; <span class="sm">%s</span>', 
+						anchor($this->uri->uri_string() . '#changeyear', 'Change academic year', 'id="changeyear_link"'));
 				}
 			?>
 			</div> 
@@ -198,9 +201,48 @@ if(isset($js) && is_array($js)){
 	</div>
 	
 	
+	
 	<!-- Javascript to attach Tipsy to all appropriate elements with titles -->
 	<script type="text/javascript">
-	$('span[title!=],label[title!=],a[title!=]').tipsy({gravity:'s'});
+	_jsQ.push(function(){
+		$('span[title!=],label[title!=],a[title!=]').tipsy({gravity:'s'});
+		<?php if($changeyear): ?>
+		$('a#changeyear_link').boxy({title:'Change working academic year', closeable:true});
+		<?php endif; ?>
+	});
+	</script>
+
+	<script type="text/javascript" src="js/LAB.min.js"></script>
+	<script type="text/javascript">
+		var extras = [];
+		<?php if(isset($js) && is_array($js)){
+			foreach($js as $j){
+				echo 'extras.push("' . $j . '");';
+				echo "\n";
+			}
+		} ?>
+		var $loader = $LAB
+			.setOptions({
+				BasePath: baseurl,
+				AlwaysPreserveOrder: true,
+				UsePreloading: true,
+				UseLocalXHR: false,
+				UseCachePreload: false})
+			.script("js/jquery-1.4.2.min.js")
+			.script("js/jquery-ui-1.8.2.custom.min.js")
+			.script("3rdparty/boxy-0.1.4/javascripts/jquery.boxy.js")
+			.script("3rdparty/tipsy-0.1.7/javascripts/jquery.tipsy.js")
+			.script("3rdparty/date_input/jquery.date_input.js")
+			.script("js/syronex-colorpicker-mod.js")
+			.script("js/jquery.cookie.js")
+			.script("js/ajax.js")
+			.script(extras);
+		if( typeof( window[ '_jsQ' ]) != "undefined"){
+			console.log(_jsQ.length);
+			for(var i = 0, len = _jsQ.length; i<len; i++){
+				$loader = $loader.wait(_jsQ[i]);
+			}
+		}
 	</script>
 	
 	

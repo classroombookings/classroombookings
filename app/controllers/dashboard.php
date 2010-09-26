@@ -33,7 +33,7 @@ class Dashboard extends Controller {
 	
 	
 	function index(){
-		#$this->auth->check('dashboard');
+		$this->auth->check('dashboard');
 		$tpl['title'] = 'Dashboard';
 		$tpl['pagetitle'] = $tpl['title'];
 		if($this->auth->logged_in() == TRUE){

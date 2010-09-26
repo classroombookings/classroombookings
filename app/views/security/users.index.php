@@ -64,7 +64,7 @@ if($users != 0){
 
 
 <script type="text/javascript">
-$(document).ready(function($){
+_jsQ.push(function(){
 	$('a[rel=boxy]').click(function(){
 		Boxy.load($(this).attr("href"), {cache:'false', title: 'Effective Permissions'});
 		return false;

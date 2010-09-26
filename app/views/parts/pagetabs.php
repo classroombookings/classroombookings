@@ -11,7 +11,7 @@ if(isset($cookie)){
 <div id="tabs">
 
 
-	<ul>
+	<ul class="hidden">
 		<?php
 		foreach($tabs as $tab){
 			echo sprintf($tablink, current_url() . "#" . $tab[0], $tab[1]);
@@ -32,7 +32,8 @@ if(isset($cookie)){
 <!-- // #tabs -->
 
 <script type="text/javascript">
-$(function() {
+_jsQ.push(function() {
 	$("#tabs").tabs(<?php echo $cookiestr; ?>);
+	$('#tabs .hidden').show();
 });
 </script>

@@ -43,7 +43,7 @@ class Auth{
 		#$this->CI->config->set_item('cookie_prefix', $_SERVER['SERVER_NAME']);
 		
 		// Cookie salt for hash - can be any text string
-		$this->cookiesalt = 'CL455R00Mb00k1ng5';
+		$this->cookiesalt = 'CL455R00Mb00k1ng5'.$_SERVER['SERVER_NAME'];
 		
 	}
 	
@@ -63,7 +63,7 @@ class Auth{
 		// Get group ID
 		$group_id = $this->CI->session->userdata('group_id');
 		// If no group, then guest group (always 0)
-		$group_id = (int)($group_id === FALSE) ? 0 : $group_id;
+		$group_id = ($group_id == FALSE) ? 0 : $group_id;
 		
 		// Hopefully speed up access by putting the group permissions into the session
 		// instead of additional DB lookups each time we run the check() function.
@@ -351,12 +351,13 @@ class Auth{
 			$this->CI->db->query($sql, array($timestamp, $user->user_id));
 			
 			// Create session data array
-			$sessdata['user_id']		= $user->user_id;
-			$sessdata['group_id']		= $user->group_id;
-			$sessdata['username']		= $user->username;
-			$sessdata['display']		= $user->display;	#($user->display == NULL) ? $user->username : $user->display;
-			$sessdata['year_active']	= $this->CI->years_model->get_active_id();
-			$sessdata['year_working']	= $sessdata['year_active'];
+			$sessdata['user_id']			= $user->user_id;
+			$sessdata['group_id']			= $user->group_id;
+			$sessdata['username']			= $user->username;
+			$sessdata['display']			= $user->display;	#($user->display == NULL) ? $user->username : $user->display;
+			$sessdata['year_active']		= $this->CI->years_model->get_active_id();
+			$sessdata['year_working']		= $sessdata['year_active'];
+			$sessdata['group_permissions']	= $this->CI->security->get_group_permissions($user->group_id);
 			
 			// Set session data
 			$this->CI->session->set_userdata($sessdata);

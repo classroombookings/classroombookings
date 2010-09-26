@@ -3,67 +3,6 @@ var sel_month;
 var sel_date;
 
 
-// On page load
-$(document).ready(function($){
-	
-	// Room/Date tabs in sidebar
-	$("#tabs").tabs({cookie:{expires: 7, name: 'tab.bookings'}});
-	
-	// Room information box
-	//$('a[rel*=facebox]').facebox();
-	$('a[rel*=boxy]').bind("click", function(e){
-		var url = $(e.currenTarget).attr("href");
-		Boxy.load($(this).attr("href"), {cache: true, title: 'Room Information'});
-		return false;
-	});
-	//new Boxy("<p>Test</p>", {title: 'Test'});
-	
-	/* XHR calls for loading rooms */
-
-	// Room element clicking
-	$('table#sb-roomlist tr[rel*=room] td').bind("click", function(e){
-		if(e.target.className != "i"){
-			var a = $(e.currentTarget).parent().find('a[rel*=room]');
-			var url = a.attr("href");
-			var id = a.attr("id");
-			id = id.split('-');
-			id = id[1];
-			console.log(url);
-			console.log(id);
-			roomajax(url, id);
-			//return false;
-		} else {
-			//alert("clicked on i");
-			//e.preventDefault();
-			//e.stopPropagation();
-			//return false;
-		}
-	});
-	
-	$('table#sb-roomlist tr[rel*=room] td').bind("mouseover", function(e){
-		$(e.currentTarget).parent().addClass("hover");
-	});
-	$('table#sb-roomlist tr[rel*=room] td').bind("mouseout", function(e){
-		$(e.currentTarget).parent().removeClass("hover");
-	});
-
-	// Room A element click event
-	$('a[rel*=room]').bind("click", function(e){
-		roomajax($(e.currentTarget).attr("href"), $(e.currentTarget).parent());
-		return false;
-	});
-	
-	// Set up calendar navigation links (months & dates)
-	calnavlinks();
-	
-	// Navigation header links
-	navheaderlinks();
-	
-});
-
-
-
-
 /* XHR function to load a room timetable into the container */
 
 // Load room timetable via AJAX and set classes on LIs
@@ -164,3 +103,65 @@ function highlight_day(daynum, weekstart){
 	$('a[rel*=caldate]').removeClass("current");
 	$('a#cal_' + daynum).addClass("current");
 }
+
+
+
+
+// When loaded.
+
+	
+// Room/Date tabs in sidebar
+$("#tabs").tabs({cookie:{expires: 7, name: 'tab.bookings'}});
+$("div#tabs").show();
+
+
+// Room information box
+//$('a[rel*=facebox]').facebox();
+$('a[rel*=boxy]').bind("click", function(e){
+	var url = $(e.currenTarget).attr("href");
+	Boxy.load($(this).attr("href"), {cache: true, title: 'Room Information'});
+	return false;
+});
+//new Boxy("<p>Test</p>", {title: 'Test'});
+
+/* XHR calls for loading rooms */
+
+// Room element clicking
+$('table#sb-roomlist tr[rel*=room] td').bind("click", function(e){
+	if(e.target.className != "i"){
+		var a = $(e.currentTarget).parent().find('a[rel*=room]');
+		var url = a.attr("href");
+		var id = a.attr("id");
+		id = id.split('-');
+		id = id[1];
+		console.log(url);
+		console.log(id);
+		roomajax(url, id);
+		//return false;
+	} else {
+		//alert("clicked on i");
+		//e.preventDefault();
+		//e.stopPropagation();
+		//return false;
+	}
+});
+
+$('table#sb-roomlist tr[rel*=room] td').bind("mouseover", function(e){
+	$(e.currentTarget).parent().addClass("hover");
+});
+$('table#sb-roomlist tr[rel*=room] td').bind("mouseout", function(e){
+	$(e.currentTarget).parent().removeClass("hover");
+});
+
+// Room A element click event
+$('a[rel*=room]').bind("click", function(e){
+	e.preventDefault();
+	roomajax($(e.currentTarget).attr("href"), $(e.currentTarget).parent());
+	//return false;
+});
+
+// Set up calendar navigation links (months & dates)
+calnavlinks();
+
+// Navigation header links
+navheaderlinks();

@@ -59,6 +59,7 @@ $t_word = array('Everyone', 'Room owner', 'User', 'Group', 'Department');
 <?php echo form_open('rooms/manage/save_permission', NULL, array('room_id' => $room_id)); ?>
 <!-- Add a new permission entry -->
 <!-- main table -->
+<div class="grey"><div>
 <table class="form" cellpadding="0" cellspacing="0" border="0" width="100%">
 	
 	<tr class="h"><td colspan="3">Add permission entry</td></tr>
@@ -214,6 +215,7 @@ $t_word = array('Everyone', 'Room owner', 'User', 'Group', 'Department');
 	
 </table>
 <!-- // main table -->
+</div></div>
 
 	
 <?php

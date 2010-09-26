@@ -71,17 +71,18 @@ $t = 1;
 			$input['tabindex'] = $t;
 			$input['class'] = 'colorpicker';
 			$input['value'] = @set_value('colour', $department->colour);
+			$input['class'] = 'hidden';
 			echo form_input($input);
 			$t++;
 			?>
 			<div id="cp"></div>
 			<script type="text/javascript"><!--
-			$(document).ready(function(){
+			_jsQ.push(function(){
 				$('#cp').colorPicker({
 					activeColour: '<?php echo $input['value'] ?>',
 					click: function(c){$('#colour').val(c);}
 				});
-				$('#colour').css("display", "none");
+				$('#colour').hide();
 			});
 			// --></script>
 		</td>
@@ -117,9 +118,9 @@ $t = 1;
 		$submittext = 'Save department';
 	}
 	unset($buttons);
-	$buttons[] = array('submit', 'positive', $submittext, 'disk1.gif', $t);
+	$buttons[] = array('submit', 'ok', $submittext, $t);
 	#$buttons[] = array('submit', '', 'Save and add another', 'add.gif', $t+1);
-	$buttons[] = array('cancel', 'negative', 'Cancel', 'arr-left.gif', $t+2, site_url('departments'));
+	$buttons[] = array('link', 'cancel', 'Cancel', $t+2, site_url('departments'));
 	$this->load->view('parts/buttons', array('buttons' => $buttons));
 	?>
 
