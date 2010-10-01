@@ -504,7 +504,7 @@ table.ccb{
 		display:block;
 		margin:3px;
 	}
-	table.ccb tr td a:hover, table.ccb tr td a.current{
+	table.ccb tr td a:hover, table.ccb tr td a.current, table.ccb tr td a.hover{
 		-moz-border-radius:3px;
 		-webkit-border-radius:3px;
 		text-decoration:underline;
@@ -527,7 +527,7 @@ table.ccb{
 
 
 /* /bookings week header */
-div#navheader table{ width:100%; border:0px solid #ccc; }
+div#navheader table{ width:100%; border:0px solid #ccc; margin:0; }
 div#navheader table tr td{ vertical-align:middle; padding:5px 0;}
 div#navheader table tr td.icons{ width:72px; }
 div#navheader table tr td.text{ font-weight:bold; text-align:left; padding-left:20px; }

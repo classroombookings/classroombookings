@@ -76,6 +76,7 @@ $changeyear = $this->auth->check('changeyear', TRUE);
 var baseurl = "<?php echo $this->config->item('base_url').'web/' ?>";
 var siteurl = "<?php echo site_url() ?>/";
 var _jsQ = [];
+var tt_view = "<?php echo $this->settings->get('tt_view') ?>";
 </script>
 </head>
 <body>
@@ -110,16 +111,16 @@ var _jsQ = [];
 			</div> 
 			<div class="grid_12" id="header-right">
 			<?php
+				if($changeyear){
+					printf('<a href="%s" id="changeyear_link" title="%s"><img src="img/ico/calendar_month.png" width="16" height="16" style="vertical-align:middle"></a> &nbsp;&nbsp;&nbsp; ', 
+						site_url($this->uri->uri_string() . '#changeyear'),
+						'Change working academic year');
+				}
 				if($this->auth->logged_in()){
 					echo sprintf('<span>Logged in as <strong>%s</strong></span>', anchor('account/main', $this->session->userdata('display')));
 					echo sprintf(' &mdash; <span>%s</span>', anchor('account/logout', lang('LOGOUT')));
 				} else {
 					echo sprintf('<span>%s</span>', anchor('account/login', lang('LOGIN')));
-				}
-				
-				if($changeyear){
-					printf(' &mdash; <span class="sm">%s</span>', 
-						anchor($this->uri->uri_string() . '#changeyear', 'Change academic year', 'id="changeyear_link"'));
 				}
 			?>
 			</div> 
@@ -202,22 +203,24 @@ var _jsQ = [];
 	
 	
 	
+	
 	<!-- Javascript to attach Tipsy to all appropriate elements with titles -->
 	<script type="text/javascript">
 	_jsQ.push(function(){
-		$('span[title!=],label[title!=],a[title!=]').tipsy({gravity:'s'});
+		$('span[title!=],label[title!=],a[title!=]').tipsy({ gravity:'n' });
 		<?php if($changeyear): ?>
-		$('a#changeyear_link').boxy({title:'Change working academic year', closeable:true});
+		$('a#changeyear_link').boxy({ title: 'Change working academic year', closeable: true });
 		<?php endif; ?>
 	});
 	</script>
-
+	
+	
 	<script type="text/javascript" src="js/LAB.min.js"></script>
 	<script type="text/javascript">
 		var extras = [];
 		<?php if(isset($js) && is_array($js)){
 			foreach($js as $j){
-				echo 'extras.push("' . $j . '");';
+				echo 'extras.push("' . $j . '?");';
 				echo "\n";
 			}
 		} ?>
@@ -238,7 +241,6 @@ var _jsQ = [];
 			.script("js/ajax.js")
 			.script(extras);
 		if( typeof( window[ '_jsQ' ]) != "undefined"){
-			console.log(_jsQ.length);
 			for(var i = 0, len = _jsQ.length; i<len; i++){
 				$loader = $loader.wait(_jsQ[i]);
 			}
