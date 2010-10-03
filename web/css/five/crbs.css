@@ -30,7 +30,7 @@ div#header a:hover{ text-decoration:underline; }
 
 /* Main menu */
 div#menu{
-	padding-top:10px;
+	padding-top:0px;
 	font-size:95%;
 	font-weight:bold;
 }

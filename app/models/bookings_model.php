@@ -75,7 +75,7 @@ class Bookings_model extends Model{
 	 */
 	private function timetable_room($room_id, $week_start){
 		
-		log_message('debug', 'Asked to load timetable for ' . $week_start . '...');
+		log_message('debug', 'Asked to load timetable for week: ' . $week_start . ' and room: ' . $room_id . '...');
 		
 		if(empty($room_id)){
 			$this->lasterr = 'No room specified for timetable.';
@@ -147,9 +147,32 @@ class Bookings_model extends Model{
 		
 		$html .= "Timetable. Room ID $room_id; Week beginning $week_start.";
 		
-		$check = $this->rooms_model->permission_check($this->session->userdata('user_id'), $room_id);
-		$html .= '<pre>' . var_export($check, TRUE) . '</pre>';
-		#$html .= $this->rooms_model->lasterr;
+		/*
+			TODO
+			Re-work all of this room permission checking stuff into AUTH library.
+				->setUser()		// Optional. Just get from session, if this is not set.
+				->setRoom()		// Once set, get member variable of Auth class
+				->check_room('permission.name')		// Uses values from setUser/setRoom
+					<= true/false
+				->permission_check(NULL)
+					<= array of all available perms for user. TRUE for exempt. FALSE for error.
+		*/
+		// Get permissions into array format for quicker access using in_array()
+		$perms = $this->rooms_model->permission_check($this->session->userdata('user_id'), $room_id);
+		if(is_array($perms)){
+			foreach($perms as $p){
+				$cando[] = $p[1];
+			}
+			$perms = $cando;
+		}
+		$perm = 'bookings.create.one';
+		$check = (is_array($perms)) ? in_array($perm, $perms) : $perms;
+		
+		
+		
+		#$check = $this->rooms_model->permission_check($this->session->userdata('user_id'), $room_id, $perm);
+		$html .= '<pre>User has permission to do ' . $perm . ': ' . var_export($check, TRUE) . '</pre>';
+		$html .= var_export($perms, TRUE);
 		
 		return $html;
 		

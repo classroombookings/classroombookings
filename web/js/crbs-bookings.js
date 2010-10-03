@@ -7,8 +7,6 @@ var sel_date;
 
 // Load room timetable via AJAX and set classes on LIs
 function roomajax(url, id){
-	//$('#tt').html(ajax_load).load(url);
-	//$('#tt').load(url);
 	crbsajax(url, 'tt', function(){
 		$('#sb-roomlist tr').removeClass("current");
 		$('table#sb-roomlist tr.room-' + id).addClass("current");
@@ -17,6 +15,7 @@ function roomajax(url, id){
 }
 
 
+// Update links after new HTML has been inserted into the DOM via XHR
 function updatelinks(){
 	navheaderlinks();
 	calnavlinks();
@@ -28,16 +27,15 @@ function updatelinks(){
 function calnavlinks(){
 	
 	$('a[rel*=calmonth]').bind("click", function(e){
+		e.preventDefault();
 		crbsajax($(e.currentTarget).attr("href"), 'cal', calnavlinks);
-		return false;
 	});
 	$('a[rel*=caldate]').bind("click", function(e){
+		e.preventDefault();
 		crbsajax($(e.currentTarget).attr("href"), 'tt', navheaderlinks);
 		$('a[rel*=caldate]').removeClass("current");
 		$(e.currentTarget).addClass("current");
-		return false;
 	});
-	//$('a[rel*=caldate]').removeClass("current");
 	
 }
 
@@ -48,6 +46,8 @@ function calnavlinks(){
 function navheaderlinks(){
 	
 	$('a[rel*=navheader]').bind("click", function(e){
+		
+		e.preventDefault();
 		
 		// Send the XHR to load the timetable in the main tt container
 		crbsajax($(e.currentTarget).attr("href"), 'tt', updatelinks);
@@ -86,9 +86,6 @@ function navheaderlinks(){
 			highlight_day(daynum);
 		}
 		
-		// Prevent page from loading
-		return false;
-		
 	});
 	
 }
@@ -107,22 +104,23 @@ function highlight_day(daynum, weekstart){
 
 
 
-// When loaded.
+/* Executed when loaded via LAB.js... */
 
-	
+
 // Room/Date tabs in sidebar
-$("#tabs").tabs({cookie:{expires: 7, name: 'tab.bookings'}});
+$("#tabs").tabs({ cookie: {expires: 7, name: 'tab.bookings'} });
 $("div#tabs").show();
 
 
 // Room information box
-//$('a[rel*=facebox]').facebox();
 $('a[rel*=boxy]').bind("click", function(e){
+	e.preventDefault();
 	var url = $(e.currenTarget).attr("href");
 	Boxy.load($(this).attr("href"), {cache: true, title: 'Room Information'});
-	return false;
 });
-//new Boxy("<p>Test</p>", {title: 'Test'});
+
+
+
 
 /* XHR calls for loading rooms */
 
@@ -137,15 +135,11 @@ $('table#sb-roomlist tr[rel*=room] td').bind("click", function(e){
 		console.log(url);
 		console.log(id);
 		roomajax(url, id);
-		//return false;
-	} else {
-		//alert("clicked on i");
-		//e.preventDefault();
-		//e.stopPropagation();
-		//return false;
 	}
 });
 
+
+// Hover classes for table rows
 $('table#sb-roomlist tr[rel*=room] td').bind("mouseover", function(e){
 	$(e.currentTarget).parent().addClass("hover");
 });
@@ -153,11 +147,11 @@ $('table#sb-roomlist tr[rel*=room] td').bind("mouseout", function(e){
 	$(e.currentTarget).parent().removeClass("hover");
 });
 
+
 // Room A element click event
 $('a[rel*=room]').bind("click", function(e){
 	e.preventDefault();
 	roomajax($(e.currentTarget).attr("href"), $(e.currentTarget).parent());
-	//return false;
 });
 
 // Set up calendar navigation links (months & dates)
