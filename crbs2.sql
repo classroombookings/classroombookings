@@ -1,14 +1,14 @@
 -- phpMyAdmin SQL Dump
--- version 3.2.0.1
+-- version 3.2.4
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Oct 01, 2010 at 03:58 PM
--- Server version: 5.1.37
--- PHP Version: 5.3.0
+-- Generation Time: Oct 03, 2010 at 11:13 PM
+-- Server version: 5.1.41
+-- PHP Version: 5.3.1
 
+SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
-
 SET AUTOCOMMIT=0;
 START TRANSACTION;
 
@@ -339,7 +339,16 @@ INSERT INTO `periods` (`period_id`, `year_id`, `time_start`, `time_end`, `name`,
 (55, 5, '12:15:00', '13:20:00', 'Lunch', 'a:5:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:1:"3";i:3;s:1:"4";i:4;s:1:"5";}', 0),
 (56, 5, '13:20:00', '14:20:00', 'Period 4', 'a:5:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:1:"3";i:3;s:1:"4";i:4;s:1:"5";}', 1),
 (57, 5, '14:20:00', '15:20:00', 'Period 5', 'a:5:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:1:"3";i:3;s:1:"4";i:4;s:1:"5";}', 1),
-(58, 5, '15:20:00', '18:30:00', 'After school', 'a:5:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:1:"3";i:3;s:1:"4";i:4;s:1:"5";}', 1);
+(58, 5, '15:20:00', '18:30:00', 'After school', 'a:5:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:1:"3";i:3;s:1:"4";i:4;s:1:"5";}', 1),
+(59, 7, '08:45:00', '09:00:00', 'Registration', 'a:5:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:1:"3";i:3;s:1:"4";i:4;s:1:"5";}', 0),
+(60, 7, '09:00:00', '10:00:00', 'Period 1', 'a:5:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:1:"3";i:3;s:1:"4";i:4;s:1:"5";}', 1),
+(61, 7, '10:00:00', '11:00:00', 'Period 2', 'a:5:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:1:"3";i:3;s:1:"4";i:4;s:1:"5";}', 1),
+(62, 7, '11:00:00', '11:15:00', 'Break', 'a:5:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:1:"3";i:3;s:1:"4";i:4;s:1:"5";}', 0),
+(63, 7, '11:15:00', '12:15:00', 'Period 3', 'a:5:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:1:"3";i:3;s:1:"4";i:4;s:1:"5";}', 1),
+(64, 7, '12:15:00', '13:20:00', 'Lunch', 'a:5:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:1:"3";i:3;s:1:"4";i:4;s:1:"5";}', 0),
+(65, 7, '13:20:00', '14:20:00', 'Period 4', 'a:5:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:1:"3";i:3;s:1:"4";i:4;s:1:"5";}', 1),
+(66, 7, '14:20:00', '15:20:00', 'Period 5', 'a:5:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:1:"3";i:3;s:1:"4";i:4;s:1:"5";}', 1),
+(67, 7, '15:20:00', '18:30:00', 'After school', 'a:5:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:1:"3";i:3;s:1:"4";i:4;s:1:"5";}', 1);
 
 -- --------------------------------------------------------
 
@@ -688,7 +697,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `password`, `displayname`, `cookiekey`, `lastlogin`, `lastactivity`, `ldap`, `created`) VALUES
-(1, 1, 1, 'admin', 'craig.rodway@gmail.com', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Craig Rodway', NULL, '2010-09-29 11:06:27', '2010-09-29 15:00:00', 0, '0000-00-00'),
+(1, 1, 1, 'admin', 'craig.rodway@gmail.com', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Craig Rodway', NULL, '2010-10-03 22:35:14', '2010-10-03 23:12:10', 0, '0000-00-00'),
 (12, 2, 1, 'craig.rodway', 'craig.rodway@bishopbarrington.net', NULL, 'Mr Rodway', NULL, '2009-05-19 11:41:06', '2009-05-19 11:43:17', 0, '2009-01-09'),
 (19, 2, 1, 'test.one', 'test.one@bishopbarrington.net', NULL, 'Mr T One', NULL, '2009-05-19 11:55:07', '2009-05-19 11:55:14', 1, '2009-01-14'),
 (22, 2, 1, 'test.three', 'test.three@bishopbarrington.net', NULL, 'Mr T Three', NULL, '2009-01-14 10:56:57', '0000-00-00 00:00:00', 1, '2009-01-14'),
@@ -707,7 +716,7 @@ INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `pas
 (126, 2, 0, 'e.winstanley100', 'e.winstanley100@bishopbarrington.net', 'ea157601840a5b4953c2e95f5fd27223291122d6', 'e.winstanley100', NULL, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 0, '2009-01-30'),
 (127, 2, 1, 'john.doe', 'teacher@bishopbarrington.net', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'John Doe', NULL, '2009-12-09 14:35:13', '2009-12-09 14:35:43', 0, '2009-10-18'),
 (129, 1, 0, 'smithj', '', '41d78584e31c36ffe3724d8ea37084b68179d198', 'smithj', NULL, '0000-00-00 00:00:00', NULL, 0, '2009-10-25'),
-(130, 2, 1, 'teacher', 'teacher@bishopbarrington.net', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Teacher', NULL, '2010-09-26 17:20:35', '2010-09-26 17:20:22', 0, '2009-12-09');
+(130, 2, 1, 'teacher', 'teacher@bishopbarrington.net', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Teacher', NULL, '2010-10-03 22:12:32', '2010-10-03 22:34:47', 0, '2009-12-09');
 
 -- --------------------------------------------------------
 
@@ -755,8 +764,6 @@ CREATE TABLE `usersactive` (
 -- Dumping data for table `usersactive`
 --
 
-INSERT INTO `usersactive` (`user_id`, `timestamp`) VALUES
-(1, 1285768824);
 
 -- --------------------------------------------------------
 
@@ -909,7 +916,8 @@ CREATE TABLE `years` (
 INSERT INTO `years` (`year_id`, `date_start`, `date_end`, `name`, `active`) VALUES
 (1, '2008-09-08', '2009-07-23', '2008 - 2009', NULL),
 (5, '2009-09-07', '2010-07-23', '2009 - 2010', 1),
-(6, '2007-09-01', '2008-07-24', '2007 - 2008', NULL);
+(6, '2007-09-01', '2008-07-24', '2007 - 2008', NULL),
+(7, '2010-09-07', '2011-07-22', '2010 - 2011', NULL);
 
 --
 -- Constraints for dumped tables
@@ -1013,7 +1021,7 @@ ALTER TABLE `weekdates`
 --
 ALTER TABLE `weeks`
   ADD CONSTRAINT `weeks_ibfk_1` FOREIGN KEY (`year_id`) REFERENCES `years` (`year_id`) ON DELETE CASCADE;
-
+SET FOREIGN_KEY_CHECKS=1;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

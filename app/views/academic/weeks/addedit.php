@@ -80,9 +80,9 @@ $t = 1;
 		$submittext = 'Save week';
 	}
 	unset($buttons);
-	$buttons[] = array('submit', 'positive', $submittext, 'disk1.gif', $t);
+	$buttons[] = array('submit', 'ok', $submittext, $t);
 	#$buttons[] = array('submit', '', 'Save and add another', 'add.gif', $t+1);
-	$buttons[] = array('cancel', 'negative', 'Cancel', 'arr-left.gif', $t+2, site_url('academic/weeks'));
+	$buttons[] = array('link', 'cancel', 'Cancel', $t+1, site_url('academic/weeks'));
 	$this->load->view('parts/buttons', array('buttons' => $buttons));
 	?>
 	

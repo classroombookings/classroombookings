@@ -10,6 +10,7 @@ echo form_open('academic/periods/copy');
 $t = 1;
 ?>
 
+<div class="grey"><div>
 <table class="form" cellpadding="6" cellspacing="0" border="0" width="100%">
 	
 	<tr class="h"><td colspan="2">Copy periods from another academic year</td></tr>
@@ -34,9 +35,11 @@ $t = 1;
 	
 	<?php
 	unset($buttons);
-	$buttons[] = array('submit', 'positive', 'Copy', 'disks.gif', $t);
+	$buttons[] = array('submit', 'ok', 'Copy', $t);
 	$this->load->view('parts/buttons', array('buttons' => $buttons));
 	?>
 
 </table>
+</div></div>
+
 </form>

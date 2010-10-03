@@ -228,7 +228,7 @@ var tt_view = "<?php echo $this->settings->get('tt_view') ?>";
 			.setOptions({
 				BasePath: baseurl,
 				AlwaysPreserveOrder: true,
-				UsePreloading: true,
+				UsePreloading: false,
 				UseLocalXHR: false,
 				UseCachePreload: false})
 			.script("js/jquery-1.4.2.min.js")

@@ -41,6 +41,7 @@ class Bookings extends Controller {
 		$this->load->helper('cookie');
 		$this->load->model('rooms_model');
 		$this->load->model('bookings_model');
+		$this->load->model('periods_model');
 		
 		// Calendar preferences (+ load template from a view file)
 		$prefs['start_day'] = 'monday';
@@ -152,9 +153,6 @@ class Bookings extends Controller {
 			if(empty($week)){
 				log_message('debug', 'No week in cookie. Setting and storing.');
 				// If current date is within working academic year, use now. If not, use start of academic year.
-				
-
-				
 				if($inacademicyear){
 					$week = $this->_get_monday(date('Y-m-d'));
 					log_message('debug', 'Week set to now: ' . $week);
@@ -231,10 +229,10 @@ class Bookings extends Controller {
 		}
 		
 		$tpl['body'] .= '</div>';
-		$tpl['body'] .= $this->load->view('bookings/javascript', NULL, TRUE);
 		$tpl['js'] = array('js/crbs-bookings.js?');
 		
 		$this->load->view($this->tpl, $tpl);
+		
 	}
 	
 	

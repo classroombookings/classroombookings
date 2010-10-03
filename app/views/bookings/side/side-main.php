@@ -58,8 +58,10 @@
 	<div id="date" class="bookings-cal">
 		<div id="cal"><?php echo $cal ?></div>
 		<div class="weeks-legend"><strong>Legend: </strong><?php
-			foreach($weeks as $week){
-				echo sprintf('<span class="week_%d">%s</span>', $week->week_id, $week->name);
+			if(is_array($weeks)){
+				foreach($weeks as $week){
+					echo sprintf('<span class="week_%d">%s</span>', $week->week_id, $week->name);
+				}
 			}
 		?></div>
 	</div>

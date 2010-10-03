@@ -21,6 +21,7 @@ class Bookings_model extends Model{
 	
 	
 	var $lasterr;
+	var $cols;
 	
 	
 	function Bookings_model(){
@@ -40,6 +41,8 @@ class Bookings_model extends Model{
 		// Get settings for view mode
 		$tt['view'] = $this->settings->get('tt_view');
 		$tt['cols'] = $this->settings->get('tt_cols');
+		
+		$this->cols = $tt['cols'];
 		
 		switch($tt['view']){
 			case 'room':
@@ -144,35 +147,33 @@ class Bookings_model extends Model{
 		
 		$html .= $nav;
 		
-		
 		$html .= "Timetable. Room ID $room_id; Week beginning $week_start.";
 		
-		/*
-			TODO
-			Re-work all of this room permission checking stuff into AUTH library.
-				->setUser()		// Optional. Just get from session, if this is not set.
-				->setRoom()		// Once set, get member variable of Auth class
-				->check_room('permission.name')		// Uses values from setUser/setRoom
-					<= true/false
-				->permission_check(NULL)
-					<= array of all available perms for user. TRUE for exempt. FALSE for error.
-		*/
-		// Get permissions into array format for quicker access using in_array()
-		$perms = $this->rooms_model->permission_check($this->session->userdata('user_id'), $room_id);
-		if(is_array($perms)){
-			foreach($perms as $p){
-				$cando[] = $p[1];
-			}
-			$perms = $cando;
-		}
+		$this->auth->set_user($this->session->userdata('user_id'));
+		$this->auth->set_room($room_id);
+		
 		$perm = 'bookings.create.one';
-		$check = (is_array($perms)) ? in_array($perm, $perms) : $perms;
+		$check = $this->auth->check_room($perm);
+		
+		// Load the Grid library
+		$this->load->library('crbsgrid');
+		
+		// Give it some data
+		$this->crbsgrid->set_type('room');
+		$this->crbsgrid->set_room($room_id);
+		$this->crbsgrid->set_date($week_start);
+		$this->crbsgrid->set_columns($this->cols);
+		
+		// Ger period info
+		$periods = $this->periods_model->get();
+		$this->crbsgrid->set_periods($periods);
+		
+		// Generate the table
+		$html .= $this->crbsgrid->generate();
 		
 		
-		
-		#$check = $this->rooms_model->permission_check($this->session->userdata('user_id'), $room_id, $perm);
 		$html .= '<pre>User has permission to do ' . $perm . ': ' . var_export($check, TRUE) . '</pre>';
-		$html .= var_export($perms, TRUE);
+		#$html .= var_export($perms, TRUE);
 		
 		return $html;
 		

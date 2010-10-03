@@ -37,9 +37,6 @@ function calnavlinks(){
 		crbsajax($(e.currentTarget).attr("href"), 'tt', navheaderlinks);
 		$('a[rel*=caldate]').removeClass("current");
 		$(e.currentTarget).addClass("current");
-<<<<<<< HEAD
-	});
-=======
 		// If room view, highlight whole week
 		if(tt_view == 'room'){
 			var td = $(e.currentTarget).parent().get(0);
@@ -47,7 +44,8 @@ function calnavlinks(){
 			$(tr).find("a").addClass("current");
 		}
 	});
-	
+
+		
 	// Add hover event to apply classes to whole week if room view is configured
 	if(tt_view == 'room'){
 		$('a[rel*=caldate]').mouseover(function(e){
@@ -59,7 +57,6 @@ function calnavlinks(){
 			$('a[rel*=caldate]').removeClass("hover");
 		});
 	}
->>>>>>> origin/master
 	
 }
 
@@ -110,12 +107,6 @@ function navheaderlinks(){
 			highlight_day(daynum);
 		}
 		
-<<<<<<< HEAD
-=======
-		// Prevent page from loading
-		//return false;
-		
->>>>>>> origin/master
 	});
 	
 }
@@ -127,6 +118,7 @@ function navheaderlinks(){
  * Highlight a day in the calendar
  */
 function highlight_day(daynum, weekstart){
+	
 	$('a[rel*=caldate]').removeClass("current");
 	$('a#cal_' + daynum).addClass("current");
 	
@@ -135,24 +127,15 @@ function highlight_day(daynum, weekstart){
 		var tr = $(td).parent().get(0);
 		$(tr).find("a").addClass("current");
 	}
+	
 }
 
 
-<<<<<<< HEAD
 
-
-/* Executed when loaded via LAB.js... */
-
-=======
 // When loaded (via LAB.js)
->>>>>>> origin/master
 
 // Room/Date tabs in sidebar
-<<<<<<< HEAD
-$("#tabs").tabs({ cookie: {expires: 7, name: 'tab.bookings'} });
-=======
 $("#tabs").tabs({ cookie:{ expires: 7, name: 'tab.bookings' } });
->>>>>>> origin/master
 $("div#tabs").show();
 
 
@@ -162,12 +145,7 @@ $('a[rel*=boxy]').bind("click", function(e){
 	var url = $(e.currenTarget).attr("href");
 	Boxy.load($(this).attr("href"), {cache: true, title: 'Room Information'});
 });
-<<<<<<< HEAD
 
-
-
-=======
->>>>>>> origin/master
 
 /* XHR calls for loading rooms */
 

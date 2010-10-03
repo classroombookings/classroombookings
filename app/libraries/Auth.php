@@ -27,6 +27,9 @@ class Auth{
 	var $levels;
 	var $settings;
 	var $errpage;
+	
+	var $user_id;
+	var $room_id;
 
 
 	function Auth(){
@@ -113,6 +116,96 @@ class Auth{
 			
 		}
 		
+	}
+	
+	
+	
+	
+	/**
+	 * Check a room permission for set user and room ID. (set_user(), set_room())
+	 */
+	function check_room($permission, $room_id = NULL){
+		
+		// If room ID supplied as parameter, use it instead
+		$room_id = ($room_id != NULL) ? $room_id : $this->room_id;
+		
+		if(!is_numeric($room_id)){
+			$this->lasterr = 'Room ID has not been set.';
+			return FALSE;
+		}
+		
+		if(!is_numeric($this->user_id)){
+			$this->lasterr = 'User ID has not been set.';
+			return FALSE;
+		}
+		
+		// Get permissions on given room for the user. TRUE if user is exempt, otherwise array.
+		$perms = $this->CI->rooms_model->permission_check($this->user_id, $this->room_id);
+		
+		// Allowed
+		$cando = array();
+		
+		if(is_array($perms)){
+			foreach($perms as $p){
+				$cando[] = $p[1];
+			}
+			$perms = $cando;
+		}
+		
+		// Finally complete the check
+		$check = (is_array($perms)) ? in_array($permission, $perms) : $perms;
+		
+		return $check;
+		
+	}
+	
+	
+	
+	
+	/**
+	 * Return array of all permissions that the user has on the set room
+	 */
+	function room_permissions(){
+		
+		$perms = $this->CI->rooms_model->permission_check($this->user_id, $this->room_id);
+		
+		// Allowed
+		$cando = array();
+
+		if(is_array($perms)){
+			foreach($perms as $p){
+				$cando[] = $p[1];
+			}
+			$perms = $cando;
+		}
+		
+		return $perms;
+		
+	}
+	
+	
+	
+	
+	/**
+	 * Set the class instance variable User ID
+	 */
+	function set_user($user_id = NULL){
+		if($user_id == NULL){
+			$user_id = $this->session->userdata('user_id');
+		}
+		$this->user_id = $user_id;
+	}
+	
+	
+	
+	
+	/**
+	 * Set the class instance variable room ID
+	 */
+	function set_room($room_id){
+		if(is_numeric($room_id)){
+			$this->room_id = $room_id;
+		}
 	}
 	
 	
