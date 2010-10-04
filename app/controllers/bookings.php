@@ -32,6 +32,7 @@ class Bookings extends Controller {
 
 
 	var $tpl;
+	var $tt;
 	
 
 	function Bookings(){
@@ -67,16 +68,18 @@ class Bookings extends Controller {
 	 * Retrive the timetable view type, and load the proper index function.
 	 */
 	function index(){
+		
 		$this->auth->check('bookings');
 		$tt['view'] = $this->settings->get('tt_view');
 		$tt['cols'] = $this->settings->get('tt_cols');
+		
+		$this->tt = $tt;
 		
 		switch($tt['view']){
 			case 'day': return $this->_index_day(); break;
 			case 'room': return $this->_index_room(); break;
 		}
 		
-		print_r($_SESSION);
 	}
 	
 	
@@ -239,6 +242,111 @@ class Bookings extends Controller {
 	
 	
 	/**
+	 * Timetable View: Day
+	 *
+	 * Not public - can only be called by other methods in this controller.
+	 *
+	 * @param	date		Date to load. If not given, get from session/cookie
+	 */
+	private function _index_day($date = NULL){
+	
+		log_message('debug', 'Bookings _index_day() method');
+		
+		// Get academic details
+		$academic = $this->_get_academic();
+		
+		// Are we currently in the academic year?
+		$time_now = strtotime(now());
+		$time_year_start = strtotime($academic['year']->date_start);
+		$time_year_end = strtotime($academic['year']->date_end);
+		$inacademicyear = ($time_now >= $time_year_start && $time_now <= $time_year_end);
+		
+		// Check for date as a paramter
+		if($date == NULL){
+			
+			log_message('debug', 'No date in parameter. Getting from store.');
+			
+			// Attempt to get stored variable
+			$date = $this->_get('crbsb.date');
+			
+			if(empty($date)){
+				log_message('debug', 'No date in store.');
+				// Nothing. If current date is within working academic year, use it. If not, use start of year.
+				if($inacademicyear){
+					log_message('debug', 'Set date to today.');
+					// Now!
+					$date = date('Y-m-d');
+				} else {
+					log_message('debug', 'Set date to start of working academic year');
+					$date = $academic['year']->date_start;
+				}
+			}
+			
+			// Store it.
+			$this->_store('crbsb.date', $date);
+			
+		}
+		
+		// If we had a week supplied, load the calendar for the month in that week
+		if(!empty($date)){
+			list($y, $m, $d) = explode('-', $date);
+			$calm = $m;
+			$caly = $y;
+		}
+		
+		// Load up the calendar picker with any overriding choices!
+		$url_month = $this->_get('cal_month');
+		$url_year = $this->_get('cal_year');
+		if(empty($url_month) && empty($url_year)){
+			// Set appropriate date depending if we're currently in the year or not
+			if($inacademicyear){
+				$calm = date('m');
+				$caly = date('Y');
+			} else {
+				$calm = date('m', $time_year_start);
+				$caly = date('Y', $time_year_start);
+			}
+		} else {
+			$calm = $url_month;
+			$caly = $url_year;
+		}
+		
+		// Set up the sidebar
+		$sidebar['cal'] = $this->calendar->generate_sidebar($caly, $calm, $academic, $date, 'date');
+		$sidebar['weeks'] = $academic['weeks'];
+		
+		// Main page info
+		$tpl['title'] = 'Bookings (Day View)';
+		$tpl['sidebar'] = $this->load->view('bookings/side/side-main', $sidebar, TRUE);
+		
+		// Container for timetable
+		$tpl['body'] = '<div id="tt">';
+		
+		// Load up timetable
+		$data['date'] = $date;
+		$timetable = $this->bookings_model->timetable($data);
+		
+		log_message('debug', 'Called timetable() method on bookings_model');
+		
+		if($timetable == FALSE){
+			// Timetable returned false, show an error.
+			$tpl['alert'] = $this->msg->err($this->bookings_model->lasterr);
+		} else {
+			// Add timetable to page.
+			$tpl['body'] .= $timetable;
+		}
+		
+		$tpl['body'] .= '</div>';
+		$tpl['js'] = array('js/crbs-bookings.js?');
+		
+		$this->load->view($this->tpl, $tpl);
+		
+	}
+	
+	
+	
+	
+	/**
 	 * Timetable View: Day-at-a-time
 	 **/
 	/* function _index_day(){
@@ -328,7 +436,7 @@ class Bookings extends Controller {
 	
 	
 	/** 
-	 * Function for loading a calendar for a week (used for choosing a date/week in the room view)
+	 * Function for loading a timetable for a week (used for choosing a date/week in the room view)
 	 *
 	 * Can be loaded via AJAX or directly.
 	 */
@@ -382,6 +490,45 @@ class Bookings extends Controller {
 	
 	
 	/**
+	 * Function for loading a timetable for a given date
+	 *
+	 * Can be loaded via XHR or directly
+	 */
+	function date($date){
+		
+		$this->auth->check('bookings');
+		
+		// Store date in session + cookie
+		$this->_store('crbsb.date', $date);
+		
+		$data['date'] = $date;
+		
+		if(IS_XHR){
+			
+			// Fetch timetable
+			$timetable = $this->bookings_model->timetable($data);
+			
+			if($timetable == FALSE){
+				$data['error'] = $this->bookings_model->lasterr;
+				$this->load->view('parts/ajaxerr', $data);
+			} else {
+				// Return the timetable HTML fragment for XHR
+				echo $timetable;
+			}
+			
+		} else {
+			
+			// No XHR, just load actual page but with supplied date
+			return $this->_index_day($data['date']);
+			
+		}
+		
+	}
+	
+	
+	
+	
+	/**
 	 * Change the calendar-picker month.
 	 *
 	 * 1) Store requested year & month.
@@ -412,8 +559,16 @@ class Bookings extends Controller {
 			
 			// Get the actual date requested before if any (to set class)
 			$cur = $this->_get('crbsb.week_requested_date');
+			
+			// Check which view mode is currently active, and supply to calendar so it generates correct URLs
+			if($this->tt['view'] == 'room'){
+				$urlpart = 'week';
+			} else {
+				$urlpart = 'date';
+			}
+			
 			// Respond with the calendar HTML
-			echo $this->calendar->generate_sidebar($url_year, $url_month, $academic, $cur);
+			echo $this->calendar->generate_sidebar($url_year, $url_month, $academic, $cur, $urlpart);
 			
 			// Send them an error as well if appropriate
 			if($err == TRUE){ echo $this->msg->err($this->lasterr); }

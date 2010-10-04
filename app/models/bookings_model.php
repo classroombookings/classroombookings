@@ -180,6 +180,112 @@ class Bookings_model extends Model{
 	}
 	
 	
+	
+	
+	/**
+	 * Timetable for day view mode
+	 *
+	 * @access private
+	 * @param	string		week		Date to show
+	 * @return	Fragment of HTML with generated timetable
+	 */
+	private function timetable_day($date){
+	
+		log_message('debug', 'Asked to load timetable for date: ' . $date);
+		
+		if(empty($date)){
+			$this->lasterr = 'No date specified for timetable.';
+			return FALSE;
+		}
+		
+		// Initialise HTML variable
+		$html = '';
+		
+		// Get info on the week that the date is in
+		$week = $this->weeks_model->get_by_date($date);
+		
+		// Get year ID
+		$year_id = $this->session->userdata('year_working');
+		if($year_id == FALSE){
+			// If not in session, get active one configured.
+			$year_id = $this->years_model->get_active_id();
+		}
+		
+		// Get the weeks in the current working academic year.
+		// Prevents non-weeks from being linked to in the nav header
+		$weeks_in_year = $this->weeks_model->get_dates(NULL, $year_id, 'date');
+		if(!is_array($weeks_in_year)){ $weeks_in_year = array(); }
+		
+		// Set up navigating header
+		$date_prev = date('Y-m-d', strtotime('-1 day', strtotime($date)));
+		$date_next = date('Y-m-d', strtotime('+1 day', strtotime($date)));
+		
+		/*
+		// Find week start of current date
+		$dateparts = explode('-', $date);
+		$crbs_date = mktime(0, 0, 0, $dateparts[1], $dateparts[2], $dateparts[0]);
+		if( date("w", $crbs_date) == 1 ){
+			$week_date = date("Y-m-d", $crbs_date);
+		} else {
+			$week_date = date("Y-m-d", strtotime("last Monday", $crbs_date));
+		}
+		
+		// Find week start of 'previous' date
+		$dateparts = explode('-', $date_prev);
+		$crbs_date = mktime(0, 0, 0, $dateparts[1], $dateparts[2], $dateparts[0]);
+		if( date("w", $crbs_date) == 1 ){
+			$week_prev = date("Y-m-d", $crbs_date);
+		} else {
+			$week_prev = date("Y-m-d", strtotime("last Monday", $crbs_date));
+		}
+		
+		// Find week start of 'next' date
+		$dateparts = explode('-', $date_next);
+		$crbs_date = mktime(0, 0, 0, $dateparts[1], $dateparts[2], $dateparts[0]);
+		if( date("w", $crbs_date) == 1 ){
+			$week_next = date("Y-m-d", $crbs_date);
+		} else {
+			$week_next = date("Y-m-d", strtotime("last Monday", $crbs_date));
+		}
+		
+		// Is last week an actual configured week in the year? If not - go back until we find one.
+		if(!array_key_exists($week_prev, $weeks_in_year)){
+			while(key($weeks_in_year) !== $week_date) next($weeks_in_year);
+			prev($weeks_in_year);
+			$week_prev = key($weeks_in_year);
+		}
+		
+		// Is next week a configured week in the year? ........
+		if(!array_key_exists($week_next, $weeks_in_year)){
+			while(key($weeks_in_year) !== $week_date) next($weeks_in_year);
+			next($weeks_in_year);
+			$week_next = key($weeks_in_year);
+		}
+		*/
+		
+		// Variables needed for navigation header. Then load the view.
+		$nav['mode'] = 'day';
+		$nav['date'] = $date;
+		$nav['week'] = $week;
+		$nav['prev']['text'] = '&lt; Previous Day';
+		$nav['prev']['href'] = (!empty($date_prev)) ? 'bookings/date/' . $date_prev : NULL;
+		$nav['next']['text'] = 'Next Week &gt;';
+		$nav['next']['href'] = (!empty($date_next)) ? 'bookings/date/' . $date_next : NULL;
+		$nav = $this->load->view('bookings/navheader', $nav, TRUE);
+		
+		$html .= $nav;
+		
+		$html .= "Timetable. Date: $date.";
+		
+		$this->auth->set_user($this->session->userdata('user_id'));
+		
+		
+		
+		return $html;
+		
+	}
+	
+	
 }
 
 

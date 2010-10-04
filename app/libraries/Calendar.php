@@ -334,10 +334,12 @@ class CI_Calendar {
 	 * @access	public
 	 * @param	integer	the year
 	 * @param	integer	the month
-	 * @param	array	the data to be shown in the calendar cells
+	 * @param	array	academic information (weeks..)
+	 * @param	cur		current date (to highlight selection)
+	 * @param	urlpart	/bookings/$urlpart/$data...
 	 * @return	string
 	 */
-	function generate_sidebar($year = '', $month = '', $academic, $cur = NULL)
+	function generate_sidebar($year = '', $month = '', $academic, $cur = NULL, $urlpart = 'week')
 	{
 		
 		// Check that $academic is an array of data. If not, fail.
@@ -511,7 +513,7 @@ class CI_Calendar {
 				
 				#echo $crbs_m;
 				if(array_key_exists($crbs_m, $weekdates)){
-					$data[$day] = site_url('bookings/week/' . date('Y-m-d', $crbs_date));
+					$data[$day] = site_url('bookings/' . $urlpart . '/' . date('Y-m-d', $crbs_date));
 				}
 				
 				#echo "Cur: $cur";

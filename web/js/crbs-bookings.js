@@ -143,7 +143,7 @@ $("div#tabs").show();
 $('a[rel*=boxy]').bind("click", function(e){
 	e.preventDefault();
 	var url = $(e.currenTarget).attr("href");
-	Boxy.load($(this).attr("href"), {cache: true, title: 'Room Information'});
+	Boxy.load($(this).attr("href"), {cache: true, title: $(this).attr("original-title")});
 });
 
 

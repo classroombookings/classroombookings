@@ -1,27 +1,27 @@
 <?php
-$tablewidth = "100%";
-
 $col1 = '200';
 $col2 = '200';
+
+$tablestyle = 'width: 100%;';
 ?>
 
-<h1><?php echo $room->name ?></h1>
+<?php if(!IS_XHR): ?><h1><?php echo $room->name ?></h1><?php endif; ?>
 
 <?php
 if(!empty($room->photo)){
 	$filename = str_replace('#', 'sm', $room->photo);
 	$path = "upload/$filename";
-	$tablewidth = '300';
-?>
-<div style="width:760px">
-<img src="<?php echo $path ?>" alt="" style="float:left;clear:none;" />
-<?php
+	$tablestyle = 'float: left; clear:none; margin-left:20px; width: 300px;';
+	?>
+	<div>
+	<img src="<?php echo $path ?>" alt="" style="float: left; clear: none; display: inline; " />
+	<?php
 } else {
-?>
+	?>
 <div style="width:400px;">
 <?php } ?>
 
-<table class="list" cellpadding="5" style="float:right;clear:none;display:block;">
+<table class="list" cellpadding="5" style="<?php echo $tablestyle ?>">
 	<?php if(!empty($room->description)): ?>
 	<tr>
 		<td class="t" width="<?php echo $col1 ?>">Description</td>
@@ -48,13 +48,13 @@ if(!empty($room->photo)){
 			if($attr->type != 'check'){
 				echo $attr->value;
 			} else {
-				$str = '<span class="ui-icon %s"></span>';
+				$str = '<img src="img/ico/%s" width="16" height="16" alt="%s" title="%s"></span>';
 				switch($attr->value){
 					case 1:
-						$img = sprintf($str, 'ui-icon-check');
+						$img = sprintf($str, 'f_yes.gif', 'Yes', 'Yes');
 						break;
 					default:
-						$img = sprintf($str, 'ui-icon-close');
+						$img = sprintf($str, 'f_err.gif', 'No', 'No');
 						break;
 				}
 				echo $img;
@@ -63,6 +63,9 @@ if(!empty($room->photo)){
 	</tr>
 	<?php endforeach; ?>
 </table>
+
+
+<div class="clear"></div>
 
 
 </div>

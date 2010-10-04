@@ -1,12 +1,13 @@
-<div id="tabs" class="bookings-sidetabs hidden">
+<?php if(isset($rooms)): ?><div id="tabs" class="bookings-sidetabs hidden"><?php endif; ?>
 	
-	
+	<?php if(isset($rooms)): ?>
 	<ul>
 		<li><a href="#rooms">Rooms</a></li>
 		<li><a href="#date">Date</a></li>
 	</ul>
+	<?php endif; ?>
 	
-	
+	<?php if(isset($rooms)): ?>
 	<div id="rooms" class="bookings-roomlist">
 		<table class="list" id="sb-roomlist">
 		<?php
@@ -41,7 +42,7 @@
 				echo '</td>';
 				echo '<td class="il">';
 				unset($actiondata);
-				$actiondata[] = array('rooms/info/' . $room->room_id, ' ', 'f_info.gif', 'Room information', FALSE, 'rel="boxy"');
+				$actiondata[] = array('rooms/info/' . $room->room_id, ' ', 'f_info.gif', 'Room information: ' . $room->name, FALSE, 'rel="boxy"');
 				$this->load->view('parts/linkbar', $actiondata);
 				echo '</td>';
 				
@@ -53,6 +54,7 @@
 		?>
 		</table>
 	</div>
+	<?php endif; ?>
 
 	
 	<div id="date" class="bookings-cal">
@@ -66,5 +68,6 @@
 		?></div>
 	</div>
 	
-	
+<?php if(isset($rooms)): ?>
 </div>
+<?php endif; ?>

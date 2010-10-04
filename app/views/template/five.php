@@ -73,10 +73,10 @@ $changeyear = $this->auth->check('changeyear', TRUE);
 <style type="text/css">.hidden{ display:block; }</style>
 </noscript>
 <script type="text/javascript">
-var baseurl = "<?php echo $this->config->item('base_url').'web/' ?>";
+var baseurl = "<?php echo $this->config->item('base_url') . 'web/' ?>";
 var siteurl = "<?php echo site_url() ?>/";
-var _jsQ = [];
 var tt_view = "<?php echo $this->settings->get('tt_view') ?>";
+var _jsQ = [];
 </script>
 </head>
 <body>
@@ -203,8 +203,7 @@ var tt_view = "<?php echo $this->settings->get('tt_view') ?>";
 	
 	
 	
-	
-	<!-- Javascript to attach Tipsy to all appropriate elements with titles -->
+	<!-- Attach Tipsy to all appropriate elements with titles -->
 	<script type="text/javascript">
 	_jsQ.push(function(){
 		$('span[title!=],label[title!=],a[title!=]').tipsy({ gravity:'n' });
@@ -215,6 +214,7 @@ var tt_view = "<?php echo $this->settings->get('tt_view') ?>";
 	</script>
 	
 	
+	<!-- Include Javascript loader and then load everything required -->
 	<script type="text/javascript" src="js/LAB.min.js"></script>
 	<script type="text/javascript">
 		var extras = [];

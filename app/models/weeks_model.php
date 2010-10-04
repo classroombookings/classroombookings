@@ -390,6 +390,15 @@ class Weeks_model extends Model{
 			return FALSE;
 		}
 		
+		// Find start of week of requested date. If date is not monday, make it so!
+		$dateparts = explode('-', $start_date);
+		$crbs_date = mktime(0, 0, 0, $dateparts[1], $dateparts[2], $dateparts[0]);
+		if( date("w", $crbs_date) == 1 ){
+			$start_date = date("Y-m-d", $crbs_date);
+		} else {
+			$start_date = date("Y-m-d", strtotime("last Monday", $crbs_date));
+		}
+		
 		// Query the DB to find the week
 		$sql = 'SELECT * FROM weeks
 				LEFT JOIN weekdates USING (week_id)
