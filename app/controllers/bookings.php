@@ -53,6 +53,12 @@ class Bookings extends Controller {
 		$prefs['template'] = $this->load->view('bookings/side/caltemplate', NULL, TRUE);
 		$this->load->library('calendar', $prefs);
 		
+		// Get settings
+		$tt = array();
+		$tt['view'] = $this->settings->get('tt_view');
+		$tt['cols'] = $this->settings->get('tt_cols');
+		$this->tt = $tt;
+		
 		// Misc things
 		$this->tpl = $this->config->item('template');
 		$this->output->enable_profiler($this->config->item('profiler'));
@@ -70,12 +76,8 @@ class Bookings extends Controller {
 	function index(){
 		
 		$this->auth->check('bookings');
-		$tt['view'] = $this->settings->get('tt_view');
-		$tt['cols'] = $this->settings->get('tt_cols');
 		
-		$this->tt = $tt;
-		
-		switch($tt['view']){
+		switch($this->tt['view']){
 			case 'day': return $this->_index_day(); break;
 			case 'room': return $this->_index_room(); break;
 		}
@@ -196,7 +198,7 @@ class Bookings extends Controller {
 		$cur = $this->_get('crbsb.week_requested_date');
 		
 		// Set up the sidebar
-		$sidebar['cal'] = $this->calendar->generate_sidebar($caly, $calm, $academic, $cur);
+		$sidebar['cal'] = $this->calendar->generate_sidebar($caly, $calm, $academic, $cur, 'week');
 		$sidebar['rooms'] = $available_rooms;
 		$sidebar['cats'] = $this->rooms_model->get_categories_dropdown();
 		$sidebar['cats'][-1] = 'Uncategorised';

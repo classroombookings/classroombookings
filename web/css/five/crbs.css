@@ -530,7 +530,7 @@ table.ccb{
 div#navheader table{ width:100%; border:0px solid #ccc; margin:0 0 1em 0; }
 div#navheader table tr td{ vertical-align:middle; padding:5px 0;}
 div#navheader table tr td.icons{ width:72px; }
-div#navheader table tr td.text{ font-weight:bold; text-align:left; padding-left:20px; }
+div#navheader table tr td.text{ font-weight:bold; text-align:left; padding-left:10px; }
 div#navheader table tr td.text span{ margin:0 10px; }
 div#navheader table tr td.nav{ width:24px; }
 div#navheader table tr td.nav a{ display:block; padding:0 5px; vertical-align:middle; line-height:12px; }

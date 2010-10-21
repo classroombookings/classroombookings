@@ -50,6 +50,7 @@ switch($mode){
 
 	<table>
 		<tr>
+			<td class="text"><?php echo $title ?></td>
 			<td class="nav">
 				<?php
 				if($prev['href'] != NULL){
@@ -66,7 +67,7 @@ switch($mode){
 				}
 				?>
 			</td>
-			<td class="text"><?php echo $title ?></td>
+			<td style="width:10px;">&nbsp;</td>
 		</tr>
 	</table>
 	
