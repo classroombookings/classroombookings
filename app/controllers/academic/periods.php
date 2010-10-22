@@ -24,21 +24,26 @@ class Periods extends Controller {
 	
 
 	function Periods(){
+		
 		parent::Controller();
 		$this->load->model('academic');
 		$this->load->model('periods_model');
 		$this->load->model('years_model');
 		$this->tpl = $this->config->item('template');
 		$this->output->enable_profiler($this->config->item('profiler'));
+		
 	}
 	
 	
 	
 	
 	function index(){
+		
 		$this->auth->check('periods');
 		
 		$links[] = array('academic/periods/add', 'Add a new period', 'add');
+		$links[] = array('academic/periods/timeslots', 'Define time slots', 'clock1.gif');
+		
 		/*$links[] = array('academic/main', 'Academic setup');
 		$links[] = array('academic/years', 'Years');
 		$links[] = array('academic/terms', 'Term dates');
@@ -64,12 +69,14 @@ class Periods extends Controller {
 		$tpl['title'] = 'Periods';
 		$tpl['pagetitle'] = $tpl['title'];
 		$this->load->view($this->tpl, $tpl);
+		
 	}
 	
 	
 	
 	
 	function add(){
+		
 		if($this->session->userdata('year_working') == NULL){
 			$this->msg->add('warn', 'You cannot add a period until an academic year has been made active or you have selected a working academic year.');
 			redirect('academic/periods');
@@ -84,12 +91,14 @@ class Periods extends Controller {
 		$tpl['pagetitle'] = 'Add a new period';
 		$tpl['body'] = $this->load->view('academic/periods/addedit', $body, TRUE);
 		$this->load->view($this->tpl, $tpl);
+		
 	}
 	
 	
 	
 	
 	function edit($period_id){
+		
 		$this->auth->check('periods.edit');
 		$body['period'] = $this->periods_model->get($period_id, NULL, $this->session->userdata('year_working'));
 		$body['period_id'] = $period_id;
@@ -107,6 +116,7 @@ class Periods extends Controller {
 		}
 		
 		$this->load->view($this->tpl, $tpl);
+		
 	}
 	
 	
@@ -171,6 +181,7 @@ class Periods extends Controller {
 	
 	
 	function delete($period_id = NULL){
+
 		$this->auth->check('periods.delete');
 		
 		// Check if a form has been submitted; if not - show it to ask user confirmation
@@ -232,6 +243,7 @@ class Periods extends Controller {
 	
 	
 	function copy(){
+	
 		$year_id = $this->input->post('year_id');
 		
 		$this->form_validation->set_rules('year_id', 'Year ID', 'required');
@@ -252,6 +264,76 @@ class Periods extends Controller {
 			redirect('academic/periods');
 			
 		}
+		
+	}
+	
+	
+	
+	
+	/* TIME SLOTS */
+	
+	
+	
+	
+	/**
+	 * Define time slots page.
+	 */
+	function timeslots(){
+		
+		$this->auth->check('periods.edit');
+		$body['timeslots'] = $this->periods_model->get_timeslots($this->session->userdata('year_working'));
+		
+		$tpl['subnav'] = $this->academic->subnav();
+		$tpl['title'] = 'Time slots';
+		$tpl['pagetitle'] = $tpl['title'];
+		
+		$tpl['body'] = $this->load->view('academic/periods/timeslots', $body, TRUE);
+		
+		$this->load->view($this->tpl, $tpl);
+		
+	}
+	
+	
+	
+	
+	/** 
+	 * Save changes to timeslots
+	 */
+	function save_timeslots(){
+		
+		$this->form_validation->set_rules('start_time', 'Start time', 'required|exact_length[5]|callback__is_valid_time');
+		$this->form_validation->set_rules('end_time', 'End time', 'required|exact_length[5]|callback__is_valid_time|callback__is_after[start_time]');
+		$this->form_validation->set_rules('interval', 'Interval', 'callback__is_sensible_interval');
+		$this->form_validation->set_error_delimiters('<li>', '</li>');
+		
+		if($this->form_validation->run() == FALSE){
+			
+			// Validation failed - load required action depending on the state of user_id
+			$this->timeslots();
+			
+		} else {
+			
+			// Validation OK
+			$data['year_id'] = $this->session->userdata('year_working');
+			$data['start_time'] = $this->input->post('start_time');
+			$data['end_time'] = $this->input->post('end_time');
+			// To get interval as seconds, multiply time by interval.
+			$interval = $this->input->post('interval');
+			$data['interval'] = $interval['time'] * $interval['measure'];
+			
+			// Updating existing period
+			$update = $this->periods_model->update_timeslots($data);
+			if($update == TRUE){
+				$this->msg->add('info', lang('TIMESLOTS_OK'));
+			} else {
+				$this->msg->add('err', sprintf(lang('TIMESLOTS_FAIL'), $this->periods_model->lasterr));
+			}
+			
+			// All done, redirect!
+			redirect('academic/periods');
+			
+		}
+		
 	}
 	
 	
@@ -267,6 +349,7 @@ class Periods extends Controller {
 	 * 
 	 */	 	 	 	 	 	 	
 	function _is_valid_time($time){
+		
 		$times['am'] = strtotime('00:00');
 		$times['pm'] = strtotime('23:59');
 		$times['data'] = strtotime($time);
@@ -277,6 +360,7 @@ class Periods extends Controller {
 			$ret = false;
 		}
 		return $ret;
+		
 	}
 	
 	
@@ -293,15 +377,44 @@ class Periods extends Controller {
 	 *
 	 */	 	 	 	 	 	 
 	function _is_after($time){
-		$start = strtotime( $this->_fix_time( $this->input->post( 'time_start' ) ) );
+		
+		$start = strtotime( $this->_fix_time( $this->input->post( 'start_time' ) ) );
 		$end = strtotime( $this->_fix_time($time) );
 		if( $end > $start ){
 			$ret = true;
 		} else {
-			$this->form_validation->set_message('_is_after', 'The end time must be equal to or greater than the start time of '.$this->_fix_time( $this->input->post( 'time_start' ) ).'.' );
+			$this->form_validation->set_message('_is_after', 'The end time must be equal to or greater than the start time of '.$this->_fix_time( $this->input->post( 'start_time' ) ).'.' );
 			$ret = false;
 		}
 		return $ret;
+		
+	}
+	
+	
+	
+	
+	/**
+	 * Check that the timeslot interval is not longer than the length of the day
+	 *
+	 * @param	int		interval		Interval (in seconds)
+	 * @return bool
+	 */
+	function _is_sensible_interval($interval){
+		
+		$ts = strtotime($this->_fix_time($this->input->post('start_time')));
+		$te = strtotime($this->_fix_time($this->input->post('end_time')));
+		$int = $interval['time'] * $interval['measure'];
+		$day_length = $te - $ts;
+		
+		if($int > $day_length){
+			$ret = FALSE;
+			$this->form_validation->set_message('_is_sensible_interval', 'Choose a sensible interval - it cannot be longer than the day.');
+		} else {
+			$ret = TRUE;
+		}
+		
+		return $ret;
+		
 	}
 	
 	

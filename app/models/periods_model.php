@@ -202,6 +202,87 @@ class Periods_model extends Model{
 	
 	
 	
+	/**
+	 * Retrieve time slot information for year.
+	 *
+	 * @param	int		year_id		Year ID to get timeslot info for.
+	 * @return	object
+	 */
+	function get_timeslots($year_id){
+		
+		$sql = 'SELECT * FROM timeslots WHERE year_id = ?';
+		$query = $this->db->query($sql, array($year_id));
+		
+		if($query->num_rows() == 0){
+			
+			return FALSE;
+			
+		} else {
+			
+			$timeslots = $query->row();
+			
+			// Determine denomination
+			$minutes = $timeslots->interval / 60;
+			$hours = $timeslots->interval / 3600;
+			
+			list($time, $measure) = ($minutes >= 60) ? array($hours, 'h') : array($minutes, 'm');
+			if($minutes >= 60){
+				$interval['time'] = $hours;
+				$interval['measure'] = 3600;
+			} else {
+				$interval['time'] = $minutes;
+				$interval['measure'] = 60;
+			}
+			$timeslots->interval = $interval;
+			
+			return $timeslots;
+			
+		}
+		
+	}
+	
+	
+	
+	
+	/**
+	 * Update the time slots.
+	 *
+	 * Academic year must be included in data array.
+	 *
+	 * @param	$data	array	Array of data to insert (year, day start/end, interval)
+	 * @return	bool
+	 */
+	function update_timeslots($data){
+		
+		$ts = strtotime($data['start_time']);
+		$te = strtotime($data['end_time']);
+		$int = $data['interval'];
+		$day_length = $te - $ts;
+		
+		if($int > $day_length){
+			$this->lasterr = 'Please choose a sensible interval - it cannot be longer than the day.';
+			return FALSE;
+		}
+		
+		
+		$sql = 'REPLACE INTO timeslots (year_id, start_time, end_time, `interval`)
+				VALUES (?, ?, ?, ?)';
+		
+		$query = $this->db->query($sql, array(
+			$data['year_id'],
+			$data['start_time'],
+			$data['end_time'],
+			$data['interval'],
+			$data['year_id']
+		));
+		
+		return $query;
+		
+	}
+	
+	
+	
+	
 }
 
 

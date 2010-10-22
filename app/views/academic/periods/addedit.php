@@ -135,14 +135,14 @@ $t = 1;
 	
 	<?php
 	if($period_id == NULL){
-		$submittext = $this->lang->line('ACTION_ADD') . ' ' . strtolower($this->lang->line('W_PERIOD'));
+		$submittext = lang('ACTION_ADD') . ' ' . strtolower(lang('W_PERIOD'));
 	} else {
-		$submittext = $this->lang->line('ACTION_SAVE') . ' ' . strtolower($this->lang->line('W_PERIOD'));
+		$submittext = lang('ACTION_SAVE') . ' ' . strtolower(lang('W_PERIOD'));
 	}
 	unset($buttons);
-	$buttons[] = array('submit', 'positive', $submittext, 'disk1.gif', $t);
-	$buttons[] = array('submit', '', 'Save and add another', 'plus.gif', $t+1);
-	$buttons[] = array('cancel', 'negative', $this->lang->line('ACTION_CANCEL'), 'arr-left.gif', $t+2, site_url('academic/periods'));
+	$buttons[] = array('submit', 'ok', $submittext, $t);
+	$buttons[] = array('submit', 'misc', 'Save and add another', $t+1);
+	$buttons[] = array('link', 'cancel', lang('ACTION_CANCEL'), $t+2, site_url('academic/periods'));
 	$this->load->view('parts/buttons', array('buttons' => $buttons));
 	?>
 

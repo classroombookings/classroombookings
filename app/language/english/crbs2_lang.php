@@ -37,6 +37,9 @@ $lang['PERIODS_ADD_FAIL'] = 'An error occured and the period could not be added.
 $lang['PERIODS_EDIT_OK'] = 'The period details were saved successfully.';
 $lang['PERIODS_EDIT_FAIL'] = 'An error occured and the period details could not be saved.';
 
+$lang['TIMESLOTS_OK'] = 'The time slots have been updated.';
+$lang['TIMESLOTS_FAIL'] = 'An error occurred and the time slots have not been updated (%s).';
+
 $lang['WEEKS_ADD_OK'] = '%s was added successfully.';
 $lang['WEEKS_ADD_FAIL'] = 'An error occured and the week could not be added (%s).';
 $lang['WEEKS_EDIT_OK'] = 'The %s details were saved successfully.';
