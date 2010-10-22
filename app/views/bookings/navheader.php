@@ -1,4 +1,9 @@
 <?php
+if(!$week){
+	$week->week_id = 0;
+	$week->name = '(No week configured)';
+	$week->colour = 'ffffff';
+}
 switch($mode){
 	
 	case 'week':

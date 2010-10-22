@@ -25,7 +25,7 @@ $t = 1;
 			$input['tabindex'] = $t;
 			$input['rows'] = '6';
 			$input['cols'] = '60';
-			$input['value'] = set_value('ldapbase', $auth->ldapbase);
+			$input['value'] = set_value('ldapbase', $settings['auth.ldap.base']);
 			echo form_textarea($input);
 			$t++;
 			?>

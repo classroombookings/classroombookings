@@ -3,6 +3,9 @@
 define('W_SIDEBAR', 5);
 define('W_MAIN', 19);
 
+// Get all settings
+$settings = $this->settings->get();
+
 // Decide on page title
 $title = (!isset($title)) ? '' : $title;
 
@@ -75,7 +78,7 @@ $changeyear = $this->auth->check('changeyear', TRUE);
 <script type="text/javascript">
 var baseurl = "<?php echo $this->config->item('base_url') . 'web/' ?>";
 var siteurl = "<?php echo site_url() ?>/";
-var tt_view = "<?php echo $this->settings->get('tt_view') ?>";
+var tt_view = "<?php echo @$settings['timetable.view']; ?>";
 var _jsQ = [];
 </script>
 </head>
@@ -100,11 +103,10 @@ var _jsQ = [];
 				<?php echo anchor(site_url(), 'Classroombookings') ?>
 				<!-- <span class="schoolname">
 				<?php
-				$settings = $this->settings->get_all('main');
-				if($settings->schoolurl != FALSE){
-					echo '<a href="'.$settings->schoolurl.'">'.$settings->schoolname.'</a>';
+				if($settings['school.url'] != FALSE){
+					echo '<a href="'.$settings['school.url'].'">'.$settings['school.name'].'</a>';
 				} else {
-					echo $settings->schoolname;
+					echo $settings['school.name'];
 				}
 				?>
 				</span> -->

@@ -148,17 +148,19 @@ div#tabs{
 
 /* Message box - Base class */
 div.msg{
-	background-position:5px 5px;
-	background-repeat:no-repeat;
-	color:#000;
-	padding:2px 0 0 26px !important;
-	border-style:solid;
-	border-width:1px;
-	min-height:28px;
+	background-position: 5px 5px;
+	background-repeat: no-repeat;
+	color: #000;
+	padding: 5px 0 5px 26px !important;
+	border-style: solid;
+	border-width: 1px;
+	/*min-height: 28px;*/
 	/*border-left-width:8px;*/
-	font-size:110%;
-	margin:10px 0;
+	margin:0 0 1em 0;
 }
+	div.msg ul{
+		margin: 0.5em 0;
+	}
 	div.msg strong{
 		margin:0;
 		padding:0;

@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Oct 22, 2010 at 10:34 AM
+-- Generation Time: Oct 22, 2010 at 04:03 PM
 -- Server version: 5.1.37
 -- PHP Version: 5.3.0
 
@@ -593,51 +593,36 @@ INSERT INTO `rooms` (`room_id`, `category_id`, `user_id`, `order`, `name`, `desc
 -- --------------------------------------------------------
 
 --
--- Table structure for table `settings-auth`
+-- Table structure for table `settings`
 --
 
-DROP TABLE IF EXISTS `settings-auth`;
-CREATE TABLE `settings-auth` (
-  `preauthkey` char(40) DEFAULT NULL COMMENT 'SHA1 hash to be used as preauth key',
-  `preauthgroup_id` int(10) unsigned DEFAULT NULL COMMENT 'Default group for accounts created automatically via preauth',
-  `preauthemail` varchar(50) DEFAULT NULL COMMENT 'Email domain for users created via preauth',
-  `ldap` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT 'Boolean 1 or 0 for LDAP auth status',
-  `ldaphost` varchar(50) DEFAULT NULL COMMENT 'LDAP server hostname',
-  `ldapport` int(5) unsigned DEFAULT NULL COMMENT 'LDAP server TCP port',
-  `ldapbase` text COMMENT 'Base DNs to search in LDAP',
-  `ldapfilter` text COMMENT 'LDAP search query filter',
-  `ldapgroup_id` int(10) unsigned DEFAULT NULL COMMENT 'Default group for LDAP accounts',
-  `ldaploginupdate` tinyint(1) unsigned DEFAULT NULL COMMENT 'Boolean. Update user details on every login?'
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='LDAP configuration';
+DROP TABLE IF EXISTS `settings`;
+CREATE TABLE `settings` (
+  `key` varchar(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `value` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`key`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='All settings';
 
 --
--- Dumping data for table `settings-auth`
+-- Dumping data for table `settings`
 --
 
-INSERT INTO `settings-auth` (`preauthkey`, `preauthgroup_id`, `preauthemail`, `ldap`, `ldaphost`, `ldapport`, `ldapbase`, `ldapfilter`, `ldapgroup_id`, `ldaploginupdate`) VALUES
-('8551ec08afab46265cbc3fed3151ac1bdfc34c73', 1, 'bishopbarrington.net', 1, 'bbs-svr-001', 389, 'ou=teaching staff, ou=bbs, ou=establishments, dc=bbarrington, dc=internal; ou=system administrators, ou=bbs, ou=establishments, dc=bbarrington, dc=internal', '(& (| (!(displayname=Administrator*)) (!(displayname=Admin*)) ) (cn=%u) )', 2, 0);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `settings-main`
---
-
-DROP TABLE IF EXISTS `settings-main`;
-CREATE TABLE `settings-main` (
-  `schoolname` varchar(100) DEFAULT NULL COMMENT 'Name of school',
-  `schoolurl` varchar(255) DEFAULT NULL COMMENT 'Web address for school',
-  `tt_view` enum('room','day') DEFAULT NULL COMMENT 'Mode of display for room booking table',
-  `tt_cols` enum('periods','rooms','days') DEFAULT NULL COMMENT 'Columns on the booking table',
-  `room_order` enum('alpha','order') DEFAULT NULL COMMENT 'How to display rooms in the booking view'
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Global app settings';
-
---
--- Dumping data for table `settings-main`
---
-
-INSERT INTO `settings-main` (`schoolname`, `schoolurl`, `tt_view`, `tt_cols`, `room_order`) VALUES
-('Bishop Barrington School Sports with Mathematics College', '', 'room', 'periods', 'alpha');
+INSERT INTO `settings` (`key`, `value`) VALUES
+('school.name', 'Bishop Barrington School'),
+('school.url', 'http://www.bishopbarrington.net/'),
+('timetable.view', 'day'),
+('timetable.cols', 'periods'),
+('timetable.roomorder', 'alpha'),
+('auth.preauth.key', '0a341129b64a985716e64009526eacc9dfae23d2'),
+('auth.preauth.group_id', '2'),
+('auth.preauth.emaildomain', 'bishopbarrington.net'),
+('auth.ldap', '1'),
+('auth.ldap.host', 'bbs-svr-001'),
+('auth.ldap.port', '389'),
+('auth.ldap.base', 'ou=teaching staff, ou=bbs, ou=establishments, dc=bbarrington, dc=internal; ou=system administrators, ou=bbs, ou=establishments, dc=bbarrington, dc=internal'),
+('auth.ldap.filter', '(& (| (!(displayname=Administrator*)) (!(displayname=Admin*)) ) (cn=%u) )'),
+('auth.ldap.group_id', '2'),
+('auth.ldap.loginupdate', '1');
 
 -- --------------------------------------------------------
 
@@ -688,7 +673,8 @@ CREATE TABLE `timeslots` (
 --
 
 INSERT INTO `timeslots` (`year_id`, `start_time`, `end_time`, `interval`) VALUES
-(5, '08:30:00', '16:30:00', 900);
+(5, '08:30:00', '16:30:00', 900),
+(7, '08:30:00', '16:30:00', 900);
 
 -- --------------------------------------------------------
 
@@ -721,7 +707,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `group_id`, `enabled`, `username`, `email`, `password`, `displayname`, `cookiekey`, `lastlogin`, `lastactivity`, `ldap`, `created`) VALUES
-(1, 1, 1, 'admin', 'craig.rodway@gmail.com', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Craig Rodway', NULL, '2010-10-21 14:27:38', '2010-10-22 10:30:13', 0, '0000-00-00'),
+(1, 1, 1, 'admin', 'craig.rodway@gmail.com', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'Craig Rodway', NULL, '2010-10-21 14:27:38', '2010-10-22 16:02:35', 0, '0000-00-00'),
 (12, 2, 1, 'craig.rodway', 'craig.rodway@bishopbarrington.net', NULL, 'Mr Rodway', NULL, '2009-05-19 11:41:06', '2009-05-19 11:43:17', 0, '2009-01-09'),
 (19, 2, 1, 'test.one', 'test.one@bishopbarrington.net', NULL, 'Mr T One', NULL, '2009-05-19 11:55:07', '2009-05-19 11:55:14', 1, '2009-01-14'),
 (22, 2, 1, 'test.three', 'test.three@bishopbarrington.net', NULL, 'Mr T Three', NULL, '2009-01-14 10:56:57', '0000-00-00 00:00:00', 1, '2009-01-14'),
@@ -789,7 +775,7 @@ CREATE TABLE `usersactive` (
 --
 
 INSERT INTO `usersactive` (`user_id`, `timestamp`) VALUES
-(1, 1287739837);
+(1, 1287759779);
 
 -- --------------------------------------------------------
 

@@ -40,7 +40,7 @@ class Configure extends Controller {
 		// Other pages in this parent section
 		$subnav[] = array('configure/general', 'General', 'configure');
 		$subnav[] = array('configure/authentication', 'Authentication', 'configure');
-		if($this->settings->ldap() == TRUE){
+		if($this->settings->get('auth.ldap') == 1){
 			$subnav[] = array('configure/ldapgroups', 'LDAP Groups', 'configure');
 		}
 		return $subnav;
@@ -67,12 +67,14 @@ class Configure extends Controller {
 	}
 	
 	
+	
+	
 	/*
 	 * Page: General
 	 */
 	function general(){
 		$this->auth->check('configure');
-		$body['main'] = $this->settings->get_all('main');
+		$body['settings'] = $this->settings->get();
 		$tpl['subnav'] = $this->subnav();
 		$tpl['title'] = 'Configure';
 		$tpl['pagetitle'] = 'Configure classroombookings';
@@ -87,8 +89,10 @@ class Configure extends Controller {
 	 * Page: Authentication
 	 */
 	function authentication(){
+		
 		$this->auth->check('configure');
-		$body['auth'] = $this->settings->get_all('auth');
+		
+		$body['settings'] = $this->settings->get('auth.');
 		$body['groups'] = $this->security->get_groups_dropdown();
 		$body['ldapgroups'] = $this->security->get_ldap_groups();		
 		$tpl['subnav'] = $this->subnav();
@@ -96,6 +100,7 @@ class Configure extends Controller {
 		$tpl['pagetitle'] = 'Configure authentication';
 		$tpl['body'] = $this->load->view('configure/conf.auth.php', $body, TRUE);
 		$this->load->view($this->tpl, $tpl);
+		
 	}
 	
 	
@@ -105,15 +110,16 @@ class Configure extends Controller {
 	 * Page: LDAP groups
 	 */
 	function ldapgroups(){
+
 		$this->auth->check('configure');
 		
-		if($this->settings->ldap() == FALSE){
+		if($this->settings->get('auth.ldap') == 0){
 			$this->session->set_flashdata('flash', $this->msg->err('You are not currently using LDAP authentication.'));
 			redirect('configure/authentication');
 		}
 		
 		$body['sidebar'] = $this->load->view('configure/conf.ldap-groups.side.php', NULL, TRUE);
-		$body['auth'] = $this->settings->get_all('auth');
+		$body['settings'] = $this->settings->get('auth.');
 		$body['groups'] = $this->security->get_groups_dropdown();
 		$body['ldapgroups'] = $this->security->get_ldap_groups();
 		$tpl['subnav'] = $this->subnav();
@@ -121,6 +127,7 @@ class Configure extends Controller {
 		$tpl['pagetitle'] = 'Configure LDAP groups';
 		$tpl['body'] = $this->load->view('configure/conf.ldap-groups.php', $body, TRUE);
 		$this->load->view($this->tpl, $tpl);
+		
 	}
 	
 	
@@ -128,31 +135,27 @@ class Configure extends Controller {
 	
 	function save_main(){
 		
-		$this->form_validation->set_rules('schoolname', 'School name', 'required|max_length[100]|trim');
-		$this->form_validation->set_rules('schoolurl', 'Website address', 'max_length[255]|prep_url|trim');
-		$this->form_validation->set_rules('tt_view', 'Timetable view', 'required');
-		$this->form_validation->set_rules('tt_cols', 'Timteable columns', 'required');
-		$this->form_validation->set_rules('room_order', 'Room display order', 'required');
+		$this->form_validation->set_rules('school_name', 'School name', 'required|max_length[100]|trim');
+		$this->form_validation->set_rules('school_url', 'Website address', 'max_length[255]|prep_url|trim');
+		$this->form_validation->set_rules('timetable_view', 'Timetable view', 'required');
+		$this->form_validation->set_rules('timetable_cols', 'Timteable columns', 'required');
 		$this->form_validation->set_error_delimiters('<li>', '</li>');
 		
 		if($this->form_validation->run() == FALSE){
 			
 			// Validation failed
-			#$this->index('conf-main');
 			$this->general();
 			
 		} else {
 			
-			$data['schoolname']		= $this->input->post('schoolname');
-			$data['schoolurl']		= $this->input->post('schoolurl');
-			$data['tt_view'] 		= $this->input->post('tt_view');
-			$data['tt_cols']		= $this->input->post('tt_cols');
-			$data['room_order']		= $this->input->post('room_order');
+			$data['school.name']			= $this->input->post('school_name');
+			$data['school.url']				= $this->input->post('school_url');
+			$data['timetable.view'] 		= $this->input->post('timetable_view');
+			$data['timetable.cols']			= $this->input->post('timetable_cols');
 			
-			$this->settings->save('main', $data);
+			$this->settings->save($data);
 			
 			$this->session->set_flashdata('flash', $this->msg->info($this->lang->line('CONF_MAIN_SAVE_OK')));
-			#$this->session->set_flashdata('tab', 'conf-main');
 			redirect('configure/general');
 			
 		}
@@ -163,22 +166,24 @@ class Configure extends Controller {
 	
 	
 	function save_auth(){
+		
+		#print_r($_POST);
 	
-		$this->form_validation->set_rules('preauth', 'Pre-authentication enable');
-		$this->form_validation->set_rules('ldap', 'LDAP enable');
-		$this->form_validation->set_rules('ldaploginupdate', 'LDAP login update');
-		if($this->input->post('ldap') == '1' && $this->input->post('ldapfirst') == '0'){
+		$this->form_validation->set_rules('auth_preauth', 'Pre-authentication enable');
+		$this->form_validation->set_rules('auth_ldap', 'LDAP enable');
+		$this->form_validation->set_rules('auth_ldap_loginupdate', 'LDAP login update');
+		if($this->input->post('auth_ldap') == '1' && $this->input->post('ldapfirst') == '0'){
 			// LDAP validation (only required if LDAP box is ticked & is not the first time it's being ticked)
-			$this->form_validation->set_rules('ldaphost', 'LDAP host', 'required|max_length[50]|trim');
-			$this->form_validation->set_rules('ldapport', 'LDAP TCP port', 'required|max_length[5]|integer|callback__port_check');
-			$this->form_validation->set_rules('ldapbase', 'LDAP Base DN', 'required|max_length[65536]');
-			$this->form_validation->set_rules('ldapfilter', 'LDAP filter', 'required|max_length[65536]');
-			$this->form_validation->set_rules('ldapgroup_id', 'LDAP group', 'required|integer');
+			$this->form_validation->set_rules('auth_ldap_host', 'LDAP host', 'required|max_length[50]|trim');
+			$this->form_validation->set_rules('auth_ldap_port', 'LDAP TCP port', 'required|max_length[5]|integer|callback__port_check');
+			$this->form_validation->set_rules('auth_ldap_base', 'LDAP Base DN', 'required|max_length[65536]');
+			$this->form_validation->set_rules('auth_ldap_filter', 'LDAP filter', 'required|max_length[65536]');
+			$this->form_validation->set_rules('auth_ldap_group_id', 'LDAP group', 'required|integer');
 			$this->form_validation->set_rules('ldaptestuser', 'LDAP test username');
 		}
-		if($this->input->post('preauth') == '1' && $this->input->post('preauthfirst') == '0'){
-			$this->form_validation->set_rules('preauthgroup_id', 'Preauth group', 'required|integer');
-			$this->form_validation->set_rules('preauthemail', 'Preauth email domain', 'required|max_length[50]');
+		if($this->input->post('auth_preauth') == '1' && $this->input->post('preauthfirst') == '0'){
+			$this->form_validation->set_rules('auth_preauth_group_id', 'Preauth group', 'required|integer');
+			$this->form_validation->set_rules('auth_preauth_emaildomain', 'Preauth email domain', 'required|max_length[50]');
 		}
 		$this->form_validation->set_error_delimiters('<li>', '</li>');
 		
@@ -192,35 +197,35 @@ class Configure extends Controller {
 			
 			// All fields were validated!
 			
-			$preauth = ($this->input->post('preauth') == '1') ? TRUE : FALSE;
-			$preauthkey = ($this->input->post('preauthkey')) ? $this->input->post('preauthkey') : FALSE;
+			$preauth = ($this->input->post('auth_preauth') == '1') ? TRUE : FALSE;
+			$preauthkey = ($this->input->post('auth_preauth_key')) ? $this->input->post('auth_preauth_key') : FALSE;
 			
 			if($preauth == TRUE && $preauthkey == TRUE){
 				// Has been enabled, we have a key, so we should really have a group ID and email domain now
-				$data['preauthgroup_id'] = $this->input->post('preauthgroup_id');
-				$data['preauthemail'] = str_replace('@', '', $this->input->post('preauthemail'));
+				$data['auth.preauth.group_id'] = $this->input->post('auth_preauth_group_id');
+				$data['auth.preauth.emaildomain'] = str_replace('@', '', $this->input->post('auth_preauth_emaildomain'));
 			}
 			
 			// No existing preauthkey, and enabling it for the first time - generate one
 			if($preauthkey == FALSE && $preauth == TRUE){
 				// Make a new preauth key
-				$data['preauthkey'] = sha1(uniqid(rand(), TRUE));
+				$data['auth.preauth.key'] = sha1(uniqid(rand(), TRUE) . __FILE__);
 			}
 			// Existing preauthkey, and now disabling it by removing it from DB
 			if($preauthkey == TRUE && $preauth == FALSE){
-				$data['preauthkey'] = NULL;
+				$data['auth.preauth.key'] = NULL;
 			}
-			$data['ldap'] = ($this->input->post('ldap') == '1') ? 1 : 0;
+			$data['auth.ldap'] = ($this->input->post('auth_ldap') == '1') ? 1 : 0;
 			if($this->input->post('ldapfirst') == '0'){
-				$data['ldaphost'] = $this->input->post('ldaphost');
-				$data['ldapport'] = $this->input->post('ldapport');
-				$data['ldapbase'] = $this->input->post('ldapbase');
-				$data['ldapfilter'] = $this->input->post('ldapfilter');
-				$data['ldapgroup_id'] = $this->input->post('ldapgroup_id');
-				$data['ldaploginupdate'] = ($this->input->post('ldaploginupdate') == '1') ? 1 : 0;
+				$data['auth.ldap.host'] = $this->input->post('auth_ldap_host');
+				$data['auth.ldap.port'] = $this->input->post('auth_ldap_port');
+				$data['auth.ldap.base'] = $this->input->post('auth_ldap_base');
+				$data['auth.ldap.filter'] = $this->input->post('auth_ldap_filter');
+				$data['auth.ldap.group_id'] = $this->input->post('auth_ldap_group_id');
+				$data['auth.ldap.loginupdate'] = ($this->input->post('auth_ldap_loginupdate') == '1') ? 1 : 0;
 			}
 			
-			$save = $this->settings->save('auth', $data);
+			$save = $this->settings->save($data);
 			
 			if($save == FALSE){
 				$this->msg->add('err', $this->lang->line('CONF_AUTH_SAVE_FAIL'));
@@ -252,10 +257,10 @@ class Configure extends Controller {
 		}
 		
 		// Get form values
-		$ldaphost = $this->input->post('ldaphost');
-		$ldapport = $this->input->post('ldapport');
-		$ldapbase = $this->input->post('ldapbase');
-		$ldapfilter = str_replace("%u", $this->input->post('ldaptestuser'), $this->input->post('ldapfilter'));
+		$ldaphost = $this->input->post('auth_ldap_host');
+		$ldapport = $this->input->post('auth_ldap_port');
+		$ldapbase = $this->input->post('auth_ldap_base');
+		$ldapfilter = str_replace("%u", $this->input->post('ldaptestuser'), $this->input->post('auth_ldap_filter'));
 		$ldaptestuser = "cn=" . $this->input->post('ldaptestuser');
 		$ldaptestpass = $this->input->post('ldaptestpass');
 		
@@ -353,7 +358,7 @@ class Configure extends Controller {
 	
 	function get_ldap_groups(){
 		// Get auth settings
-		$auth = $this->settings->get_all('auth');
+		$settings = $this->settings->get('auth.');
 		// Set the tab for when returning to config page
 		#$this->session->set_flashdata('tab', 'conf-ldap-groups');
 		
@@ -367,7 +372,7 @@ class Configure extends Controller {
 		$fields = array('samaccountname');
 		
 		// Connect to LDAP server
-		$connect = ldap_connect($auth->ldaphost, $auth->ldapport);
+		$connect = ldap_connect($settings['auth.ldap.host'], $settings['auth.ldap.port']);
 		if(!$connect){
 			$this->msg->add('err', 'Could not connect to LDAP server.');
 			redirect('configure/ldapgroups');

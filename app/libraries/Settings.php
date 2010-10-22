@@ -32,116 +32,101 @@ class Settings{
 	
 	
 	
-	function get($param, $type = 'main'){
-		$sql = sprintf('SELECT %s FROM `settings-%s` LIMIT 1', $param, $type);
-		$query = $this->CI->db->query($sql);
-		if($query->num_rows() == 1){
-			$row = $query->row();
-			return $row->$param;
-		} else {
-			return FALSE;
-		}	
-	}
-	
-	
-	
-	
-	function get_all($type){
-		switch($type){
-			case 'main':
-				$sql = 'SELECT * FROM `settings-main` LIMIT 1';
-				break;
-			case 'auth':
-				$sql = 'SELECT * FROM `settings-auth` LIMIT 1';
-				break;
-			default:
-				$sql = NULL;
-				$this->lasterr = 'The settings type you loaded was not valid.';
-				break;
+	/**
+	 * Get setting(s)
+	 *
+	 * $param:	a) NULL = get all settings.
+	 *			b) auth. = get all auth.* settings
+	 *			c) auth.ldap = get one setting
+	 *
+	 * @param	mixed	param	Parameter to get if desired
+	 * @return mixed	array (many) or string (single)
+	 */
+	function get($param = NULL){
+		
+		if($param != NULL && preg_match('/\.$/', $param) === 1){
+			// Search for multiple settings
+			$sql = "SELECT * FROM settings WHERE `key` LIKE '%s%%'";
+			$sql = sprintf($sql, $param);
+			$query = $this->CI->db->query($sql);
 		}
 		
-		if($sql == NULL){
-			return FALSE;
-		} else {
-			$query = $this->CI->db->query($sql);
-			if($query->num_rows() == 1){
-				// Got data ok
-				#$row = $query->row();
-				return $query->row();
+		if($param == NULL OR isset($sql)){
+			
+			// Initialise array for settings
+			$settings = array();
+		
+			// get all, if no query previously created
+			if(!isset($sql)){
+				$sql = 'SELECT * FROM settings';
+				$query = $this->CI->db->query($sql);
+			}
+			
+			// Result of query (should have multiple rows)
+			if($query->num_rows() > 0){
+				$result = $query->result();
+				foreach($result as $row){
+					$settings[$row->key] = $row->value;
+				}
+				return $settings;
 			} else {
-				$this->lasterr = 'No results found!';
+				$this->lasterr = 'No settings to retrieve.';
 				return FALSE;
 			}
-		}
-	}
-	
-	
-	
-	
-	function save($type = NULL, $data = NULL){
-		if($data == NULL || !is_array($data)){
-			$this->lasterr = 'Save function was not called with a data array.';
-			return FALSE;
-		}
-		
-		if($type == NULL){
-			$this->lasterr = 'The save function was given some data, but the type of information is unknown or has not been specified.';
-			return FALSE;
-		}
-		
-		switch($type){
-			case 'main': $table = 'settings-main'; break;
-			case 'auth': $table = 'settings-auth'; break;
-			default: $this->lasterr = 'No valid type of data was specified.'; return FALSE; break;
-		}
-		
-		return $this->CI->db->update($table, $data);
-	}
-	
-	
-	
-	
-	function getldap(){
-		$result1 = array();
-		$result2 = array();
-		
-		$sql = 'SELECT * FROM `settings-ldap`LIMIT 1';
-		$query1 = $this->CI->db->query($sql);
-		
-		if($query1->num_rows() == 1){
-			$result1 = $query1->result_array();
-		}
-
-		$sql = 'SELECT * FROM `settings-ldap-rdns`';
-		$query2 = $this->CI->db->query($sql);
-		
-		if($query2->num_rows() > 0){
-			$result2 = $query2->result_array();
-		}
 			
-		$result['ldap'] = $result1;
-		$result['rnds'] = $result2;
+		} elseif($param != NULL){
 		
-		return $result;
+			// Get one			
+			$sql = 'SELECT value FROM settings WHERE `key` = ? LIMIT 1';
+			$query = $this->CI->db->query($sql, array($param));
+			if($query->num_rows == 1){
+				$row = $query->row();
+				return $row->value;
+			} else {
+				$this->lasterr = sprintf('Could not retrieve setting s.', $param);
+				return FALSE;
+			}
+			
+		}
 		
 	}
 	
 	
 	
 	
-	/**
-	 * LDAP function - returns true/false if using LDAP or not
-	 */
-	function ldap(){
-		$sql = 'SELECT ldap FROM `settings-auth` LIMIT 1';
-		$query = $this->CI->db->query($sql);
-		if($query->num_rows() == 1){
-			$row = $query->row();
-			return ($row->ldap == 1) ? TRUE : FALSE;
+	function save($key = NULL, $value = NULL){
+		
+		// Check first parameter type
+		
+		if(is_array($key)){
+
+			// $key is actually an array of settings
+			$sql = 'REPLACE INTO settings (`key`, value) VALUES ';
+			foreach($key as $k => $v){
+				$sql .= sprintf("('%s', '%s'),", $k, $v);
+			}
+			$sql = preg_replace('/,$/', '', $sql);
+			$query = $this->CI->db->query($sql);
+			return $query;
+			
 		} else {
-			$this->lasterr = 'Could not find auth settings at all!';
-			return FALSE;
+			
+			// One key, one value.
+			if($key != NULL && $value != NULL){
+				
+				$sql = 'REPLACE INTO settings (`key`, value) VALUES (?, ?)';
+				$query = $this->CI->db->query($sql, array($key, $value));
+				return $query;
+				
+			} else {
+				
+				$this->lasterr = 'Settings not supplied in correct format.';
+				return FALSE;
+			
+			}
+		
 		}
+		
 	}
 	
 	

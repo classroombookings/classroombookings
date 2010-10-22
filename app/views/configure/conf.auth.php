@@ -12,18 +12,18 @@ $t = 1;
 	
 	<tr>
 		<td class="caption">
-			<label for="preauth" accesskey="P" title="Enable pre-authentication support. Tick this box to enable it, click Save, then the key will be generated and displayed below."><u>P</u>re-authentication</label>
+			<label for="auth_preauth" accesskey="P" title="Enable pre-authentication support. Tick this box to enable it, click Save, then the key will be generated and displayed below."><u>P</u>re-authentication</label>
 			<p class="tip">Enable pre-authentication support. Tick this box to enable it, click Save, then the key will be generated and displayed below.</p>
 		</td>
 		<td class="field">
-			<label for="preauth" class="check">
+			<label for="auth_preauth" class="check">
 			<?php
-			echo form_hidden('preauthkey', $auth->preauthkey);
+			echo form_hidden('auth_preauth_key', @$settings['auth.preauth.key']);
 			unset($check);
-			$check['name'] = 'preauth';
-			$check['id'] = 'preauth';
+			$check['name'] = 'auth_preauth';
+			$check['id'] = 'auth_preauth';
 			$check['value'] = '1';
-			$check['checked'] = set_radio($check['name'], $check['value'], (!empty($auth->preauthkey)));
+			$check['checked'] = set_radio($check['name'], $check['value'], (!empty($settings['auth.preauth.key'])));
 			$check['tabindex'] = $t;
 			echo form_checkbox($check);
 			$t++;
@@ -33,36 +33,44 @@ $t = 1;
 	</tr>
 	
 	<?php
-	if(!empty($auth->preauthkey)){
+	if(!empty($settings['auth.preauth.key'])){
 		echo form_hidden('preauthfirst', '0');
 	?>
 	<tr class="preauth">
 		<td class="caption">
-			<label for="preauthgroup_id" class="r" accesskey="U" title="Choose a group that users created automatically via preauth will belong to.">Default gro<u>u</u>p</label>
+			<label for="auth_preauth_group_id" class="r" accesskey="U" title="Choose a group that users created automatically via preauth will belong to.">Default gro<u>u</u>p</label>
 			<p class="tip">Choose a group that users created automatically via preauth will belong to.</p>
 		</td>
 		<td class="field">
 			<?php
-			echo form_dropdown('preauthgroup_id', $groups, set_value('preauthgroup_id', (isset($auth->preauthgroup_id)) ? $auth->preauthgroup_id : 0), array('tabindex' => $t));
+			echo form_dropdown(
+				'auth_preauth_group_id', 
+				$groups, 
+				set_value(
+					'auth_preauth_group_id', 
+					(isset($settings['auth.preauth.group_id'])) ? $settings['auth.preauth.group_id'] : 0
+				), 
+				'tabindex="' . $t . '" id="auth_preauth_group_id"'
+			);
 			$t++;
 			?>
 		</td>
 	</tr>
 	<tr class="preauth">
 		<td class="caption">
-			<label for="preauthemail" class="r" accesskey="E" title="Default email address domain applied to users created via preauthentication."><u>E</u>mail domain</label>
+			<label for="auth_preauth_emaildomain" class="r" accesskey="E" title="Default email address domain applied to users created via preauthentication."><u>E</u>mail domain</label>
 			<p class="tip">Default email address domain applied to users created via preauthentication.</p>
 		</td>
 		<td class="field">
 			<?php
 			unset($input);
 			$input['accesskey'] = 'E';
-			$input['name'] = 'preauthemail';
-			$input['id'] = 'preauthemail';
+			$input['name'] = 'auth_preauth_emaildomain';
+			$input['id'] = 'auth_preauth_emaildomain';
 			$input['size'] = '50';
 			$input['maxlength'] = '100';
 			$input['tabindex'] = $t;
-			$input['value'] = @set_value('preauthemail', $auth->preauthemail);
+			$input['value'] = @set_value($input['name'], $settings['auth.preauth.emaildomain']);
 			echo form_input($input);
 			$t++;
 			?>
@@ -74,7 +82,7 @@ $t = 1;
 			<p class="tip">Please read the documentation on how to use the pre-authentication key.</p>
 		</td>
 		<td class="field">
-			<?php echo $auth->preauthkey ?>
+			<?php echo @$settings['auth.preauth.key'] ?>
 		</td>
 	</tr>
 	<?php
@@ -100,13 +108,13 @@ $t = 1;
 			<p class="tip">If you enable LDAP authentication, users who attempt to login with LDAP credentials will be added to Classroombookings if successful. Ensure you set the Default group below to ensure they inherit the correct permissions.</p>
 		</td>
 		<td class="field">
-			<label for="ldap" class="check">
+			<label for="auth_ldap" class="check">
 			<?php
 			unset($check);
-			$check['name'] = 'ldap';
-			$check['id'] = 'ldap';
+			$check['name'] = 'auth_ldap';
+			$check['id'] = 'auth_ldap';
 			$check['value'] = '1';
-			$check['checked'] = set_radio($check['name'], $check['value'], ($auth->ldap == 1));
+			$check['checked'] = set_radio($check['name'], $check['value'], ($settings['auth.ldap'] == 1));
 			$check['tabindex'] = $t;
 			echo form_checkbox($check);
 			$t++;
@@ -117,26 +125,26 @@ $t = 1;
 	
 	
 	<?php
-	if($auth->ldap == 1){
+	if($settings['auth.ldap'] == 1){
 		echo form_hidden('ldapfirst', '0');
 	?>
 	
 	
 	<tr class="ldap">
 		<td class="caption">
-			<label for="ldaphost" class="r" accesskey="H" title="The LDAP hostname or IP address. If specifying a hostname, please ensure that the server can resolve it via DNS."><u>H</u>ostname</label>
+			<label for="auth_ldap_host" class="r" accesskey="H" title="The LDAP hostname or IP address. If specifying a hostname, please ensure that the server can resolve it via DNS."><u>H</u>ostname</label>
 			<p class="tip">The LDAP hostname or IP address. If specifying a hostname, please ensure that the server can resolve it via DNS.</p>
 		</td>
 		<td class="field">
 		  <?php
 		  	unset($input);
 			$input['accesskey'] = 'H';
-			$input['name'] = 'ldaphost';
-			$input['id'] = 'ldaphost';
+			$input['name'] = 'auth_ldap_host';
+			$input['id'] = 'auth_ldap_host';
 			$input['size'] = '40';
 			$input['maxlength'] = '50';
 			$input['tabindex'] = $t;
-			$input['value'] = set_value('ldaphost', $auth->ldaphost);
+			$input['value'] = set_value($input['name'], $settings['auth.ldap.host']);
 			echo form_input($input);
 			$t++;
 			?>
@@ -145,19 +153,19 @@ $t = 1;
 	
 	<tr class="ldap">
 		<td class="caption">
-			<label for="ldapport" class="r" accesskey="C" title="TCP port used to communicate with the LDAP port on, use 389 if unsure.">T<u>C</u>P Port</label>
+			<label for="auth_ldap_port" class="r" accesskey="C" title="TCP port used to communicate with the LDAP port on, use 389 if unsure.">T<u>C</u>P Port</label>
 			<p class="tip">TCP port used to communicate with the LDAP port on, use 389 if unsure.</p>
 		</td>
 		<td class="field">
 		  <?php
 		  	unset($input);
 			$input['accesskey'] = 'C';
-			$input['name'] = 'ldapport';
-			$input['id'] = 'ldapport';
+			$input['name'] = 'auth_ldap_port';
+			$input['id'] = 'auth_ldap_port';
 			$input['size'] = '5';
 			$input['maxlength'] = '5';
 			$input['tabindex'] = $t;
-			$input['value'] = set_value('ldapport', ($auth->ldapport) ? $auth->ldapport : '389');
+			$input['value'] = set_value($input['name'], ($settings['auth.ldap.port']) ? $settings['auth.ldap.port'] : '389');
 			echo form_input($input);
 			$t++;
 			?>
@@ -166,20 +174,20 @@ $t = 1;
 	
 	<tr class="ldap">
 		<td class="caption">
-			<label for="ldapbase" class="r" accesskey="D" title="Separate multiple DNs to search with a semicolon">Base <u>D</u>Ns</label>
+			<label for="auth_ldap_base" class="r" accesskey="D" title="Separate multiple DNs to search with a semicolon">Base <u>D</u>Ns</label>
 			<p class="tip">Separate multiple DNs to search with a semicolon.</p>
 		</td>
 		<td class="field">
 		  <?php
 		  	unset($input);
 			$input['accesskey'] = 'D';
-			$input['name'] = 'ldapbase';
-			$input['id'] = 'ldapbase';
+			$input['name'] = 'auth_ldap_base';
+			$input['id'] = 'auth_ldap_base';
 			$input['maxlength'] = '65536';
 			$input['tabindex'] = $t;
 			$input['rows'] = '6';
 			$input['cols'] = '60';
-			$input['value'] = set_value('ldapbase', $auth->ldapbase);
+			$input['value'] = set_value($input['name'], $settings['auth.ldap.base']);
 			echo form_textarea($input);
 			$t++;
 			?>
@@ -188,21 +196,21 @@ $t = 1;
 	
 	<tr class="ldap">
 		<td class="caption">
-			<label for="ldapfilter" class="r" accesskey="F" title="LDAP query filter. %u is where the supplied username will be replaced. Leave as default if unsure.">LDAP query filter</label>
+			<label for="auth_ldap_filter" class="r" accesskey="F" title="LDAP query filter. %u is where the supplied username will be replaced. Leave as default if unsure.">LDAP query filter</label>
 			<p class="tip">LDAP query filter. %u is where the supplied username will be replaced. Leave as default if unsure.</p>
 		</td>
 		<td class="field">
 		  <?php
 		  	unset($input);
 			$input['accesskey'] = 'F';
-			$input['name'] = 'ldapfilter';
-			$input['id'] = 'ldapfilter';
+			$input['name'] = 'auth_ldap_filter';
+			$input['id'] = 'auth_ldap_filter';
 			#$input['size'] = '60';
 			$input['maxlength'] = '5120';
 			$input['tabindex'] = $t;
 			$input['rows'] = '4';
 			$input['cols'] = '60';
-			$input['value'] = set_value('ldapfilter', ($auth->ldapfilter) ? $auth->ldapfilter : "(& (| (!(displayname=Administrator*)) (!(displayname=Admin*)) ) (cn=%u) )");
+			$input['value'] = set_value('auth_ldap_filter', ($settings['auth.ldap.filter']) ? $settings['auth.ldap.filter'] : "(& (| (!(displayname=Administrator*)) (!(displayname=Admin*)) ) (cn=%u) )");
 			echo form_textarea($input);
 			$t++;
 			?>
@@ -211,12 +219,20 @@ $t = 1;
 	
 	<tr class="ldap">
 		<td class="caption">
-			<label for="ldapgroup_id" class="r" accesskey="G" title="This is the group that users who authenticate via LDAP will become members of automatically.">Default CRBS group</label>
+			<label for="auth_ldap_group_id" class="r" accesskey="G" title="This is the group that users who authenticate via LDAP will become members of automatically.">Default CRBS group</label>
 			<p class="tip">This is the group that users who authenticate via LDAP will become members of automatically.</p>
 		</td>
 		<td class="field">
 			<?php
-			echo form_dropdown('ldapgroup_id', $groups, set_value('ldapgroup_id', (isset($auth->ldapgroup_id)) ? $auth->ldapgroup_id : 0), array('tabindex' => $t));
+			echo form_dropdown(
+				'auth_ldap_group_id', 
+				$groups, 
+				set_value(
+					'auth_ldap_group_id', 
+					(isset($settings['auth.ldap.group_id'])) ? $settings['auth.ldap.group_id'] : 0
+				),
+				array('tabindex' => $t)
+			);
 			$t++;
 			?>
 		</td>
@@ -224,17 +240,17 @@ $t = 1;
 	
 	<tr>
 		<td class="caption">
-			<label for="ldaploginupdate" accesskey="T" title="If this option is enabled, the user details (display name, group and department membership) will be updated with their LDAP info every time they login; potentially un-doing any customisations you made to the user.">Upda<u>t</u>e details on login</label>
+			<label for="auth_ldap_loginupdate" accesskey="T" title="If this option is enabled, the user details (display name, group and department membership) will be updated with their LDAP info every time they login; potentially un-doing any customisations you made to the user.">Upda<u>t</u>e details on login</label>
 			<p class="tip">If this option is enabled, the user details (display name, group and department membership) will be updated with their LDAP info every time they login; potentially un-doing any customisations you made to the user.</p>
 		</td>
 		<td class="field">
-			<label for="ldaploginupdate" class="check">
+			<label for="auth_ldap_loginupdate" class="check">
 			<?php
 			unset($check);
-			$check['name'] = 'ldaploginupdate';
-			$check['id'] = 'ldaploginupdate';
+			$check['name'] = 'auth_ldap_loginupdate';
+			$check['id'] = 'auth_ldap_loginupdate';
 			$check['value'] = '1';
-			$check['checked'] = set_radio($check['name'], $check['value'], ($auth->ldaploginupdate == 1));
+			$check['checked'] = set_radio($check['name'], $check['value'], ($settings['auth.ldap.loginupdate'] == 1));
 			$check['tabindex'] = $t;
 			echo form_checkbox($check);
 			$t++;

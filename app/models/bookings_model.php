@@ -39,12 +39,13 @@ class Bookings_model extends Model{
 	public function timetable($data){
 		
 		// Get settings for view mode
-		$tt['view'] = $this->settings->get('tt_view');
-		$tt['cols'] = $this->settings->get('tt_cols');
+		/*$tt['view'] = $this->settings->get('tt_view');
+		$tt['cols'] = $this->settings->get('tt_cols');*/
+		#$settings = $this->_settings;
 		
-		$this->cols = $tt['cols'];
+		$this->cols = $this->_settings['timetable.cols'];
 		
-		switch($tt['view']){
+		switch($this->_settings['timetable.view']){
 			case 'room':
 				
 				// Should have room_id and week in $data

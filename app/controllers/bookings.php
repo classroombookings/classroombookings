@@ -32,7 +32,7 @@ class Bookings extends Controller {
 
 
 	var $tpl;
-	var $tt;
+	var $_settings;
 	
 
 	function Bookings(){
@@ -54,10 +54,12 @@ class Bookings extends Controller {
 		$this->load->library('calendar', $prefs);
 		
 		// Get settings
-		$tt = array();
+		/*$tt = array();
 		$tt['view'] = $this->settings->get('tt_view');
 		$tt['cols'] = $this->settings->get('tt_cols');
-		$this->tt = $tt;
+		$this->tt = $tt;*/
+		// Get timetable settings
+		$this->_settings = $this->settings->get('timetable.');
 		
 		// Misc things
 		$this->tpl = $this->config->item('template');
@@ -77,7 +79,7 @@ class Bookings extends Controller {
 		
 		$this->auth->check('bookings');
 		
-		switch($this->tt['view']){
+		switch($this->_settings['timetable.view']){
 			case 'day': return $this->_index_day(); break;
 			case 'room': return $this->_index_room(); break;
 		}
