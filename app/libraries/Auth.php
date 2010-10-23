@@ -332,8 +332,8 @@ class Auth{
 	function login($username, $password, $remember = FALSE, $is_sha1 = FALSE){
 		
 		// Retrieve auth settings
-		$auth = $this->CI->settings->get_all('auth');
-		$ldap = ($auth->ldap == 1);
+		$auth = $this->CI->settings->get('auth.');
+		$ldap = ($auth['auth.ldap'] == 1);
 		
 		if($username != NULL && $password != NULL){
 			
@@ -582,7 +582,7 @@ class Auth{
 		}
 		
 		// Get the current key from the database
-		$preauthkey = $this->CI->settings->get('preauthkey', 'auth');
+		$preauthkey = $this->CI->settings->get('auth.preauth.key');
 		
 		// Work out what we *should* get based on their info + our preauthkey
 		$expected_final = sha1("{$data['username']}|{$data['timestamp']}|{$preauthkey}");
@@ -662,7 +662,7 @@ class Auth{
 		}
 		
 		// Retrieve auth settings
-		$auth = $this->CI->settings->get_all('auth');
+		$auth = $this->CI->settings->get('auth.');
 		
 		// See if the user exists at all
 		$userexists = $this->userexists($username);
