@@ -46,8 +46,8 @@ $changeyear = $this->auth->check('changeyear', TRUE);
 <![endif]-->
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <meta name="author" content="Craig A Rodway" />
-<link rel="shortcut icon" type="image/x-icon" href="favicon2.ico" />
-<link rel="icon" type="image/x-icon" href="favicon2.ico" />
+<link rel="shortcut icon" type="image/x-icon" href="favicon3.ico" />
+<link rel="icon" type="image/x-icon" href="favicon3.ico" />
 <link rel="stylesheet" href="css/five/reset.css" />
 <link rel="stylesheet" href="css/five/text.css" />
 <link rel="stylesheet" href="css/five/960_24_col.css" />
