@@ -10,6 +10,22 @@
 |
 */
 
+$hook['post_controller_constructor'][] = array(
+	'class'    => 'AuthHook',
+	'function' => 'cookiecheck',
+	'filename' => 'AuthHook.php',
+	'filepath' => 'hooks',
+);
+
+
+$hook['post_controller_constructor'][] = array(
+	'class'	=> 'AuthHook',
+	'function' => 'activeuser',
+	'filename' => 'AuthHook.php',
+	'filepath' => 'hooks',
+);
+
+
 
 
 /* End of file hooks.php */

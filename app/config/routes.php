@@ -38,8 +38,19 @@
 |
 */
 
-$route['default_controller'] = "welcome";
+$route['default_controller'] = "dashboard";
 $route['404_override'] = '';
+
+
+/* CRBS-related URI routing */
+
+$route['account/main'] = 'account';
+
+// Room info
+$route['rooms/info/(:num)'] = 'rooms/manage/info/$1';
+
+// Purely for changing the month in the calendar picker
+$route['bookings/calendar/(:any)'] = 'bookings/calendar/$1';
 
 
 /* End of file routes.php */
