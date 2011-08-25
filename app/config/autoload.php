@@ -1,4 +1,4 @@
-<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /*
 | -------------------------------------------------------------------
 | AUTO-LOADER
@@ -18,9 +18,9 @@
 |
 | These are the things you can load automatically:
 |
-| 1. Libraries
-| 2. Helper files
-| 3. Plugins
+| 1. Packages
+| 2. Libraries
+| 3. Helper files
 | 4. Custom config files
 | 5. Language files
 | 6. Models
@@ -29,17 +29,30 @@
 
 /*
 | -------------------------------------------------------------------
+|  Auto-load Packges
+| -------------------------------------------------------------------
+| Prototype:
+|
+|  $autoload['packages'] = array(APPPATH.'third_party', '/usr/local/shared');
+|
+*/
+
+$autoload['packages'] = array();
+
+
+/*
+| -------------------------------------------------------------------
 |  Auto-load Libraries
 | -------------------------------------------------------------------
 | These are the classes located in the system/libraries folder
-| or in your system/application/libraries folder.
+| or in your application/libraries folder.
 |
 | Prototype:
 |
 |	$autoload['libraries'] = array('database', 'session', 'xmlrpc');
 */
 
-$autoload['libraries'] = array('settings','database','session','auth','form_validation','msg');
+$autoload['libraries'] = array();
 
 
 /*
@@ -51,19 +64,7 @@ $autoload['libraries'] = array('settings','database','session','auth','form_vali
 |	$autoload['helper'] = array('url', 'file');
 */
 
-$autoload['helper'] = array('url','form','field','date','datefuncs','misc');
-
-
-/*
-| -------------------------------------------------------------------
-|  Auto-load Plugins
-| -------------------------------------------------------------------
-| Prototype:
-|
-|	$autoload['plugin'] = array('captcha', 'js_calendar');
-*/
-
-$autoload['plugin'] = array();
+$autoload['helper'] = array();
 
 
 /*
@@ -79,7 +80,7 @@ $autoload['plugin'] = array();
 |
 */
 
-$autoload['config'] = array('crbs', 'permissions');
+$autoload['config'] = array();
 
 
 /*
@@ -90,12 +91,12 @@ $autoload['config'] = array('crbs', 'permissions');
 |
 |	$autoload['language'] = array('lang1', 'lang2');
 |
-| NOTE: Do not include the "_lang" part of your file.  For example 
+| NOTE: Do not include the "_lang" part of your file.  For example
 | "codeigniter_lang.php" would be referenced as array('codeigniter');
 |
 */
 
-$autoload['language'] = array('crbs2');
+$autoload['language'] = array();
 
 
 /*
@@ -108,18 +109,8 @@ $autoload['language'] = array('crbs2');
 |
 */
 
-$autoload['model'] = array('years_model', 'weeks_model');
+$autoload['model'] = array();
 
 
-/*
-| -------------------------------------------------------------------
-|  Auto-load Core Libraries
-| -------------------------------------------------------------------
-|
-| DEPRECATED:  Use $autoload['libraries'] above instead.
-|
-*/
-// $autoload['core'] = array();
-
-
-?>
+/* End of file autoload.php */
+/* Location: ./application/config/autoload.php */

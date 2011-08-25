@@ -1,4 +1,4 @@
-<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /*
 | -------------------------------------------------------------------------
 | Hooks
@@ -11,22 +11,6 @@
 */
 
 
-$hook['post_controller_constructor'][] = array(
-                                'class'    => 'AuthHook',
-                                'function' => 'cookiecheck',
-                                'filename' => 'AuthHook.php',
-                                'filepath' => 'hooks',
-                                );
 
-
-$hook['post_controller_constructor'][] = array(
-								'class'	=> 'AuthHook',
-								'function' => 'activeuser',
-								'filename' => 'AuthHook.php',
-								'filepath' => 'hooks',
-								);
-
-
-
-
-/* End of file app/config/hooks.php */
+/* End of file hooks.php */
+/* Location: ./application/config/hooks.php */
