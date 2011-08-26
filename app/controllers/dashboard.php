@@ -17,7 +17,7 @@
 */
 
 
-class Dashboard extends CI_Controller {
+class Dashboard extends CB_Controller {
 
 
 	var $tpl;
@@ -25,8 +25,6 @@ class Dashboard extends CI_Controller {
 
 	function __construct(){
 		parent::__construct();
-		$this->tpl = $this->config->item('template');
-		$this->output->enable_profiler($this->config->item('profiler'));
 	}
 	
 	

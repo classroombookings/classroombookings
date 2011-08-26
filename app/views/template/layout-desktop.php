@@ -1,12 +1,13 @@
 <?php
 // Get all settings
 $settings = $this->settings->get();
+$school_name = $this->settings->get('school_name');
 
 // Decide on page title
-$title[] = (isset($title)) ? $title : NULL;
-$title[] = 'Classroombookings';
-$title[] = (!empty($this->settings->get('school_name')) ? $this->settings->get('school_name') : NULL;
-$title_string = implode(' - ', $title);
+$title_arr[] = (isset($title)) ? $title : NULL;
+$title_arr[] = 'Classroombookings';
+$title_arr[] = (!empty($school_name)) ? $school_name : NULL;
+$title_string = implode(' - ', $title_arr);
 
 // URI segments
 $seg1 = $this->uri->segment(1, 'dashboard');
