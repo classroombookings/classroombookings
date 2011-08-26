@@ -17,14 +17,14 @@
 */
 
 
-class Years_model extends Model{
+class Years_model extends CI_Model{
 
 
 	var $lasterr;
 	
 	
-	function Years_model(){
-		parent::Model();
+	function __construct(){
+		parent::__construct();
 		
 	}
 	

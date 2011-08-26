@@ -39,7 +39,7 @@ class Auth{
 		
 		// Load helpers/models required by the library
 		$this->CI->load->helper('cookie');
-		$this->CI->load->model('security');
+		$this->CI->load->model('security_model', 'cbsecurity');
 		$this->CI->load->library('user_agent');
 		$this->CI->load->library('msg');
 		
@@ -72,7 +72,7 @@ class Auth{
 		// instead of additional DB lookups each time we run the check() function.
 		if(!$this->CI->session->userdata('group_permissions')){
 			// Get the group permissions for the user's group
-			$group_permissions = $this->CI->security->get_group_permissions($group_id);
+			$group_permissions = $this->CI->cbsecurity->get_group_permissions($group_id);
 			$this->CI->session->set_userdata('group_permissions', $group_permissions);
 		} else {
 			$group_permissions = $this->CI->session->userdata('group_permissions');

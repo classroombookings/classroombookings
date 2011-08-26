@@ -17,14 +17,14 @@
 */
 
 
-class Departments_model extends Model{
+class Departments_model extends CI_Model{
 
 
 	var $lasterr;
 	
 	
-	function Departments_model(){
-		parent::Model();
+	function __construct(){
+		parent::__construct();
 		
 	}
 	

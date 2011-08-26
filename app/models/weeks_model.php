@@ -17,14 +17,14 @@
 */
 
 
-class Weeks_model extends Model{
+class Weeks_model extends CI_Model{
 
 
 	var $lasterr;
 	
 	
-	function Weeks_model(){
-		parent::Model();
+	function __construct(){
+		parent::__construct();
 		
 	}
 	

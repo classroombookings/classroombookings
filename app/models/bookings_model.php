@@ -17,15 +17,15 @@
 */
 
 
-class Bookings_model extends Model{
+class Bookings_model extends CI_Model{
 	
 	
 	var $lasterr;
 	var $cols;
 	
 	
-	function Bookings_model(){
-		parent::Model();
+	function __construct(){
+		parent::__construct();
 	}
 	
 	

@@ -17,47 +17,32 @@
 */
 
 
-class Dashboard extends CI_Controller {
-
-
-	var $tpl;
+class Academic_model extends CI_Model{
 	
-
+	
 	function __construct(){
 		parent::__construct();
-		$this->tpl = $this->config->item('template');
-		$this->output->enable_profiler($this->config->item('profiler'));
 	}
 	
 	
-	
-	
-	function index(){
-		$this->auth->check('dashboard');
-		$tpl['title'] = 'Dashboard';
-		$tpl['pagetitle'] = $tpl['title'];
-		if($this->auth->logged_in() == TRUE){
-			$body['active_users'] = $this->auth->active_users();
-			$tpl['body'] = $this->load->view('dashboard/index', $body, TRUE);
-		} else {
-			$tpl['body'] = 'You are not currently logged in. ' . anchor('account/login', 'Login now') . '.';
-		}
-		$this->load->view($this->tpl, $tpl);
+	/**
+	 * Link definitions of pages in this section
+	 */
+	function subnav(){
+		$subnav = array();
+		// Other pages in this parent section
+		$subnav[] = array('academic/years', 'Years', 'years');
+		$subnav[] = array('academic/terms', 'Term dates', 'terms');
+		$subnav[] = array('academic/weeks', 'Timetable weeks', 'weeks');
+		$subnav[] = array('academic/periods', 'Periods', 'periods');
+		$subnav[] = array('academic/holidays', 'Holidays', 'holidays');
+		return $subnav;
 	}
-	
-	
-	
-	
-	function error(){
-		$tpl['title'] = 'An error occured';
-		$tpl['body'] = '';
-		$this->load->view($this->tpl, $tpl);
-	}
-	
-	
 	
 	
 }
 
 
-?>
+
+
+/* End of file: app/models/academic.php */

@@ -17,14 +17,14 @@
 */
 
 
-class Terms_model extends Model{
+class Terms_model extends CI_Model{
 
 
 	var $lasterr;
 	
 	
-	function Terms_model(){
-		parent::Model();
+	function __construct(){
+		parent::__construct();
 		
 	}
 	

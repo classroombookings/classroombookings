@@ -17,15 +17,15 @@
 */
 
 
-class Periods_model extends Model{
+class Periods_model extends CI_Model{
 
 
 	var $lasterr;
 	var $days;
 	
 	
-	function Periods_model(){
-		parent::Model();
+	function __construct(){
+		parent::__construct();
 		
 		$this->days[0] = 'Sunday';
 		$this->days[1] = 'Monday';

@@ -17,7 +17,7 @@
 */
 
 
-class Rooms_model extends Model{
+class Rooms_model extends CI_Model{
 
 
 	var $lasterr;
@@ -25,8 +25,8 @@ class Rooms_model extends Model{
 	var $fieldtypes;
 	
 	
-	function Rooms_model(){
-		parent::Model();
+	function __construct(){
+		parent::__construct();
 		
 		// Object types for permissions
 		$this->types['e'] = 'Everyone';

@@ -17,11 +17,11 @@
 */
 
 
-class Account_model extends Model{
+class Account_model extends CI_Model{
 	
 	
-	function Account_model(){
-		parent::Model();
+	function __construct(){
+		parent::__construct();
 	}
 	
 	
