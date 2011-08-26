@@ -49,7 +49,7 @@ class Weeks_model extends CI_Model{
 				$this->db->where('year_id', $year_id);
 			}
 			
-			$this->db->orderby('name ASC');
+			$this->db->order_by('name ASC');
 			
 			if (isset($page) && is_array($page)) {
 				$this->db->limit($page[0], $page[1]);
