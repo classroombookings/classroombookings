@@ -209,6 +209,18 @@ p.success{ background: #ABE673;	/*#77BF30;*/ }
 
 
 
+.msg { padding: 5px 10px; }
+.msg.err {
+	background: #CF3541;
+	color: #fff !important;
+	border: 1px solid #9B1A15;
+}
+.msg.notice { 
+	background: #fffed0;
+	border: 1px solid #d4d287;
+	color: #333;
+}
+
 
 /* List tables */
 table.list{ width:100%; font-size:90%; }

@@ -1,87 +1,75 @@
 <?php
+
 /*
-	This file is part of Classroombookings.
+ * Classroombookings. Hassle-free resource booking for schools. <http://classroombookings.com/>
+ * Copyright (C) 2006-2011 Craig A Rodway <craig.rodway@gmail.com>
+ *
+ * This file is part of Classroombookings.
+ * Classroombookings is licensed under the Affero GNU GPLv3 license.
+ * Please see license-classroombookings.txt for the full license text.
+ */
 
-	Classroombookings is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
-
-	Classroombookings is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with Classroombookings.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-
-class Account extends Controller {
-
-
-	var $tpl;
+class Account extends CB_Controller
+{
 	
-
-	function Account(){
-		parent::Controller();
+	
+	function __construct()
+	{
+		parent::__construct();
 		$this->load->model('account_model');
-		$this->tpl = $this->config->item('template');
-		$this->output->enable_profiler($this->config->item('profiler'));
 	}
 	
 	
 	
 	
-	function index(){
-		$tpl['subnav'] = $this->account_model->subnav();
-		$tpl['title'] = 'My Account';
-		$tpl['pagetitle'] = $tpl['title'];
-		$this->load->view($this->tpl, $tpl);
+	function index()
+	{
+		$data['title'] = 'My Account';
+		$this->page($data);
 	}
 	
 	
 	
 	
-	function activebookings(){
-		$tpl['subnav'] = $this->account_model->subnav();
-		$tpl['title'] = 'My Active Bookings';
-		$tpl['pagetitle'] = $tpl['title'];
-		$this->load->view($this->tpl, $tpl);
+	function activebookings()
+	{
+		$data['title'] = 'My Active Bookings';
+		$this->page($data);
 	}
 	
 	
 	
 	
-	function previousbookings(){
-		$tpl['subnav'] = $this->account_model->subnav();
-		$tpl['title'] = 'My Active Bookings';
-		$tpl['pagetitle'] = $tpl['title'];
-		$this->load->view($this->tpl, $tpl);
+	function previousbookings()
+	{
+		$data['title'] = 'My Active Bookings';
+		$this->page($data);
 	}
 	
 	
 	
 	
-	function changepassword(){
-		$tpl['subnav'] = $this->account_model->subnav();
-		$tpl['title'] = 'Change password';
-		$tpl['pagetitle'] = $tpl['title'];
-		$this->load->view($this->tpl, $tpl);
+	function changepassword()
+	{
+		$data['title'] = 'Change password';
+		$this->page($data);
 	}
 	
 	
 	
 	
-	function login(){
-		$tpl['title'] = 'Login';
-		$tpl['pagetitle'] = $tpl['title'];
-		if($this->auth->logged_in()){
-			$tpl['body'] = 'You are already logged in.';
-		} else {
-			$tpl['body'] = $this->load->view('account/login', NULL, TRUE);
+	function login()
+	{
+		if ($this->auth->logged_in())
+		{
+			redirect('account');
 		}
-		$this->load->view($this->tpl, $tpl);
+		else
+		{
+			$data['title'] = 'Login';
+			$data['body'] = $this->load->view('account/login', null, true);
+			$this->page($data);
+		}
 	}
 	
 	
@@ -92,8 +80,8 @@ class Account extends Controller {
 	 */
 	function loginsubmit(){
 		// Validation rules for login form
-		$this->form_validation->set_rules('username', 'Username', 'required|max_length[30]');
-		$this->form_validation->set_rules('password', 'Password', 'required|max_length[30]');
+		$this->form_validation->set_rules('username', 'Username', 'required|max_length[104]');
+		$this->form_validation->set_rules('password', 'Password', 'required|max_length[104]');
 		$this->form_validation->set_error_delimiters('<li>', '</li>');
 		
 		// Check validation first

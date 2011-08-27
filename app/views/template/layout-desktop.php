@@ -33,10 +33,6 @@ $changeyear = $this->auth->check('changeyear', true);
 		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
 	
-	<!-- <link rel="stylesheet" href="css/baseline.reset.css">
-	<link rel="stylesheet" href="css/baseline.base.css">
-	<link rel="stylesheet" href="css/baseline.type.css">
-	<link rel="stylesheet" href="css/baseline.table.css"> -->
 	<link rel="stylesheet" href="css/base.css">
 	<link rel="stylesheet" href="css/skeleton.css">
 	<link rel="stylesheet" href="css/layout-fluid.css">
@@ -69,6 +65,7 @@ $changeyear = $this->auth->check('changeyear', true);
 	</div>
 	
 </div> 
+
 
 <div class="colmask leftmenu"> 
 	

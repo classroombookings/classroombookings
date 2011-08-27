@@ -9,7 +9,8 @@
  * Please see license-classroombookings.txt for the full license text.
  */
  
- class Auth{
+class Auth
+{
 
 
 	var $CI;
@@ -24,7 +25,7 @@
 	var $room_id;
 
 
-	function Auth(){
+	public function __construct(){
 		
 		// Load original CI object to global CI variable
 		$this->CI =& get_instance();
@@ -586,8 +587,8 @@
 		delete_cookie("tab.bookings");
 		
 		// NULLify the cookie key in the DB
-		$sql = 'UPDATE users SET cookiekey = NULL WHERE user_id = ?';
-		$query = $this->CI->db->query($sql, array($user_id));
+		//$sql = 'UPDATE users SET cookiekey = NULL WHERE user_id = ?';
+		//$query = $this->CI->db->query($sql, array($user_id));
 		
 		// Verify session has been destroyed by retrieving info 
 		return ($this->CI->session->userdata('user_id') == FALSE) ? TRUE : FALSE;
@@ -898,8 +899,10 @@
 	/**
 	 * Return if user is logged in or not
 	 */
-	function logged_in(){
-		return ($this->CI->session->userdata('user_id') && $this->CI->session->userdata('username'));
+	function logged_in()
+	{
+		$user_id = $this->CI->session->userdata('user_id');
+		return ($user_id && !$this->is_anon());
 	}
 	
 	

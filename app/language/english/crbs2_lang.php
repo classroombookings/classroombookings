@@ -89,6 +89,9 @@ $lang['W_FIELD'] = 'Field';
 $lang['LOGIN'] = 'Log in';		// Could be 'Sign in'...
 $lang['LOGOUT'] = 'Log out';		// Could be 'Sign out'...
 
+$lang['USERNAME'] = 'Username';
+$lang['PASSWORD'] = 'Password';
+
 // Actions
 $lang['ACTION_ADD'] = 'Add';
 $lang['ACTION_NEW'] = 'New';
