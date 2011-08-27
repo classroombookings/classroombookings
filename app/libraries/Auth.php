@@ -943,6 +943,4 @@ class Auth
 }
 
 
-
-
 /* End of file app/libraries/Auth.php */

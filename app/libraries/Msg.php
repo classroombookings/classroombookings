@@ -1,22 +1,32 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
-class Msg{
 
+/*
+ * Classroombookings. Hassle-free resource booking for schools. <http://classroombookings.com/>
+ * Copyright (C) 2006-2011 Craig A Rodway <craig.rodway@gmail.com>
+ *
+ * This file is part of Classroombookings.
+ * Classroombookings is licensed under the Affero GNU GPLv3 license.
+ * Please see license-classroombookings.txt for the full license text.
+ */
+
+class Msg
+{
 
 	var $CI;
 	var $msgs;
-	var $types = array('err','help','info','note','warn','yes');
+	var $types = array('err', 'notice');
 
 
-	function Msg(){
+	function __construct()
+	{
 		// Load original CI object
 		$this->CI =& get_instance();
 	}
 	
 	
-	
-	
 	function add($type = 'note', $text, $title = NULL){
-		if(in_array($type, $this->types)){
+		if (in_array($type, $this->types))
+		{
 			$data['title'] = $title;
 			$data['text'] = $text;
 			$thismsg = $this->CI->load->view('msg/'.$type, $data, TRUE);
@@ -26,17 +36,15 @@ class Msg{
 	}
 	
 	
-	
-	
 	function show(){
 		return $this->msgs;
 	}
 	
 	
-	
-	
-	function showone($type = 'info', $text, $title = NULL){
-		if(in_array($type, $this->types)){
+	function showone($type = 'info', $text, $title = NULL)
+	{
+		if (in_array($type, $this->types))
+		{
 			$data['title'] = $title;
 			$data['text'] = $text;
 			$thismsg = $this->CI->load->view('msg/'.$type, $data, TRUE);
@@ -45,41 +53,20 @@ class Msg{
 	}
 	
 	
-	
-	
-	function err($text, $title = NULL){
+	function err($text, $title = NULL)
+	{
 		return $this->showone('err', $text, $title);
 	}
 	
 	
-	function help($text, $title = NULL){
-		return $this->showone('help', $text, $title);
+	function notice($text, $title = NULL)
+	{
+		return $this->showone('notice', $text, $title);
 	}
 	
 	
-	function info($text, $title = NULL){
-		return $this->showone('info', $text, $title);
-	}
-	
-	
-	function note($text, $title = NULL){
-		return $this->showone('note', $text, $title);
-	}
-	
-	
-	function warn($text, $title = NULL){
-		return $this->showone('warn', $text, $title);
-	}
-	
-	
-	function yes($text, $title = NULL){
-		return $this->showone('yes', $text, $title);
-	}
-	
-	
-	
-	
-	function fail($title, $text = ''){
+	function fail($title, $text = '')
+	{
 		$error =& load_class('Exceptions');
 		echo $error->show_error($text);
 		exit;
@@ -87,4 +74,6 @@ class Msg{
 	
 	
 }
-?>
+
+
+/* End of file app/libraries/Msg.php */
