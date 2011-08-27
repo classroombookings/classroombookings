@@ -1,13 +1,12 @@
 <?php
-// Get all settings
-$settings = $this->settings->get();
+// Get school name
 $school_name = $this->settings->get('school_name');
 
 // Decide on page title
 $title_arr[] = (isset($title)) ? $title : NULL;
 $title_arr[] = 'Classroombookings';
 $title_arr[] = (!empty($school_name)) ? $school_name : NULL;
-$title_string = implode(' - ', $title_arr);
+$title_string = implode(' - ', array_filter($title_arr));
 
 // URI segments
 $seg1 = $this->uri->segment(1, 'dashboard');
@@ -26,7 +25,7 @@ $changeyear = $this->auth->check('changeyear', true);
 
 	<meta charset="utf-8" />
 	
-	<base href="<?php echo $this->config->item('base_url').'assets/'; ?>">
+	<base href="<?php echo $this->config->item('base_url') . 'assets/' ?>">
 	
 	<title><?php echo $title_string ?></title>
 
@@ -85,7 +84,7 @@ $changeyear = $this->auth->check('changeyear', true);
 	<div class="colright"> 
 		<div class="col1wrap"> 
 			<div class="col1"> 
-				
+				<?php echo $body ?>
 			</div> 
 		</div> 
 		
