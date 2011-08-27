@@ -1,6 +1,4 @@
-html {
-	overflow-y: scroll;
-}
+html { overflow-y: scroll; }
 
 div hr { height: 1px; }
 
@@ -63,7 +61,7 @@ ul.nav li {
 }
 ul.nav li a {
 	cursor: pointer;
-	font-size: 90%;
+	font-size: 85%;
 	text-decoration: none;
 	display: block;
 	width: auto;
@@ -90,6 +88,7 @@ ul.nav li a.i {
 
 
 /* Top menu */
+div#header { font-size: 90%; }
 div#header ul {
 	top: 0;
 }

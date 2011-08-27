@@ -30,6 +30,7 @@ class AuthHook{
 		
 		// Load cookie helper as required by this library
 		$this->CI->load->helper('cookie');
+		$this->CI->load->library('session');
 		
 		#$this->CI->config->set_item('cookie_prefix', $_SERVER['SERVER_NAME']);
 		
@@ -62,7 +63,7 @@ class AuthHook{
 	 */
 	function activeuser(){
 		
-		if($this->CI->auth->logged_in() == TRUE){
+		if($this->CI->auth->logged_in() == true && $this->CI->auth->is_anon() == false){
 			
 			// Get the logged in user ID and current time
 			$user_id = (int)$this->CI->session->userdata('user_id');

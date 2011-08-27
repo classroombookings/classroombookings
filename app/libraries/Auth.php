@@ -1,23 +1,15 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+
 /*
-	This file is part of Classroombookings.
-
-	Classroombookings is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
-
-	Classroombookings is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with Classroombookings.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-
-class Auth{
+ * Classroombookings. Hassle-free resource booking for schools. <http://classroombookings.com/>
+ * Copyright (C) 2006-2011 Craig A Rodway <craig.rodway@gmail.com>
+ *
+ * This file is part of Classroombookings.
+ * Classroombookings is licensed under the Affero GNU GPLv3 license.
+ * Please see license-classroombookings.txt for the full license text.
+ */
+ 
+ class Auth{
 
 
 	var $CI;
@@ -39,7 +31,7 @@ class Auth{
 		
 		// Load helpers/models required by the library
 		$this->CI->load->helper('cookie');
-		$this->CI->load->model('security_model', 'cbsecurity');
+		$this->CI->load->model('security_model');
 		$this->CI->load->library('user_agent');
 		$this->CI->load->library('msg');
 		
@@ -61,21 +53,22 @@ class Auth{
 	 */
 	function check($action, $return = FALSE){
 		
-		log_message('debug', 'Auth: Checking if user can do ' . $action . '.');
+		log_message('debug', 'Auth: check(): Action - ' . $action . '.');
 		
 		// Get group ID
 		$group_id = $this->CI->session->userdata('group_id');
-		// If no group, then guest group (always 0)
-		$group_id = ($group_id == FALSE) ? 0 : $group_id;
+		
+		
+		//$group_id = ($group_id == FALSE) ? 0 : $group_id;
 		
 		// Hopefully speed up access by putting the group permissions into the session
 		// instead of additional DB lookups each time we run the check() function.
-		if(!$this->CI->session->userdata('group_permissions')){
+		if(!$this->CI->session->userdata('permissions')){
 			// Get the group permissions for the user's group
-			$group_permissions = $this->CI->cbsecurity->get_group_permissions($group_id);
-			$this->CI->session->set_userdata('group_permissions', $group_permissions);
+			$group_permissions = $this->CI->security_model->get_group_permissions($group_id);
+			$this->CI->session->set_userdata('permissions', $group_permissions);
 		} else {
-			$group_permissions = $this->CI->session->userdata('group_permissions');
+			$group_permissions = $this->CI->session->userdata('permissions');
 		}
 		
 		// See if this action is in the permissions array for the user
@@ -84,6 +77,8 @@ class Auth{
 		} else {
 			$check = FALSE;
 		}
+		
+		log_message('debug', 'Auth: check(): Result: ' . $check . '.');
 		
 		// Return true/false if we only want the return value
 		if($return == TRUE){
@@ -450,7 +445,8 @@ class Auth{
 			$sessdata['display']			= $user->display;	#($user->display == NULL) ? $user->username : $user->display;
 			$sessdata['year_active']		= $this->CI->years_model->get_active_id();
 			$sessdata['year_working']		= $sessdata['year_active'];
-			$sessdata['group_permissions']	= $this->CI->security->get_group_permissions($user->group_id);
+			$sessdata['group_permissions']	= $this->CI->security_model->get_group_permissions($user->group_id);
+			$sessdata['is_anon']			= false;
 			
 			// Set session data
 			$this->CI->session->set_userdata($sessdata);
@@ -497,6 +493,58 @@ class Auth{
 			$this->lasterr = 'Logon failed - could not find details to initialise session.';
 			return FALSE;
 			
+		}
+		
+	}
+	
+	
+	
+	
+	function session_create_anon()
+	{
+		$anon_user_id = $this->CI->settings->get('auth_anonuserid');
+		if (empty($anon_user_id))
+		{
+			$this->lasterr = 'No anonymous user has been configured.';
+			log_message('debug', 'Auth: session_create_anon(): ' . $this->lasterr);
+			return false;
+		}
+		
+		$sql = 'SELECT 
+					user_id, 
+					group_id, 
+					username, 
+					displayname,
+					IFNULL(displayname, username) AS display
+				FROM users
+				WHERE user_id = ? 
+				AND enabled = 1 
+				LIMIT 1';
+		$query = $this->CI->db->query($sql, array($anon_user_id));
+		
+		if($query->num_rows() == 1){
+
+			// Cool, got the user we wanted
+			$user = $query->row();
+			
+			// Create session data array
+			$sessdata['user_id']			= $user->user_id;
+			$sessdata['group_id']			= $user->group_id;
+			$sessdata['username']			= $user->username;
+			$sessdata['display']			= $user->display;
+			$sessdata['year_active']		= $this->CI->years_model->get_active_id();
+			$sessdata['year_working']		= $sessdata['year_active'];
+			$sessdata['permissions']		= $this->CI->security_model->get_group_permissions($user->group_id);
+			$sessdata['is_anon']			= true;
+
+			// Set session data
+			$this->CI->session->set_userdata($sessdata);
+			
+		}
+		else
+		{
+			$this->lasterr = 'Anonymous user not found in database.';
+			return false;
 		}
 		
 	}
@@ -852,6 +900,15 @@ class Auth{
 	 */
 	function logged_in(){
 		return ($this->CI->session->userdata('user_id') && $this->CI->session->userdata('username'));
+	}
+	
+	
+	
+	function is_anon()
+	{
+		$anon_user_id = $this->CI->settings->get('auth_anonuserid');
+		$session_user_id = $this->CI->session->userdata('user_id');
+		return ($session_user_id == $anon_user_id);
 	}
 	
 	

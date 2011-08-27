@@ -6,7 +6,7 @@
 					<li>Room 16, today, period 6</li>
 					<li>ICT Suite, tomorrow, period 2</li>
 				</ul>
-			<h3>Your department's bookings</h3>
+			<h3>Your department&apos;s bookings</h3>
 				<ul>
 					<li>Room 14, tomorrow, period 4 booked by Joe Bloggs</li>
 				</ul>

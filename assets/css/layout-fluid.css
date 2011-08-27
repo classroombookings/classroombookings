@@ -88,16 +88,18 @@
 		position:relative;
 		right:235px;
 		padding-top: 15px;
+		padding-bottom: 15px;
 	}
 	/* Footer styles */
 	#footer {
 		clear:both;
 		float:left;
 		width:100%;
-		border-top:1px solid #000;
+		border-top:1px solid #999;
 	}
 	#footer p {
 		padding:10px;
 		margin:0;
+		font-size: 85%;
 	}
 	/* --> */

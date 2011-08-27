@@ -9,7 +9,6 @@
  * Please see license-classroombookings.txt for the full license text.
  */
 
-
 class Settings{
 
 
