@@ -74,14 +74,17 @@ $changeyear = $this->auth->check('changeyear', true);
 		<div class="col1wrap">
 			<div class="col1 container">
 				
-					<?php echo $body ?>
-					<?php /* <div class="one-third column">One</div>
-					<div class="one-third column">Two</div>
-					<div class="one-third column">Three</div>
-					<br class="clear">
-					<div class="four columns">LEFT</div>
-					<div class="eight columns">RIGHT</div> */
-					?>
+				<?php echo (isset($alert)) ? $alert : $this->session->flashdata('flash') ?>
+				
+				<?php echo $body ?>
+				
+				<?php /* <div class="one-third column">One</div>
+				<div class="one-third column">Two</div>
+				<div class="one-third column">Three</div>
+				<br class="clear">
+				<div class="four columns">LEFT</div>
+				<div class="eight columns">RIGHT</div> */
+				?>
 				
 			</div> 
 		</div> 

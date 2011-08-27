@@ -58,7 +58,12 @@ class Account extends CB_Controller
 	
 	
 	
-	function login()
+	/**
+	 * Account login page
+	 *
+	 * @param string $logged_out Set to ok|fail to show status of logout action
+	 */
+	function login($logged_out = false)
 	{
 		if ($this->auth->logged_in())
 		{
@@ -66,6 +71,13 @@ class Account extends CB_Controller
 		}
 		else
 		{
+			// If we have a log out status - get message and load in page.
+			if ($logged_out !== false)
+			{
+				$data['alert'] = ($logged_out == 'ok')
+					? $this->msg->notice(lang('AUTH_LOGOUT_OK'))
+					: $this->msg->err(lang('AUTH_LOGOUT_FAIL'));
+			}
 			$data['title'] = 'Login';
 			$data['body'] = $this->load->view('account/login', null, true);
 			$this->page($data);
@@ -96,20 +108,18 @@ class Account extends CB_Controller
 			
 			$login = $this->auth->login($username, $password, $remember);
 			
-			if($login == TRUE){
-				
+			if($login == TRUE)
+			{
 				// Login successful, going to page
-				$this->session->set_flashdata('flash', $this->msg->note($this->lang->line('AUTH_OK')));
+				$this->session->set_flashdata('flash', $this->msg->notice(lang('AUTH_OK')));
 				$uri = $this->session->userdata('uri');
 				redirect(($uri != NULL) ? $uri : 'dashboard');
-				
-			} else {
-				
+			}
+			else
+			{
 				// Login failed
-				//print $this->msg->err($this->lang->line('AUTH_FAIL_USERPASS'));
 				$this->session->set_flashdata('flash', $this->msg->err($this->auth->lasterr, 'Authentication failure'));
 				redirect("account/login");
-				
 			}
 			
 		}
@@ -223,18 +233,12 @@ class Account extends CB_Controller
 	
 	
 
-	function logout(){
-		/*$tpl['title'] = 'Logout';
-		$tpl['pagetitle'] = $tpl['title'];
-		$this->load->view($this->tpl, $tpl);*/
+	function logout()
+	{
+		$this->session->keep_flashdata('flash');
 		$logout = $this->auth->logout();
-		if($logout == TRUE){
-			$this->session->set_flashdata('flash', $this->msg->info($this->lang->line('AUTH_LOGOUT_OK')));
-			redirect("account/login");
-		} else {
-			$this->session->set_flashdata('flash', $this->msg->err($this->lang->line('AUTH_LOGOUT_FAIL')));
-			redirect("account/login");
-		}
+		$logged_out = ($logout == true) ? 'ok' : 'fail';
+		redirect("account/login/$logged_out");
 	}
 	
 	

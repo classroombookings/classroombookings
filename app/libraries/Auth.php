@@ -541,6 +541,8 @@ class Auth
 			// Set session data
 			$this->CI->session->set_userdata($sessdata);
 			
+			return true;
+			
 		}
 		else
 		{
@@ -570,7 +572,10 @@ class Auth
 		$sessdata['group_id'] = NULL;
 		$sessdata['username'] = NULL;
 		$sessdata['display'] = NULL;
-		$sessdata['group_permissions'] = NULL;
+		$sessdata['year_active'] = NULL;
+		$sessdata['year_working'] = NULL;
+		$sessdata['permissions'] = NULL;
+		$sessdata['is_anon'] = NULL;
 		
 		// Set empty session data
 		$this->CI->session->unset_userdata($sessdata);
