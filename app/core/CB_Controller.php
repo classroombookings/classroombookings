@@ -37,10 +37,6 @@ class CB_Controller extends CI_Controller
 		$default['sidebar'] = '';
 		$default['body'] = '';
 		
-		
-		
-		//$default['header_left'] = $this->load->view('template/menu1', NULL, true);
-		
 		$data = array_merge($default, $data);
 		$this->load->view($this->_tpl, $data);
 	}
@@ -61,4 +57,28 @@ class CB_Controller extends CI_Controller
 		}
 	}
 	
+}
+
+
+
+
+class Configure_Controller extends CB_Controller
+{
+
+
+	public function __construct()
+	{
+		parent::__construct();
+	}
+	
+	
+	
+	public function page($data)
+	{
+		$sidebar['menu'] = $this->menu_model->configure();
+		$data['sidebar'] = $this->load->view('configure/sidebar', $sidebar, true);
+		parent::page($data);
+	}
+
+
 }

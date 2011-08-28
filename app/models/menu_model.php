@@ -40,13 +40,13 @@ class Menu_model extends CI_Model
 	function configure()
 	{
 		$subnav = array();
-		$subnav[] = array('settings', lang('DISPLAY_SETTINGS'), 'configure', 'configure-settings');
+		$subnav[] = array('configure/settings', lang('DISPLAY_SETTINGS'), 'configure', 'configure-settings');
 		$subnav[] = array('authentication', lang('AUTHENTICATION'), 'configure', 'configure-authentication');
 		$subnav[] = array('security/users', lang('USERS'), 'users', 'configure-users');
 		$subnav[] = array('security/groups', lang('USER_GROUPS'), 'groups', 'configure-groups');
 		$subnav[] = array('security/permissions', lang('GROUP_PERMISSIONS'), 'permissions', 'configure-permissions');
 		$subnav[] = array('departments', lang('DEPARTMENTS'), 'departments', 'configure-departments');
-		$subnav[] = array('rooms', lang('ROOMS'), 'rooms', 'configure-rooms');
+		$subnav[] = array('rooms/manage', lang('ROOMS'), 'rooms', 'configure-rooms');
 		$subnav[] = array('academic/years', lang('ACADEMIC_YEARS'), 'years', 'configure-years');
 		$subnav[] = array('academic/terms', lang('TERM_DATES'), 'terms', 'configure-terms');
 		$subnav[] = array('academic/weeks', lang('TIMETABLE_WEEKS'), 'weeks', 'configure-weeks');

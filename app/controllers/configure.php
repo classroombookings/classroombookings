@@ -9,7 +9,7 @@
  * Please see license-classroombookings.txt for the full license text.
  */
  
-class Configure extends CB_Controller
+class Configure extends Configure_Controller
 {
 	
 	
@@ -23,11 +23,12 @@ class Configure extends CB_Controller
 	
 	
 	
-	
-	function index(){
+	/**
+	 * Main settings page
+	 */
+	function index()
+	{
 		$this->auth->check('configure');
-		$sidebar['menu'] = $this->menu_model->configure();
-		$data['sidebar'] = $this->load->view('configure/sidebar', $sidebar, true);
 		$data['body'] = '&nbsp';
 		$this->page($data);
 	}
@@ -36,9 +37,10 @@ class Configure extends CB_Controller
 	
 	
 	/*
-	 * Page: General
+	 * Page: Display settings
 	 */
-	function general(){
+	function settings()
+	{
 		$this->auth->check('configure');
 		$body['settings'] = $this->settings->get();
 		$tpl['subnav'] = $this->subnav();
