@@ -40,16 +40,22 @@ class Authentication extends Configure_Controller
 			'title' => 'Global',
 			'view' => $this->load->view('authentication/global', $tab, true),
 		);
-		$tabs[] = array(
-			'id' => 'ldap',
-			'title' => 'LDAP',
-			'view' => $this->load->view('authentication/ldap', $tab, true),
-		);
-		$tabs[] = array(
-			'id' => 'preauth',
-			'title' => 'Pre-authentication',
-			'view' => $this->load->view('authentication/preauth', $tab, true),
-		);
+		if ($this->settings->get('auth_ldap_enable') == 1)
+		{
+			$tabs[] = array(
+				'id' => 'ldap',
+				'title' => 'LDAP',
+				'view' => $this->load->view('authentication/ldap', $tab, true),
+			);
+		}
+		if ($this->settings->get('auth_preauth_enable') == 1)
+		{
+			$tabs[] = array(
+				'id' => 'preauth',
+				'title' => 'Pre-authentication',
+				'view' => $this->load->view('authentication/preauth', $tab, true),
+			);
+		}
 		
 		// Tab data for main page
 		$body['tabs'] = $tabs;
@@ -59,6 +65,36 @@ class Authentication extends Configure_Controller
 		$data['title'] = 'Configure';
 		$data['body'] = $this->load->view('parts/tabs', $body, TRUE);
 		$this->page($data);
+	}
+	
+	
+	
+	
+	function save_main()
+	{
+
+		$this->form_validation->set_rules('auth_anonuserid', 'Anonymous user', 'required|max_length[10]|integer');
+		$this->form_validation->set_rules('auth_ldap_enable', 'Enable LDAP', 'required|exact_length[1]');
+		$this->form_validation->set_rules('auth_preauth_enable', 'Enable pre-authentication', 'required|exact_length[1]');
+		$this->form_validation->set_error_delimiters('<li>', '</li>');
+		
+		if ($this->form_validation->run() == false)
+		{
+			// Validation failed
+			return $this->index();
+		}
+		else
+		{
+			$data['auth_anonuserid'] = $this->input->post('auth_anonuserid');
+			$data['auth_ldap_enable'] = $this->input->post('auth_ldap_enable');
+			$data['auth_preauth_enable'] = $this->input->post('auth_preauth_enable');
+
+			$this->settings->save($data);
+
+			$this->session->set_flashdata('flash', 
+				$this->msg->notice(lang('CONF_AUTH_SAVE_OK')));
+			redirect('authentication');
+		}
 	}
 	
 	
@@ -91,34 +127,7 @@ class Authentication extends Configure_Controller
 	
 	
 	
-	function settings_save()
-	{
-		
-		$this->form_validation->set_rules('school_name', 'School name', 'required|max_length[100]|trim');
-		$this->form_validation->set_rules('school_url', 'Website address', 'max_length[255]|prep_url|trim');
-		$this->form_validation->set_rules('timetable_view', 'Timetable view', 'required');
-		$this->form_validation->set_rules('timetable_cols', 'Timteable columns', 'required');
-		$this->form_validation->set_error_delimiters('<li>', '</li>');
-		
-		if ($this->form_validation->run() == false)
-		{
-			// Validation failed
-			return $this->settings();
-		}
-		else
-		{
-			$data['school_name'] = $this->input->post('school_name');
-			$data['school_url'] = $this->input->post('school_url');
-			$data['timetable_view'] = $this->input->post('timetable_view');
-			$data['timetable_cols'] = $this->input->post('timetable_cols');
-			
-			$this->settings->save($data);
-			
-			$this->session->set_flashdata('flash', 
-				$this->msg->notice(lang('CONF_MAIN_SAVE_OK')));
-			redirect('configure/settings');
-		}
-	}
+
 	
 	
 	

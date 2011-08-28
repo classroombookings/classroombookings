@@ -4,7 +4,9 @@
 $foo = validation_errors();
 if($foo)
 {
+	echo '<div style="margin-top: 20px;">';
 	echo $this->msg->err('Check form fields and try again.');
+	echo '</div>';
 }
 
 echo form_open(

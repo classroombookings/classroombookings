@@ -26,8 +26,15 @@ class Configure extends Configure_Controller
 	function index()
 	{
 		$this->auth->check('configure');
-		$data['body'] = '&nbsp';
-		$this->page($data);
+		if ($this->auth->check('configure', true))
+		{
+			return $this->settings();
+		}
+		else
+		{
+			$data['body'] = '';
+			$this->page($data);
+		}
 	}
 	
 	

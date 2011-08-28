@@ -226,13 +226,13 @@
 		font: 13px "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
 		color: #777;
 		margin: 0;
-		/*width: 210px;*/
+		/* width: 100px; */
 		max-width: 100%;
 		display: block;
 		margin-bottom: 20px;
 		background: #fff; }
 	select { 
-		padding: 0; }
+		padding: 2px; }
 	input[type="text"]:focus,
 	input[type="password"]:focus,
 	input[type="email"]:focus, 
@@ -249,8 +249,8 @@
 		display: block;
 		font-weight: bold;
 		font-size: 13px;  }
-	select { 
-		width: 220px; }
+	/*select { 
+		width: 220px; }*/
 	input[type="checkbox"] {
 		display: inline; }
 	label span,
