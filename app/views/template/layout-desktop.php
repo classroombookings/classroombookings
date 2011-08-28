@@ -52,52 +52,71 @@ $changeyear = $this->auth->check('changeyear', true);
 <div id="header">
 	
 	<div class="header-left">
-		<ul class="horiz">
-			<li><a href="#!/dashboard" data-name="dashboard" class="i dashboard">Home</a></li> 
-			<li><a href="#!/bookings" data-name="bookings" class="i bookings">Bookings</a></li> 
-			<li><a href="#!/configure" data-name="configure" class="i configure">Configure</a></li> 
-			<li><a href="#!/reports" data-name="reports" class="i reports">Reports</a></li>
-		</ul>
+		<?php echo $header_left ?>
 	</div>
 	
 	<div class="header-right">
-		<?php $this->load->view('template/layout-desktop.header-right.php') ?>
+		<?php echo $header_right ?>
 	</div>
 	
-</div> 
+</div>
 
 
-<div class="colmask leftmenu"> 
+<?php if(empty($sidebar)): ?>
 	
-	<div class="colright">
+	<br class="clear">
+	<div class="container_skel container">
 		
-		<div class="col1wrap">
-			<div class="col1 container">
-				
-				<?php echo (isset($alert)) ? $alert : $this->session->flashdata('flash') ?>
-				
-				<?php echo $body ?>
-				
-				<?php /* <div class="one-third column">One</div>
-				<div class="one-third column">Two</div>
-				<div class="one-third column">Three</div>
-				<br class="clear">
-				<div class="four columns">LEFT</div>
-				<div class="eight columns">RIGHT</div> */
-				?>
-				
+		<?php $alert = (isset($alert)) ? $alert : $this->session->flashdata('flash') ?>
+		<?php if (!empty($alert)): ?>
+		<div class="sixteen columns" style="margin-top: 20px;">
+			<?php echo $alert ?>
+		</div>
+		<br class="clear">
+		<?php endif; ?>
+	
+		<?php echo $body ?>
+	
+	</div>
+	
+
+<?php else: ?>
+	
+	
+	<div class="colmask leftmenu"> 
+	
+		<div class="colright">
+	
+			<div class="col1wrap">
+				<div class="col1 container">
+	
+					<?php echo (isset($alert)) ? $alert : $this->session->flashdata('flash') ?>
+	
+					<?php echo $body ?>
+	
+					<?php /* <div class="one-third column">One</div>
+					<div class="one-third column">Two</div>
+					<div class="one-third column">Three</div>
+					<br class="clear">
+					<div class="four columns">LEFT</div>
+					<div class="eight columns">RIGHT</div> */
+					?>
+	
+				</div> 
 			</div> 
-		</div> 
-		
-		<!-- Sidebar -->
-		<div class="col2" id="sidebar"> 
-			<?php echo $sidebar ?>
-		</div> 
-		<!-- / sidebar -->
-		
+	
+			<!-- Sidebar -->
+			<div class="col2" id="sidebar"> 
+				<?php echo $sidebar ?>
+			</div> 
+			<!-- / sidebar -->
+	
+		</div>
+	
 	</div>
 	
-</div> 
+	
+<?php endif; ?>
 
 
 <div id="footer"> 

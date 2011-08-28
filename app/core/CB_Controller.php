@@ -20,8 +20,15 @@ class CB_Controller extends CI_Controller
 	
 	function page($data)
 	{
+		// Top left menu
+		$header_left['menu'] = $this->menu_model->main();
+		$default['header_left'] = $this->load->view('template/layout-desktop.header-left.php', $header_left, true);
+		$default['header_right'] = $this->load->view('template/layout-desktop.header-right.php', null, true);
+		
 		$default['sidebar'] = '';
 		$default['body'] = '';
+		
+		
 		
 		//$default['header_left'] = $this->load->view('template/menu1', NULL, true);
 		

@@ -446,7 +446,7 @@ class Auth
 			$sessdata['display']			= $user->display;	#($user->display == NULL) ? $user->username : $user->display;
 			$sessdata['year_active']		= $this->CI->years_model->get_active_id();
 			$sessdata['year_working']		= $sessdata['year_active'];
-			$sessdata['group_permissions']	= $this->CI->security_model->get_group_permissions($user->group_id);
+			$sessdata['permissions']		= $this->CI->security_model->get_group_permissions($user->group_id);
 			$sessdata['is_anon']			= false;
 			
 			// Set session data
@@ -575,6 +575,7 @@ class Auth
 		$sessdata['year_active'] = NULL;
 		$sessdata['year_working'] = NULL;
 		$sessdata['permissions'] = NULL;
+		$sessdata['group_permissions'] = NULL;
 		$sessdata['is_anon'] = NULL;
 		
 		// Set empty session data

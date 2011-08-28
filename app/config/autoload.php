@@ -109,7 +109,7 @@ $autoload['language'] = array('crbs2');
 |
 */
 
-$autoload['model'] = array('years_model', 'weeks_model');
+$autoload['model'] = array('years_model', 'weeks_model', 'menu_model');
 
 
 /* End of file autoload.php */

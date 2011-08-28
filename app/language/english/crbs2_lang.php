@@ -92,6 +92,12 @@ $lang['LOGOUT'] = 'Log out';		// Could be 'Sign out'...
 $lang['USERNAME'] = 'Username';
 $lang['PASSWORD'] = 'Password';
 
+// Modules
+$lang['DASHBOARD'] = 'Dashboard';
+$lang['BOOKINGS'] = 'Bookings';
+$lang['CONFIGURE'] = 'Configure';
+$lang['REPORTS'] = 'Reports';
+
 // Actions
 $lang['ACTION_ADD'] = 'Add';
 $lang['ACTION_NEW'] = 'New';
