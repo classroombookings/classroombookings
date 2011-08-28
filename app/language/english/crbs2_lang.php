@@ -98,6 +98,19 @@ $lang['BOOKINGS'] = 'Bookings';
 $lang['CONFIGURE'] = 'Configure';
 $lang['REPORTS'] = 'Reports';
 
+$lang['DISPLAY_SETTINGS'] = 'Display settings';
+$lang['AUTHENTICATION'] = 'Authentication';
+$lang['USERS'] = 'Users';
+$lang['USER_GROUPS'] = 'User groups';
+$lang['GROUP_PERMISSIONS'] = 'Group permissions';
+$lang['DEPARTMENTS'] = 'Departments';
+$lang['ROOMS'] = 'Rooms';
+$lang['ACADEMIC_YEARS'] = 'Academic years';
+$lang['TERM_DATES'] = 'Term dates';
+$lang['TIMETABLE_WEEKS'] = 'Timetable weeks';
+$lang['HOLIDAYS'] = 'Holidays';
+$lang['PERIODS'] = 'Periods';
+
 // Actions
 $lang['ACTION_ADD'] = 'Add';
 $lang['ACTION_NEW'] = 'New';

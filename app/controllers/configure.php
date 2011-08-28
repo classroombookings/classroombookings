@@ -1,69 +1,35 @@
-<?php
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+
 /*
-	This file is part of Classroombookings.
-
-	Classroombookings is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
-
-	Classroombookings is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with Classroombookings.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-
-class Configure extends Controller {
+ * Classroombookings. Hassle-free resource booking for schools. <http://classroombookings.com/>
+ * Copyright (C) 2006-2011 Craig A Rodway <craig.rodway@gmail.com>
+ *
+ * This file is part of Classroombookings.
+ * Classroombookings is licensed under the Affero GNU GPLv3 license.
+ * Please see license-classroombookings.txt for the full license text.
+ */
+ 
+class Configure extends CB_Controller
+{
 	
 	
 	var $tpl;
 	
 	
-	function Configure(){
-		parent::Controller();
-		$this->load->model('security');
-		$this->tpl = $this->config->item('template');
-		$this->output->enable_profiler($this->config->item('profiler'));
-	}
-	
-	
-	
-	/**
-	 * Link definitions of pages in this section
-	 */
-	function subnav(){
-		$subnav = array();
-		// Other pages in this parent section
-		$subnav[] = array('configure/general', 'General', 'configure');
-		$subnav[] = array('configure/authentication', 'Authentication', 'configure');
-		if($this->settings->get('auth.ldap') == 1){
-			$subnav[] = array('configure/ldapgroups', 'LDAP Groups', 'configure');
-		}
-		return $subnav;
+	function __construct(){
+		parent::__construct();
+		$this->load->model('security_model');
 	}
 	
 	
 	
 	
-	/*function index($tab = 'conf-main'){
-		$this->auth->check('configure');
-		$body['tab'] = ($this->session->flashdata('tab')) ? $this->session->flashdata('tab') : $tab;
-		$body['conf']['main'] = $this->settings->get_all('main');
-		$body['conf']['auth'] = $this->settings->get_all('auth');
-		$body['conf']['groups'] = $this->security->get_groups_dropdown();
-		$body['conf']['ldapgroups'] = $this->security->get_ldap_groups();
-		
-		$tpl['title'] = 'Configure';
-		$tpl['pagetitle'] = 'Configure classroombookings';
-		$tpl['body'] = $this->load->view('configure/conf.index.php', $body, TRUE);
-		$this->load->view($this->tpl, $tpl);
-	}*/
 	function index(){
-		$this->general();
+		$this->auth->check('configure');
+		$sidebar['menu'] = $this->menu_model->configure();
+		$data['sidebar'] = $this->load->view('configure/sidebar', $sidebar, true);
+		$data['body'] = '&nbsp';
+		$this->page($data);
 	}
 	
 	

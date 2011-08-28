@@ -9,11 +9,9 @@
  * Please see license-classroombookings.txt for the full license text.
  */
  
-class Dashboard extends CB_Controller {
+class Dashboard extends CB_Controller
+{
 
-
-	var $tpl;
-	
 
 	function __construct(){
 		parent::__construct();

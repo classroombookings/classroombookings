@@ -1,24 +1,16 @@
-<?php
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+
 /*
-	This file is part of Classroombookings.
+ * Classroombookings. Hassle-free resource booking for schools. <http://classroombookings.com/>
+ * Copyright (C) 2006-2011 Craig A Rodway <craig.rodway@gmail.com>
+ *
+ * This file is part of Classroombookings.
+ * Classroombookings is licensed under the Affero GNU GPLv3 license.
+ * Please see license-classroombookings.txt for the full license text.
+ */
 
-	Classroombookings is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
-
-	Classroombookings is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with Classroombookings.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-
-class AuthHook{
+class AuthHook
+{
 
 
     var $CI;
