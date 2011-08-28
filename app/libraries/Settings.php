@@ -9,7 +9,8 @@
  * Please see license-classroombookings.txt for the full license text.
  */
 
-class Settings{
+class Settings
+{
 
 
 	var $CI;
@@ -18,7 +19,8 @@ class Settings{
 	private $_settings;
 	
 	
-	function Settings(){
+	function Settings()
+	{
 		// Load original CI object
 		$this->CI =& get_instance();
 		// Get all settings and store in local array
@@ -59,12 +61,16 @@ class Settings{
 	/**
 	 * Get one or mroe setting values
 	 *
-	 * @param string|array $key One setting name or 1D array of keys
+	 * @param empty|string|array $key One setting name or 1D array of keys. Empty = all settings
 	 * @return string|array String value, or 2D array of keys => values
 	 */
-	function get($key)
+	function get($key = null)
 	{
-		if (is_array($key))
+		if ($key === null)
+		{
+			return $this->settings;
+		}
+		elseif (is_array($key))
 		{
 			$ret = array();
 			foreach($key as $k)
@@ -73,7 +79,7 @@ class Settings{
 			}
 			return $ret;
 		}
-		else
+		elseif (is_string($key))
 		{
 			return $this->_get_one($key);
 		}

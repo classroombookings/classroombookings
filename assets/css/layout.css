@@ -2,9 +2,12 @@ html { overflow-y: scroll; }
 
 div hr { height: 1px; }
 
-div h1, div h2, div h3, div h4, div h5, div h6, ul {
+div h1, div h2, div h3, div h4, div h5, div h6 {
 	margin-bottom: 15px;
+	font-weight: bold;
 }
+
+ul { margin-bottom: 15px; }
 
 
 a { color: #204A87; cursor: pointer; }
@@ -157,6 +160,7 @@ p.success{ background: #ABE673;	/*#77BF30;*/ }
 .i.bookings { background-image: url(../img/ico/bookings.png); }
 .i.configure { background-image: url(../img/ico/configure.png); }
 .i.reports { background-image: url(../img/ico/reports.png); }
+.i.event-log { background-image: url(../img/ico/event-log.png); }
 .i.account { background-image: url(../img/ico/person.png); }
 .i.security { background-image: url(../img/ico/key.png); }
 
@@ -244,7 +248,7 @@ table.list tr.hover td { background: #fffed0; cursor: pointer; }
 .button {
 	padding: 5px 10px;
 	display: inline;
-	background: #777 url(button.png) repeat-x bottom;
+	background: #777 url(../img/button.png) repeat-x bottom;
 	border: none;
 	color: #fff;
 	cursor: pointer;

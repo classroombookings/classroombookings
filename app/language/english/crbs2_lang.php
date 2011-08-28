@@ -1,5 +1,7 @@
 <?php
 
+/* Status messages */
+
 $lang['AUTH_FAIL_USERPASS'] = 'Incorrect username and/or password';
 $lang['AUTH_OK'] = 'You are now logged in.';
 
@@ -84,6 +86,10 @@ $lang['W_WEEKS'] = 'Weeks';
 $lang['W_YEAR'] = 'Year';
 $lang['W_YEARS'] = 'Years';
 $lang['W_FIELD'] = 'Field';
+$lang['W_SCHOOL'] = 'School';
+$lang['W_NAME'] = 'Name';
+$lang['W_DETAILS'] = 'Details';
+$lang['W_SETTINGS'] = 'Settings';
 
 // Login/out terminology
 $lang['LOGIN'] = 'Log in';		// Could be 'Sign in'...
@@ -95,10 +101,13 @@ $lang['PASSWORD'] = 'Password';
 // Modules
 $lang['DASHBOARD'] = 'Dashboard';
 $lang['BOOKINGS'] = 'Bookings';
+
 $lang['CONFIGURE'] = 'Configure';
+$lang['WEBADDR'] = 'web address';
+
 $lang['REPORTS'] = 'Reports';
 
-$lang['DISPLAY_SETTINGS'] = 'Display settings';
+$lang['GENERAL_SETTINGS'] = 'General settings';
 $lang['AUTHENTICATION'] = 'Authentication';
 $lang['USERS'] = 'Users';
 $lang['USER_GROUPS'] = 'User groups';

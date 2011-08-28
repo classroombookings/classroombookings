@@ -56,7 +56,7 @@ $t = 1;
 		
 		<?php
 		unset($buttons);
-		$buttons[] = array('submit', 'green', lang('LOGIN'), $t);
+		$buttons[] = array('submit', 'blue', lang('LOGIN'), $t);
 		$this->load->view('parts/buttons', array('buttons' => $buttons));
 		?>
 

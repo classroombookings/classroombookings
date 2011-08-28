@@ -13,18 +13,15 @@ class Configure extends Configure_Controller
 {
 	
 	
-	var $tpl;
-	
-	
 	function __construct(){
 		parent::__construct();
-		$this->load->model('security_model');
+		//$this->load->model('security_model');
 	}
 	
 	
 	
 	/**
-	 * Main settings page
+	 * Page: configuration
 	 */
 	function index()
 	{
@@ -42,12 +39,14 @@ class Configure extends Configure_Controller
 	function settings()
 	{
 		$this->auth->check('configure');
-		$body['settings'] = $this->settings->get();
-		$tpl['subnav'] = $this->subnav();
-		$tpl['title'] = 'Configure';
-		$tpl['pagetitle'] = 'Configure classroombookings';
-		$tpl['body'] = $this->load->view('configure/conf.main.php', $body, TRUE);
-		$this->load->view($this->tpl, $tpl);
+		
+		// Retrieve settings
+		$settings_list = array('school_name', 'school_url', 'timetable_view', 'timetable_cols');
+		$body['settings'] = $this->settings->get($settings_list);
+		
+		$data['title'] = 'Configure';
+		$data['body'] = $this->load->view('configure/settings', $body, true);
+		$this->page($data);
 	}
 	
 	
@@ -101,7 +100,8 @@ class Configure extends Configure_Controller
 	
 	
 	
-	function save_main(){
+	function settings_save()
+	{
 		
 		$this->form_validation->set_rules('school_name', 'School name', 'required|max_length[100]|trim');
 		$this->form_validation->set_rules('school_url', 'Website address', 'max_length[255]|prep_url|trim');
@@ -109,25 +109,24 @@ class Configure extends Configure_Controller
 		$this->form_validation->set_rules('timetable_cols', 'Timteable columns', 'required');
 		$this->form_validation->set_error_delimiters('<li>', '</li>');
 		
-		if($this->form_validation->run() == FALSE){
-			
+		if ($this->form_validation->run() == false)
+		{
 			// Validation failed
-			$this->general();
-			
-		} else {
-			
-			$data['school.name']			= $this->input->post('school_name');
-			$data['school.url']				= $this->input->post('school_url');
-			$data['timetable.view'] 		= $this->input->post('timetable_view');
-			$data['timetable.cols']			= $this->input->post('timetable_cols');
+			return $this->settings();
+		}
+		else
+		{
+			$data['school_name'] = $this->input->post('school_name');
+			$data['school_url'] = $this->input->post('school_url');
+			$data['timetable_view'] = $this->input->post('timetable_view');
+			$data['timetable_cols'] = $this->input->post('timetable_cols');
 			
 			$this->settings->save($data);
 			
-			$this->session->set_flashdata('flash', $this->msg->info($this->lang->line('CONF_MAIN_SAVE_OK')));
-			redirect('configure/general');
-			
+			$this->session->set_flashdata('flash', 
+				$this->msg->notice(lang('CONF_MAIN_SAVE_OK')));
+			redirect('configure/settings');
 		}
-		
 	}
 	
 	

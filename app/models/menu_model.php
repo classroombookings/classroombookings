@@ -29,6 +29,7 @@ class Menu_model extends CI_Model
 		$subnav[] = array('bookings', lang('BOOKINGS'), 'bookings', 'bookings');
 		$subnav[] = array('configure', lang('CONFIGURE'), 'configure', 'configure');
 		$subnav[] = array('reports', lang('REPORTS'), 'reports', 'reports');
+		$subnav[] = array('reports', 'Event Log', 'reports', 'event-log');
 		return $subnav;
 	}
 	
@@ -40,7 +41,7 @@ class Menu_model extends CI_Model
 	function configure()
 	{
 		$subnav = array();
-		$subnav[] = array('configure/settings', lang('DISPLAY_SETTINGS'), 'configure', 'configure-settings');
+		$subnav[] = array('configure/settings', lang('GENERAL_SETTINGS'), 'configure', 'configure-settings');
 		$subnav[] = array('authentication', lang('AUTHENTICATION'), 'configure', 'configure-authentication');
 		$subnav[] = array('security/users', lang('USERS'), 'users', 'configure-users');
 		$subnav[] = array('security/groups', lang('USER_GROUPS'), 'groups', 'configure-groups');
