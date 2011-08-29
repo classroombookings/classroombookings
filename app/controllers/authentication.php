@@ -67,8 +67,6 @@ class Authentication extends Configure_Controller
 		$body['active_tab'] = ($active_tab == null) ? $this->session->flashdata('active_tab') : $active_tab;
 		$body['active_tab'] = (empty($body['active_tab'])) ? 'main' : $body['active_tab'];
 		
-		echo $body['active_tab'];
-		
 		$data['title'] = 'Configure';
 		$data['body'] = $this->load->view('parts/tabs', $body, TRUE);
 		$this->page($data);
