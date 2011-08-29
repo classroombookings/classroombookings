@@ -138,6 +138,8 @@ div.header-right ul li a:hover {
 }
 
 
+p.hint { font-size: 85%; color: #999; }
+
 
 /* Messages */
 p.error, p.success{ color:#000; padding:4px; font-weight:bold; font-size:90%; }

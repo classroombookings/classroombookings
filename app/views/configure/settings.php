@@ -6,7 +6,7 @@ if($errors){
 ?>
 
 <?php
-echo form_open('configure/settings_save');
+echo form_open('configure/save_settings');
 
 // Start tabindex
 $t = 1;

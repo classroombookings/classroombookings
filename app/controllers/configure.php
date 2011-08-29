@@ -107,7 +107,7 @@ class Configure extends Configure_Controller
 	
 	
 	
-	function settings_save()
+	function save_settings()
 	{
 		
 		$this->form_validation->set_rules('school_name', 'School name', 'required|max_length[100]|trim');
