@@ -47,6 +47,11 @@ class Authentication extends Configure_Controller
 				'title' => 'LDAP',
 				'view' => $this->load->view('authentication/ldap', $tab, true),
 			);
+			$tabs[] = array(
+				'id' => 'ldapgroups',
+				'title' => 'LDAP Groups',
+				'view' => $this->load->view('authentication/ldap-groups', $tab, true),
+			);
 		}
 		if ($this->settings->get('auth_preauth_enable') == 1)
 		{
