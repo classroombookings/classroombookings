@@ -1,6 +1,6 @@
 <ul class="tabs">
 	<?php foreach($tabs as $tab): ?>
-		<?php $class = ($activetab == $tab['id']) ? 'class="active"' : ''; ?>
+		<?php $class = ($active_tab == $tab['id']) ? 'class="active"' : ''; ?>
 		<li><a <?php echo $class ?> data-tab="<?php echo $tab['id'] ?>"><?php echo $tab['title'] ?></a></li>
 	<?php endforeach; ?>
 </ul>
@@ -11,7 +11,7 @@
 	<?php foreach($tabs as $tab): ?>
 		
 		<!-- Tab: <?php echo $tab['title'] ?> -->
-		<?php $class = ($activetab == $tab['id']) ? 'class="active"' : ''; ?>
+		<?php $class = ($active_tab == $tab['id']) ? 'class="active"' : ''; ?>
 		<li <?php echo $class ?> id="<?php echo $tab['id'] ?>">
 			<?php echo $tab['view'] ?>
 		</li>

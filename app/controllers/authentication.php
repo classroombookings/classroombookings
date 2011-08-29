@@ -22,9 +22,9 @@ class Authentication extends Configure_Controller
 	
 	
 	/**
-	 * Page: Authentication index page
+	 * PAGE: Authentication index page (with tabs)
 	 */
-	function index()
+	function index($active_tab = null)
 	{
 		$this->auth->check('configure');
 		
@@ -64,8 +64,10 @@ class Authentication extends Configure_Controller
 		
 		// Tab data for main page
 		$body['tabs'] = $tabs;
-		$body['activetab'] = $this->session->flashdata('active_tab');
-		$body['activetab'] = (empty($body['activetab'])) ? 'main' : $body['activetab'];
+		$body['active_tab'] = ($active_tab == null) ? $this->session->flashdata('active_tab') : $active_tab;
+		$body['active_tab'] = (empty($body['active_tab'])) ? 'main' : $body['active_tab'];
+		
+		echo $body['active_tab'];
 		
 		$data['title'] = 'Configure';
 		$data['body'] = $this->load->view('parts/tabs', $body, TRUE);
@@ -75,9 +77,11 @@ class Authentication extends Configure_Controller
 	
 	
 	
+	/**
+	 * FORM POST: Save global auth settings
+	 */
 	function save_main()
 	{
-
 		$this->form_validation->set_rules('auth_anonuserid', 'Anonymous user', 'required|max_length[10]|integer');
 		$this->form_validation->set_rules('auth_ldap_enable', 'Enable LDAP', 'required|exact_length[1]');
 		$this->form_validation->set_rules('auth_preauth_enable', 'Enable pre-authentication', 'required|exact_length[1]');
@@ -93,6 +97,13 @@ class Authentication extends Configure_Controller
 			$data['auth_anonuserid'] = $this->input->post('auth_anonuserid');
 			$data['auth_ldap_enable'] = $this->input->post('auth_ldap_enable');
 			$data['auth_preauth_enable'] = $this->input->post('auth_preauth_enable');
+			
+			// Check if there is an existing pre-auth key. If not, make one.
+			$preauthkey = $this->settings->get('auth_preauth_key');
+			if (empty($preauthkey))
+			{
+				$data['auth_preauth_key'] = $this->_genpak();
+			}
 
 			$this->settings->save($data);
 
@@ -105,109 +116,45 @@ class Authentication extends Configure_Controller
 	
 	
 	
+	/* ============= LDAP ========== */
+	
+	
+	
+	
 	/**
-	 * Page: LDAP groups
+	 * FORM POST: Save LDAP settings
 	 */
-	function ldapgroups(){
-
-		$this->auth->check('configure');
+	function save_ldap()
+	{
+		$this->form_validation->set_rules('auth_ldap_host', 'LDAP host', 'required|max_length[50]|trim');
+		$this->form_validation->set_rules('auth_ldap_port', 'LDAP TCP port', 'required|max_length[5]|integer|callback__port_check');
+		$this->form_validation->set_rules('auth_ldap_base', 'LDAP Base DN', 'required|max_length[65535]');
+		$this->form_validation->set_rules('auth_ldap_filter', 'LDAP filter', 'required|max_length[65535]');
+		$this->form_validation->set_rules('auth_ldap_groupid', 'LDAP group', 'required|integer');
+		$this->form_validation->set_rules('ldaptestuser', 'LDAP test username');
 		
-		if($this->settings->get('auth.ldap') == 0){
-			$this->session->set_flashdata('flash', $this->msg->err('You are not currently using LDAP authentication.'));
-			redirect('configure/authentication');
-		}
-		
-		$body['sidebar'] = $this->load->view('configure/conf.ldap-groups.side.php', NULL, TRUE);
-		$body['settings'] = $this->settings->get('auth.');
-		$body['groups'] = $this->security->get_groups_dropdown();
-		$body['ldapgroups'] = $this->security->get_ldap_groups();
-		$tpl['subnav'] = $this->subnav();
-		$tpl['title'] = 'Configure';
-		$tpl['pagetitle'] = 'Configure LDAP groups';
-		$tpl['body'] = $this->load->view('configure/conf.ldap-groups.php', $body, TRUE);
-		$this->load->view($this->tpl, $tpl);
-		
-	}
-	
-	
-	
-	
-
-	
-	
-	
-	
-	function save_auth(){
-		
-		#print_r($_POST);
-	
-		$this->form_validation->set_rules('auth_preauth', 'Pre-authentication enable');
-		$this->form_validation->set_rules('auth_ldap', 'LDAP enable');
-		$this->form_validation->set_rules('auth_ldap_loginupdate', 'LDAP login update');
-		if($this->input->post('auth_ldap') == '1' && $this->input->post('ldapfirst') == '0'){
-			// LDAP validation (only required if LDAP box is ticked & is not the first time it's being ticked)
-			$this->form_validation->set_rules('auth_ldap_host', 'LDAP host', 'required|max_length[50]|trim');
-			$this->form_validation->set_rules('auth_ldap_port', 'LDAP TCP port', 'required|max_length[5]|integer|callback__port_check');
-			$this->form_validation->set_rules('auth_ldap_base', 'LDAP Base DN', 'required|max_length[65536]');
-			$this->form_validation->set_rules('auth_ldap_filter', 'LDAP filter', 'required|max_length[65536]');
-			$this->form_validation->set_rules('auth_ldap_group_id', 'LDAP group', 'required|integer');
-			$this->form_validation->set_rules('ldaptestuser', 'LDAP test username');
-		}
-		if($this->input->post('auth_preauth') == '1' && $this->input->post('preauthfirst') == '0'){
-			$this->form_validation->set_rules('auth_preauth_group_id', 'Preauth group', 'required|integer');
-			$this->form_validation->set_rules('auth_preauth_emaildomain', 'Preauth email domain', 'required|max_length[50]');
-		}
 		$this->form_validation->set_error_delimiters('<li>', '</li>');
 		
-		if($this->form_validation->run() == FALSE){
-			
-			// Validation failed
-			#$this->index('conf-auth');
-			$this->authentication();
-			
-		} else {
-			
+		if($this->form_validation->run() == false)
+		{
+			$this->index('ldap');
+		}
+		else
+		{
 			// All fields were validated!
-			
-			$preauth = ($this->input->post('auth_preauth') == '1') ? TRUE : FALSE;
-			$preauthkey = ($this->input->post('auth_preauth_key')) ? $this->input->post('auth_preauth_key') : FALSE;
-			
-			if($preauth == TRUE && $preauthkey == TRUE){
-				// Has been enabled, we have a key, so we should really have a group ID and email domain now
-				$data['auth.preauth.group_id'] = $this->input->post('auth_preauth_group_id');
-				$data['auth.preauth.emaildomain'] = str_replace('@', '', $this->input->post('auth_preauth_emaildomain'));
-			}
-			
-			// No existing preauthkey, and enabling it for the first time - generate one
-			if($preauthkey == FALSE && $preauth == TRUE){
-				// Make a new preauth key
-				$data['auth.preauth.key'] = sha1(uniqid(rand(), TRUE) . __FILE__);
-			}
-			// Existing preauthkey, and now disabling it by removing it from DB
-			if($preauthkey == TRUE && $preauth == FALSE){
-				$data['auth.preauth.key'] = NULL;
-			}
-			$data['auth.ldap'] = ($this->input->post('auth_ldap') == '1') ? 1 : 0;
-			if($this->input->post('ldapfirst') == '0'){
-				$data['auth.ldap.host'] = $this->input->post('auth_ldap_host');
-				$data['auth.ldap.port'] = $this->input->post('auth_ldap_port');
-				$data['auth.ldap.base'] = $this->input->post('auth_ldap_base');
-				$data['auth.ldap.filter'] = $this->input->post('auth_ldap_filter');
-				$data['auth.ldap.group_id'] = $this->input->post('auth_ldap_group_id');
-				$data['auth.ldap.loginupdate'] = ($this->input->post('auth_ldap_loginupdate') == '1') ? 1 : 0;
-			}
+			$data['auth_ldap_host'] = $this->input->post('auth_ldap_host');
+			$data['auth_ldap_port'] = $this->input->post('auth_ldap_port');
+			$data['auth_ldap_base'] = $this->input->post('auth_ldap_base');
+			$data['auth_ldap_filter'] = $this->input->post('auth_ldap_filter');
+			$data['auth_ldap_groupid'] = $this->input->post('auth_ldap_groupid');
+			$data['auth_ldap_loginupdate'] = $this->input->post('auth_ldap_loginupdate');
 			
 			$save = $this->settings->save($data);
 			
-			if($save == FALSE){
-				$this->msg->add('err', $this->lang->line('CONF_AUTH_SAVE_FAIL'));
-			} else {
-				$this->msg->add('info', $this->lang->line('CONF_AUTH_SAVE_OK'));
-			}
-			
-			#$this->session->set_flashdata('tab', 'conf-auth');
-			redirect('configure/authentication');
-			
+			$this->session->set_flashdata('active_tab', 'ldap');
+			$this->session->set_flashdata('flash', 
+				$this->msg->notice(lang('CONF_AUTH_LDAP_SAVE_OK')));
+			redirect('authentication');
 		}
 		
 	}
@@ -216,7 +163,8 @@ class Authentication extends Configure_Controller
 	
 	
 	/**
-	 * LDAP test function.
+	 * FORM POST: Test LDAP settings
+	 *
 	 * Runs through the procedure one line at a time and tests for success.
 	 */	 	
 	function test_ldap(){
@@ -328,6 +276,9 @@ class Authentication extends Configure_Controller
 	
 	
 	
+	/**
+	 * FORM POST: Lookup and store the LDAP groups
+	 */
 	function get_ldap_groups(){
 		// Get auth settings
 		$settings = $this->settings->get('auth.');
@@ -439,6 +390,74 @@ class Authentication extends Configure_Controller
 	
 	
 	
+	/* ========== PRE-AUTH ========== */
+	
+	
+	
+	
+	/**
+	 * FORM POST: Save pre-authentication settings
+	 */
+	function save_preauth()
+	{
+		// Determine which button was clicked
+		$actions['save'] = $this->input->post('action_save');
+		$actions['newkey'] = $this->input->post('action_newkey');
+		$actions = array_flip($actions);
+		$submit = $this->input->post('submit');
+		$action = $actions[$submit];
+		
+		if ($action == 'newkey')
+		{
+			// Generate a new key only. Don't alter settings
+			
+			$data['auth_preauth_key'] = $this->_genpak();
+			$save = $this->settings->save($data);
+			$msg = $this->msg->notice(lang('CONF_AUTH_PREAUTH_NEWKEY'));
+			$this->session->set_flashdata('active_tab', 'preauth');
+			$this->session->set_flashdata('flash', $msg);
+			redirect('authentication');
+		}
+		elseif ($action == 'save')
+		{
+			// Save settings, don't generate a new key
+			
+			$this->form_validation->set_rules('auth_preauth_groupid', 'Preauth group', 'required|integer');
+			$this->form_validation->set_rules('auth_preauth_emaildomain', 'Preauth email domain', 'required|max_length[50]');
+			
+			$this->form_validation->set_error_delimiters('<li>', '</li>');
+		
+			if($this->form_validation->run() == false)
+			{
+				$this->index('preauth');
+			}
+			else
+			{
+				$data['auth_preauth_groupid'] = $this->input->post('auth_preauth_groupid');
+				$data['auth_preauth_emaildomain'] = str_replace('@', '', $this->input->post('auth_preauth_emaildomain'));
+				$save = $this->settings->save($data);
+				$msg = $this->msg->notice(lang('CONF_AUTH_PREAUTH_SAVE_OK'));
+				$this->session->set_flashdata('active_tab', 'preauth');
+				$this->session->set_flashdata('flash', $msg);
+				redirect('authentication');
+			}	// form validation else
+		}	// $action elseif=save
+	}
+	
+	
+	
+	
+	/**
+	 * Generate a new key for pre-authentication
+	 */
+	function _genpak()
+	{
+		return sha1($this->config->item('encryption_key').sha1(uniqid().time()));
+	}
+	
+	
+	
+	
 	function _d($message, $br = TRUE){
 		echo $message;
 		echo ($br == TRUE) ? '<br /><br />' : '';
@@ -467,4 +486,5 @@ class Authentication extends Configure_Controller
 
 
 
-/* End of file app/controllers/configure.php */
+
+/* End of file app/controllers/authentication.php */

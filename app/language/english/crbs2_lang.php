@@ -16,6 +16,13 @@ $lang['CONF_MAIN_SAVE_OK'] = 'Main settings were saved successfully.';
 $lang['CONF_AUTH_SAVE_OK'] = 'Authentication settings were saved successfully.';
 $lang['CONF_AUTH_SAVE_FAIL'] = 'An error occured while saving the authentication settings.';
 
+$lang['CONF_AUTH_LDAP_SAVE_OK'] = 'LDAP settings were saved successfully.';
+$lang['CONF_AUTH_LDAP_SAVE_FAIL'] = 'An error occured while saving the LDAP settings.';
+
+$lang['CONF_AUTH_PREAUTH_SAVE_OK'] = 'Pre-authentication settings were saved successfully.';
+$lang['CONF_AUTH_PREAUTH_SAVE_FAIL'] = 'An error occured while saving the pre-authentication settings.';
+$lang['CONF_AUTH_PREAUTH_NEWKEY'] = 'A new pre-authentication key has been created. Remember to update any applications that use it.';
+
 $lang['SECURITY_USER_ADD_OK_ENABLED'] = 'The user was created successfully and can now log in using the password you set.';
 $lang['SECURITY_USER_ADD_OK_DISABLED'] = 'The user was created successfully, but they will not be able to log in until their account is enabled.';
 $lang['SECURITY_USER_ADD_FAIL'] = 'An error occured and the user could not be added (%s)';

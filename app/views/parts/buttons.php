@@ -22,7 +22,7 @@ foreach($buttons as $button){
 	switch($type)
 	{
 		case 'submit':
-			$format = '<input type="submit" class="button {class}" tabindex="{tab}" value="{text}" {id}>';
+			$format = '<input type="submit" name="submit" class="button {class}" tabindex="{tab}" value="{text}" {id}>';
 			echo str_replace($find, $replace, $format);
 		break;
 		

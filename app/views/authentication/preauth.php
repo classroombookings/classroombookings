@@ -57,6 +57,18 @@ $t = 1;
 <hr>
 
 
+<div class="alpha three columns"><h6>Your key</h6></div>
+
+<div class="omega nine columns">
+
+	<?php echo $settings['auth_preauth_key'] ?>
+
+</div>
+
+
+<hr>
+
+
 <div class="row">
 <div class="alpha three columns">&nbsp;</div>
 <div class="omega nine columns"><?php
@@ -76,17 +88,3 @@ $this->load->view('parts/buttons', array('buttons' => $buttons));
 
 
 </form>
-
-
-<hr>
-
-
-<div class="row">
-<div class="alpha three columns"><h6>Your key</h6></div>
-
-<div class="omega nine columns">
-
-	<?php echo $settings['auth_preauth_key'] ?>
-
-</div>
-</div>
