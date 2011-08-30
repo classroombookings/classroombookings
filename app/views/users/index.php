@@ -51,7 +51,12 @@
 			?>
 			</td>
 			
-			<td class="title <?php if ($user->online == 1) echo 'status-online'; ?>">
+			<?php
+			$classes = array();
+			if ($user->online == 1) $classes[] = 'status online';
+			if ($user->enabled == 0) $classes[] = 'status disabled';
+			?>
+			<td class="title <?php echo implode(' ', $classes) ?>">
 				<?php echo anchor('security/users/edit/' . $user->user_id, $user->displayname . " ", 'rel="edit"') ?>
 				<span><?php echo $user->groupname ?></span>
 			</td>
@@ -92,7 +97,7 @@
 				?>&nbsp;
 			</td>
 			
-			<td class="actions"><a href="#">Delete</a></td>
+			<td class="actions"><a href="#" class="button red small">Delete</a></td>
 			
 		</tr>
 		
