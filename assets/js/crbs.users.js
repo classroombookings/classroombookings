@@ -63,9 +63,12 @@
 			}
 		}).trigger("change");
 		
-		$("table#users").delegate("tr", "click", function(){
-			var a = $(this).find("a[rel=edit]");
-			window.location.href = a.attr("href");
+		$("table#users").delegate("tr", "click", function(e){
+			// Don't do default action on link click
+			if (e.target.tagName != "A") {
+				var a = $(this).find("a[rel=edit]");
+				window.location.href = a.attr("href");
+			}
 		});
 
 	});

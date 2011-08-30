@@ -63,18 +63,21 @@ class Security_model extends CI_Model{
 	 */
 	function get_user($user_id = NULL, $group_id = NULL, $page = NULL)
 	{
-		if ($user_id == NULL) {
-		
+		if ($user_id == NULL)
+		{
 			// Getting all users
-			$this->db->select('users.*, 
+			$this->db->select(
+				'users.*,
 				IFNULL(users.displayname, users.username) AS displayname, 
 				groups.name AS groupname, 
 				groups.quota_type, 
-				quota.quota_num', FALSE
-			);
+				quota.quota_num,
+				IF(usersactive.timestamp > 0, true, false) AS online'
+			, false);
 			$this->db->from('users');
 			$this->db->join('groups', 'users.group_id = groups.group_id', 'left');
 			$this->db->join('quota', 'users.user_id = quota.user_id', 'left');
+			$this->db->join('usersactive', 'users.user_id = usersactive.user_id', 'left');
 			
 			// Filter to group if necessary
 			if ($group_id != NULL && is_numeric($group_id)) {

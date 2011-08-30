@@ -17,14 +17,15 @@
 </div></div>
 
 
-<table class="list2" summary="User list" id="users">
+<table class="list2 middle" summary="User list" id="users">
 	
 	<thead>
 		<tr>
+			<th scope="col" width="20">&nbsp;</th>
 			<th scope="col">User</th>
+			<th scope="col"></th>
 			<th scope="col">Quota</th>
 			<th scope="col">Last login</th>
-			<th scope="col">Type</th>
 			<th scope="col">Actions</th>
 		</tr>
 	</thead>
@@ -40,10 +41,27 @@
 		?>
 		
 		<tr class="<?php echo implode(' ', $classes) ?>">
+		
+			<td align="center" width="20">
+			<?php
+			$src = ($user->ldap == 1) ? 'user-ldap.png' : 'database.png';
+			$alt = ($user->ldap == 1) ? 'LDAP' : 'Local';
+			echo '<img src="img/ico/' . $src . '" style="margin: 0;">';
+			echo '<span style="display:none">' . $alt . '</span>';
+			?>
+			</td>
 			
-			<td class="title">
+			<td class="title <?php if ($user->online == 1) echo 'status-online'; ?>">
 				<?php echo anchor('security/users/edit/' . $user->user_id, $user->displayname . " ", 'rel="edit"') ?>
-				<!-- <br><span><?php echo $user->groupname ?></span> -->
+				<span><?php echo $user->groupname ?></span>
+			</td>
+			
+			<td width="32" align="right">
+				<?php
+				$quota = rand(0, 10);
+				$class = ($quota > 0) ? 'green' : 'red';
+				echo '<span class="digit ' . $class . '">' . $quota . '</span>';
+				?>
 			</td>
 			
 			<td>
@@ -63,15 +81,18 @@
 					}
 					$text = sprintf($q, $user->quota_num);
 				}
-				echo "0 / $text";
+				echo "$text";
 				?>
 			</td>
 			
-			<td><?php echo mysqlhuman($user->lastlogin, "d/m/Y H:i") ?>&nbsp;</td>
+			<td>
+				<?php
+				$date = mysqlhuman($user->lastlogin, "d/m/Y H:i");
+				echo str_replace(date("d/m/Y"), "Today at", $date);
+				?>&nbsp;
+			</td>
 			
-			<td><?php echo ($user->ldap == 1) ? 'LDAP' : 'Local'; ?></td>
-			
-			<td>&nbsp;</td>
+			<td class="actions"><a href="#">Delete</a></td>
 			
 		</tr>
 		
