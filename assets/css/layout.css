@@ -10,6 +10,10 @@ div h1, div h2, div h3, div h4, div h5, div h6 {
 ul { margin-bottom: 15px; }
 
 
+.lfloat { float: left; }
+.rfloat { float: right; }
+
+
 a { color: #204A87; cursor: pointer; }
 a:hover { color: #A40000; }
 
@@ -246,6 +250,49 @@ table.list tr.filters td input, table.list tr.filters td select{ font-size: 90%;
 table.list tr.filters td{ background: #EEEEEC; }
 
 table.list tr.hover td { background: #fffed0; cursor: pointer; }
+
+
+
+
+table.list2 {
+	background: #fff;
+	border-collapse: collapse;
+	text-align: left;
+	width: 100%;
+	margin-bottom: 20px;
+}
+table.list2 th {
+	font-size: 90%;
+	font-weight: bold;
+	color: #666;
+	padding: 6px 3px;
+	border-bottom: 2px solid #666;
+	text-align: left;
+}
+table.list2 td {
+	border-bottom: 1px solid #ccc;
+	color: #666;
+	padding: 6px 3px;
+	font-size: 90%;
+	cursor: default;
+}
+table.list2 td.title { font-weight: bold; }
+table.list2 td.title span { font-weight: normal; }
+table.list2 td a { text-decoration: none; color: #333; }
+table.list2 tbody tr:hover td {
+	background: #E0E4ED;
+}
+
+
+
+
+div.filter { background: #ddd; border-top: 1px solid #bbb; padding: 5px 0; }
+div.filter div.row {
+	margin: 0 5px;
+	padding: 0;
+}
+div.filter input, div.filter select { margin: 0; }
+
 
 
 .button {

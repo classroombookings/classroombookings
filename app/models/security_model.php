@@ -61,12 +61,17 @@ class Security_model extends CI_Model{
 	 * Example - get all users in a group
 	 *  get_user(NULL, 4);
 	 */
-	function get_user($user_id = NULL, $group_id = NULL, $page = NULL){
-		
+	function get_user($user_id = NULL, $group_id = NULL, $page = NULL)
+	{
 		if ($user_id == NULL) {
 		
 			// Getting all users
-			$this->db->select('users.*, groups.name AS groupname, groups.quota_type, quota.quota_num', FALSE);
+			$this->db->select('users.*, 
+				IFNULL(users.displayname, users.username) AS displayname, 
+				groups.name AS groupname, 
+				groups.quota_type, 
+				quota.quota_num', FALSE
+			);
 			$this->db->from('users');
 			$this->db->join('groups', 'users.group_id = groups.group_id', 'left');
 			$this->db->join('quota', 'users.user_id = quota.user_id', 'left');
@@ -76,7 +81,7 @@ class Security_model extends CI_Model{
 				$this->db->where('users.group_id', $group_id);
 			}
 			
-			$this->db->orderby('users.username ASC');
+			$this->db->order_by('users.username ASC');
 			
 			if (isset($page) && is_array($page)) {
 				$this->db->limit($page[0], $page[1]);
@@ -334,7 +339,7 @@ class Security_model extends CI_Model{
 			);
 			$this->db->from('groups');
 						
-			$this->db->orderby('groups.name ASC');
+			$this->db->order_by('groups.name ASC');
 			
 			if (isset($page) && is_array($page)) {
 				$this->db->limit($page[0], $page[1]);

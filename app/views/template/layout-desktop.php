@@ -189,14 +189,13 @@ var $loader = $LAB
 	.script("js/syronex-colorpicker-mod.js")
 	/*.script("js/jquery.cookie.js")
 	.script("js/ajax.js")*/
-	.script(extras);
-if (typeof(window[ '_jsQ' ]) != "undefined")
-{
-	for (var i=0, len =_jsQ.length; i<len; i++)
-	{
-		$loader = $loader.wait(_jsQ[i]);
-	}
-}
+	.script(extras).wait(function(){
+		if (typeof(window['_jsQ']) != "undefined") {
+			for (var i=0, len =_jsQ.length; i<len; i++) {
+				$loader = $loader.wait(_jsQ[i]);
+			}
+		}
+	});
 </script>
 
 
