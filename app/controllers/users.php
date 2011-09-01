@@ -80,7 +80,7 @@ class Users extends Configure_Controller
 	
 	
 	/**
-	 * Page function to show only users in a particular group
+	 * PAGE: Users in a group
 	 */
 	function ingroup($group_id){
 		$this->index($group_id);
@@ -90,19 +90,10 @@ class Users extends Configure_Controller
 	
 	
 	/**
-	 * Page function for paginated list of users (index() picks up page offset via URI)
+	 * PAGE: Add a user
 	 */
-	function p($offset = 0){
-		$this->index();
-	}
-	
-	
-	
-	
-	/**
-	 * Page function: add a user
-	 */
-	function add(){
+	function add()
+	{
 		$this->auth->check('users.add');
 		$body['user'] = NULL;
 		$body['user_id'] = NULL;

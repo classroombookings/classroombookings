@@ -1,4 +1,7 @@
 <?php
+
+die();
+
 /*
 	This file is part of Classroombookings.
 

@@ -81,7 +81,7 @@ $changeyear = $this->auth->check('changeyear', true);
 		
 		<?php $alert = (isset($alert)) ? $alert : $this->session->flashdata('flash') ?>
 		<?php if (!empty($alert)): ?>
-		<div class="row" style="padding-top: 20px;">
+		<div class="row remove-bottom" style="padding-top: 20px;">
 			<?php echo $alert ?>
 		</div>
 		<br class="clear">
