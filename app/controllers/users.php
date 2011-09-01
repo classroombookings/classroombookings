@@ -91,46 +91,42 @@ class Users extends Configure_Controller
 	function add()
 	{
 		$this->auth->check('users.add');
-		$body['user'] = NULL;
-		$body['user_id'] = NULL;
-		$body['groups'] = $this->security->get_groups_dropdown();
+		$body['user'] = null;
+		$body['user_id'] = null;
+		$body['groups'] = $this->security_model->get_groups_dropdown();
 		$body['departments'] = $this->departments_model->get_dropdown();
-		
-		$tpl['sidebar'] = $this->load->view('security/users.addedit.side.php', NULL, TRUE);
-		$tpl['subnav'] = $this->security->subnav();
-		$tpl['title'] = 'Add user';
-		$tpl['pagetitle'] = 'Add a new user';
-		$tpl['body'] = $this->load->view('security/users.addedit.php', $body, TRUE);
-		
-		$this->load->view($this->tpl, $tpl);
+		$data['title'] = 'Add new user';
+		$data['body'] = $this->load->view('users/addedit', $body, true);
+		$this->page($data);
 	}
 	
 	
 	
 	
 	/**
-	 * Page function: edit a user
+	 * PAGE: Edit a user
 	 */
-	function edit($user_id){
+	function edit($user_id)
+	{
 		$this->auth->check('users.edit');
-		$body['user'] = $this->security->get_user($user_id);
+		$body['user'] = $this->security_model->get_user($user_id);
 		$body['user_id'] = $user_id;
-		$body['groups'] = $this->security->get_groups_dropdown();
+		$body['groups'] = $this->security_model->get_groups_dropdown();
 		$body['departments'] = $this->departments_model->get_dropdown();
 		
-		$tpl['subnav'] = $this->security->subnav();
-		$tpl['title'] = 'Edit user';
+		$data['title'] = 'Edit user';
 		
-		if($body['user']){
-			#$tpl['pagetitle'] = ($body['user']->displayname == FALSE) ? 'Edit ' . $body['user']->username : 'Edit ' . $body['user']->displayname;
-			$tpl['pagetitle'] = 'Edit ' . $body['user']->displayname;
-			$tpl['body'] = $this->load->view('security/users.addedit.php', $body, TRUE);
-		} else {
-			$tpl['pagetitle'] = 'Error loading user';
-			$tpl['body'] = $this->security->lasterr;
+		if ($body['user'])
+		{
+			$data['title'] = 'Edit ' . $body['user']->displayname;
+			$data['body'] = $this->load->view('users/addedit', $body, true);
 		}
-		
-		$this->load->view($this->tpl, $tpl);
+		else
+		{
+			$data['title'] = 'Error loading user';
+			$data['body'] = $this->msg->err($this->security_model->lasterr);
+		}
+		$this->page($data);
 	}
 	
 	

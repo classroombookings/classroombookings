@@ -57,7 +57,7 @@
 			if ($user->enabled == 0) $classes[] = 'status disabled';
 			?>
 			<td class="title <?php echo implode(' ', $classes) ?>">
-				<?php echo anchor('security/users/edit/' . $user->user_id, $user->displayname . " ", 'rel="edit"') ?>
+				<?php echo anchor('users/edit/' . $user->user_id, $user->displayname . " ", 'rel="edit"') ?>
 				<span><?php echo $user->groupname ?></span>
 			</td>
 			
@@ -97,7 +97,10 @@
 				?>&nbsp;
 			</td>
 			
-			<td class="actions"><a href="#" class="button red small">Delete</a></td>
+			<td class="actions">
+				<a href="#" class="button red small">Delete</a>
+				<a href="#" class="button small">View events</a>
+			</td>
 			
 		</tr>
 		

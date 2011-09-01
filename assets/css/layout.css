@@ -311,15 +311,14 @@ table.list2 td {
 	color: #666;
 	padding: 8px 4px;
 	font-size: 90%;
-	cursor: default;
 }
 table.list2 td.title { font-weight: bold; }
 table.list2 td.title a { font-size: 110%; }
 table.list2 td.title span { font-weight: normal; font-size: 85%; }
 table.list2 td a { text-decoration: none; }
-/* table.list2 tbody tr:hover td {
+table.list2 tbody tr:hover td {
 	background-color: #E0E4ED;
-} */
+}
 
 table.list2.middle td { vertical-align: middle; line-height: 100%; }
 
