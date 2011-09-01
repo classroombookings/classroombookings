@@ -43,11 +43,6 @@ class Users extends Configure_Controller
 		// Check authorisation
 		$this->auth->check('users');
 		
-		// Links just for this page
-		$links[] = array('users/add', 'Add a new user', 'add');
-		$links[] = array('users/import', 'Import from file', 'table-upload');
-		$data['links'] = $this->load->view('parts/linkbar', $links, TRUE);
-		
 		if ($group_id == null)
 		{
 			// ALL users

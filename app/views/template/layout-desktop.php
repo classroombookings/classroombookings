@@ -74,6 +74,21 @@ $changeyear = $this->auth->check('changeyear', true);
 </div>
 
 
+<?php
+$submenu_html = '';
+if (!empty($submenu))
+{
+	$submenu_html .= '<div class="submenu">';
+	$submenu_html .= $this->load->view('configure/sidebar', array(
+		'menu' => $submenu,
+		'ulclass' => 'horiz subnav'
+	), true);
+	$submenu_html .= '</div>'."\n\n";
+}
+$body = $submenu_html . $body;
+?>
+
+
 <?php if(empty($sidebar)): ?>
 	
 	<br class="clear">
@@ -84,7 +99,8 @@ $changeyear = $this->auth->check('changeyear', true);
 		<div class="row remove-bottom" style="padding-top: 20px;">
 			<?php echo $alert ?>
 		</div>
-		<br class="clear">
+		<?php else: ?>
+			<br class="clear">
 		<?php endif; ?>
 		
 		<!-- page body -->

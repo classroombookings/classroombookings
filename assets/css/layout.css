@@ -54,6 +54,7 @@ ul.horiz li a {
 }
 
 
+
 ul.nav {
 	margin: 0;
 	border: 0;
@@ -90,6 +91,35 @@ ul.nav li a.i {
 	background-repeat: no-repeat;
 }
 */
+
+
+/**
+ * SUBMENU
+ *
+ * Usually additional actions that can be taken out on a page.
+ * Just above the body.
+ */
+div.submenu {
+	margin: 0 0 20px 0;
+	padding: 0 0 10px 0;
+	border-bottom: 1px solid #ccc;
+}
+div.submenu a { text-decoration: none; }
+ul.subnav,
+ul.subnav li {
+	padding: 0;
+	margin: 0;
+}
+ul.subnav li a {
+	font-size: 90%;
+	margin-right: 20px;
+}
+
+ul.subnav .i {
+	background-position: 0 50%;
+	padding-left: 23px !important;
+}
+
 
 /* Full page width layer for menu background colour */
 
@@ -160,7 +190,7 @@ p.success{ background: #ABE673;	/*#77BF30;*/ }
 	padding-left: 30px !important;
 }
 
-.button span.i { background-position: 0 50%; padding-left: 20px !important; line-height: 21px; display: inline-block; }
+/*.button span.i { background-position: 0 50%; padding-left: 20px !important; line-height: 21px; display: inline-block; }*/
 
 /* Icons */
 .i.dashboard { background-image: url(../img/ico/home.png); }
@@ -172,6 +202,8 @@ p.success{ background: #ABE673;	/*#77BF30;*/ }
 .i.security { background-image: url(../img/ico/key.png); }
 
 .i.add { background-image: url(../img/ico/add.png); }
+
+.i.upload { background-image: url(../img/ico/upload.png); }
 
 .i.tick { background-image: url(../img/ico/tick.png); }
 .i.disk { background-image: url(../img/ico/disk.png); }

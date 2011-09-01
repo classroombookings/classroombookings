@@ -1,4 +1,8 @@
-<ul class="nav">
+<?php
+$ulclass = (isset($ulclass)) ? $ulclass : '';
+?>
+
+<ul class="<?php echo $ulclass ?> clearfix">
 		
 <?php
 

@@ -76,6 +76,7 @@ class Configure_Controller extends CB_Controller
 	public function page($data)
 	{
 		$sidebar['menu'] = $this->menu_model->configure();
+		$sidebar['ulclass'] = 'nav';
 		$data['sidebar'] = $this->load->view('configure/sidebar', $sidebar, true);
 		parent::page($data);
 	}
