@@ -57,9 +57,23 @@ class Menu_model extends CI_Model
 	}
 	
 	
+	
+	
+	/**
+	 * Configure / Users
+	 */
+	function users()
+	{
+		$subnav = array();
+		$subnav[] = array('users/add', 'Add new user', 'users.add', 'add');
+		$subnav[] = array('users/import', 'Bulk import users', 'users.import', 'upload');
+		return $subnav;
+	}
+	
+	
+	
+	
 }
 
 
-
-
-/* End of file: app/models/academic.php */
+/* End of file: app/models/menu_model.php */

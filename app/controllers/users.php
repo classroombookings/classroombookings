@@ -73,6 +73,7 @@ class Users extends Configure_Controller
 			$data['body'] = $this->load->view('users/index', $body, true);
 		}
 		$data['js'] = array('js/crbs.users.js');
+		$data['submenu'] = $this->menu_model->users();
 		$this->page($data);
 	}
 	
