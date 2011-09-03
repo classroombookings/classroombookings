@@ -325,76 +325,82 @@ class Auth
 	 * @param	bool	is_sha1		Is password already sha1
 	 * @return	bool
 	 */
-	function login($username, $password, $remember = FALSE, $is_sha1 = FALSE){
+	function login($username, $password, $remember = false){
 		
 		// Retrieve auth settings
-		$auth = $this->CI->settings->get('auth.');
-		$ldap = ($auth['auth.ldap'] == 1);
+		$ldap = $this->CI->settings->get('auth_ldap_enable');
 		
-		if($username != NULL && $password != NULL){
+		if ($username != NULL && $password != NULL)
+		{
 			
 			$trylocal = TRUE;
 			
 			// See if user we're trying to authenticate is local or LDAP
 			$sql = 'SELECT ldap FROM users WHERE username = ? LIMIT 1';
 			$query = $this->CI->db->query($sql, array($username));
-			if($query->num_rows() == 1){
+			if ($query->num_rows() == 1)
+			{
 				// Found the user, so we know they exist.
 				$row = $query->row();
 				$userldap = $row->ldap;
 				$tryldap = ($userldap == 1);
-			} else {
+			}
+			else
+			{
 				// User doesn't exist at all! Try LDAP as that will create accounts automatically
-				$tryldap = TRUE;
+				$tryldap = true;
 			}
 			
 			
 			// Check if we are using LDAP/AD auth or not and also if we should try authing this user via ldap
-			if($ldap == TRUE && $tryldap == TRUE){
-				
+			if ($ldap == true && $tryldap == true)
+			{
 				// Don't try local auth unless this fails
-				$trylocal = FALSE;
+				$trylocal = false;
 				
 				// We are using LDAP. First, send the supplied user and password to the ldap function
 				$ldapauth = $this->auth_ldap($username, $password);
 				
-				if($ldapauth == TRUE){
+				if ($ldapauth == TRUE)
+				{
 					return $this->session_create($username, $remember);
-				} else {
+				}
+				else
+				{
 					// Fail if the LDAP auth function failed (lasterr is already set by that function)
 					#$trylocal = TRUE;
-					return FALSE;
+					return false;
 				}
-				
-			} elseif($ldap == FALSE && $tryldap == TRUE){
-				
+			}
+			elseif($ldap == false && $tryldap == true)
+			{
 				$this->lasterr = 'User authenticates via LDAP but system is not configured to use LDAP.';
 				return FALSE;
-				
 			}
 			
 			// Not using LDAP or LDAP auth failed, so we look up a local user in the DB (trylocal should be TRUE now)
 			
-			if($trylocal == TRUE){
-				
-				$localauth = $this->auth_local($username, $password, $is_sha1);
-				
-				if($localauth == TRUE){
+			if ($trylocal == TRUE)
+			{
+				$localauth = $this->auth_local($username, $password);
+				if ($localauth == TRUE)
+				{
 					return $this->session_create($username, $remember);
-				} else {
-					$this->lasterr = (isset($this->lasterr)) ? $this->lasterr : "Incorrect username and/or password";
 				}
-				
+				else
+				{
+					$this->lasterr = (isset($this->lasterr)) 
+						? $this->lasterr 
+						: "Incorrect username and/or password";
+				}
 			}
-			
-		} else {
-			
+		}
+		else
+		{
 			// No username and password supplied
 			$this->lasterr = "No username and/or password supplied to Auth library.";
 			return FALSE;
-			
 		}
-		
 	}
 	
 	
@@ -409,8 +415,8 @@ class Auth
 	 * @param string username
 	 * @return bool
 	 */
-	function session_create($username, $remember = FALSE){
-		
+	function session_create($username, $remember = FALSE)
+	{
 		/*
 			We need to check of the enabled=1 at this stage because we dont want 
 			preauth/ldap/local to override this
@@ -427,8 +433,8 @@ class Auth
 				LIMIT 1';
 		$query = $this->CI->db->query($sql, array($username));
 		
-		if($query->num_rows() == 1){
-			
+		if ($query->num_rows() == 1)
+		{
 			// Cool, got the user we wanted
 			$user = $query->row();
 			
@@ -453,7 +459,8 @@ class Auth
 			$this->CI->session->set_userdata($sessdata);
 			
 			// Now set remember-me cookie if requested
-			if($remember == TRUE){
+			if ($remember == TRUE)
+			{
 				// Generate hash using details we just retrieved
 				$cookiekey = sha1(implode("", array(
 					$this->cookiesalt,
@@ -488,12 +495,12 @@ class Auth
 			// TODO: Should we check the session data has actually been set before returning success?
 			return TRUE;
 			
-		} else {
-			
+		}
+		else
+		{
 			// FAIL! User account is *probably*: 1) LDAP, but 2) Disabled
 			$this->lasterr = 'Logon failed - could not find details to initialise session.';
 			return FALSE;
-			
 		}
 		
 	}
@@ -560,8 +567,8 @@ class Auth
 	 *
 	 * @return	bool
 	 */	 	
-	function logout(){
-		
+	function logout()
+	{
 		$user_id = $this->CI->session->userdata('user_id');
 		
 		$sql = 'DELETE FROM usersactive WHERE user_id = ?';
@@ -598,7 +605,6 @@ class Auth
 		
 		// Verify session has been destroyed by retrieving info 
 		return ($this->CI->session->userdata('user_id') == FALSE) ? TRUE : FALSE;
-		
 	}
 	
 	
@@ -609,18 +615,22 @@ class Auth
 	 *
 	 * @param array Data array. Must contain keys and values of: username, timestamp, preauth
 	 */
-	function preauth($data){
+	function preauth($data)
+	{
 		
 		// Check for username
-		if(!isset($data['username'])){
+		if (!isset($data['username']))
+		{
 			$this->lasterr = 'No username supplied.';
 			return FALSE;
 		}
-		if(!isset($data['timestamp'])){
+		if (!isset($data['timestamp']))
+		{
 			$this->lasterr = 'No timestamp supplied.';
 			return FALSE;
 		}
-		if(!isset($data['preauth'])){
+		if (!isset($data['preauth']))
+		{
 			$this->lasterr = 'No computed preauth supplied.';
 			return FALSE;
 		}
@@ -631,13 +641,14 @@ class Auth
 		$time_upper = strtotime("+5 minutes");
 		
 		// Check if the supplied timestamp is within the allowed threshold
-		if( ($data['timestamp'] < $time_lower) OR ($data['timestamp'] > $time_upper) ){
+		if ( ($data['timestamp'] < $time_lower) OR ($data['timestamp'] > $time_upper) )
+		{
 			$this->lasterr = 'Supplied timestamp falls outside of the allowed threshold of 5 minutes.';
 			return FALSE;
 		}
 		
 		// Get the current key from the database
-		$preauthkey = $this->CI->settings->get('auth.preauth.key');
+		$preauthkey = $this->CI->settings->get('auth_preauth_key');
 		
 		// Work out what we *should* get based on their info + our preauthkey
 		$expected_final = sha1("{$data['username']}|{$data['timestamp']}|{$preauthkey}");
@@ -645,10 +656,9 @@ class Auth
 		// Finally we compare our correct result with their result
 		$compare = ($expected_final == $data['preauth']);
 		
-		if($compare == FALSE){ $this->lasterr = 'Key did not match the expected value.'; }
+		if ($compare == false){ $this->lasterr = 'Key did not match the expected value.'; }
 		
 		return $compare;
-		
 	}
 	
 	
@@ -661,35 +671,39 @@ class Auth
 	 *
 	 * @param	string	username
 	 * @param	string	password
-	 * @param	bool	is_sha1		Specifies whether the password is already an SHA1 hash
 	 * @return	bool
 	 */
-	function auth_local($username, $password, $is_sha1 = FALSE){
+	function auth_local($username, $password){
 		
-		// Check if we need to SHA1 the supplied password
-		$password = ($is_sha1 == FALSE) ? sha1($password) : $password;
-		
-		$sql = 'SELECT user_id, username
+		$sql = 'SELECT password 
 				FROM users
 				WHERE username = ?
-				AND password = ?
 				AND enabled = 1
 				AND ldap = 0
 				LIMIT 1';
 				
+		$query = $this->CI->db->query($sql, array($username));
 		
-		$query = $this->CI->db->query($sql, array($username, $password));
-		
-		if($query->num_rows() == 1){
+		if ($query->num_rows() == 1)
+		{
 			
-			// Success
-			return TRUE;
+			$user = $query->row();
+			$match = $this->check_password($password, $user->password);
+			if ($match == true)
+			{
+				return true;
+			}
+			else
+			{
+				$this->lasterr = 'Local authentication failure. Incorrect username and/or password.';
+				return false;
+			}
 			
-		} else {
-			
+		}
+		else
+		{
 			// Fail
 			$this->lasterr = 'Local authentication failure. Incorrect username and/or password.';
-			
 		}
 		
 	}
@@ -941,6 +955,40 @@ class Auth
 		
 		return $activeusers;
 		
+	}
+	
+	
+	
+	
+	public function hash_password($password)
+	{
+		$this->CI->load->helper('string');
+		$salt = random_string('alnum', 10);
+		return $this->hash_with_salt($password, $salt);
+	}
+	
+	
+	
+	
+	private function hash_with_salt($password, $salt)
+	{
+		$global_salt = $this->CI->config->item('encryption_key');
+		$sha1 = sha1($salt . $password . $global_salt);
+		for ($i = 0; $i < 1000; $i++)
+		{
+			$sha1 = sha1($sha1 . (($i % 2 == 0) ? $password : $salt));
+		}
+		return 'crbs#' . $salt . '#' . $sha1;
+	}
+	
+	
+	
+	
+	public function check_password($password, $hashed)
+	{
+		$parts = explode('#', $hashed);
+		$salt = $parts[1];
+		return ($this->hash_with_salt($password, $salt) == $hashed);
 	}
 	
 	

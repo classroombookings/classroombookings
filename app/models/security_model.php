@@ -1,44 +1,24 @@
-<?php
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+
 /*
-	This file is part of Classroombookings.
+ * Classroombookings. Hassle-free resource booking for schools. <http://classroombookings.com/>
+ * Copyright (C) 2006-2011 Craig A Rodway <craig.rodway@gmail.com>
+ *
+ * This file is part of Classroombookings.
+ * Classroombookings is licensed under the Affero GNU GPLv3 license.
+ * Please see license-classroombookings.txt for the full license text.
+ */
 
-	Classroombookings is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
-
-	Classroombookings is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with Classroombookings.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-
-class Security_model extends CI_Model{
+class Security_model extends CI_Model
+{
 
 
 	var $lasterr;
 	
 	
-	function __construct(){
+	function __construct()
+	{
 		parent::__construct();
-	}
-	
-	
-	
-	/**
-	 * Link definitions of pages in this section
-	 */
-	function subnav(){
-		$subnav = array();
-		// Other pages in this parent section (uri, title, permission name)
-		$subnav[] = array('security/users', 'Users', 'users');
-		$subnav[] = array('security/groups', 'Groups', 'groups');
-		$subnav[] = array('security/permissions', 'Group permissions', 'permissions');
-		return $subnav;
 	}
 	
 	
@@ -80,27 +60,35 @@ class Security_model extends CI_Model{
 			$this->db->join('usersactive', 'users.user_id = usersactive.user_id', 'left');
 			
 			// Filter to group if necessary
-			if ($group_id != NULL && is_numeric($group_id)) {
+			if ($group_id != NULL && is_numeric($group_id))
+			{
 				$this->db->where('users.group_id', $group_id);
 			}
 			
 			$this->db->order_by('users.username ASC');
 			
-			if (isset($page) && is_array($page)) {
+			if (isset($page) && is_array($page))
+			{
 				$this->db->limit($page[0], $page[1]);
 			}
 			
 			$query = $this->db->get();
-			if ($query->num_rows() > 0){
+			if ($query->num_rows() > 0)
+			{
 				return $query->result();
-			} else {
+			}
+			else
+			{
 				$this->lasterr = 'This group is empty!';
 				return 0;
 			}
 			
-		} else {
+		}
+		else
+		{
 			
-			if (!is_numeric($user_id)) {
+			if (!is_numeric($user_id))
+			{
 				return FALSE;
 			}
 			
@@ -128,12 +116,15 @@ class Security_model extends CI_Model{
 					LIMIT 1';
 			$query = $this->db->query($sql, array($user_id));
 			
-			if($query->num_rows() == 1){
+			if ($query->num_rows() == 1)
+			{
 				$user = $query->row();
 				$user->departments = explode(',', $user->departments);
 				#$user->display2 = ($user->displayname) ? $user->displayname : $user->username;
 				return $user;
-			} else {
+			}
+			else
+			{
 				return FALSE;
 			}
 			
@@ -150,22 +141,28 @@ class Security_model extends CI_Model{
 	 * @param	bool	none	Include a "(None)" option with a value of -1
 	 * @return	Array	Array: user_id => Display name
 	 */
-	function get_users_dropdown($none = FALSE){
+	function get_users_dropdown($none = FALSE)
+	{
 		$sql = 'SELECT user_id, username, displayname, IFNULL(displayname, username) AS display
 				FROM users
 				ORDER BY display ASC';
 		$query = $this->db->query($sql);
-		if($query->num_rows() > 0){
+		if ($query->num_rows() > 0)
+		{
 			$result = $query->result();
 			$users = array();
-			if($none == TRUE){
+			if ($none == TRUE)
+			{
 				$users[-1] = '(None)';
 			}
-			foreach($result as $user){
+			foreach ($result as $user)
+			{
 				$users[$user->user_id] = $user->display;
 			}
 			return $users;
-		} else {
+		}
+		else
+		{
 			$this->lasterr = 'No users found';
 			return FALSE;
 		}
@@ -177,32 +174,33 @@ class Security_model extends CI_Model{
 	/**
 	 * Add a user to the database
 	 */
-	function add_user($data){
-		
+	function add_user($data)
+	{
 		// Check if user exists - can't add if already in DB
 		$exists = $this->auth->userexists($data['username']);
-		if($exists == TRUE){
+		if ($exists == true)
+		{
 			$this->lasterr = 'Username already exists.';
-			return FALSE;
+			return false;
 		}
 		
+		// Add a date created field
 		$data['created'] = date("Y-m-d");
 		
+		// Get supplied departments if any, and then remove from data array
 		$departments = (isset($data['departments'])) ? $data['departments'] : array();
 		unset($data['departments']);
+		
+		// Hash and store password securely
+		$data['password'] = $this->auth->hash_password($data['password']);
 		
 		$add = $this->db->insert('users', $data);
 		$user_id = $this->db->insert_id();
 		
+		// Update the deparments for the user now we have an ID
 		$this->update_user_departments($user_id, $departments);
 		
-		// Return new ID
-		if($add == TRUE){
-			return $user_id;
-		} else {
-			return FALSE;
-		}
-		
+		return ($add == true) ? $user_id : false;
 	}
 	
 	
@@ -211,14 +209,23 @@ class Security_model extends CI_Model{
 	/**
 	 * Update user details
 	 */
-	function edit_user($user_id = NULL, $data){
-		if($user_id == NULL){
+	function edit_user($user_id = null, $data = array())
+	{
+		if($user_id == null)
+		{
 			$this->lasterr = 'Cannot update a user without their ID.';
-			return FALSE;
+			return false;
 		}
 		
+		// Get supplied departments if any, and then remove from data array
 		$departments = (isset($data['departments'])) ? $data['departments'] : array();
 		unset($data['departments']);
+		
+		// Hash and store password securely
+		if (!empty($data['password']))
+		{
+			$data['password'] = $this->auth->hash_password($data['password']);
+		}
 		
 		$this->db->where('user_id', $user_id);
 		$edit = $this->db->update('users', $data);

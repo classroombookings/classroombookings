@@ -1,23 +1,6 @@
 (function($){
 	
-	/*function table_filter (phrase, _id){
-		var words = phrase.toLowerCase().split(" ");
-		var table = document.getElementById(_id);
-		var ele;
-		for (var r = 1; r < table.rows.length; r++){
-			ele = table.rows[r].innerHTML.replace(/<[^>]+>/g,"");
-			var displayStyle = 'none';
-			for (var i = 0; i < words.length; i++) {
-				if (ele.toLowerCase().indexOf(words[i])>=0){
-					displayStyle = '';
-				} else {
-					displayStyle = 'none';
-					break;
-				}
-			}
-			table.rows[r].style.display = displayStyle;
-		}
-	}*/
+	
 	function table_filter(phrase, id) {
 		var words = phrase.toLowerCase().split(" ");
 		var el;
@@ -63,14 +46,6 @@
 			}
 		}).trigger("change");
 		
-		/* $("table#users").delegate("tr", "click", function(e){
-			// Don't do default action on link click
-			if (e.target.tagName != "A") {
-				var a = $(this).find("a[rel=edit]");
-				window.location.href = a.attr("href");
-			}
-		}); */
-
 	});
 	
 

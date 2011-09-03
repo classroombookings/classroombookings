@@ -78,7 +78,8 @@ class Users extends Configure_Controller
 	/**
 	 * PAGE: Users in a group
 	 */
-	function ingroup($group_id){
+	function ingroup($group_id)
+	{
 		$this->index($group_id);
 	}
 	
@@ -135,12 +136,14 @@ class Users extends Configure_Controller
 	/**
 	 * Destination for form submission for add and edit pages
 	 */
-	function save(){
+	function save()
+	{
 		$user_id = $this->input->post('user_id');
 		
 		$this->form_validation->set_rules('user_id', 'User ID');
 		$this->form_validation->set_rules('username', 'Username', 'required|min_length[1]|max_length[64]|trim');
-		if(!$user_id){
+		if (!$user_id)
+		{
 			$this->form_validation->set_rules('password1', 'Password', 'max_length[104]|required');
 			$this->form_validation->set_rules('password2', 'Password (confirmation)', 'max_length[104]|required|matches[password1]');
 		}
@@ -148,16 +151,15 @@ class Users extends Configure_Controller
 		$this->form_validation->set_rules('enabled', 'Enabled', 'exact_length[1]');
 		$this->form_validation->set_rules('email', 'Email address', 'max_length[256]|valid_email|trim');
 		$this->form_validation->set_rules('displayname', 'Display name', 'max_length[64]|trim');
-		//$this->form_validation->set_rules('department_id', 'Department', 'integer');
 		$this->form_validation->set_error_delimiters('<li>', '</li>');
 		
-		if($this->form_validation->run() == FALSE){
-			
+		if ($this->form_validation->run() == false)
+		{
 			// Validation failed - load required action depending on the state of user_id
 			($user_id == NULL) ? $this->add() : $this->edit($user_id);
-			
-		} else {
-			
+		}
+		else
+		{
 			// Validation OK
 			$data['username'] = $this->input->post('username');
 			$data['displayname'] = $this->input->post('displayname');
@@ -165,53 +167,64 @@ class Users extends Configure_Controller
 			$data['group_id'] = $this->input->post('group_id');
 			$data['departments'] = $this->input->post('departments');
 			$data['enabled'] = ($this->input->post('enabled') == '1') ? 1 : 0;
-			$data['ldap'] = ($this->input->post('ldap') == '1') ? 1 : 0;
+			$data['ldap'] = $this->input->post('ldap');
 			// Only set password if supplied.
-			if($this->input->post('password1')){
-				$data['password'] = sha1($this->input->post('password1'));
+			if ($this->input->post('password1'))
+			{
+				$data['password'] = $this->input->post('password1');
 			}
 			
 			#die(print_r($data));
 			
-			if($user_id == NULL){
-				
-				// Adding user
-				#$data['ldap'] = 0;
-				
-				#die(var_export($data, true));
-				$add = $this->security->add_user($data);
-				
-				if($add == TRUE){
-					// Set quota if needed
-					if($this->input->post('quota')){
+			if ($user_id == null)
+			{
+				$add = $this->security_model->add_user($data);
+				if ($add == null)
+				{
+					$this->msg->add('err', sprintf(lang('SECURITY_USER_ADD_FAIL'),
+						$this->security_model->lasterr));
+				}
+				else
+				{
+					// Set quota if supplied
+					if ($this->input->post('quota'))
+					{
 						$this->quota->set_quota_u($add, $this->input->post('quota'));
 					}
-					$message = ($data['enabled'] == 1) ? 'SECURITY_USER_ADD_OK_ENABLED' : 'SECURITY_USER_ADD_OK_DISABLED';
-					$this->msg->add('info', $this->lang->line($message));
-				} else {
-					$this->msg->add('err', sprintf($this->lang->line('SECURITY_USER_ADD_FAIL', $this->security->lasterr)));
+					$message = ($data['enabled'] == 1) 
+						? 'SECURITY_USER_ADD_OK_ENABLED' 
+						: 'SECURITY_USER_ADD_OK_DISABLED';
+					$this->msg->add('notice', lang($message));
 				}
 				
-			} else {
-				
+			}
+			else
+			{
 				// Updating existing user
-				$edit = $this->security->edit_user($user_id, $data);
-				if($edit == TRUE){
+				$edit = $this->security_model->edit_user($user_id, $data);
+				if ($edit == TRUE)
+				{
 					// Update quota if needed
-					if($this->input->post('quota')){
+					if ($this->input->post('quota'))
+					{
 						$this->quota->set_quota_u($user_id, $this->input->post('quota'));
 					}
-					$message = ($data['enabled'] == 1) ? 'SECURITY_USER_EDIT_OK_ENABLED' : 'SECURITY_USER_EDIT_OK_DISABLED';
-					$this->msg->add('info', $this->lang->line($message));
-				} else {
-					$this->msg->add('err', sprintf($this->lang->line('SECURITY_USER_EDIT_FAIL', $this->security->lasterr)));
+					$message = ($data['enabled'] == 1) 
+						? 'SECURITY_USER_EDIT_OK_ENABLED' 
+						: 'SECURITY_USER_EDIT_OK_DISABLED';
+					$this->msg->add('notice', lang($message));
+				}
+				else
+				{
+					$this->msg->add('err', sprintf(lang('SECURITY_USER_EDIT_FAIL'),
+						$this->security->lasterr));
 				}
 				
 			}
 			
 			
 			// All done, redirect!
-			redirect('security/users');
+			redirect('users');
 			
 		}
 		
