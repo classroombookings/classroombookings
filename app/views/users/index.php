@@ -98,7 +98,7 @@
 			</td>
 			
 			<td class="actions">
-				<a href="#" class="button red small">Delete</a>
+				<a href="<?php echo site_url(sprintf('users/delete/%d', $user->user_id)) ?>" class="button red small">Delete</a>
 				<a href="#" class="button small">View events</a>
 			</td>
 			

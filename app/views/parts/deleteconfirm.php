@@ -1,24 +1,17 @@
+<?php echo form_open($action, null, array('id' => $id)) ?>
+
+<h5><?php echo $title ?></h5>
+
+<?php if (isset($text)) { echo $this->msg->notice($text); } ?>
+
+<br>
+
 <?php
-
-echo form_open($action, NULL, array('id' => $id));
-
-echo '<br />';
-
-echo $this->msg->help('Are you sure you want to delete this item?');
-
-if(isset($text)){ echo $this->msg->warn($text); }
-
+$t = 1;
+unset($buttons);
+$buttons[] = array('submit', 'red', "Delete", $t);
+$buttons[] = array('link', '', "Cancel", $t + 1, site_url($cancel));
+$this->load->view('parts/buttons', array('buttons' => $buttons));
 ?>
-
-	<br /><br />
-	<table class="form">
-	<?php
-	$t = 1;
-	unset($buttons);
-	$buttons[] = array('submit', 'ok', 'Delete', $t);
-	$buttons[] = array('link', 'cancel', 'Cancel', $t+1, site_url($cancel));
-	$this->load->view('parts/buttons', array('buttons' => $buttons));
-	?>
-	</table>
 
 </form>

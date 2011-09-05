@@ -134,7 +134,7 @@ class Users extends Configure_Controller
 	
 	
 	/**
-	 * Destination for form submission for add and edit pages
+	 * FORM POST: Destination for form submission for add/edit pages
 	 */
 	function save()
 	{
@@ -219,15 +219,10 @@ class Users extends Configure_Controller
 					$this->msg->add('err', sprintf(lang('SECURITY_USER_EDIT_FAIL'),
 						$this->security->lasterr));
 				}
-				
 			}
-			
-			
 			// All done, redirect!
 			redirect('users');
-			
 		}
-		
 	}
 	
 	
@@ -548,75 +543,82 @@ class Users extends Configure_Controller
 	
 	
 	/**
-	 * Page function: Deleting a user
+	 * PAGE: Deleting a user
 	 */
-	function delete($user_id = NULL){
+	function delete($user_id = null)
+	{
 		$this->auth->check('users.delete');
 		
 		// Check if a form has been submitted; if not - show it to ask user confirmation
-		if($this->input->post('id')){
-		
+		if ($this->input->post('id'))
+		{
 			// Form has been submitted (so the POST value exists)
 			// Call model function to delete user
-			$delete = $this->security->delete_user($this->input->post('id'));
-			if($delete == FALSE){
-				$this->msg->add('err', $this->security->lasterr, 'An error occured');
-			} else {
+			$delete = $this->security_model->delete_user($this->input->post('id'));
+			if ($delete == false)
+			{
+				$this->msg->add('err', $this->security_model->lasterr, 'An error occured');
+			}
+			else
+			{
 				$this->msg->add('info', 'The user has been deleted.');
 			}
 			// Redirect
-			redirect('security/users');
-			
-		} else {
-		
+			redirect('users');
+		}
+		else
+		{
 			// Are we trying to delete ourself?
-			if( ($this->session->userdata('user_id')) && ($user_id == $this->session->userdata('user_id')) ){
+			if ( ($this->session->userdata('user_id')) && ($user_id == $this->session->userdata('user_id')) )
+			{
 				$this->msg->add(
-					'warn',
+					'err',
 					base64_decode('WW91IGNhbm5vdCBkZWxldGUgeW91cnNlbGYsIHRoZSB1bml2ZXJzZSB3aWxsIGltcGxvZGUu'),
 					base64_decode('RXJyb3IgSUQjMTBU')
 				);
-				redirect('security/users');
+				redirect('users');
 			}
 			
-			if($user_id == NULL){
-				
-				$tpl['title'] = 'Delete user';
-				$tpl['pagetitle'] = $tpl['title'];
-				$tpl['body'] = $this->msg->err('Cannot find the user or no user ID given.');
-				
-			} else {
-				
+			// Deleting the annymous user?
+			$anon = $this->settings->get('auth_anonuserid');
+			if ($user_id == $anon)
+			{
+				$this->msg->add('err', 'Cannot delete the anonymous user.');
+				redirect('users');
+			}
+			
+			if ($user_id == null)
+			{
+				$data['title'] = 'Delete user';
+				$data['body'] = $this->msg->err('Cannot find the user or no user ID given.');
+			}
+			else
+			{
 				// Get user info so we can present the confirmation page with a dsplayname/username
-				$user = $this->security->get_user($user_id);
-				
-				if($user == FALSE){
-				
-					$tpl['title'] = 'Delete user';
-					$tpl['pagetitle'] = $tpl['title'];
-					$tpl['body'] = $this->msg->err('Could not find that user or no user ID given.');
-					
-				} else {
-					
-					// Initialise page
-					$body['action'] = 'security/users/delete';
-					$body['id'] = $user_id;
-					$body['cancel'] = 'security/users';
-					$body['text'] = 'If you delete this user, all of their bookings and room owenership information will also be deleted.';
-					$tpl['title'] = 'Delete user';
-					$tpl['pagetitle'] = 'Delete ' . $user->display2;
-					$tpl['body'] = $this->load->view('parts/deleteconfirm', $body, TRUE);
-					
+				$user = $this->security_model->get_user($user_id);
+				if ($user == false)
+				{
+					$data['title'] = 'Delete user';
+					$data['body'] = $this->msg->err('Could not find that user or no user ID given.');
 				}
-				
-			}
+				else
+				{
+					// Initialise page
+					$body['action'] = 'users/delete';
+					$body['id'] = $user_id;
+					$body['cancel'] = 'users';
+					$body['text'] = 'If you delete this user, all of their bookings and room owenership information will also be deleted.';
+					$body['title'] = 'Are you sure you want to delete user ' . $user->displayname . '?';
+					$data['title'] = 'Delete ' . $user->displayname;
+					$data['body'] = $this->load->view('parts/deleteconfirm', $body, true);
+				}	// if user == false-else
+			}	// if user_id == null-else
 			
-			$tpl['subnav'] = $this->security->subnav();
-			$this->load->view($this->tpl, $tpl);
+			$this->page($data);
 			
-		}
+		}	// if post(id) else
 		
-	}
+	}	// endfunction
 	
 	
 	
