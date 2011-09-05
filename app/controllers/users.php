@@ -229,57 +229,49 @@ class Users extends Configure_Controller
 	
 	
 	/**
-	 * Page function: User import landing page
+	 * PAGE: User import landing page
 	 */
-	function import($stage = 0){
-		
-		// Find the stage from the post vars
-		//$poststage = $this->input->post('stage');
-		//echo $poststage;
-		
+	function import($step = 0)
+	{
 		$this->auth->check('users.add');
 		
-		if($stage == 0){
-			
-			$links[] = array('security/users/import', 'Start import again', 'table-upload');
-			$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
-			
-			$body['groups'] = $this->security->get_groups_dropdown();
-			$tpl['subnav'] = $this->security->subnav();
-			$tpl['title'] = 'Import users';
-			$tpl['pagetitle'] = 'Import users (stage 1)';
-			
-			$tpl['body'] = $this->lasterr;
-			$tpl['body'] .= $this->load->view('security/users.import.1.php', $body, TRUE);
-			$this->load->view($this->tpl, $tpl);
-			
-		} else {
-			
-			switch($stage){
-				case 1:	$this->_import_1(); break;
-				case 2: $this->_import_2(); break;
-				case 3: $this->_import_3(); break;
-			}
-			
+		if ($step == 0)
+		{
+			$body['groups'] = $this->security_model->get_groups_dropdown();
+			$body['departments'] = $this->departments_model->get_dropdown();
+			$body['lasterr'] = (isset($this->lasterr)) ? $this->lasterr : '';
+			$data['title'] = 'Import users - Step 1';
+			$data['body'] = $this->load->view('users/import-1', $body, true);
+			$this->page($data);
 		}
-		
+		else
+		{
+			switch ($step)
+			{
+				case 1:	return $this->_import_1(); break;
+				case 2: return $this->_import_2(); break;
+				case 3: return $this->_import_3(); break;
+			}
+		}
 	}
 	
 	
 	
 	
 	/**
-	 * User Import: Stage 1 - user has uploaded a file and hopefully set some default values
+	 * User Import: step 1 - user has uploaded a file and hopefully set some default values
 	 */
-	function _import_1(){
+	function _import_1()
+	{
 		
 		// Check where we are getting the CSV data from
-		if($this->input->post('stage') == 1){
-			
+		
+		if ($this->input->post('step') == 1)
+		{
 			// Do upload if it was submitted
 			$config['upload_path'] = 'temp';
 			$config['allowed_types'] = 'csv|txt';
-			$config['encrypt_name'] = TRUE;
+			$config['encrypt_name'] = true;
 			$this->load->library('upload', $config);
 			
 			$upload = $this->upload->do_upload();
@@ -287,38 +279,35 @@ class Users extends Configure_Controller
 			// Get default values
 			$defaults['password'] = $this->input->post('default_password');
 			$defaults['group_id'] = $this->input->post('default_group_id');
+			$defaults['departments'] = $this->input->post('default_departments[]');
 			$defaults['enabled'] = ($this->input->post('default_enabled') == '1') ? 1 : 0;
 			$defaults['emaildomain'] = str_replace('@', '', $this->input->post('default_emaildomain'));
 			
 			// Store defaults in session to retrieve later
 			$this->session->set_userdata('importdef', $defaults);
 			
-		} elseif(is_array($this->session->userdata('csvimport'))){
-			
+		}
+		elseif (is_array($this->session->userdata('csvimport')))
+		{
 			// Otherwise fetch CSV data from 
-			$upload = TRUE;
+			$upload = true;
 			$csv = $this->session->userdata('csvimport');
-			
-		} else {
-			
+		}
+		else
+		{
 			$this->lasterr = $this->msg->err('Expected CSV data via form upload or session, but none was found');
 			return $this->import(0);
-			
 		}
 		
 		// Test for valid data
-		if($upload == FALSE){
-			
+		if ($upload == false)
+		{
 			// Upload failed
 			$this->lasterr = $this->msg->err(strip_tags($this->upload->display_errors()), 'File upload error');
 			return $this->import(0);
-			
-		} else {
-			
-			// Elements to show on the page
-			$links[] = array('security/users/import', 'Start import again');
-			$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
-			
+		}
+		else
+		{
 			// Obtain the CSV data either from upload, or from session (if returning to here from an error)
 			$csv = (!isset($csv)) ? $this->upload->data() : $csv;
 			
@@ -330,7 +319,8 @@ class Users extends Configure_Controller
 			// Open the CSV file for reading
 			$fhandle = fopen($csv['full_path'], 'r');
 			
-			if($fhandle == FALSE){
+			if ($fhandle == FALSE)
+			{
 				// Check we can actually open the file
 				$this->lasterr = $this->msg->err("Could not open uploaded file {$csv['full_path']}.");
 				return $this->import(0);
@@ -351,9 +341,7 @@ class Users extends Configure_Controller
 			$tpl['body'] = $this->lasterr;
 			$tpl['body'] .= $this->load->view('security/users.import.2.php', $body, TRUE);
 			$this->load->view($this->tpl, $tpl);
-			
 		}
-		
 	}
 	
 	
