@@ -106,7 +106,7 @@ class Auth
 				$this->lasterr2 = anchor($this->CI->agent->referrer(), 'Click here to go back.');
 			}
 			
-			$error =& load_class('Exceptions');
+			$error =& load_class('Exceptions', 'core');
 			echo $error->show_error($this->lasterr, $this->lasterr2);
 			exit;
 			
