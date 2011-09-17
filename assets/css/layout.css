@@ -272,8 +272,14 @@ input.search {
 
 /* List tables */
 table.list{ width:100%; font-size:90%; }
-table.list tr td, table.list tr th{ padding:6px 4px; vertical-align:middle; }
-table.list tr.heading th{ text-align:left; background:#eee; color:#000; font-weight: bold; }
+table.list tr td, table.list tr th{ padding: 6px 4px; vertical-align: middle; }
+table.list tr.heading th, 
+table.list tr.heading td {
+	text-align: left;
+	background: #E0E4ED;
+	color: #000;
+	font-weight: bold;
+}
 table.list tr.heading th a{ color:#fff; }
 table.list tr td{ border-bottom:1px solid #ccc; }
 table.list tr td.name{ font-weight:bold; font-size:110%; }

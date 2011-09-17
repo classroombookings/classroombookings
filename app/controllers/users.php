@@ -19,6 +19,7 @@ class Users extends Configure_Controller
 		$this->load->model('security_model');
 		$this->load->model('departments_model');
 		$this->load->model('quota_model');
+		$this->lasterr = false;
 	}
 	
 	
@@ -141,16 +142,21 @@ class Users extends Configure_Controller
 		$user_id = $this->input->post('user_id');
 		
 		$this->form_validation->set_rules('user_id', 'User ID');
-		$this->form_validation->set_rules('username', 'Username', 'required|min_length[1]|max_length[64]|trim');
 		if (!$user_id)
 		{
 			$this->form_validation->set_rules('password1', 'Password', 'max_length[104]|required');
 			$this->form_validation->set_rules('password2', 'Password (confirmation)', 'max_length[104]|required|matches[password1]');
+			$username_rules = 'required|min_length[1]|max_length[64]|trim';
+		}
+		if ($user_id)
+		{
+			$username_rules = 'required|min_length[1]|max_length[64]|trim|callback__check_username';
 		}
 		$this->form_validation->set_rules('group_id', 'Group', 'required|integer');
 		$this->form_validation->set_rules('enabled', 'Enabled', 'exact_length[1]');
 		$this->form_validation->set_rules('email', 'Email address', 'max_length[256]|valid_email|trim');
 		$this->form_validation->set_rules('displayname', 'Display name', 'max_length[64]|trim');
+		$this->form_validation->set_rules('username', 'Username', $username_rules);
 		$this->form_validation->set_error_delimiters('<li>', '</li>');
 		
 		if ($this->form_validation->run() == false)
@@ -166,7 +172,7 @@ class Users extends Configure_Controller
 			$data['email'] = $this->input->post('email');
 			$data['group_id'] = $this->input->post('group_id');
 			$data['departments'] = $this->input->post('departments');
-			$data['enabled'] = ($this->input->post('enabled') == '1') ? 1 : 0;
+			$data['enabled'] = $this->input->post('enabled');
 			$data['ldap'] = $this->input->post('ldap');
 			// Only set password if supplied.
 			if ($this->input->post('password1'))
@@ -235,6 +241,13 @@ class Users extends Configure_Controller
 	{
 		$this->auth->check('users.add');
 		
+		if ($step == 'cancel')
+		{
+			$this->session->unset_userdata('csvimport');
+			$this->session->unset_userdata('importdef');
+			$this->session->unset_userdata('users');
+		}
+		
 		if ($step == 0)
 		{
 			$body['groups'] = $this->security_model->get_groups_dropdown();
@@ -279,13 +292,12 @@ class Users extends Configure_Controller
 			// Get default values
 			$defaults['password'] = $this->input->post('default_password');
 			$defaults['group_id'] = $this->input->post('default_group_id');
-			$defaults['departments'] = $this->input->post('default_departments[]');
-			$defaults['enabled'] = ($this->input->post('default_enabled') == '1') ? 1 : 0;
+			$defaults['departments'] = $this->input->post('default_departments');
+			$defaults['enabled'] = (int) $this->input->post('default_enabled');
 			$defaults['emaildomain'] = str_replace('@', '', $this->input->post('default_emaildomain'));
 			
 			// Store defaults in session to retrieve later
 			$this->session->set_userdata('importdef', $defaults);
-			
 		}
 		elseif (is_array($this->session->userdata('csvimport')))
 		{
@@ -335,12 +347,10 @@ class Users extends Configure_Controller
 			#$body['csvdata'] = fgetcsv($fhandle, filesize($csv['full_path']), ',');
 			
 			// Load page
-			$tpl['subnav'] = $this->security->subnav();
-			$tpl['title'] = 'Import users';
-			$tpl['pagetitle'] = "Import users (stage 2) - {$csv['orig_name']}";
-			$tpl['body'] = $this->lasterr;
-			$tpl['body'] .= $this->load->view('security/users.import.2.php', $body, TRUE);
-			$this->load->view($this->tpl, $tpl);
+			$data['title'] = 'Import users';
+			$body['lasterr'] = (isset($this->lasterr)) ? $this->lasterr : '';
+			$data['body'] = $this->load->view('users/import-2', $body, true);
+			$this->page($data);
 		}
 	}
 	
@@ -350,14 +360,14 @@ class Users extends Configure_Controller
 	/**
 	 * User import: Stage 2 - preview the user page
 	 */
-	function _import_2(){
-		
+	function _import_2()
+	{
 		$col = $this->input->post('col');
 		$col_num = $col;
 		$col = array_flip($col);
 		$rows = $this->input->post('row');
 		
-		$groups_id = $this->security->get_groups_dropdown();
+		$groups_id = $this->security_model->get_groups_dropdown();
 		$groups_name = array_flip($groups_id);
 		
 		$csv = $this->session->userdata('csvimport');
@@ -365,24 +375,34 @@ class Users extends Configure_Controller
 		$defaults = $this->session->userdata('importdef');
 		
 		// No username column chosen? Can't continue
-		if(!isset($col['username'])){
+		if (!isset($col['username']))
+		{
 			$this->lasterr = $this->msg->err('You have not chosen a column that contains the username.', 'Required column not selected');
 			return $this->import(1);
 		}
 		
+		// Check for password in column or default
 		$pass_col = in_array('password', $col_num);
 		$pass_def = !empty($defaults['password']);
 		
-		if($pass_col == FALSE && $pass_def == FALSE){
+		if ($pass_col == false && $pass_def == false)
+		{
 			$this->lasterr = $this->msg->err('You have not chosen a password column or set a default password on the previous page.');
+			return $this->import(1);
+		}
+		
+		// Check if any users were selected
+		if (empty($rows))
+		{
+			$this->lasterr = $this->msg->err('You must choose at least one user to import.');
 			return $this->import(1);
 		}
 		
 		$users = array();
 		
 		// Go through each row, and try to get proper user details from it
-		foreach($rows as $row){
-			
+		foreach ($rows as $row)
+		{
 			$user = array();
 			
 			// USERNAME
@@ -425,31 +445,37 @@ class Users extends Configure_Controller
 				}
 			}
 			
+			// DEPARTMENTS
+			if (!empty($defaults['departments']))
+			{
+				$user['departments'] = $defaults['departments'];
+			}
+			
 			// Enabled or not?
-			$user['enabled'] = ($defaults['enabled'] == 1) ? 1 : 0;
+			$user['enabled'] = $defaults['enabled'];
 			
 			// Finally add this user to the big list if we should import them
-			if(isset($row['import']) && $row['import'] == 1 && !empty($user['username'])){
+			if(isset($row['import']) 
+				&& $row['import'] == 1 
+				&& !empty($user['username']))
+			{
 				array_push($users, $user);
 			}
 			unset($user);
-			
 		}
 		
 		$body['users'] = $users;
 		$body['groups'] = $groups_id;
+		$body['departments'] = $this->departments_model->get_dropdown();
 		
 		$this->session->set_userdata('users', $users);
 		
+		$body['lasterr'] = (isset($this->lasterr)) ? $this->lasterr : '';
+		
 		// Load page
-		$links[] = array('security/users/import', 'Start import again');
-		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
-		$tpl['subnav'] = $this->security->subnav();
-		$tpl['title'] = 'Import users';
-		$tpl['pagetitle'] = "Import users (stage 3) - {$csv['orig_name']}";
-		$tpl['body'] = $this->lasterr;
-		$tpl['body'] .= $this->load->view('security/users.import.3.php', $body, TRUE);
-		$this->load->view($this->tpl, $tpl);
+		$data['title'] = 'Import users';
+		$data['body'] = $this->load->view('users/import-3', $body, true);
+		$this->page($data);
 		
 	}
 	
@@ -459,22 +485,22 @@ class Users extends Configure_Controller
 	/**
 	 * User Import: Stage 3 - add the actual users and show success/failures
 	 */
-	function _import_3(){
-		
+	function _import_3()
+	{
 		// Get array of users to add from the session (stored in previous stage)
 		$users = $this->session->userdata('users');
 		// Get CSV data
 		$csv = $this->session->userdata('csvimport');
 		
-		if(count($users) > 0){
-			
+		if(count($users) > 0)
+		{
 			// Arrays to hold details of successes and failures
 			$fail = array();
 			$success = array();
 			
 			// Loop through all users and add them to the database
-			foreach($users as $user){
-				
+			foreach($users as $user)
+			{
 				// Create array of fields to be sent to the database
 				$data = array();
 				$data['username'] = $user['username'];
@@ -482,22 +508,24 @@ class Users extends Configure_Controller
 				$data['email'] = $user['email'];
 				$data['group_id'] = $user['group_id'];
 				$data['enabled'] = $user['enabled'];
-				$data['password'] = sha1($user['password']);
+				$data['password'] = $user['password'];
+				$data['departments'] = $user['departments'];
 				$data['ldap'] = 0;
 				
 				// Add user to database
-				$add = $this->security->add_user($data);
+				$add = $this->security_model->add_user($data);
 				
 				// Test result of the add
-				if($add == FALSE){
-					$user['fail'] = $this->security->lasterr;
+				if ($add == false)
+				{
+					$user['fail'] = $this->security_model->lasterr;
 					array_push($fail, $user);
-				} else {
+				}
+				else
+				{
 					array_push($success, $user);
 				}
-				
 				unset($data);
-				
 			}
 			
 			// Finished adding users
@@ -509,22 +537,17 @@ class Users extends Configure_Controller
 			$this->session->unset_userdata(array('csvimport', 'users'));
 			
 			// Load page
-			$links[] = array('security/users/import', 'Start import again');
-			$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
-			$tpl['subnav'] = $this->security->subnav();
-			$tpl['title'] = 'Import users';
-			$tpl['pagetitle'] = "Import users (complete) - {$csv['orig_name']}";
-			$tpl['body'] = $this->load->view('security/users.import.4.php', $body, TRUE);
-			$this->load->view($this->tpl, $tpl);
+			$data['title'] = 'Import users';
+			$data['body'] = $this->load->view('users/import-4', $body, true);
+			$this->page($data);
 			
-		} else {
-			
+		}
+		else
+		{
 			// No users - weird - shouldn't get to this stage without them.
 			$this->lasterr = $this->msg->err('No users were supplied');
 			return $this->import(2);
-			
 		}
-		
 	}
 	
 	
@@ -549,7 +572,7 @@ class Users extends Configure_Controller
 			}
 			else
 			{
-				$this->msg->add('info', 'The user has been deleted.');
+				$this->msg->add('notice', 'The user has been deleted.');
 			}
 			// Redirect
 			redirect('users');
@@ -596,7 +619,7 @@ class Users extends Configure_Controller
 					$body['id'] = $user_id;
 					$body['cancel'] = 'users';
 					$body['text'] = 'If you delete this user, all of their bookings and room owenership information will also be deleted.';
-					$body['title'] = 'Are you sure you want to delete user ' . $user->displayname . '?';
+					$body['title'] = 'Are you sure you want to delete user ' . $user->username . '?';
 					$data['title'] = 'Delete ' . $user->displayname;
 					$data['body'] = $this->load->view('parts/deleteconfirm', $body, true);
 				}	// if user == false-else
@@ -607,6 +630,31 @@ class Users extends Configure_Controller
 		}	// if post(id) else
 		
 	}	// endfunction
+	
+	
+	
+	
+	
+	/**
+	 * Validation function.
+	 *
+	 * When renaming a user, check if new name doesn't already exist
+	 */
+	function  _check_username($new_username)
+	{
+		$old_username = $this->input->post('old_username');
+		if ($new_username == $old_username)
+		{
+			return true;
+		}
+		
+		if ($this->auth->userexists($new_username))
+		{
+			$this->form_validation->set_message('_check_username',
+				"The username '$new_username' already exists.");
+			return false;
+		}
+	}
 	
 	
 	

@@ -862,4 +862,4 @@ class Security_model extends CI_Model
 
 
 
-/* End of file: app/models/security.php */
+/* End of file: app/models/security_model.php */

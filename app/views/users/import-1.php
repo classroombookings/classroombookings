@@ -75,28 +75,28 @@ $t = 1;
 	</select>
 	<?php endif; ?>
 	
-	<label for="email">Email domain</label>
+	<label for="default_emaildomain">Email domain</label>
 	<?php
 	unset($input);
 	$input['accesskey'] = 'E';
-	$input['name'] = 'email';
-	$input['id'] = 'email';
+	$input['name'] = 'default_emaildomain';
+	$input['id'] = 'default_emaildomain';
 	$input['size'] = '40';
 	$input['maxlength'] = '100';
 	$input['tabindex'] = $t;
 	$input['autocomplete'] = 'off';
-	$input['value'] = set_value('email');
+	$input['value'] = set_value('default_emaildomain');
 	echo form_input($input);
 	$t++;
 	?>
 	
 	<fieldset>
-		<label for="enabled">
+		<label for="default_enabled">
 			<?php
-			echo form_hidden('enabled', '0');
+			echo form_hidden('default_enabled', '0');
 			unset($input);
-			$input['name'] = 'enabled';
-			$input['id'] = 'enabled';
+			$input['name'] = 'default_enabled';
+			$input['id'] = 'default_enabled';
 			$input['value'] = '1';
 			$input['checked'] = set_checkbox($input['name'], $input['value'], true);
 			$input['tabindex'] = $t;
@@ -117,7 +117,7 @@ $t = 1;
 <div class="omega nine columns"><?php
 unset($buttons);
 $buttons[] = array('submit', 'blue', "Next &rarr;", $t);
-$buttons[] = array('link', '', 'Cancel', $t + 1, 'users');
+$buttons[] = array('link', '', 'Cancel', $t + 1, site_url('users'));
 $this->load->view('parts/buttons', array('buttons' => $buttons));
 ?></div>
 
