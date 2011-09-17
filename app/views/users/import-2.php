@@ -94,7 +94,7 @@ $t = 1;
 <?php
 unset($buttons);
 $buttons[] = array('submit', 'blue', "Preview import &rarr;", $t);
-$buttons[] = array('link', '', 'Cancel', $t + 1, site_url('users'));
+$buttons[] = array('link', '', 'Cancel', $t + 1, site_url('users/import/cancel'));
 $this->load->view('parts/buttons', array('buttons' => $buttons));
 ?>
 

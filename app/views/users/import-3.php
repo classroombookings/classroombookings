@@ -42,12 +42,15 @@ foreach($users as $user){
 			<tr>
 				<td><strong>Department(s)</strong></td>
 				<td><?php
-				$dnames = array();
-				foreach($user['departments'] as $did)
+				if (!empty($user['departments']))
 				{
-					$dnames[] = $departments[$did];
+					$dnames = array();
+					foreach($user['departments'] as $did)
+					{
+						$dnames[] = $departments[$did];
+					}
+					echo implode(", ", $dnames);
 				}
-				echo implode(", ", $dnames);
 				?></td>
 			</tr>
 		</table>
@@ -64,7 +67,7 @@ foreach($users as $user){
 <?php
 unset($buttons);
 $buttons[] = array('submit', 'green', "Import users &rarr;", $t + 1);
-$buttons[] = array('link', '', 'Cancel', $t + 2, site_url('users'));
+$buttons[] = array('link', '', 'Cancel', $t + 2, site_url('users/import/cancel'));
 $this->load->view('parts/buttons', array('buttons' => $buttons));
 ?>
 

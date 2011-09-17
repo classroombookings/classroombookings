@@ -117,7 +117,7 @@ $t = 1;
 <div class="omega nine columns"><?php
 unset($buttons);
 $buttons[] = array('submit', 'blue', "Next &rarr;", $t);
-$buttons[] = array('link', '', 'Cancel', $t + 1, site_url('users'));
+$buttons[] = array('link', '', 'Cancel', $t + 1, site_url('users/import/cancel'));
 $this->load->view('parts/buttons', array('buttons' => $buttons));
 ?></div>
 

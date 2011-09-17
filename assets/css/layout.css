@@ -342,7 +342,7 @@ td.status {
 td.status.online { background-image: url(../img/ico/online.png); }
 td.status.disabled { background-image: url(../img/ico/user-disabled.png); }
 
-div.filter { background: #ddd; border-top: 1px solid #bbb; padding: 5px 0; }
+div.filter { background: #E0E4ED; border-top: 1px solid #bbb; padding: 5px 0; }
 div.filter div.row {
 	margin: 0 5px;
 	padding: 0;

@@ -241,13 +241,6 @@ class Users extends Configure_Controller
 	{
 		$this->auth->check('users.add');
 		
-		if ($step == 'cancel')
-		{
-			$this->session->unset_userdata('csvimport');
-			$this->session->unset_userdata('importdef');
-			$this->session->unset_userdata('users');
-		}
-		
 		if ($step == 0)
 		{
 			$body['groups'] = $this->security_model->get_groups_dropdown();
@@ -265,6 +258,12 @@ class Users extends Configure_Controller
 				case 2: return $this->_import_2(); break;
 				case 3: return $this->_import_3(); break;
 			}
+		}
+		
+		if ($step === 'cancel')
+		{
+			Events::trigger('users.import.end');
+			redirect('users');
 		}
 	}
 	
@@ -351,6 +350,7 @@ class Users extends Configure_Controller
 			$body['lasterr'] = (isset($this->lasterr)) ? $this->lasterr : '';
 			$data['body'] = $this->load->view('users/import-2', $body, true);
 			$this->page($data);
+			fclose($fhandle);
 		}
 	}
 	
@@ -509,7 +509,7 @@ class Users extends Configure_Controller
 				$data['group_id'] = $user['group_id'];
 				$data['enabled'] = $user['enabled'];
 				$data['password'] = $user['password'];
-				$data['departments'] = $user['departments'];
+				$data['departments'] = (!empty($user['departments'])) ? $user['departments'] : array();
 				$data['ldap'] = 0;
 				
 				// Add user to database
@@ -533,8 +533,8 @@ class Users extends Configure_Controller
 			$body['fail'] = $fail;
 			$body['success'] = $success;
 			
-			// Remove session data
-			$this->session->unset_userdata(array('csvimport', 'users'));
+			// This will erase the temporary session data used during import
+			Events::trigger('users.import.end');
 			
 			// Load page
 			$data['title'] = 'Import users';
