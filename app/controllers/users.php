@@ -28,41 +28,35 @@ class Users extends Configure_Controller
 	/**
 	 * PAGE: Main user list.
 	 *
-	 * Is also used by ingroup() and p()
+	 * Is also called by ingroup()
 	 */
-	function index()
+	function index($group_id = null)
 	{
-		if ($this->uri->segment(3) == 'ingroup')
-		{
-			$group_id = (int) $this->uri->segment(4);
-		}
-		else
-		{
-			$group_id = NULL;
-		}
-		
 		// Check authorisation
 		$this->auth->check('users');
 		
-		if ($group_id == null)
+		if ($group_id === null)
 		{
 			// ALL users
-			$body['groups'] = $this->security_model->get_groups_dropdown();
-			$body['users'] = $this->security_model->get_user(NULL, NULL);
+			$body['group_id'] = -1;
+			$body['users'] = $this->security_model->get_user(null, null);
 			$data['title'] = 'Users';
 		}
 		else
 		{
 			// Users in one group
-			$groupname = $this->security->get_group_name($group_id);
-			$body['users'] = $this->security_model->get_user(NULL, $group_id);
-			$data['title'] = sprintf('Users in the %s group', $groupname);
+			$groupname = $this->security_model->get_group_name($group_id);
+			$body['group_id'] = $group_id;
+			$body['users'] = $this->security_model->get_user(null, $group_id);
+			$data['title'] = sprintf('Users (%s group)', $groupname);
 		}
 		
-		// Get list of users
+		$body['groups'] = $this->security_model->get_groups_dropdown();
+		
+		// Got list of users?
 		if ($body['users'] == false)
 		{
-			$data['body'] = $this->msg->err($this->security->lasterr);
+			$data['body'] = $this->msg->err($this->security_model->lasterr);
 		}
 		else
 		{

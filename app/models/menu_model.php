@@ -9,6 +9,16 @@
  * Please see license-classroombookings.txt for the full license text.
  */
 
+/**
+ * The menu model contains functions that return arrays of menu items specific 
+ * to pages within the app. 
+ *
+ * 0: Slug
+ * 1: Title
+ * 2: Permission required
+ * 3: icon class
+ */
+
 class Menu_model extends CI_Model
 {
 	
@@ -67,6 +77,19 @@ class Menu_model extends CI_Model
 		$subnav = array();
 		$subnav[] = array('users/add', 'Add new user', 'users.add', 'add');
 		$subnav[] = array('users/import', 'Bulk import users', 'users.import', 'upload');
+		return $subnav;
+	}
+	
+	
+	
+	
+	/**
+	 * Configure / Groups
+	 */
+	function groups()
+	{
+		$subnav = array();
+		$subnav[] = array('users/add', 'Add new group', 'groups.add', 'add');
 		return $subnav;
 	}
 	

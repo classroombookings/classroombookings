@@ -1,4 +1,5 @@
-<div class="filter add-bottom"><div class="row">
+<div class="filter add-bottom">
+	<div class="row">
 		<div class="lfloat">
 			<input id="search" size="30" class="search" autocomplete="off">
 		</div>
@@ -9,12 +10,13 @@
 			echo form_dropdown(
 				'auth_ldap_groupid', 
 				$groups,
-				-1,
+				$group_id,
 				'id="group"'
 			);
 			?>
 		</div>
-</div></div>
+	</div>
+</div>
 
 
 <table class="list2 middle" summary="User list" id="users">
