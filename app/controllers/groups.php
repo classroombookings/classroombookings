@@ -47,21 +47,26 @@ class Groups extends Configure_Controller
 	
 	
 	
-	function add(){
+	/**
+	 * PAGE: Add a new group
+	 */
+	function add()
+	{
 		$this->auth->check('groups.add');
-		$body['group'] = NULL;
-		$body['group_id'] = NULL;
-		$body['ldapgroups'] = $this->security->get_ldap_groups_unassigned();
-		$tpl['subnav'] = $this->security->subnav();
-		$tpl['title'] = 'Add group';
-		$tpl['pagetitle'] = 'Add a new group';
-		$tpl['body'] = $this->load->view('security/groups.addedit.php', $body, TRUE);
-		$this->load->view($this->tpl, $tpl);
+		$body['group'] = null;
+		$body['group_id'] = null;
+		$body['ldapgroups'] = $this->security_model->get_ldap_groups_unassigned();
+		$data['title'] = 'Add group';
+		$data['body'] = $this->load->view('groups/addedit', $body, true);
+		$this->page($data);
 	}
 	
 	
 	
 	
+	/**
+	 * PAGE: Edit a group
+	 */
 	function edit($group_id){
 		$this->auth->check('groups.edit');
 		$body['group'] = $this->security->get_group($group_id);

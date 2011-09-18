@@ -89,7 +89,7 @@ class Menu_model extends CI_Model
 	function groups()
 	{
 		$subnav = array();
-		$subnav[] = array('users/add', 'Add new group', 'groups.add', 'add');
+		$subnav[] = array('groups/add', 'Add new group', 'groups.add', 'add');
 		return $subnav;
 	}
 	
