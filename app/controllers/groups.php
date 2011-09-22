@@ -67,24 +67,26 @@ class Groups extends Configure_Controller
 	/**
 	 * PAGE: Edit a group
 	 */
-	function edit($group_id){
+	function edit($group_id)
+	{
 		$this->auth->check('groups.edit');
-		$body['group'] = $this->security->get_group($group_id);
+		$body['group'] = $this->security_model->get_group($group_id);
 		$body['group_id'] = $group_id;
-		$body['ldapgroups'] = $this->security->get_ldap_groups_unassigned($group_id);
+		$body['ldapgroups'] = $this->security_model->get_ldap_groups_unassigned($group_id);
 		
-		$tpl['subnav'] = $this->security->subnav();
-		$tpl['title'] = 'Edit group';
+		$data['title'] = 'Edit group';
 		
-		if($body['group'] != FALSE){
-			$tpl['pagetitle'] = 'Edit ' . $body['group']->name . ' group';
-			$tpl['body'] = $this->load->view('security/groups.addedit.php', $body, TRUE);
-		} else {
-			$tpl['pagetitle'] = 'Error getting group';
-			$tpl['body'] = $this->msg->err('Could not load the specified group. Please check the ID and try again.');
+		if ($body['group'] != false)
+		{
+			$data['title'] = 'Edit ' . $body['group']->name . ' group';
+			$data['body'] = $this->load->view('groups/addedit', $body, true);
 		}
-		
-		$this->load->view($this->tpl, $tpl);
+		else
+		{
+			$data['title'] = 'Error getting group';
+			$data['body'] = $this->msg->err('Could not load the specified group. Please check the ID and try again.');
+		}
+		$this->page($data);
 	}
 	
 	

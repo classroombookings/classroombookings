@@ -82,37 +82,14 @@ $t = 1;
 
 <hr>
 
-<div class="alpha three columns"><h6>Other options</h6></div>
 
-<div class="omega nine columns">
-
-	<label for="name">Booking ahead</label>
-	<?php
-	unset($input);
-	$input['name'] = 'bookahead';
-	$input['id'] = 'bookahead';
-	$input['size'] = '10';
-	$input['maxlength'] = '3';
-	$input['value'] = @set_value($input['name'], $group->bookahead);
-	echo form_input($input);
-	?>
-	
-	<p class="hint add-bottom">The number of days ahead users can create a booking. Leave blank to allow bookings at any time in the future.</p>
-	
-	
-	<label for="quota_num">Quota</label>
-	<?php
-	unset($input);
-	$input['name'] = 'quota_num';
-	$input['id'] = 'quota_num';
-	$input['size'] = '10';
-	$input['maxlength'] = '3';
-	$input['value'] = @set_value($input['name'], $group->quota_num);
-	echo form_input($input);
-	?>
-	<p class="tip add-bottom">The number of bookings a user in this group can have or make.</p>
-
-</div>
+<div class="alpha three columns">&nbsp;</div>
+<div class="omega nine columns"><?php
+$text = ($group_id == null) ? 'Add' : 'Save';
+unset($buttons);
+$buttons[] = array('submit', 'blue', "$text group", $t);
+$this->load->view('parts/buttons', array('buttons' => $buttons));
+?></div>
 
 
 </form>
