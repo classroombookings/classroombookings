@@ -113,9 +113,7 @@ $t = 1;
 
 <div id="permissions" class="hidden">
 
-<?php // $this->load->view('permissions/list', null); ?>
-
-perms
+<?php $this->load->view('permissions/list', null); ?>
 
 </div>
 
@@ -124,6 +122,18 @@ perms
 
 
 <!-- end of page -->
+
+
+<div id="form-buttons" class="hidden">
+	<div class="alpha three columns">&nbsp;</div>
+	<div class="omega nine columns"><?php
+	$text = ($permission_id == null) ? 'Add' : 'Save';
+	unset($buttons);
+	$buttons[] = array('submit', 'blue', "$text permission entry", $t);
+	$this->load->view('parts/buttons', array('buttons' => $buttons));
+	?></div>
+</div>
+
 
 </form>
 
@@ -139,10 +149,24 @@ _jsQ.push(function(){
 		var others = $("div.entity-type");
 		others.hide();
 		options.show();
+		if (type == 'e'){
+			$("div#permissions:hidden").show();
+			$("div#form-buttons:hidden").show();
+		}
 	});
 	
 	$("select").change(function(){
 		$("div#permissions:hidden").show();
+		$("div#form-buttons:hidden").show();
+	});
+	
+	
+	$("label.tristate").cbtristate();
+	
+	// Toggle all
+	$("h6.toggle").css("cursor", "pointer").click(function(){
+		$(this).closest("div").next("div.columns").find("label.tristate img").trigger("click");
+		return false;
 	});
 	
 });

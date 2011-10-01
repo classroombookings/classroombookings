@@ -354,6 +354,11 @@ div.filter input, div.filter select { margin: 0; }
 
 
 
+fieldset.tristates label { margin-bottom: 7px; }
+.tristate img { display: inline; vertical-align: middle; margin: 0; }
+
+
+
 .button {
 	padding: 5px 10px;
 	display: inline;

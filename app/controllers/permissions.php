@@ -52,9 +52,22 @@ class Permissions extends Configure_Controller
 		
 		$body['permission_id'] = null;
 		
+		// List of all available permissions
+		$body['permission_list'] = $this->config->item('permissions');
+		
+		$data['js'] = array('js/tristate-checkbox.js');
+		
 		$data['title'] = 'Add permission entry';
 		$data['body'] = $this->load->view('permissions/add', $body, true);
 		$this->page($data);
+	}
+	
+	
+	
+	
+	function save()
+	{
+		$this->output->enable_profiler(true);
 	}
 	
 	
