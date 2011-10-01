@@ -134,4 +134,3 @@ $lang['ACTION_SAVE'] = 'Save';
 $lang['ACTION_DELETE'] = 'Delete';
 $lang['ACTION_CANCEL'] = 'Cancel';
 
-?>

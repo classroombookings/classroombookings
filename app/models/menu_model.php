@@ -96,6 +96,19 @@ class Menu_model extends CI_Model
 	
 	
 	
+	/**
+	 * Configure / Permissions
+	 */
+	function permissions()
+	{
+		$subnav = array();
+		$subnav[] = array('permissions/add', 'Add new permission', 'permissions', 'add');
+		return $subnav;
+	}
+	
+	
+	
+	
 }
 
 
