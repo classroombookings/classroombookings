@@ -12,6 +12,7 @@
 		foreach($options as $opt){
 		
 			$id = 'permissions[' . $opt[0] . ']';
+			$id = str_replace(".", "_", $id);
 			$caption = $opt[1];
 			$hint = @$opt[2];
 			

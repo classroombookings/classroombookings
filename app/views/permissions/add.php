@@ -104,8 +104,6 @@ $t = 1;
 
 
 
-
-
 <hr class="remove-bottom">
 
 <br>
