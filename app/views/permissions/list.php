@@ -2,7 +2,7 @@
 
 <div class="omega nine columns">
 	
-	<label for="username">Total concurrent bookings</label>
+	<label for="p_quota_concurrent">Total concurrent bookings</label>
 	<?php
 	unset($input);
 	$input['name'] = 'permissions[quota_concurrent]';
@@ -13,6 +13,44 @@
 	//$input['value'] = @set_value('quota', $user->quota);
 	echo form_input($input);
 	?>
+	
+	<label for="p_booking_advance">Bookings must be made this amount of days in advance</label>
+	<?php
+	unset($input);
+	$input['name'] = 'permissions[booking_advance]';
+	$input['id'] = 'p_booking_advance';
+	$input['size'] = '5';
+	$input['maxlength'] = '5';
+	$input['autocomplete'] = 'off';
+	//$input['value'] = @set_value('quota', $user->quota);
+	echo form_input($input);
+	?>
+	
+	<label for="p_booking_future">Bookings cannot be made beyond this amount of days in the future</label>
+	<?php
+	unset($input);
+	$input['name'] = 'permissions[booking_future]';
+	$input['id'] = 'p_booking_future';
+	$input['size'] = '5';
+	$input['maxlength'] = '5';
+	$input['autocomplete'] = 'off';
+	//$input['value'] = @set_value('quota', $user->quota);
+	echo form_input($input);
+	?>
+	
+	<label for="p_quota_weekly">Weekly booking quota</label>
+	<?php
+	unset($input);
+	$input['name'] = 'permissions[quota_weekly]';
+	$input['id'] = 'p_quota_weekly';
+	$input['size'] = '5';
+	$input['maxlength'] = '5';
+	$input['autocomplete'] = 'off';
+	$input['class'] = 'remove-bottom';
+	//$input['value'] = @set_value('quota', $user->quota);
+	echo form_input($input);
+	?>
+	<p class="hint">Up to this amount of bookings can be made every week.</p>
 	
 </div>
 
