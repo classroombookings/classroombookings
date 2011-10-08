@@ -82,4 +82,39 @@ unset($checks);
 $checks['options'] = $permission_list['academic'];
 $checks['category'] = 'Academic';
 $this->load->view('permissions/list-checks', $checks);
+
+unset($checks);
+$checks['options'] = $permission_list['weeks'];
+$checks['category'] = 'Timetable weeks';
+$this->load->view('permissions/list-checks', $checks);
+
+unset($checks);
+$checks['options'] = $permission_list['holidays'];
+$checks['category'] = 'Holidays';
+$this->load->view('permissions/list-checks', $checks);
+
+unset($checks);
+$checks['options'] = $permission_list['terms'];
+$checks['category'] = 'Term dates';
+$this->load->view('permissions/list-checks', $checks);
+
+unset($checks);
+$checks['options'] = $permission_list['departments'];
+$checks['category'] = 'Departments';
+$this->load->view('permissions/list-checks', $checks);
+
+unset($checks);
+$checks['options'] = $permission_list['reports'];
+$checks['category'] = 'Reporting';
+$this->load->view('permissions/list-checks', $checks);
+
+unset($checks);
+$checks['options'] = $permission_list['users'];
+$checks['category'] = 'Users';
+$this->load->view('permissions/list-checks', $checks);
+
+unset($checks);
+$checks['options'] = $permission_list['groups'];
+$checks['category'] = 'Groups';
+$this->load->view('permissions/list-checks', $checks);
 ?>
