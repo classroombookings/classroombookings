@@ -28,10 +28,10 @@ $t = 1;
 	<fieldset>
 	<?php
 	$options = array(
-		'e' => 'Everyone',
-		'd' => 'Department',
-		'g' => 'Group',
-		'u' => 'User',
+		'E' => 'Everyone',
+		'D' => 'Department',
+		'G' => 'Group',
+		'U' => 'User',
 	);
 	foreach($options as $k => $v)
 	{

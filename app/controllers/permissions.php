@@ -65,9 +65,47 @@ class Permissions extends Configure_Controller
 	
 	
 	
+	/**
+	 * Save the submitted permissions
+	 */
 	function save()
 	{
-		$this->output->enable_profiler(true);
+		$this->auth->check('permissions');
+		
+		$entity_type = $this->input->post('entity_type');
+		$permission_id = $this->input->post('permission_id');
+		
+		$this->form_validation->set_rules('permission_id', 'Permission ID');
+		$this->form_validation->set_rules('entity_type', 'Entity type', 'exact_length[1]');
+		$this->form_validation->set_rules('permissions[]', 'Permissions');
+		// Add a rule depending on chosen entity type
+		switch($entity_type)
+		{
+			case 'D':
+				$this->form_validation->set_rules('department_id', 'Department', 'required|integer');
+				break;
+			case 'G':
+				$this->form_validation->set_rules('group_id', 'Group', 'required|integer');
+				break;
+			case 'U':
+				$this->form_validation->set_rules('user_id', 'User', 'required|integer');
+				break;
+		}
+		
+		$this->form_validation->set_error_delimiters('<li>', '</li>');
+		
+		// Validate form
+		if ($this->form_validation->run() == FALSE)
+		{
+			// Validation failed - load required action depending on the state of user_id
+			($permission_id == NULL) ? $this->add() : $this->edit($permission_id);
+			
+		}
+		else
+		{
+			
+		}
+		
 	}
 	
 	
