@@ -26,7 +26,7 @@
 	//$input['value'] = @set_value('quota', $user->quota);
 	echo form_input($input);
 	?>
-	<p class="hint">Up to this amount of bookings can be made every week.</p>
+	<p class="hint add-bottom">Up to this amount of bookings can be made every week.</p>
 	
 	<label for="p_booking_advance">Bookings must be made this amount of days in advance</label>
 	<?php

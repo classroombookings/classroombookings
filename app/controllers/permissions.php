@@ -76,6 +76,7 @@ class Permissions extends Configure_Controller
 		
 		$entity_type = $this->input->post('entity_type');
 		$permission_id = $this->input->post('permission_id');
+		$entity_id = null;
 		
 		$this->form_validation->set_rules('permission_id', 'Permission ID');
 		$this->form_validation->set_rules('entity_type', 'Entity type', 'exact_length[1]');
@@ -116,18 +117,19 @@ class Permissions extends Configure_Controller
 			$data['entity_id'] = $entity_id;
 			$data['permissions'] = $this->input->post('permissions');
 			
-			if ($permission_id == NULL)
+			if (empty($permission_id))
 			{
 				// Add new permission
-				$ret = $this->security_model->add_permission($data);
+				$ret = $this->permissions_model->add($data);
 			}
 			else
 			{
-				$ret = $this->security_model->edit_permission($permission_id, $data);
+				$ret = $this->permissions_model->edit($permission_id, $data);
 			}
 			
+			echo "Done!";
 			echo $ret;
-			echo $this->security_model->lasterr;
+			echo $this->permissions_model->lasterr;
 			
 			//redirect('permissions');
 			
