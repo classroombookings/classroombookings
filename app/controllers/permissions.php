@@ -72,23 +72,31 @@ class Permissions extends Configure_Controller
 	{
 		$this->auth->check('permissions');
 		
+		$this->output->enable_profiler(true);
+		
 		$entity_type = $this->input->post('entity_type');
 		$permission_id = $this->input->post('permission_id');
 		
 		$this->form_validation->set_rules('permission_id', 'Permission ID');
 		$this->form_validation->set_rules('entity_type', 'Entity type', 'exact_length[1]');
 		$this->form_validation->set_rules('permissions[]', 'Permissions');
+		
+		$valid_id = 'required|integer|is_natural_no_zero';
+		
 		// Add a rule depending on chosen entity type
 		switch($entity_type)
 		{
 			case 'D':
-				$this->form_validation->set_rules('department_id', 'Department', 'required|integer');
+				$this->form_validation->set_rules('department_id', 'Department', $valid_id);
+				$entity_id = $this->input->post('department_id');
 				break;
 			case 'G':
-				$this->form_validation->set_rules('group_id', 'Group', 'required|integer');
+				$this->form_validation->set_rules('group_id', 'Group', $valid_id);
+				$entity_id = $this->input->post('group_id');
 				break;
 			case 'U':
-				$this->form_validation->set_rules('user_id', 'User', 'required|integer');
+				$this->form_validation->set_rules('user_id', 'User', $valid_id);
+				$entity_id = $this->input->post('user_id');
 				break;
 		}
 		
@@ -98,11 +106,30 @@ class Permissions extends Configure_Controller
 		if ($this->form_validation->run() == FALSE)
 		{
 			// Validation failed - load required action depending on the state of user_id
-			($permission_id == NULL) ? $this->add() : $this->edit($permission_id);
-			
+			return ($permission_id == NULL) ? $this->add() : $this->edit($permission_id);
 		}
 		else
 		{
+			
+			$data = array();
+			$data['entity_type'] = $entity_type;
+			$data['entity_id'] = $entity_id;
+			$data['permissions'] = $this->input->post('permissions');
+			
+			if ($permission_id == NULL)
+			{
+				// Add new permission
+				$ret = $this->security_model->add_permission($data);
+			}
+			else
+			{
+				$ret = $this->security_model->edit_permission($permission_id, $data);
+			}
+			
+			echo $ret;
+			echo $this->security_model->lasterr;
+			
+			//redirect('permissions');
 			
 		}
 		

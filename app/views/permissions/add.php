@@ -56,7 +56,7 @@ $t = 1;
 
 <!-- Department choice -->
 
-<div id="entity_type_d" class="entity-type hidden">
+<div id="entity_type_D" class="entity-type hidden">
 
 	<div class="alpha three columns"><h6>Department</h6></div>
 
@@ -73,7 +73,7 @@ $t = 1;
 
 <!-- Group choice -->
 
-<div id="entity_type_g" class="entity-type hidden">
+<div id="entity_type_G" class="entity-type hidden">
 
 	<div class="alpha three columns"><h6>Group</h6></div>
 
@@ -90,7 +90,7 @@ $t = 1;
 
 <!-- User choice -->
 
-<div id="entity_type_u" class="entity-type hidden">
+<div id="entity_type_U" class="entity-type hidden">
 
 	<div class="alpha three columns"><h6>User</h6></div>
 
@@ -149,7 +149,7 @@ _jsQ.push(function(){
 		var others = $("div.entity-type");
 		others.hide();
 		options.show();
-		if (type == 'e'){
+		if (type == 'E'){
 			$("div#permissions:hidden").show();
 			$("div#form-buttons:hidden").show();
 		}
