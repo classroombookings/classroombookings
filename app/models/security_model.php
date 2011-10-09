@@ -25,6 +25,14 @@ class Security_model extends CI_Model
 	
 	
 	/**
+	 * Users
+	 * =====
+	 */
+	
+	
+	
+	
+	/**
 	 * get one or more users (optionally by group)
 	 *
 	 * @param int user_id
@@ -50,8 +58,6 @@ class Security_model extends CI_Model
 				'users.*,
 				IFNULL(users.displayname, users.username) AS displayname, 
 				groups.name AS groupname, 
-				groups.quota_type, 
-				quota.quota_num,
 				IF(usersactive.timestamp > 0, true, false) AS online'
 			, false);
 			$this->db->from('users');
@@ -104,8 +110,6 @@ class Security_model extends CI_Model
 						users.lastactivity,
 						users.ldap,
 						users.created,
-						groups.quota_type,
-						IFNULL(quota.quota_num, groups.quota_num) AS quota_num,
 						GROUP_CONCAT(DISTINCT(u2d.department_id)) AS departments
 					FROM users
 					LEFT JOIN groups ON users.group_id = groups.group_id
@@ -184,7 +188,7 @@ class Security_model extends CI_Model
 			return false;
 		}
 		
-		// Add a date created field
+		// Add a date created value
 		$data['created'] = date("Y-m-d");
 		
 		// Get supplied departments if any, and then remove from data array
@@ -597,6 +601,7 @@ class Security_model extends CI_Model
 	
 	
 	
+	/*
 	function get_group_permissions($group_id = NULL){
 	
 		#echo $group_id;
@@ -645,16 +650,17 @@ class Security_model extends CI_Model
 			return FALSE;
 		}
 		
-		/*if(!is_array($permissions) || ($permissions != NULL)){
+		if(!is_array($permissions) || ($permissions != NULL)){
 			$this->lasterr = 'Permissions was not supplied in valid format.';
 			return FALSE;
-		}*/
+		}
 		
 		$sql = 'UPDATE groups SET permissions = ? WHERE group_id = ? LIMIT 1';
 		$query = $this->db->query($sql, array(serialize($permissions), $group_id));
 		
 		return $query;
 	}
+	*/
 	
 	
 	
