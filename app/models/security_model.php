@@ -601,7 +601,7 @@ class Security_model extends CI_Model
 	
 	
 	
-	/*
+	
 	function get_group_permissions($group_id = NULL){
 	
 		#echo $group_id;
@@ -660,7 +660,7 @@ class Security_model extends CI_Model
 		
 		return $query;
 	}
-	*/
+	
 	
 	
 	

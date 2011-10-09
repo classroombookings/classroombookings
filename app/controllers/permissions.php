@@ -30,8 +30,35 @@ class Permissions extends Configure_Controller
 	{
 		$this->auth->check('permissions');
 		
+		$body['defined_permissions'] = $this->permissions_model->get_list();
+		$body['available_permissions'] = $this->config->item('permissions');
+		
+		foreach ($body['defined_permissions'] as $permission)
+		{
+			if ($permission->entity_type == 'E')
+			{
+				$title = 'Everyone';
+			}
+			else
+			{
+				$title = sprintf('%s: %s', $permission->entity_type, $permission->entity_name);
+			}
+			$tabs[] = array(
+				'id' => 'p_' . $permission->permission_id,
+				'title' => $title,
+				'view' => $this->load->view('permissions/list', $body, true),
+			);
+		}
+		
+		$body['tabs'] = $tabs;
+		$body['active_tab'] = 'p_E';
+		
 		$data['title'] = 'Permissions';
 		$data['submenu'] = $this->menu_model->permissions();
+		$data['body'] = $this->load->view('parts/tabs', $body, TRUE);
+		
+		$data['js'] = array('js/tristate-checkbox.js');
+		
 		$this->page($data);
 	}
 	
@@ -53,7 +80,7 @@ class Permissions extends Configure_Controller
 		$body['permission_id'] = null;
 		
 		// List of all available permissions
-		$body['permission_list'] = $this->config->item('permissions');
+		$body['available_permissions'] = $this->config->item('permissions');
 		
 		$data['js'] = array('js/tristate-checkbox.js');
 		

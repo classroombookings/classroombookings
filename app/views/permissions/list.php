@@ -59,62 +59,77 @@
 
 <?php
 unset($checks);
-$checks['options'] = $permission_list['general'];
+$checks['options'] = $available_permissions['general'];
 $checks['category'] = 'General';
 $this->load->view('permissions/list-checks', $checks);
 
 unset($checks);
-$checks['options'] = $permission_list['bookings'];
+$checks['options'] = $available_permissions['bookings'];
 $checks['category'] = 'Bookings';
 $this->load->view('permissions/list-checks', $checks);
 
 unset($checks);
-$checks['options'] = $permission_list['rooms'];
+$checks['options'] = $available_permissions['rooms'];
 $checks['category'] = 'Rooms';
 $this->load->view('permissions/list-checks', $checks);
 
 unset($checks);
-$checks['options'] = $permission_list['periods'];
+$checks['options'] = $available_permissions['periods'];
 $checks['category'] = 'Periods';
 $this->load->view('permissions/list-checks', $checks);
 
 unset($checks);
-$checks['options'] = $permission_list['academic'];
+$checks['options'] = $available_permissions['academic'];
 $checks['category'] = 'Academic';
 $this->load->view('permissions/list-checks', $checks);
 
 unset($checks);
-$checks['options'] = $permission_list['weeks'];
+$checks['options'] = $available_permissions['weeks'];
 $checks['category'] = 'Timetable weeks';
 $this->load->view('permissions/list-checks', $checks);
 
 unset($checks);
-$checks['options'] = $permission_list['holidays'];
+$checks['options'] = $available_permissions['holidays'];
 $checks['category'] = 'Holidays';
 $this->load->view('permissions/list-checks', $checks);
 
 unset($checks);
-$checks['options'] = $permission_list['terms'];
+$checks['options'] = $available_permissions['terms'];
 $checks['category'] = 'Term dates';
 $this->load->view('permissions/list-checks', $checks);
 
 unset($checks);
-$checks['options'] = $permission_list['departments'];
+$checks['options'] = $available_permissions['departments'];
 $checks['category'] = 'Departments';
 $this->load->view('permissions/list-checks', $checks);
 
 unset($checks);
-$checks['options'] = $permission_list['reports'];
+$checks['options'] = $available_permissions['reports'];
 $checks['category'] = 'Reporting';
 $this->load->view('permissions/list-checks', $checks);
 
 unset($checks);
-$checks['options'] = $permission_list['users'];
+$checks['options'] = $available_permissions['users'];
 $checks['category'] = 'Users';
 $this->load->view('permissions/list-checks', $checks);
 
 unset($checks);
-$checks['options'] = $permission_list['groups'];
+$checks['options'] = $available_permissions['groups'];
 $checks['category'] = 'Groups';
 $this->load->view('permissions/list-checks', $checks);
 ?>
+
+
+<script type="text/javascript">
+_jsQ.push(function(){
+	
+	$("label.tristate").cbtristate();
+
+	// Toggle all
+	$("h6.toggle").css("cursor", "pointer").click(function(){
+		$(this).closest("div").next("div.columns").find("label.tristate img").trigger("click");
+		return false;
+	});
+	
+});
+</script>

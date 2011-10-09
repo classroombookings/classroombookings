@@ -98,6 +98,19 @@ class Permissions_model extends CI_Model
 	
 	
 	/**
+	 * Get a list of all the defined permissions
+	 */
+	function get_list()
+	{
+		$query = $this->db->get('v_permissions_list');
+		$permissions_list = $query->result();
+		return $permissions_list;
+	}
+	
+	
+	
+	
+	/**
 	 * Check if a permission entry exists
 	 */
 	// TODO: Code it up.
