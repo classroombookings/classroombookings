@@ -98,6 +98,35 @@ class Permissions_model extends CI_Model
 	
 	
 	/**
+	 * Get all the permission values for a given ID
+	 */
+	function get_values($permission_id)
+	{
+		$sql = 'SELECT name, value FROM permissions WHERE permission_id = ?';
+		$query = $this->db->query($sql, array($permission_id));
+		
+		$vals = array();
+		
+		if ($query->num_rows() > 0)
+		{
+			$items = $query->result();
+			foreach ($items as $item)
+			{
+				$vals[$item->name] = $item->value;
+			}
+			return $vals;
+		}
+		else
+		{
+			$this->lasterr = "Could not find any entries for permission ID $permission_id";
+			return false;
+		}
+	}
+	
+	
+	
+	
+	/**
 	 * Get a list of all the defined permissions
 	 */
 	function get_list()

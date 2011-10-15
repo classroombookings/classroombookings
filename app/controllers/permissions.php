@@ -32,9 +32,22 @@ class Permissions extends Configure_Controller
 		
 		$body['defined_permissions'] = $this->permissions_model->get_list();
 		$body['available_permissions'] = $this->config->item('permissions');
+		$body['permission_values'] = array();
 		
+		// Loop through the defined permissions
 		foreach ($body['defined_permissions'] as $permission)
 		{
+			// Get the actual values for this permission ID
+			$body['permission_values'][$permission->permission_id] = $this->permissions_model->get_values($permission->permission_id);
+			
+			// Create view data array for this tab
+			$tabview = array();
+			$tabview['id'] = $permission->permission_id;
+			$tabview['defined_permissions'] = $body['defined_permissions'];
+			$tabview['available_permissions'] = $body['available_permissions'];
+			$tabview['permission_values'] = $body['permission_values'][$permission->permission_id];
+			
+			// Work out the nice title for it
 			if ($permission->entity_type == 'E')
 			{
 				$title = 'Everyone';
@@ -43,10 +56,12 @@ class Permissions extends Configure_Controller
 			{
 				$title = sprintf('%s: %s', $permission->entity_type, $permission->entity_name);
 			}
+			
+			// Add a main tab to the page
 			$tabs[] = array(
 				'id' => 'p_' . $permission->permission_id,
 				'title' => $title,
-				'view' => $this->load->view('permissions/list', $body, true),
+				'view' => $this->load->view('permissions/list', $tabview, true),
 			);
 		}
 		
@@ -55,7 +70,8 @@ class Permissions extends Configure_Controller
 		
 		$data['title'] = 'Permissions';
 		$data['submenu'] = $this->menu_model->permissions();
-		$data['body'] = $this->load->view('parts/tabs', $body, TRUE);
+		$data['body'] = $this->load->view('parts/tabs', $body, true);
+		$data['body'] .= $this->load->view('permissions/index', null, true);
 		
 		$data['js'] = array('js/tristate-checkbox.js');
 		

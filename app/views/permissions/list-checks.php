@@ -18,7 +18,7 @@
 			
 			$replace = array($id, $caption);
 			
-			$str = '<label class="tristate" data-id="%id%">
+			$str = '<label class="tristate" data-id="%id%" data-value="">
 				<span>%caption%</span>
 				</label>';
 			echo str_replace($find, $replace, $str);
