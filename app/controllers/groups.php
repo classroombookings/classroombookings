@@ -100,9 +100,9 @@ class Groups extends Configure_Controller
 		$this->form_validation->set_rules('name', 'Name', 'required|max_length[20]|trim');
 		$this->form_validation->set_rules('description', 'Description', 'max_length[255]|trim');
 		$this->form_validation->set_rules('ldapgroups[]', 'LDAP Groups');
-		$this->form_validation->set_rules('daysahead', 'Booking days ahead', 'max_length[3]|numeric');
+		/* $this->form_validation->set_rules('daysahead', 'Booking days ahead', 'max_length[3]|numeric');
 		$this->form_validation->set_rules('quota_num', 'Quota', 'max_length[5]|numeric');
-		$this->form_validation->set_rules('quota_type', 'Quota type');
+		$this->form_validation->set_rules('quota_type', 'Quota type'); */
 		$this->form_validation->set_error_delimiters('<li>', '</li>');
 
 		if($this->form_validation->run() == FALSE){
@@ -116,9 +116,9 @@ class Groups extends Configure_Controller
 			$data['name'] = $this->input->post('name');
 			$data['description'] = $this->input->post('description');
 			$data['ldapgroups'] = ($this->input->post('ldapgroups')) ? $this->input->post('ldapgroups') : array();
-			$data['bookahead'] = $this->input->post('bookahead');
+			/* $data['bookahead'] = $this->input->post('bookahead');
 			$data['quota_num'] = $this->input->post('quota_num');
-			$data['quota_type'] = $this->input->post('quota_type');
+			$data['quota_type'] = $this->input->post('quota_type'); */
 			
 			if($data['quota_type'] == 'unlimited'){
 				$data['quota_type'] = NULL;

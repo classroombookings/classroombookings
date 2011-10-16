@@ -111,7 +111,10 @@ $t = 1;
 
 <div id="permissions" class="hidden">
 
-<?php $this->load->view('permissions/list', null); ?>
+<?php $this->load->view('permissions/list', array(
+	'id' => null,
+	'permission_values' => array()
+)); ?>
 
 </div>
 

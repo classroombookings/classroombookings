@@ -26,6 +26,25 @@ class Permissions_model extends CI_Model
 	
 	
 	
+	function get_roles()
+	{
+		$this->db->order_by('weight', 'asc');
+		$this->db->order_by('name', 'asc');
+		$query = $this->db->get('roles');
+		if ($query->num_rows() > 0)
+		{
+			return $query->result();
+		}
+		else
+		{
+			$this->lasterr = 'No roles defined';
+			return false;
+		}
+	}
+	
+	
+	
+	
 	/**
 	 * Add a new permission entry
 	 */
@@ -100,7 +119,7 @@ class Permissions_model extends CI_Model
 	/**
 	 * Get all the permission values for a given ID
 	 */
-	function get_values($permission_id)
+	/* function get_values($permission_id)
 	{
 		$sql = 'SELECT name, value FROM permissions WHERE permission_id = ?';
 		$query = $this->db->query($sql, array($permission_id));
@@ -122,19 +141,20 @@ class Permissions_model extends CI_Model
 			return false;
 		}
 	}
-	
+	*/
 	
 	
 	
 	/**
 	 * Get a list of all the defined permissions
 	 */
-	function get_list()
+	/*function get_list()
 	{
 		$query = $this->db->get('v_permissions_list');
 		$permissions_list = $query->result();
 		return $permissions_list;
 	}
+	*/
 	
 	
 	
@@ -143,14 +163,15 @@ class Permissions_model extends CI_Model
 	 * Check if a permission entry exists
 	 */
 	// TODO: Code it up.
-	function exists($permission_id)
+	/*function exists($permission_id)
 	{
 		return false;
 	}
+	*/
 	
 	
 	
-	
+	/*
 	function entity_name($entity_type)
 	{
 		$types['E'] = 'Everyone';
@@ -166,7 +187,7 @@ class Permissions_model extends CI_Model
 			return false;
 		}
 	}
-	
+	*/
 	
 	
 	

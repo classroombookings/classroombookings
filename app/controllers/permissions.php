@@ -24,57 +24,69 @@ class Permissions extends Configure_Controller
 	
 	
 	/**
-	 * PAGE: Main permission page
+	 * PAGE: Main roles & permission page
 	 */
 	function index()
 	{
 		$this->auth->check('permissions');
 		
-		$body['defined_permissions'] = $this->permissions_model->get_list();
-		$body['available_permissions'] = $this->config->item('permissions');
-		$body['permission_values'] = array();
+		$tabs = array();
 		
-		// Loop through the defined permissions
-		foreach ($body['defined_permissions'] as $permission)
-		{
-			// Get the actual values for this permission ID
-			$body['permission_values'][$permission->permission_id] = $this->permissions_model->get_values($permission->permission_id);
-			
-			// Create view data array for this tab
-			$tabview = array();
-			$tabview['id'] = $permission->permission_id;
-			$tabview['defined_permissions'] = $body['defined_permissions'];
-			$tabview['available_permissions'] = $body['available_permissions'];
-			$tabview['permission_values'] = $body['permission_values'][$permission->permission_id];
-			
-			// Work out the nice title for it
-			if ($permission->entity_type == 'E')
-			{
-				$title = 'Everyone';
-			}
-			else
-			{
-				$title = sprintf('%s: %s', $permission->entity_type, $permission->entity_name);
-			}
-			
-			// Add a main tab to the page
-			$tabs[] = array(
-				'id' => 'p_' . $permission->permission_id,
-				'title' => $title,
-				'view' => $this->load->view('permissions/list', $tabview, true),
-			);
-		}
+		$roles_data['roles'] = $this->permissions_model->get_roles();
+		
+		$tabs[] = array(
+			'id' => 'roles',
+			'title' => 'Roles',
+			'view' => $this->load->view('permissions/tab_roles_index', $roles_data, true),
+		);
+		
+		$tabs[] = array(
+			'id' => 'role_assignments',
+			'title' => 'Role Assignments',
+			'view' => ''
+		);
+		
+		$tabs[] = array(
+			'id' => 'permissions',
+			'title' => 'Permissions',
+			'view' => '',
+		);
 		
 		$body['tabs'] = $tabs;
-		$body['active_tab'] = 'p_E';
+		$body['active_tab'] = 'roles';
 		
-		$data['title'] = 'Permissions';
+		$data['title'] = 'Roles &amp; Permissions';
 		$data['submenu'] = $this->menu_model->permissions();
 		$data['body'] = $this->load->view('parts/tabs', $body, true);
-		$data['body'] .= $this->load->view('permissions/index', null, true);
+		
+		//$data['body'] .= $this->load->view('permissions/index', null, true);
 		
 		$data['js'] = array('js/tristate-checkbox.js');
 		
+		$this->page($data);
+	}
+	
+	
+	
+	
+	/*
+	 * Roles
+	 * =====
+	 */
+	
+	
+	
+	
+	/**
+	 * PAGE: Add a new role
+	 */
+	function add_role()
+	{
+		$this->auth->check('permissions');
+		$body['role'] = null;
+		$body['role_id'] = null;
+		$data['title'] = 'Add role';
+		$data['body'] = $this->load->view('permissions/role_addedit', $body, true);
 		$this->page($data);
 	}
 	
@@ -111,7 +123,7 @@ class Permissions extends Configure_Controller
 	/**
 	 * Save the submitted permissions
 	 */
-	function save()
+	function save_one()
 	{
 		$this->auth->check('permissions');
 		

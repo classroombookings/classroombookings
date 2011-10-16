@@ -9,6 +9,11 @@ $.fn.cbtristate = function(settings) {
 	
 	if (settings) $.extend(config, settings);
 	
+	var reverse_config = {};
+	$.each(config, function(k){
+		reverse_config[this.val] = k;
+	});
+	
 	
 	$(this).delegate("span,img", "click", function(e){
 		// Get parent label
@@ -42,19 +47,23 @@ $.fn.cbtristate = function(settings) {
 		// Eventually becomes input name
 		var id = $(this).data("id");
 		
+		// Get the initial value to set
+		var initial_value = $(this).data("value");
+		var config_key = reverse_config[initial_value];
+		
 		// Make a container for image + form element
 		var container = $("<span>");
 		
 		// Make image for checkbox and append to container
 		var img = $("<img>");
-		img.attr("src", config.empty.img);
+		img.attr("src", config[config_key].img);
 		img.appendTo(container);
 		
 		// Make a hidden form element and append to container
 		var formel = $("<input>", {
 			type: "hidden",
 			name: id,
-			value: config.empty.val
+			value: config[config_key].val
 		}).appendTo(container);
 		
 		// prepend the generated checkbox+form element container to the main parent label element

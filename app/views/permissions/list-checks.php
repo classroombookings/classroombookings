@@ -7,7 +7,7 @@
 	<fieldset class="tristates">
 		
 		<?php
-		$find = array('%id%', '%caption%');
+		$find = array('%id%', '%caption%', '%val%');
 		
 		foreach($options as $opt){
 		
@@ -16,9 +16,11 @@
 			$caption = $opt[1];
 			$hint = @$opt[2];
 			
-			$replace = array($id, $caption);
+			$val = $values[str_replace(".", "_", $opt[0])];
 			
-			$str = '<label class="tristate" data-id="%id%" data-value="">
+			$replace = array($id, $caption, $val);
+			
+			$str = '<label class="tristate" data-id="%id%" data-value="%val%">
 				<span>%caption%</span>
 				</label>';
 			echo str_replace($find, $replace, $str);

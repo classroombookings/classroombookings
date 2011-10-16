@@ -6,7 +6,7 @@
 	<?php
 	unset($input);
 	$input['name'] = 'permissions[quota_concurrent]';
-	$input['id'] = sprintf('p_%d_quota_concurrent', $id);
+	$input['id'] = sprintf('p_%s_quota_concurrent', $id);
 	$input['size'] = '5';
 	$input['maxlength'] = '5';
 	$input['autocomplete'] = 'off';
@@ -18,7 +18,7 @@
 	<?php
 	unset($input);
 	$input['name'] = 'permissions[quota_weekly]';
-	$input['id'] = sprintf('p_%d_quota_weekly', $id);
+	$input['id'] = sprintf('p_%s_quota_weekly', $id);
 	$input['size'] = '5';
 	$input['maxlength'] = '5';
 	$input['autocomplete'] = 'off';
@@ -32,7 +32,7 @@
 	<?php
 	unset($input);
 	$input['name'] = 'permissions[booking_advance]';
-	$input['id'] = sprintf('p_%d_booking_advance', $id);
+	$input['id'] = sprintf('p_%s_booking_advance', $id);
 	$input['size'] = '5';
 	$input['maxlength'] = '5';
 	$input['autocomplete'] = 'off';
@@ -44,7 +44,7 @@
 	<?php
 	unset($input);
 	$input['name'] = 'permissions[booking_future]';
-	$input['id'] = sprintf('p_%d_booking_future', $id);
+	$input['id'] = sprintf('p_%s_booking_future', $id);
 	$input['size'] = '5';
 	$input['maxlength'] = '5';
 	$input['autocomplete'] = 'off';

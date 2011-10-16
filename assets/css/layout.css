@@ -206,6 +206,8 @@ p.success{ background: #ABE673;	/*#77BF30;*/ }
 
 .i.add { background-image: url(../img/ico/add.png); }
 
+.i.assign { background-image: url(../img/ico/assign.png); }
+
 .i.upload { background-image: url(../img/ico/upload.png); }
 
 .i.tick { background-image: url(../img/ico/tick.png); }

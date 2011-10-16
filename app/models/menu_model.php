@@ -102,7 +102,8 @@ class Menu_model extends CI_Model
 	function permissions()
 	{
 		$subnav = array();
-		$subnav[] = array('permissions/add', 'Add new permission', 'permissions', 'add');
+		$subnav[] = array('permissions/add_role', 'Add new role', 'permissions', 'add');
+		$subnav[] = array('permissions/assign_role', 'Assign role', 'permissions', 'assign');
 		return $subnav;
 	}
 	

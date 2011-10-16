@@ -73,7 +73,7 @@
 			
 			<td>
 				<?php
-				if ($user->quota_type == NULL)
+				/* if ($user->quota_type == NULL)
 				{
 					$text = '(Unlimited)';
 				}
@@ -88,7 +88,7 @@
 					}
 					$text = sprintf($q, $user->quota_num);
 				}
-				echo "$text";
+				echo "$text"; */
 				?>
 			</td>
 			
