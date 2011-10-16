@@ -45,6 +45,43 @@ class Permissions_model extends CI_Model
 	
 	
 	
+	function add_role($data = array())
+	{
+		if (empty($data))
+		{
+			$this->lasterr = 'Empty data';
+			return false;
+		}
+		
+		// Get weight for new role
+		$data['weight'] = $this->get_role_weight('max') + 1;
+		
+		return $this->db->insert('roles', $data);
+	}
+	
+	
+	
+	
+	function get_role_weight($which = 'max')
+	{
+		$sql['max'] = 'SELECT MAX(weight) AS weight FROM roles';
+		$sql['min'] = 'SELECT MIN(weight) AS weight FROM roles';
+		
+		if (!array_key_exists($which, $sql))
+		{
+			return false;
+		}
+		
+		$sql_to_run = $sql[$which];
+		
+		$query = $this->db->query($sql_to_run);
+		$row = $query->row();
+		return (int) $row->weight;
+	}
+	
+	
+	
+	
 	/**
 	 * Add a new permission entry
 	 */

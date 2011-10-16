@@ -334,6 +334,9 @@ table.list2 tbody tr:hover td {
 table.list2.middle td { vertical-align: middle; line-height: 100%; }
 
 
+td.one.icon { width: 20px; text-align: center; vertical-align: middle; }
+
+
 
 span.digit { font-size: 110%; font-weight: bold; }
 span.digit.green { color: darkgreen; }

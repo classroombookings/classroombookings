@@ -33,6 +33,8 @@ class Permissions extends Configure_Controller
 		$tabs = array();
 		
 		$roles_data['roles'] = $this->permissions_model->get_roles();
+		$roles_data['weights']['max'] = $this->permissions_model->get_role_weight('max');
+		$roles_data['weights']['min'] = $this->permissions_model->get_role_weight('min');
 		
 		$tabs[] = array(
 			'id' => 'roles',
@@ -80,14 +82,56 @@ class Permissions extends Configure_Controller
 	/**
 	 * PAGE: Add a new role
 	 */
-	function add_role()
+	function save_role()
 	{
-		$this->auth->check('permissions');
-		$body['role'] = null;
-		$body['role_id'] = null;
-		$data['title'] = 'Add role';
-		$data['body'] = $this->load->view('permissions/role_addedit', $body, true);
-		$this->page($data);
+		$role_id = $this->input->post('role_id');
+
+		$this->form_validation->set_rules('role_id', 'Role ID');
+		$this->form_validation->set_rules('name', 'Name', 'required|max_length[20]|trim');
+		$this->form_validation->set_rules('weight', 'Weight', 'numeric');
+		$this->form_validation->set_error_delimiters('<li>', '</li>');
+
+		if ($this->form_validation->run() == false)
+		{
+			// Validation failed - load required action depending on the state of user_id
+			return $this->index();
+		}
+		else
+		{
+			// Validation OK
+			$data['name'] = $this->input->post('name');
+
+			if ($role_id == null)
+			{
+				$add = $this->permissions_model->add_role($data);
+				if ($add == true)
+				{
+					$this->msg->add('info', 'The role has been added.');
+				}
+				else
+				{
+					$this->msg->add('err', 'Could not add the role: ' . $this->permissions_model->lasterr);
+				}
+			}
+			else
+			{
+				// Updating existing role
+				$edit = $this->permissions_model->edit_role($role_id, $data);
+				if ($edit == true)
+				{
+					$this->msg->add('info', 'The role has been updated.');
+				}
+				else
+				{
+					$this->msg->add('err', 'Could not update the role: ' . $this->permissions_model->lasterr);
+				}
+			}
+
+			// All done, redirect!
+			redirect('permissions');
+
+		}
+
 	}
 	
 	

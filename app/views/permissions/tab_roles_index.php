@@ -1,27 +1,34 @@
-<?php if (!empty($roles)): ?>
-
 <table class="list2 middle" summary="Role list" id="roles">
 
 	<thead>
 		<tr>
+			<th scope="col" colspan="2">Move</th>
 			<th scope="col">Role name</th>
-			<th scope="col">Description</th>
 			<th scope="col">Actions</th>
 		</tr>
 	</thead>
 	
 	<tbody>
 	
+		<?php if (!empty($roles)): ?>
+	
 		<?php foreach ($roles as $role): ?>
+		
+		<td class="one icon">
+			<?php if ($role->weight > $weights['min']): ?>
+				<img src="img/ico/arrup.png">
+			<?php endif; ?>
+		</td>
+		<td class="one icon">
+			<?php if ($role->weight < $weights['max']): ?>
+				<img src="img/ico/arrdown.png">
+			<?php endif; ?>
+		</td>
 		
 		<td class="title">
 			<?php
-			echo anchor('permissions/edit_role/' . $role->role_id, $role->name . " ", 'rel="edit" class="' . $title . '"');
+			echo $role->name;
 			?>
-		</td>
-		
-		<td width="100" align="left">
-			<?php echo $role->description; ?>&nbsp;
 		</td>
 		
 		<td class="actions">
@@ -35,12 +42,33 @@
 	
 	<?php endforeach; ?>
 	
+	<?php endif; ?>
+	
+	<?php echo form_open('permissions/save_role') ?>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>
+			<?php
+			unset($input);
+			$input['accesskey'] = 'N';
+			$input['name'] = 'name';
+			$input['id'] = 'name';
+			$input['size'] = '30';
+			$input['maxlength'] = '20';
+			$input['autocomplete'] = 'off';
+			$input['class'] = 'remove-bottom';
+			$input['value'] = @set_value($input['name'], $group->name);
+			echo form_input($input);
+			?>
+		</td>
+		<td class="actions">
+			<input type="submit" value="Add role" class="small blue button">
+		</td>
+	</tr>
+	</form>
+	
+	
 	</tbody>
 	
 </table>
-
-<?php else: ?>
-
-	<p>No roles defined!</p>
-	
-<?php endif; ?>
