@@ -137,9 +137,71 @@ class Permissions extends Configure_Controller
 	
 	
 	
+	function delete_role($role_id = null)
+	{
+		$this->auth->check('permissions');
+		
+		// Check if a form has been submitted; if not - show it to ask user confirmation
+		if ($this->input->post('id'))
+		{
+			// Form has been submitted (so the POST value exists)
+			// Call model function to delete user
+			$delete = $this->permissions_model->delete_role($this->input->post('id'));
+			if ($delete == false)
+			{
+				$this->msg->add('err', $this->permissions_model->lasterr, 'An error occured');
+			}
+			else
+			{
+				$this->msg->add('notice', 'The role has been deleted.');
+			}
+			// Redirect
+			redirect('permissions');
+		}
+		else
+		{
+			// TODO: Add a check to make sure that specific roles aren't being deleted
+
+			if ($role_id == null)
+			{
+				$data['title'] = 'Delete role';
+				$data['body'] = $this->msg->err('Cannot find the role or no role ID supplied.');
+			}
+			else
+			{
+				// Get role info so we can present the confirmation page with a name
+				$role = $this->permissions_model->get_role($role_id);
+				if ($role == false)
+				{
+					$data['title'] = 'Delete role';
+					$data['body'] = $this->msg->err('Could not find that role or no role ID given.');
+				}
+				else
+				{
+					// Initialise page
+					$body['action'] = 'permissions/delete_role';
+					$body['id'] = $role_id;
+					$body['cancel'] = 'permissions';
+					$body['text'] = 'If you delete this role, all users it would be applied to will have it removed.';
+					$body['title'] = 'Are you sure you want to delete the role ' . $role->name . '?';
+					$data['title'] = 'Delete ' . $role->name;
+					$data['body'] = $this->load->view('parts/deleteconfirm', $body, true);
+				}	// if role == false-else
+			}	// if role_id == null-else
+			
+			$this->page($data);
+			
+		}	// if post(id) else
+		
+	}	// endfunction
+	
+	
+	
+	
 	/**
 	 * PAGE: Add a new permission entry
 	 */
+	 /*
 	function add()
 	{
 		$this->auth->check('permissions');
@@ -160,13 +222,14 @@ class Permissions extends Configure_Controller
 		$data['body'] = $this->load->view('permissions/add', $body, true);
 		$this->page($data);
 	}
-	
+	*/
 	
 	
 	
 	/**
 	 * Save the submitted permissions
 	 */
+	 /*
 	function save_one()
 	{
 		$this->auth->check('permissions');
@@ -235,6 +298,7 @@ class Permissions extends Configure_Controller
 		}
 		
 	}
+	*/
 	
 	
 	

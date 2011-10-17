@@ -45,6 +45,24 @@ class Permissions_model extends CI_Model
 	
 	
 	
+	function get_role($role_id = null)
+	{
+		if (!$role_id) return false;
+		$sql = 'SELECT * FROM roles WHERE role_id = ? LIMIT 1';
+		$query = $this->db->query($sql, array($role_id));
+		if ($query->num_rows() == 1)
+		{
+			return $query->row();
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	
+	
+	
 	function add_role($data = array())
 	{
 		if (empty($data))
@@ -77,6 +95,19 @@ class Permissions_model extends CI_Model
 		$query = $this->db->query($sql_to_run);
 		$row = $query->row();
 		return (int) $row->weight;
+	}
+	
+	
+	
+	
+	function delete_role($role_id = null)
+	{
+		if (!$role_id) return false;
+		
+		$sql = 'DELETE FROM roles WHERE role_id = ? LIMIT 1';
+		$query = $this->db->query($sql, array($role_id));
+		
+		return ($this->db->affected_rows() == 1);
 	}
 	
 	
