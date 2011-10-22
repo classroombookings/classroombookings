@@ -1,3 +1,17 @@
+<?php
+$errors = validation_errors();
+if ($errors)
+{
+	echo '<div class="row">';
+	echo $this->msg->err('<ul class="square">' . $errors . '</ul>', 'Please check the following invalid item(s) and try again.');
+	echo '</div>';
+}
+?>
+
+
+
+<!-- Main listing of roles -->
+
 <table class="list2 middle" summary="Role list" id="roles">
 
 	<thead>
@@ -78,15 +92,15 @@
 
 
 
+
+<!-- Dialog box for assigning a role -->
+
 <div class="hidden dialog" id="assign-role">
 	
 	<h2>Assign role</h2>
 	
 	<?php
 	echo form_open('permissions/assign_role');
-	array_unshift($users, "Choose...");
-	array_unshift($groups, "Choose...");
-	array_unshift($departments, "Choose...");
 	?>
 	
 	<input type="hidden" name="role_id" value="">
@@ -157,8 +171,11 @@
 
 
 
+
 <script>
 _jsQ.push(function(){
+	
+	// Attach overlay trigger to assign buttons
 	var triggers = $("button.assign").overlay({
 		closeOnClick: true,
 		closeOnEsc: true,
@@ -176,6 +193,7 @@ _jsQ.push(function(){
 		}
 	});
 	
+	// Change dropdown box when selecting type
 	$("input[name='entity_type']").change(function(){
 		var type = $(this).val();
 		var options = $("div#entity_type_" + type);
@@ -183,7 +201,6 @@ _jsQ.push(function(){
 		others.hide();
 		options.css("display", "block").show();
 	});
-
 	
 });
 </script>

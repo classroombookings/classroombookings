@@ -218,6 +218,7 @@ p.success{ background: #ABE673;	/*#77BF30;*/ }
 .i.configure-users{ background-image: url(../img/ico/users.png); }
 .i.configure-groups{ background-image: url(../img/ico/groups.png); }
 .i.configure-permissions{ background-image: url(../img/ico/permissions.png); }
+.i.configure-quota{ background-image: url(../img/ico/quota.png); }
 .i.configure-departments{ background-image: url(../img/ico/departments.png); }
 .i.configure-rooms{ background-image: url(../img/ico/rooms.png); }
 .i.configure-years{ background-image: url(../img/ico/years.png); }

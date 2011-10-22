@@ -203,6 +203,72 @@ class Permissions extends Configure_Controller
 	
 	
 	/**
+	 * Assign role
+	 */
+	function assign_role()
+	{
+		$this->auth->check('permissions');
+		
+		$role_id = $this->input->post('role_id');
+		$entity_type = $this->input->post('entity_type');
+		$entity_id = null;
+		
+		$this->form_validation->set_rules('role_id', 'Role', 'required|integer|is_natural_no_zero');
+		$this->form_validation->set_rules('entity_type', 'Entity type', 'exact_length[1]');
+		
+		// Validation for all entity IDs
+		$valid_id = 'required|integer|is_natural_no_zero';
+		
+		// Add a rule depending on chosen entity type
+		switch($entity_type)
+		{
+			case 'D':
+				$this->form_validation->set_rules('department_id', 'Department', $valid_id);
+				$entity_id = $this->input->post('department_id');
+				$department = $this->departments_model->get($entity_id);
+				$entity_type_name = 'department';
+				$entity_name = $department->name;
+				break;
+			case 'G':
+				$this->form_validation->set_rules('group_id', 'Group', $valid_id);
+				$entity_id = $this->input->post('group_id');
+				$group = $this->security_model->get_group($entity_id);
+				$entity_type_name = 'group';
+				$entity_name = $group->name;
+				break;
+			case 'U':
+				$this->form_validation->set_rules('user_id', 'User', $valid_id);
+				$entity_id = $this->input->post('user_id');
+				$user = $this->security_model->get_user($entity_id);
+				$entity_type_name = 'user';
+				$entity_name = $user->displayname;
+				break;
+		}
+
+		$this->form_validation->set_error_delimiters('<li>', '</li>');
+		
+		// Validate form
+		if ($this->form_validation->run() == false)
+		{
+			// Validation failed - load required action depending on the state of user_id
+			return $this->index();
+		}
+		else
+		{
+			$role = $this->permissions_model->get_role($role_id);
+			
+			$assign = $this->permissions_model->assign_role($role_id, $entity_type, $entity_id);
+			$this->msg->add('notice', sprintf('The %s role has been assigned to %s %s.',
+				$role->name, $entity_type_name, $entity_name));
+			redirect('permissions');
+		}
+		
+	}
+	
+	
+	
+	
+	/**
 	 * PAGE: Add a new permission entry
 	 */
 	 /*

@@ -56,6 +56,7 @@ class Menu_model extends CI_Model
 		$subnav[] = array('users', lang('USERS'), 'users', 'configure-users');
 		$subnav[] = array('groups', lang('GROUPS'), 'groups', 'configure-groups');
 		$subnav[] = array('permissions', lang('PERMISSIONS'), 'permissions', 'configure-permissions');
+		$subnav[] = array('quota', 'Quota', 'permissions', 'configure-quota');
 		$subnav[] = array('departments', lang('DEPARTMENTS'), 'departments', 'configure-departments');
 		$subnav[] = array('rooms/manage', lang('ROOMS'), 'rooms', 'configure-rooms');
 		$subnav[] = array('academic/years', lang('ACADEMIC_YEARS'), 'years', 'configure-years');

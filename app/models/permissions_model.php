@@ -114,9 +114,42 @@ class Permissions_model extends CI_Model
 	
 	
 	/**
+	 * Assign an existing role to a user, group or department
+	 */
+	function assign_role($role_id = null, $entity_type = null, $entity_id = null)
+	{
+		if (!$role_id) return false;
+		if (!$entity_type) return false;
+		if (!$entity_id) return false;
+		
+		$msg = "Assigning role ID $role_id to $entity_type ID $entity_id.";
+		log_message('debug', $msg);
+		
+		$table = null;
+		
+		switch ($entity_type)
+		{
+			case 'U': $table = 'roles2users'; break;
+			case 'G': $table = 'roles2groups'; break;
+			case 'D': $table = 'roles2departments'; break;
+		}
+		
+		if (!$table) return false;
+		
+		$sql = "INSERT INTO $table VALUES (?, ?) 
+				ON DUPLICATE KEY UPDATE role_id = ?";
+		$query = $this->db->query($sql, array($role_id, $entity_id, $role_id));
+		
+		return $query;
+	}
+	
+	
+	
+	
+	/**
 	 * Add a new permission entry
 	 */
-	function add($data)
+	/* function add($data)
 	{
 		// Ensure it's uppercase
 		$data['entity_type'] = strtoupper($data['entity_type']);
@@ -179,7 +212,7 @@ class Permissions_model extends CI_Model
 		
 		return $ret;
 		
-	}
+	} */
 	
 	
 	
