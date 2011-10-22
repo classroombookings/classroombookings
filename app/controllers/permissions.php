@@ -35,6 +35,10 @@ class Permissions extends Configure_Controller
 		$roles_data['roles'] = $this->permissions_model->get_roles();
 		$roles_data['weights']['max'] = $this->permissions_model->get_role_weight('max');
 		$roles_data['weights']['min'] = $this->permissions_model->get_role_weight('min');
+		// Get lists of stuff we need for adding a role
+		$roles_data['groups'] = $this->security_model->get_groups_dropdown();
+		$roles_data['departments'] = $this->departments_model->get_dropdown();
+		$roles_data['users'] = $this->security_model->get_users_dropdown();
 		
 		$tabs[] = array(
 			'id' => 'roles',
@@ -58,7 +62,7 @@ class Permissions extends Configure_Controller
 		$body['active_tab'] = 'roles';
 		
 		$data['title'] = 'Roles &amp; Permissions';
-		$data['submenu'] = $this->menu_model->permissions();
+		//$data['submenu'] = $this->menu_model->permissions();
 		$data['body'] = $this->load->view('parts/tabs', $body, true);
 		
 		//$data['body'] .= $this->load->view('permissions/index', null, true);

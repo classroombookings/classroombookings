@@ -399,3 +399,29 @@ fieldset.tristates label { margin-bottom: 7px; }
 .button.large { font-size: 125%; padding: 7px 12px; }
 .button.large:hover { background-position: 0 -35px; }
 .button.large:active { padding: 8px 12px 6px; background-position: 0 top; }
+
+
+
+
+
+.dialog {
+	background-color: #fff;
+	display: none;
+	width: 380px;
+	padding: 10px;
+	text-align: left;
+	border: 4px solid #999;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	-moz-box-shadow: 0 0 50px #999;
+	-webkit-box-shadow: 0 0 50px #999;
+}
+
+.dialog h2 {
+	margin: 0 0 20px 0;
+	padding: 0 0 5px 0;
+	border-bottom: 1px solid #ccc;
+	font-size: 22px;
+	font-weight: normal;
+	line-height: 150%;
+}

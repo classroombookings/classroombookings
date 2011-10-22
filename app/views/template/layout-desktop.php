@@ -199,12 +199,8 @@ var $loader = $LAB
 		UseLocalXHR: false,
 		UseCachePreload: false})
 	.script("js/jquery-1.6.2.min.js")
-	.script("3rdparty/boxy-0.1.4/javascripts/jquery.boxy.js")
-	.script("3rdparty/tipsy-0.1.7/javascripts/jquery.tipsy.js")
-	.script("3rdparty/date_input/jquery.date_input.js")
 	.script("js/syronex-colorpicker-mod.js")
-	/*.script("js/jquery.cookie.js")
-	.script("js/ajax.js")*/
+	.script("js/jquery.tools.min.js")
 	.script(extras).wait(function(){
 		if (typeof(window['_jsQ']) != "undefined") {
 			for (var i=0, len =_jsQ.length; i<len; i++) {
