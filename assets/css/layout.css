@@ -303,6 +303,26 @@ table.list tr.hover td { background: #fffed0; cursor: pointer; }
 
 
 
+table.grid.permissions tr.section-header td {
+	border-bottom: 2px solid #E2E5EE;
+}
+table.grid.permissions tr.section-header td.section-name {
+	font-weight: bold;
+	font-size: 120%;
+}
+table.grid.permissions tr.section-header td.role-name {
+	text-align: center;
+}
+table.grid.permissions tr.permission-row td { border-bottom: 1px solid #E2E5EE; font-size: 90%; }
+table.grid.permissions tr td { padding: 5px; }
+table.grid.permissions tr td.check { text-align: center; }
+
+td.zc1 { background: #fff; }
+td.zc0 { background: #F8F8F8; }
+
+
+
+
 table.list2 {
 	background: #fff;
 	border-collapse: collapse;

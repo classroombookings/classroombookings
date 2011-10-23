@@ -147,6 +147,34 @@ class Permissions_model extends CI_Model
 	
 	
 	/**
+	 * List all the available permissions in the DB ordered by name
+	 *
+	 * @param string format	Desired array format for returned values
+	 * @return array
+	 */
+	function get_available_permissions($format = 'ids')
+	{
+		$sql = 'SELECT * FROM permissions ORDER BY name ASC';
+		$query = $this->db->query($sql);
+		$res = $query->result();
+		
+		$_ids = array();
+		$_sections = array();
+		
+		foreach ($res as $p)
+		{
+			$parts = explode(".", $p->name);
+			$_sections[$parts[0]][$p->permission_id] = $p->name;
+			$_ids[$p->permission_id] = $p->name;
+		}
+		
+		return ($format == 'sections') ? $_sections : $_ids;
+	}
+	
+	
+	
+	
+	/**
 	 * Add a new permission entry
 	 */
 	/* function add($data)

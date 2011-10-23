@@ -30,6 +30,8 @@ class Permissions extends Configure_Controller
 	{
 		$this->auth->check('permissions');
 		
+		$this->load->helper('text_helper');
+		
 		$tabs = array();
 		
 		$roles_data['roles'] = $this->permissions_model->get_roles();
@@ -39,6 +41,9 @@ class Permissions extends Configure_Controller
 		$roles_data['groups'] = $this->security_model->get_groups_dropdown();
 		$roles_data['departments'] = $this->departments_model->get_dropdown();
 		$roles_data['users'] = $this->security_model->get_users_dropdown();
+		
+		$perms_data['available_perms'] = $this->permissions_model->get_available_permissions('sections');
+		$perms_data['roles'] = $roles_data['roles'];
 		
 		$tabs[] = array(
 			'id' => 'roles',
@@ -55,7 +60,7 @@ class Permissions extends Configure_Controller
 		$tabs[] = array(
 			'id' => 'permissions',
 			'title' => 'Permissions',
-			'view' => '',
+			'view' => $this->load->view('permissions/tab_permissions', $perms_data, true),
 		);
 		
 		$body['tabs'] = $tabs;
@@ -141,6 +146,9 @@ class Permissions extends Configure_Controller
 	
 	
 	
+	/**
+	 * Delete a role
+	 */
 	function delete_role($role_id = null)
 	{
 		$this->auth->check('permissions');
@@ -203,7 +211,7 @@ class Permissions extends Configure_Controller
 	
 	
 	/**
-	 * Assign role
+	 * Form destination: Assign a role to something
 	 */
 	function assign_role()
 	{
@@ -268,49 +276,11 @@ class Permissions extends Configure_Controller
 	
 	
 	
-	function move_role($direction = null, $role_id = null)
-	{
-		if (!$role_id) redirect('permissions');
-		
-		$role = $this->permissions_model->get_role($role_id);
-		
-		if (!$role) redirect('permissions');
-		
-		/*
-		mysql_query("UPDATE menu SET menu_order = '$page_order' +1 WHERE id != '$menu_id' AND menu_order < '$page_order'");
-		mysql_query("UPDATE menu SET menu_order = menu_order -1 WHERE id = '$menu_id'");    
-	
-	
-		} else if ($_GET['do'] == 'down') {
-	
-		mysql_query("UPDATE menu SET menu_order = '$page_order' -1 WHERE id != '$menu_id'");
-		mysql_query("UPDATE menu SET menu_order = menu_order +1 WHERE id = '$menu_id'");    
-	
-		*/
-		
-		$from = $role->weight;
-		
-		if ($direction == 'up')
-		{
-			$to = $from - 1;
-		}
-		elseif ($direction == 'down')
-		{
-			$to = $from + 1;
-		}
-		
-		$sql = 'UPDATE roles SET weight = weight - 1 
-				WHERE weight > ? AND weight <= ?';
-		$query = $this->db->query($sql, array($from, $to));
-		$sql = 'UPDATE roles SET weight = ? WHERE role_id = ?';
-		$query = $this->db->query($sql, array($to, $role_id));
-		
-		redirect('permissions');
-	}
-	
-	
-	
-	
+	/**
+	 * Save the new order for the roles.
+	 *
+	 * Submitted to via XHR, redirect not required
+	 */
 	function save_role_order()
 	{
 		$role_weights = $this->input->post('role');
