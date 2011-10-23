@@ -24,19 +24,17 @@ if ($errors)
 	
 	<tbody>
 	
-		<?php if (!empty($roles)): ?>
+	<?php if (!empty($roles)): ?>
 	
-		<?php foreach ($roles as $role): ?>
+	<?php foreach ($roles as $role): ?>
 		
-		<td class="one icon">
-			<?php if ($role->weight > $weights['min']): ?>
-				<img src="img/ico/arrup.png">
-			<?php endif; ?>
+	<tr class="role" data-roleid="<?php echo $role->role_id ?>">
+		
+		<td class="one icon up" style="padding:0;">
+			<img src="img/ico/arrup.png" class="move" data-direction="up">
 		</td>
-		<td class="one icon">
-			<?php if ($role->weight < $weights['max']): ?>
-				<img src="img/ico/arrdown.png">
-			<?php endif; ?>
+		<td class="one icon down" style="padding:0;">
+			<img src="img/ico/arrdown.png" class="move" data-direction="down">
 		</td>
 		
 		<td class="title">
@@ -60,6 +58,7 @@ if ($errors)
 	<?php endforeach; ?>
 	
 	<?php endif; ?>
+	
 	
 	<?php echo form_open('permissions/save_role') ?>
 	<tr>
@@ -89,6 +88,16 @@ if ($errors)
 	</tbody>
 	
 </table>
+
+
+
+<?php
+echo form_open('permissions/save_role_order', array('name' => 'role_order'));
+foreach ($roles as $role){
+	echo form_hidden("role[{$role->role_id}]", $role->weight);
+}
+echo form_close();
+?>
 
 
 
@@ -175,6 +184,9 @@ if ($errors)
 <script>
 _jsQ.push(function(){
 	
+	$("table#roles tr.role:first td.up img").hide();
+	$("table#roles tr.role:last td.down img").hide();
+	
 	// Attach overlay trigger to assign buttons
 	var triggers = $("button.assign").overlay({
 		closeOnClick: true,
@@ -201,6 +213,38 @@ _jsQ.push(function(){
 		others.hide();
 		options.css("display", "block").show();
 	});
+	
+	$("img.move").click(function(){
+		// Get direction to move in
+		var direction = $(this).data("direction");
+		// Get the row that is being moved
+		var row = $(this).closest("tr.role");
+		// Move it appropriately
+		if (direction == "up"){
+			row.insertBefore(row.prev());
+		} else {
+			row.insertAfter(row.next());
+		}
+		// Show all move up/down arrow images
+		var tablebody = $(this).closest("tbody");
+		tablebody.find("tr.role img.move").show();
+		// But hide the relevant up/down arrow at the top/bottom of the table
+		tablebody.find("tr.role:first td.up img").hide();
+		tablebody.find("tr.role:last td.down img").hide();
+		// Update the hidden form values
+		var data = {};
+		tablebody.find("tr.role").each(function(x){
+			var weight = x+1;
+			var role_id = $(this).data("roleid");
+			data["role[" + role_id + "]"] = weight;
+			console.log(role_id + ": " + weight);
+			/* var form = $("form[name=role_order]");
+			form.find("input[name=role\\[" + role_id + "\\]]").val(weight);
+			form.ajaxSubmit(); */
+		});
+		$.post(siteurl + "permissions/save_role_order", data);
+		
+	}).css("cursor", "pointer");
 	
 });
 </script>

@@ -268,6 +268,63 @@ class Permissions extends Configure_Controller
 	
 	
 	
+	function move_role($direction = null, $role_id = null)
+	{
+		if (!$role_id) redirect('permissions');
+		
+		$role = $this->permissions_model->get_role($role_id);
+		
+		if (!$role) redirect('permissions');
+		
+		/*
+		mysql_query("UPDATE menu SET menu_order = '$page_order' +1 WHERE id != '$menu_id' AND menu_order < '$page_order'");
+		mysql_query("UPDATE menu SET menu_order = menu_order -1 WHERE id = '$menu_id'");    
+	
+	
+		} else if ($_GET['do'] == 'down') {
+	
+		mysql_query("UPDATE menu SET menu_order = '$page_order' -1 WHERE id != '$menu_id'");
+		mysql_query("UPDATE menu SET menu_order = menu_order +1 WHERE id = '$menu_id'");    
+	
+		*/
+		
+		$from = $role->weight;
+		
+		if ($direction == 'up')
+		{
+			$to = $from - 1;
+		}
+		elseif ($direction == 'down')
+		{
+			$to = $from + 1;
+		}
+		
+		$sql = 'UPDATE roles SET weight = weight - 1 
+				WHERE weight > ? AND weight <= ?';
+		$query = $this->db->query($sql, array($from, $to));
+		$sql = 'UPDATE roles SET weight = ? WHERE role_id = ?';
+		$query = $this->db->query($sql, array($to, $role_id));
+		
+		redirect('permissions');
+	}
+	
+	
+	
+	
+	function save_role_order()
+	{
+		$role_weights = $this->input->post('role');
+		print_r($role_weights);
+		foreach($role_weights as $role_id => $weight)
+		{
+			$sql = 'UPDATE roles SET weight = ? WHERE role_id = ? LIMIT 1';
+			$query = $this->db->query($sql, array($weight, $role_id));
+		}
+	}
+	
+	
+	
+	
 	/**
 	 * PAGE: Add a new permission entry
 	 */
