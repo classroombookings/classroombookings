@@ -78,7 +78,7 @@ _jsQ.push(function(){
 		var nextval = get_next_value(curval);
 		row.find("input[type=hidden]").val(nextval).trigger("change");
 		row.data("curval", nextval);
-	});
+	}).css("cursor", "pointer");
 	
 	// Section name clicking: set whole row for all sub permissions
 	$("td.section-name").click(function(){
@@ -88,7 +88,7 @@ _jsQ.push(function(){
 		var selector = "input.section-" + section_name;
 		$(selector).val(nextval).trigger("change");
 		$(this).data("curval", nextval);
-	});
+	}).css("cursor", "pointer");
 	
 	$("td.role-name").click(function(e){
 		var section_name = $(this).data("section");
@@ -98,7 +98,7 @@ _jsQ.push(function(){
 		var selector = "input.section-" + section_name + ".roleid-" + role_id;
 		$(selector).val(nextval).trigger("change");
 		$(this).data("curval", nextval);
-	});
+	}).css("cursor", "pointer");
 	
 	function get_next_value(curval){
 		var nextval = null;

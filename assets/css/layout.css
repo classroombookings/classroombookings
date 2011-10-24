@@ -313,11 +313,26 @@ table.grid.permissions tr.section-header td.section-name {
 table.grid.permissions tr.section-header td.role-name {
 	text-align: center;
 }
-table.grid.permissions tr.permission-row td { border-bottom: 1px solid #E2E5EE; font-size: 90%; }
-table.grid.permissions tr td { padding: 5px; -moz-user-select: none; -khtml-user-select: none; vertical-align: top; }
-table.grid.permissions tr td.check { text-align: center; }
-table.grid.permissions tr td.check img { padding: 0; margin: 0; line-height: normal; }
+table.grid.permissions tr.permission-row td {
+	border-bottom: 1px solid #E2E5EE;
+	font-size: 90%;
+}
+table.grid.permissions tr td {
+	padding: 5px;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	vertical-align: top;
+}
+table.grid.permissions tr td.check {
+	text-align: center;
+}
+table.grid.permissions tr td.check img {
+	padding: 0;
+	margin: 0;
+	line-height: normal;
+}
 
+/* Zebra columns */
 td.zc1 { background: #fff; }
 td.zc0 { background: #F8F8F8; }
 

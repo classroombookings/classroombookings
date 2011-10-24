@@ -26,6 +26,11 @@ class Permissions_model extends CI_Model
 	
 	
 	
+	/**
+	 * Get all roles in the database ordered by weight
+	 *
+	 * @return object Roles
+	 */
 	function get_roles()
 	{
 		$this->db->order_by('weight', 'asc');
@@ -45,6 +50,12 @@ class Permissions_model extends CI_Model
 	
 	
 	
+	/**
+	 * Retrieve one role from the database
+	 *
+	 * @param int role_id Role ID of role to retrieve
+	 * @return object The role
+	 */
 	function get_role($role_id = null)
 	{
 		if (!$role_id) return false;
@@ -63,6 +74,12 @@ class Permissions_model extends CI_Model
 	
 	
 	
+	/**
+	 * Add a role to the database
+	 *
+	 * @param array data Array of data for the role
+	 * @return bool
+	 */
 	function add_role($data = array())
 	{
 		if (empty($data))
@@ -80,6 +97,12 @@ class Permissions_model extends CI_Model
 	
 	
 	
+	/**
+	 * Get the current min or max weight of the roles
+	 *
+	 * @param string which Minimum or Maximum number to get
+	 * @return int The weight as requested
+	 */
 	function get_role_weight($which = 'max')
 	{
 		$sql['max'] = 'SELECT MAX(weight) AS weight FROM roles';
@@ -100,6 +123,12 @@ class Permissions_model extends CI_Model
 	
 	
 	
+	/**
+	 * Delete a role from the database
+	 *
+	 * @param int role_id Role ID to delete
+	 * @return bool on successful deletion
+	 */
 	function delete_role($role_id = null)
 	{
 		if (!$role_id) return false;
@@ -115,15 +144,16 @@ class Permissions_model extends CI_Model
 	
 	/**
 	 * Assign an existing role to a user, group or department
+	 *
+	 * @param int role_id Role ID to assign
+	 * @param string entity_type Type of entity to assign (U: user, D: department, G: group)
+	 * @param int entity_id ID of the entity that the role is being assigned to
 	 */
 	function assign_role($role_id = null, $entity_type = null, $entity_id = null)
 	{
 		if (!$role_id) return false;
 		if (!$entity_type) return false;
 		if (!$entity_id) return false;
-		
-		$msg = "Assigning role ID $role_id to $entity_type ID $entity_id.";
-		log_message('debug', $msg);
 		
 		$table = null;
 		
@@ -135,6 +165,9 @@ class Permissions_model extends CI_Model
 		}
 		
 		if (!$table) return false;
+		
+		$msg = "Assigning role ID $role_id to $entity_type ID $entity_id.";
+		log_message('debug', $msg);
 		
 		$sql = "INSERT INTO $table VALUES (?, ?) 
 				ON DUPLICATE KEY UPDATE role_id = ?";
@@ -169,6 +202,48 @@ class Permissions_model extends CI_Model
 		}
 		
 		return ($format == 'sections') ? $_sections : $_ids;
+	}
+	
+	
+	
+	
+	/**
+	 * Set permissions for a role
+	 *
+	 * @param int role_id Role ID to update
+	 * @param array permissions 2D array of permission_id => value
+	 * @return bool
+	 */
+	function set_permissions($role_id = null, $permissions = array())
+	{
+		if (!is_numeric($role_id))
+		{
+			$this->lasterr = 'Invalid role ID.';
+			return false;
+		}
+		
+		if (count($permissions) == 0)
+		{
+			$this->lasterr = 'Permissions array is empty.';
+			return false;
+		}
+		
+		log_message('debug', "Updating permissions for Role ID $role_id.");
+		
+		$sql = 'INSERT INTO permissions2roles (role_id, permission_id, val) VALUES ';
+		
+		foreach ($permissions as $permission_id => $value)
+		{
+			$value = (!is_numeric($value)) ? 'NULL' : "'$value'";
+			$sql .= sprintf("('%d', '%d', %s),", $role_id, $permission_id, $value);
+		}
+		
+		$sql = preg_replace('/,$/', '', $sql);
+		
+		$sql .= ' ON DUPLICATE KEY UPDATE val = val';
+		
+		$query = $this->db->query($sql);
+		return $query;
 	}
 	
 	

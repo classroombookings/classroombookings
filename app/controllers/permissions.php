@@ -26,7 +26,7 @@ class Permissions extends Configure_Controller
 	/**
 	 * PAGE: Main roles & permission page
 	 */
-	function index()
+	function index($active_tab = 'roles')
 	{
 		$this->auth->check('permissions');
 		
@@ -64,7 +64,7 @@ class Permissions extends Configure_Controller
 		);
 		
 		$body['tabs'] = $tabs;
-		$body['active_tab'] = 'roles';
+		$body['active_tab'] = $active_tab;
 		
 		$data['title'] = 'Roles &amp; Permissions';
 		//$data['submenu'] = $this->menu_model->permissions();
@@ -301,7 +301,30 @@ class Permissions extends Configure_Controller
 	 */
 	function save_permissions()
 	{
-		$this->output->enable_profiler(true);
+		//$this->output->enable_profiler(true);
+		
+		$postdata = $this->input->post('permissions');
+		
+		$err = 0;
+		foreach ($postdata as $role_id => $role_permissions)
+		{
+			$ret[$role_id] = $this->permissions_model->set_permissions($role_id, $role_permissions);
+			if (!$ret[$role_id])
+			{
+				$err++;
+			}
+		}
+		
+		if ($err > 0)
+		{
+			$this->msg->add('err', 'One or more roles could not be updated.');
+		}
+		else
+		{
+			$this->msg->add('notice', 'Permissions have been updated.');
+		}
+		
+		redirect('permissions/index/permissions');
 	}
 	
 	

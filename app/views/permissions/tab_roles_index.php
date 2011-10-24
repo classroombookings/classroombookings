@@ -239,10 +239,6 @@ _jsQ.push(function(){
 			var weight = x+1;
 			var role_id = $(this).data("roleid");
 			data["role[" + role_id + "]"] = weight;
-			console.log(role_id + ": " + weight);
-			/* var form = $("form[name=role_order]");
-			form.find("input[name=role\\[" + role_id + "\\]]").val(weight);
-			form.ajaxSubmit(); */
 		});
 		$.post(siteurl + "permissions/save_role_order", data);
 		
