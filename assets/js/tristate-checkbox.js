@@ -15,59 +15,73 @@ $.fn.cbtristate = function(settings) {
 	});
 	
 	
-	$(this).delegate("span,img", "click", function(e){
-		// Get parent label
-		var parent = $($(this).closest("label.tristate"));
-		// Get the ID attribute from the parent
-		var id = parent.data("id");
-		// Image to change = this
-		var destimg = $(parent.find("span img")[0]);
-		// Get form element to update
-		var destformel = $(parent.find("input[type=hidden]")[0]);
-		// Get current state from form element
-		var state = destformel.val();
-		// Switch state
-		if (state == config.yes.val){
-			next = 'no';
-		} else if (state == config.no.val){
-			next = 'empty';
-		} else {
-			next = 'yes';
-		}
-		// Update image + form element
-		destimg.attr("src", config[next].img);
-		destformel.val(config[next].val);
-		return false;
-	});
-	
-	
 	this.each(function() {
 		
-		// Retrieve id from the data attribute.
-		// Eventually becomes input name
-		var id = $(this).data("id");
-		
 		// Get the initial value to set
-		var initial_value = $(this).data("value");
+		var initial_value = $(this).val();
 		var config_key = reverse_config[initial_value];
 		
-		// Make a container for image + form element
-		var container = $("<span>");
+		$(this).bind("change", function(){
+			var input = $(this);
+			var ref = input.data("ref");
+			var destimg = $("img."+ref);
+			var state = input.val();
+			var imgsrc = null;
+			if (state == config.yes.val){
+				imgsrc = config.yes.img;
+			} else if (state == config.no.val){
+				imgsrc = config.no.img;
+			} else {
+				imgsrc = config.empty.img;
+			}
+			destimg.attr("src", imgsrc);
+		});
 		
-		// Make image for checkbox and append to container
+		
+		$(this).bind("tog", function(){
+			var state = $(this).val();
+			var next = null;
+			if (state == config.yes.val){
+				next = config.no.val;
+			} else if (state == config.no.val){
+				next = config.empty.val;
+			} else {
+				next = config.yes.val;
+			}
+			$(this).val(next).trigger("change");
+		});
+		
+		
+		// Make image for checkbox and insert into DOM next to the input
 		var img = $("<img>");
 		img.attr("src", config[config_key].img);
-		img.appendTo(container);
+		img.addClass("tristate-image");
+		img.addClass($(this).data("ref"));
+		// 'for' is reference to hidden input's ID
+		img.data("for", $(this).attr("id"));
 		
-		// Make a hidden form element and append to container
-		var formel = $("<input>", {
-			type: "hidden",
-			name: id,
-			value: config[config_key].val
-		}).appendTo(container);
+		// Toggle function
+		img.click(function(){
+			var img = $(this);
+			// Get hidden input to update
+			var destformel = $("input#" + img.data("for"));
+			// Get current state from form element
+			var state = destformel.val();
+			// Switch state
+			if (state == config.yes.val){
+				next = 'no';
+			} else if (state == config.no.val){
+				next = 'empty';
+			} else {
+				next = 'yes';
+			}
+			// Update image + form element
+			//$(this).attr("src", config[next].img);
+			destformel.val(config[next].val).trigger("change");
+			return false;
+		});
 		
-		// prepend the generated checkbox+form element container to the main parent label element
-		container.prependTo(this);
+		img.insertAfter(this);
 	
 	});		// this.each
 	

@@ -176,6 +176,8 @@ echo form_close();
 		<button class="grey button close" type="reset">Cancel</button>
 	</div>
 	
+	</form>
+	
 </div>
 
 

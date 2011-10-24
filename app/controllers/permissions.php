@@ -296,6 +296,18 @@ class Permissions extends Configure_Controller
 	
 	
 	/**
+	 * Permissions
+	 * ===========
+	 */
+	function save_permissions()
+	{
+		$this->output->enable_profiler(true);
+	}
+	
+	
+	
+	
+	/**
 	 * PAGE: Add a new permission entry
 	 */
 	 /*
