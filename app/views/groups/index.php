@@ -29,8 +29,6 @@
 					'Delete', 'class="small red button"') . " ";
 				echo anchor(sprintf('users/ingroup/%d', $group->group_id),
 					'View users', 'class="small button"') . " ";
-				echo anchor(sprintf('permissions/view/%d', $group->group_id),
-					'View permissions', 'class="small button"') . " ";
 			?>
 		</td>
 		
