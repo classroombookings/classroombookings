@@ -39,7 +39,7 @@
 						name="permissions[<?php echo $role->role_id ?>][<?php echo $permission_id ?>]"
 						data-ref="<?php echo $ref ?>"
 						id="<?php echo $ref ?>"
-						value="">
+						value="<?php echo $values[$role->role_id][$permission_id] ?>">
 				</td>
 			<?php $c++; ?>
 			<?php endforeach; ?>

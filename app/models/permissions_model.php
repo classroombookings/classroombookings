@@ -240,10 +240,98 @@ class Permissions_model extends CI_Model
 		
 		$sql = preg_replace('/,$/', '', $sql);
 		
-		$sql .= ' ON DUPLICATE KEY UPDATE val = val';
+		$sql .= ' ON DUPLICATE KEY UPDATE val = VALUES(val)';
 		
 		$query = $this->db->query($sql);
 		return $query;
+	}
+	
+	
+	
+	
+	/**
+	 * Get the available permissions for 1+ roles
+	 *
+	 * @param mixed role_id null: all roles. int: one role. array: multiple roles
+	 * @return mixed array
+	 */
+	function get_permission_values($role_id = null)
+	{
+		// Determine what is being requested
+		if ($role_id == null)
+		{
+			$action = 'all';
+		}
+		elseif (is_numeric($role_id))
+		{
+			$action = 'one';
+		}
+		elseif (is_array($role_id))
+		{
+			$action = 'multiple';
+		}
+		
+		
+		switch ($action)
+		{
+			
+			case 'all':
+				$sql = 'SELECT * FROM permissions2roles';
+				$query = $this->db->query($sql);
+				$result = $query->result();
+				if ($query->num_rows() > 0)
+				{
+					$permissions = array();
+					foreach ($result as $row)
+					{
+						$permissions[$row->role_id][$row->permission_id] = $row->val;
+					}
+				}
+			break;
+			
+			case 'one':
+				$sql = 'SELECT * FROM permissions2roles WHERE role_id = ?';
+				$query = $this->db->query($sql, array($role_id));
+				$result = $query->result();
+				if ($query->num_rows() > 0)
+				{
+					$permissions = array();
+					foreach ($result as $row)
+					{
+						$permissions[$row->permission_id] = $row->val;
+					}
+				}
+			break;
+			
+			case 'multiple':
+				$instr = implode(",", $role_id);
+				$sql = "SELECT * FROM permissions2roles WHERE role_id IN ($instr)";
+				$query = $this->db->query($sql);
+				$result = $query->result();
+				if ($query->num_rows() > 0)
+				{
+					$permissions = array();
+					foreach ($result as $row)
+					{
+						$permissions[$row->role_id][] = array(
+							$row->permission_id => $row->val
+						);
+					}
+				}
+			break;
+			
+		}		// end switch
+		
+		if (!is_array($permissions))
+		{
+			$this->lasterr = 'Could not find requested permissions';
+			return false;
+		}
+		else
+		{
+			return $permissions;
+		}
+		
 	}
 	
 	

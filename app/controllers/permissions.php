@@ -44,6 +44,7 @@ class Permissions extends Configure_Controller
 		
 		$perms_data['available_perms'] = $this->permissions_model->get_available_permissions('sections');
 		$perms_data['roles'] = $roles_data['roles'];
+		$perms_data['values'] = $this->permissions_model->get_permission_values();
 		
 		$tabs[] = array(
 			'id' => 'roles',
@@ -301,7 +302,7 @@ class Permissions extends Configure_Controller
 	 */
 	function save_permissions()
 	{
-		//$this->output->enable_profiler(true);
+		$this->output->enable_profiler(true);
 		
 		$postdata = $this->input->post('permissions');
 		
