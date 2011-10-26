@@ -6,7 +6,9 @@
 
 	<tr class="section-header">
 		
-		<td class="section-name" data-section="<?php echo $section_name ?>" width="280"><?php echo $section_name ?></td>
+		<td class="section-name" data-section="<?php echo $section_name ?>" width="280">
+			<?php echo lang('permsection_' . $section_name) ?>
+		</td>
 		
 		<?php $c = 0; ?>
 		<?php foreach ($roles as $role): ?>
@@ -27,7 +29,9 @@
 	
 		<tr class="permission-row">
 			
-			<td class="permission-name section-<?php echo $section_name ?>"><?php echo $permission_name ?></td>
+			<td class="permission-name section-<?php echo $section_name ?>">
+				<?php echo lang('permission_' . $permission_name) ?>
+			</td>
 			
 			<?php $c = 0; ?>
 			<?php foreach ($roles as $role): ?>
