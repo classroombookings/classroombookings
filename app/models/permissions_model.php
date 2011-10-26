@@ -180,6 +180,91 @@ class Permissions_model extends CI_Model
 	
 	
 	/**
+	 * Get the things that roles are assigned to
+	 *
+	 * @param int role_id Optionally specify a single Role ID to look up
+	 * @return array
+	 */
+	function get_role_assignments($role_id = null)
+	{
+		$where = null;
+		
+		if ($role_id != null && is_numeric($role_id))
+		{
+			$where = 'WHERE r2e.role_id = ?';
+		}
+		
+		if ($role_id != null && !is_numeric($role_id))
+		{
+			$this->lasterr = 'Invalid Role ID format';
+			return false;
+		}
+		
+		$sql = "SELECT
+					r2e.role_id,
+					r2e.entity_id,
+					r2e.entity_type,
+					CASE
+						WHEN d.name IS NOT NULL THEN d.name
+						WHEN g.name IS NOT NULL then g.name
+						WHEN u.username IS NOT NULL then u.username
+					END AS name
+				FROM v_roles2entities AS r2e
+				LEFT JOIN departments d ON r2e.entity_id = d.department_id AND r2e.entity_type = 'D'
+				LEFT JOIN groups g ON r2e.entity_id = g.group_id AND r2e.entity_type = 'G'
+				LEFT JOIN users u ON r2e.entity_id = u.user_id AND r2e.entity_type = 'U'
+				$where
+				ORDER BY role_id ASC, entity_type ASC";
+		
+		if ($role_id == null)
+		{
+			$query = $this->db->query($sql);
+		}
+		else
+		{
+			$query = $this->db->query($sql, array($role_id));
+		}
+		
+		if ($query->num_rows() > 0)
+		{
+			$roles = array();
+			$result = $query->result();
+			foreach ($result as $row)
+			{
+				$roles[$row->role_id][] = array(
+					'entity_type' => $row->entity_type,
+					'entity_id' => $row->entity_id,
+					'name' => $row->name
+				);
+			}
+			if ($role_id == null)
+			{
+				return $roles;
+			}
+			else
+			{
+				return $roles[$role_id];
+			}
+		}
+		else
+		{
+			$this->lasterr = 'No assignments returned';
+			return false;
+		}
+	}
+	
+	
+	
+	
+	/**
+	 * Permissions
+	 * ===========
+	 */
+	
+	
+	
+	
+	/**
 	 * List all the available permissions in the DB ordered by name
 	 *
 	 * @param string format	Desired array format for returned values
