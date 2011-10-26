@@ -175,7 +175,7 @@ div.header-right ul li a:hover {
 }
 
 
-p.hint { font-size: 85%; color: #777; }
+p.hint, span.hint { font-size: 85%; color: #777; }
 p.hint.dark { color: #333; }
 
 

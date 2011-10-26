@@ -44,7 +44,8 @@ class Permissions extends Configure_Controller
 		$roles_data['users'] = $this->security_model->get_users_dropdown();
 		
 		// Assignments tab
-		//$assign_data['assignments'] = $this->permissions_model->get_role_assignments();
+		$assign_data['assignments'] = $this->permissions_model->get_role_assignments();
+		$assign_data['roles'] = $this->permissions_model->get_roles_dropdown();
 		
 		// Permissions tab
 		$perms_data['available_perms'] = $this->permissions_model->get_available_permissions('sections');
@@ -60,7 +61,7 @@ class Permissions extends Configure_Controller
 		$tabs[] = array(
 			'id' => 'role_assignments',
 			'title' => 'Role Assignments',
-			//'view' => $this->load->view('permissions/tab_roles_assignments', $assign_data, true),
+			'view' => $this->load->view('permissions/tab_roles_assignments', $assign_data, true),
 		);
 		
 		$tabs[] = array(

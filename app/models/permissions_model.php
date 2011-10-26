@@ -51,6 +51,35 @@ class Permissions_model extends CI_Model
 	
 	
 	/**
+	 * Get list of roles as array in id => name format
+	 *
+	 * @return array
+	 */
+	function get_roles_dropdown()
+	{
+		$sql = 'SELECT role_id, name FROM roles ORDER BY name ASC';
+		$query = $this->db->query($sql);
+		if ($query->num_rows() > 0)
+		{
+			$result = $query->result();
+			$roles = array();
+			foreach ($result as $row)
+			{
+				$roles[$row->role_id] = $row->name;
+			}
+			return $roles;
+		}
+		else
+		{
+			$this->lasterr = 'No roles found';
+			return false;
+		}
+	}
+	
+	
+	
+	
+	/**
 	 * Retrieve one role from the database
 	 *
 	 * @param int role_id Role ID of role to retrieve
@@ -206,8 +235,8 @@ class Permissions_model extends CI_Model
 					r2e.entity_type,
 					CASE
 						WHEN d.name IS NOT NULL THEN d.name
-						WHEN g.name IS NOT NULL then g.name
-						WHEN u.username IS NOT NULL then u.username
+						WHEN g.name IS NOT NULL THEN g.name
+						WHEN u.username IS NOT NULL THEN IFNULL(u.displayname, u.username)
 					END AS name
 				FROM v_roles2entities AS r2e
 				LEFT JOIN departments d ON r2e.entity_id = d.department_id AND r2e.entity_type = 'D'
@@ -231,11 +260,7 @@ class Permissions_model extends CI_Model
 			$result = $query->result();
 			foreach ($result as $row)
 			{
-				$roles[$row->role_id][] = array(
-					'entity_type' => $row->entity_type,
-					'entity_id' => $row->entity_id,
-					'name' => $row->name
-				);
+				$roles[$row->role_id][] = $row;
 			}
 			if ($role_id == null)
 			{
