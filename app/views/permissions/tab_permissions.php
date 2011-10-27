@@ -36,14 +36,17 @@
 			<?php $c = 0; ?>
 			<?php foreach ($roles as $role): ?>
 				<td class="check zc<?php echo ($c & 1) ?>" title="<?php echo $role->name ?>">
-					<?php $ref = sprintf('p_%d_%d', $role->role_id, $permission_id) ?>
+					<?php
+					$ref = sprintf('p_%d_%d', $role->role_id, $permission_id);
+					$value = (isset($values[$role->role_id][$permission_id])) ? $values[$role->role_id][$permission_id] : null;
+					?>
 					<input 
 						class="tristate section-<?php echo $section_name ?> roleid-<?php echo $role->role_id ?> <?php echo $ref ?>"
 						type="hidden" 
 						name="permissions[<?php echo $role->role_id ?>][<?php echo $permission_id ?>]"
 						data-ref="<?php echo $ref ?>"
 						id="<?php echo $ref ?>"
-						value="<?php echo $values[$role->role_id][$permission_id] ?>">
+						value="<?php echo $value ?>">
 				</td>
 			<?php $c++; ?>
 			<?php endforeach; ?>

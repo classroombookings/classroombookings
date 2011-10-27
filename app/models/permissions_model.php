@@ -209,6 +209,52 @@ class Permissions_model extends CI_Model
 	
 	
 	/**
+	 * Unassign a role from a user, group or department
+	 *
+	 * @param int role_id Role ID to unassign
+	 * @param string entity_type Type of entity to be unassign (U: user, D: department, G: group)
+	 * @param int entity_id ID of the entity that the role is being unassigned from
+	 */
+	function unassign_role($role_id = null, $entity_type = null, $entity_id = null)
+	{
+		if (!$role_id) return false;
+		if (!$entity_type) return false;
+		if (!$entity_id) return false;
+		
+		$table = null;
+		$key = null;
+		
+		switch ($entity_type)
+		{
+			case 'U':
+				$table = 'roles2users';
+				$key = 'user_id';
+			break;
+			case 'G':
+				$table = 'roles2groups';
+				$key = 'group_id';
+			break;
+			case 'D':
+				$table = 'roles2departments';
+				$key = 'department_id';
+			break;
+		}
+		
+		if (!$table) return false;
+		
+		$msg = "*UN*assigning role ID $role_id from $entity_type ID $entity_id.";
+		log_message('debug', $msg);
+
+		$sql = "DELETE FROM $table WHERE role_id = ? AND $key = ? LIMIT 1";
+		$query = $this->db->query($sql, array($role_id, $entity_id));
+		
+		return ($this->db->affected_rows() == 1);
+	}
+	
+	
+	
+	
+	/**
 	 * Get the things that roles are assigned to
 	 *
 	 * @param int role_id Optionally specify a single Role ID to look up
@@ -233,6 +279,7 @@ class Permissions_model extends CI_Model
 					r2e.role_id,
 					r2e.entity_id,
 					r2e.entity_type,
+					roles.weight,
 					CASE
 						WHEN d.name IS NOT NULL THEN d.name
 						WHEN g.name IS NOT NULL THEN g.name
@@ -242,8 +289,9 @@ class Permissions_model extends CI_Model
 				LEFT JOIN departments d ON r2e.entity_id = d.department_id AND r2e.entity_type = 'D'
 				LEFT JOIN groups g ON r2e.entity_id = g.group_id AND r2e.entity_type = 'G'
 				LEFT JOIN users u ON r2e.entity_id = u.user_id AND r2e.entity_type = 'U'
+				LEFT JOIN roles ON r2e.role_id = roles.role_id
 				$where
-				ORDER BY role_id ASC, entity_type ASC";
+				ORDER BY roles.weight ASC, entity_type DESC";
 		
 		if ($role_id == null)
 		{

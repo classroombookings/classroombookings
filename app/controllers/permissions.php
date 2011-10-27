@@ -59,7 +59,7 @@ class Permissions extends Configure_Controller
 		);
 		
 		$tabs[] = array(
-			'id' => 'role_assignments',
+			'id' => 'assignments',
 			'title' => 'Role Assignments',
 			'view' => $this->load->view('permissions/tab_roles_assignments', $assign_data, true),
 		);
@@ -265,7 +265,7 @@ class Permissions extends Configure_Controller
 		// Validate form
 		if ($this->form_validation->run() == false)
 		{
-			// Validation failed - load required action depending on the state of user_id
+			// Validation failed - load page again
 			return $this->index();
 		}
 		else
@@ -278,6 +278,78 @@ class Permissions extends Configure_Controller
 			redirect('permissions');
 		}
 		
+	}
+	
+	
+	
+	
+	/**
+	 * Unassign a role from an entity
+	 */
+	function unassign_role()
+	{
+		$this->auth->check('permissions');
+		
+		$this->output->enable_profiler(true);
+		
+		$this->form_validation->set_rules('role_id', 'Role', 'required|integer|is_natural_no_zero');
+		$this->form_validation->set_rules('entity_id', 'Role', 'required|integer|is_natural_no_zero');
+		$this->form_validation->set_rules('entity_type', 'Entity type', 'exact_length[1]');
+		
+		$this->form_validation->set_error_delimiters('<li>', '</li>');
+
+		// Validate form
+		if ($this->form_validation->run() == false)
+		{
+			// Validation failed - load page again
+			return $this->index();
+		}
+		else
+		{
+			// Get form values
+			$role_id = $this->input->post('role_id');
+			$entity_id = $this->input->post('entity_id');
+			$entity_type = $this->input->post('entity_type');
+			
+			switch ($entity_type)
+			{
+				case 'D':
+					$department = $this->departments_model->get($entity_id);
+					$entity_name = $department->name;
+					$entity_type_name = 'department';
+				break;
+				case 'G':
+					$group = $this->security_model->get_group($entity_id);
+					$entity_name = $group->name;
+					$entity_type_name = 'group';
+				break;
+				case 'U':
+					$user = $this->security_model->get_user($entity_id);
+					$entity_name = $user->displayname;
+					$entity_type_name = 'user';
+				break;
+			}
+			
+			$role = $this->permissions_model->get_role($role_id);
+			
+			// Unassign it!
+			$unassign = $this->permissions_model->unassign_role($role_id, $entity_type, $entity_id);
+			
+			if ($unassign == true)
+			{
+				$msg = "The %s role has been unassigned from the %s '%s'.";
+				$this->msg->add('notice', sprintf($msg, 
+					$role->name, $entity_type_name, $entity_name));
+			}
+			else
+			{
+				$reason = $this->permissions_model->lasterr;
+				$msg = "Error unassigning the %s role from the %s '%s': %s";
+				$this->msg->add('err', sprintf($msg,
+					$role->name, $entity_type_name, $entity_name, $reason));
+			}
+			redirect('permissions/index/assignments');
+		}
 	}
 	
 	
