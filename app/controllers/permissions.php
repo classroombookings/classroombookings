@@ -100,6 +100,8 @@ class Permissions extends Configure_Controller
 	 */
 	function save_role()
 	{
+		$this->auth->check('permissions.view');
+		
 		$role_id = $this->input->post('role_id');
 
 		$this->form_validation->set_rules('role_id', 'Role ID');
@@ -142,7 +144,10 @@ class Permissions extends Configure_Controller
 					$this->msg->add('err', 'Could not update the role: ' . $this->permissions_model->lasterr);
 				}
 			}
-
+			
+			// Clear the permission cache for all users
+			$this->permissions_model->clear_cache();
+			
 			// All done, redirect!
 			redirect('permissions');
 
@@ -158,7 +163,7 @@ class Permissions extends Configure_Controller
 	 */
 	function delete_role($role_id = null)
 	{
-		$this->auth->check('permissions');
+		$this->auth->check('permissions.view');
 		
 		// Check if a form has been submitted; if not - show it to ask user confirmation
 		if ($this->input->post('id'))
@@ -174,6 +179,10 @@ class Permissions extends Configure_Controller
 			{
 				$this->msg->add('notice', 'The role has been deleted.');
 			}
+			
+			// Clear the permission cache for all users
+			$this->permissions_model->clear_cache();
+			
 			// Redirect
 			redirect('permissions');
 		}
@@ -222,7 +231,7 @@ class Permissions extends Configure_Controller
 	 */
 	function assign_role()
 	{
-		$this->auth->check('permissions');
+		$this->auth->check('permissions.view');
 		
 		$role_id = $this->input->post('role_id');
 		$entity_type = $this->input->post('entity_type');
@@ -275,6 +284,10 @@ class Permissions extends Configure_Controller
 			$assign = $this->permissions_model->assign_role($role_id, $entity_type, $entity_id);
 			$this->msg->add('notice', sprintf('The %s role has been assigned to %s %s.',
 				$role->name, $entity_type_name, $entity_name));
+			
+			// Clear the permission cache for all users
+			$this->permissions_model->clear_cache();
+			
 			redirect('permissions');
 		}
 		
@@ -288,7 +301,7 @@ class Permissions extends Configure_Controller
 	 */
 	function unassign_role()
 	{
-		$this->auth->check('permissions');
+		$this->auth->check('permissions.view');
 		
 		$this->output->enable_profiler(true);
 		
@@ -348,6 +361,10 @@ class Permissions extends Configure_Controller
 				$this->msg->add('err', sprintf($msg,
 					$role->name, $entity_type_name, $entity_name, $reason));
 			}
+			
+			// Clear the permission cache for all users
+			$this->permissions_model->clear_cache();
+			
 			redirect('permissions/index/assignments');
 		}
 	}
@@ -362,6 +379,7 @@ class Permissions extends Configure_Controller
 	 */
 	function save_role_order()
 	{
+		$this->auth->check('permissions.view');
 		$role_weights = $this->input->post('role');
 		print_r($role_weights);
 		foreach($role_weights as $role_id => $weight)
@@ -369,6 +387,8 @@ class Permissions extends Configure_Controller
 			$sql = 'UPDATE roles SET weight = ? WHERE role_id = ? LIMIT 1';
 			$query = $this->db->query($sql, array($weight, $role_id));
 		}
+		// Clear the permission cache for all users
+		$this->permissions_model->clear_cache();
 	}
 	
 	
@@ -380,7 +400,7 @@ class Permissions extends Configure_Controller
 	 */
 	function save_permissions()
 	{
-		$this->output->enable_profiler(true);
+		$this->auth->check('permissions.view');
 		
 		$postdata = $this->input->post('permissions');
 		
@@ -403,113 +423,12 @@ class Permissions extends Configure_Controller
 			$this->msg->add('notice', 'Permissions have been updated.');
 		}
 		
+		// Clear the permission cache for all users
+		$this->permissions_model->clear_cache();
+		
 		redirect('permissions/index/permissions');
 	}
 	
-	
-	
-	
-	/**
-	 * PAGE: Add a new permission entry
-	 */
-	 /*
-	function add()
-	{
-		$this->auth->check('permissions');
-		
-		// Get lists of stuff we need
-		$body['groups'] = $this->security_model->get_groups_dropdown();
-		$body['departments'] = $this->departments_model->get_dropdown();
-		$body['users'] = $this->security_model->get_users_dropdown();
-		
-		$body['permission_id'] = null;
-		
-		// List of all available permissions
-		$body['available_permissions'] = $this->config->item('permissions');
-		
-		$data['js'] = array('js/tristate-checkbox.js');
-		
-		$data['title'] = 'Add permission entry';
-		$data['body'] = $this->load->view('permissions/add', $body, true);
-		$this->page($data);
-	}
-	*/
-	
-	
-	
-	/**
-	 * Save the submitted permissions
-	 */
-	 /*
-	function save_one()
-	{
-		$this->auth->check('permissions');
-		
-		$this->output->enable_profiler(true);
-		
-		$entity_type = $this->input->post('entity_type');
-		$permission_id = $this->input->post('permission_id');
-		$entity_id = null;
-		
-		$this->form_validation->set_rules('permission_id', 'Permission ID');
-		$this->form_validation->set_rules('entity_type', 'Entity type', 'exact_length[1]');
-		$this->form_validation->set_rules('permissions[]', 'Permissions');
-		
-		$valid_id = 'required|integer|is_natural_no_zero';
-		
-		// Add a rule depending on chosen entity type
-		switch($entity_type)
-		{
-			case 'D':
-				$this->form_validation->set_rules('department_id', 'Department', $valid_id);
-				$entity_id = $this->input->post('department_id');
-				break;
-			case 'G':
-				$this->form_validation->set_rules('group_id', 'Group', $valid_id);
-				$entity_id = $this->input->post('group_id');
-				break;
-			case 'U':
-				$this->form_validation->set_rules('user_id', 'User', $valid_id);
-				$entity_id = $this->input->post('user_id');
-				break;
-		}
-		
-		$this->form_validation->set_error_delimiters('<li>', '</li>');
-		
-		// Validate form
-		if ($this->form_validation->run() == FALSE)
-		{
-			// Validation failed - load required action depending on the state of user_id
-			return ($permission_id == NULL) ? $this->add() : $this->edit($permission_id);
-		}
-		else
-		{
-			
-			$data = array();
-			$data['entity_type'] = $entity_type;
-			$data['entity_id'] = $entity_id;
-			$data['permissions'] = $this->input->post('permissions');
-			
-			if (empty($permission_id))
-			{
-				// Add new permission
-				$ret = $this->permissions_model->add($data);
-			}
-			else
-			{
-				$ret = $this->permissions_model->edit($permission_id, $data);
-			}
-			
-			echo "Done!";
-			echo $ret;
-			echo $this->permissions_model->lasterr;
-			
-			//redirect('permissions');
-			
-		}
-		
-	}
-	*/
 	
 	
 	

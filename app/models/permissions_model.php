@@ -648,148 +648,156 @@ class Permissions_model extends CI_Model
 	
 	
 	/**
-	 * Add a new permission entry
+	 * Get actual permissions that user is permitted to do
+	 *
+	 * @param int user_id User ID to get permissions for
+	 * @return array Array of permissions (id => name)
 	 */
-	/* function add($data)
+	function get_permissions_for_user($user_id = null)
 	{
-		// Ensure it's uppercase
-		$data['entity_type'] = strtoupper($data['entity_type']);
-		
-		// Check it's a valid type
-		if (!in_array($data['entity_type'], $this->allowed_entity_types))
+		if (!is_numeric($user_id))
 		{
-			$this->lasterr = 'Entity type not recognised';
+			$this->lasterr = 'User ID not in expected format or not supplied.';
 			return false;
 		}
 		
-		// Check there's an ID
-		// TODO: Extra checks to make sure entity_id exists
-		if ($data['entity_type'] != 'E' && !is_numeric($data['entity_id']))
+		$user_roles = $this->get_user_roles($user_id);
+		if (is_array($user_roles))
 		{
-			$this->lasterr = 'Invalid entity ID';
-			return false;
-		}
-		
-		// Check for permissions
-		if (!is_array($data['permissions']) OR empty($data['permissions']))
-		{
-			$this->lasterr = 'No permissions to save';
-			return false;
-		}
-		
-		// Generate the ID string
-		if ($data['entity_type'] != 'E')
-		{
-			$data['permission_id'] = sprintf("%s%d", 
-				$data['entity_type'], $data['entity_id']);
-		}
-		else
-		{
-			$data['permission_id'] = 'E';
-		}
-		
-		// Now we have an ID, check it doesn't already exist. It *shouldn't*...
-		if ($this->exists($data['permission_id']))
-		{
-			$this->lasterr = 'Permission already exists!';
-			return false;
-		}
-		
-		// Create an array for each row to be inserted
-		$entries = array();
-		// Loop through each permission and make a new row
-		foreach ($data['permissions'] as $k => $v)
-		{
-			$item = array();
-			$item['permission_id'] = $data['permission_id'];
-			$item['entity_type'] = $data['entity_type'];
-			$item['entity_id'] = $data['entity_id'];
-			$item['name'] = $k;
-			$item['value'] = trim($v);
-			$entries[] = $item;
-		}
-		// Insert those rows!
-		$ret = $this->db->insert_batch('permissions', $entries);
-		
-		return $ret;
-		
-	} */
-	
-	
-	
-	
-	/**
-	 * Get all the permission values for a given ID
-	 */
-	/* function get_values($permission_id)
-	{
-		$sql = 'SELECT name, value FROM permissions WHERE permission_id = ?';
-		$query = $this->db->query($sql, array($permission_id));
-		
-		$vals = array();
-		
-		if ($query->num_rows() > 0)
-		{
-			$items = $query->result();
-			foreach ($items as $item)
+			foreach ($user_roles as $r)
 			{
-				$vals[$item->name] = $item->value;
+				$roles[] = $r->role_id;
 			}
-			return $vals;
+			// Now get permissions for those roles (id => name);
+			$permissions = $this->get_role_permissions($roles);
+			return $permissions;
 		}
 		else
 		{
-			$this->lasterr = "Could not find any entries for permission ID $permission_id";
+			$this->lasterr = 'User does not have any roles.';
 			return false;
 		}
 	}
-	*/
-	
-	
-	
-	/**
-	 * Get a list of all the defined permissions
-	 */
-	/*function get_list()
-	{
-		$query = $this->db->get('v_permissions_list');
-		$permissions_list = $query->result();
-		return $permissions_list;
-	}
-	*/
 	
 	
 	
 	
 	/**
-	 * Check if a permission entry exists
+	 * Save a user's permissions to the cache table for quick retrieval
+	 *
+	 * @param int user_id ID of user to save permissions for
+	 * @return bool
 	 */
-	// TODO: Code it up.
-	/*function exists($permission_id)
+	function save_to_cache($user_id = null)
 	{
-		return false;
-	}
-	*/
-	
-	
-	
-	/*
-	function entity_name($entity_type)
-	{
-		$types['E'] = 'Everyone';
-		$types['D'] = 'Department';
-		$types['G'] = 'Groups';
-		$types['U'] = 'User';
-		if (array_key_exists($entity_type, $types))
+		if (!is_numeric($user_id))
 		{
-			return $types[$entity_type];
+			log_message('debug', 'save_to_cache(): Invalid User ID: $user_id');
+			$this->lasterr = 'User ID not in expected format.';
+			return false;
 		}
-		else
+		
+		$permissions = $this->get_permissions_for_user($user_id);
+		
+		if (!is_array($permissions))
 		{
 			return false;
 		}
+		
+		$serialised = serialize($permissions);
+		
+		$sql = 'INSERT INTO permission_cache (user_id, permissions)
+				VALUES (?, ?)
+				ON DUPLICATE KEY UPDATE permissions = VALUES(permissions)';
+		$query = $this->db->query($sql, array($user_id, $serialised));
+		
+		log_message('debug', "Permissions model: save_to_cache(): permissions for user ID $user_id saved to cache.");
+		
+		return ($this->db->affected_rows() == 1);
 	}
-	*/
+	
+	
+	
+	
+	/**
+	 * Get a user's permissions from the cache table.
+	 *
+	 * If not cached, will get permissions and set the cache
+	 *
+	 * @param int user_id ID of user to get permissions for
+	 * @return array
+	 */
+	function get_from_cache($user_id = null)
+	{
+		if (!is_numeric($user_id))
+		{
+			$this->lasterr = 'User ID not in expected format.';
+			return false;
+		}
+		
+		$sql = 'SELECT permissions FROM permission_cache 
+				WHERE user_id = ? LIMIT 1';
+		$query = $this->db->query($sql, array($user_id));
+		
+		if ($query->num_rows() == 1)
+		{
+			// Got permissions from the cache
+			log_message('debug', "Permissions model: get_from_cache(): got permissions for user id $user_id from cache.");
+			$row = $query->row();
+			$permissions = unserialize($row->permissions);
+			return $permissions;
+		}
+		else
+		{
+			// No cache entry - make it!
+			log_message('debug', "Permissions model: get_from_cache(): none found for user ID $user_id. Now caching...");
+			$save = $this->save_to_cache($user_id);
+			if ($save == true)
+			{
+				return $this->get_from_cache($user_id);
+			}
+			else
+			{
+				// Couldn't save them for some reason!
+				return false;
+			}
+		}
+		
+	}
+	
+	
+	
+	
+	/**
+	 * Clear permissions from the cache table (all, or for one user)
+	 *
+	 * Clear all permissions when any permissions are changed.
+	 * Clear a user's permissions on logout
+	 *
+	 * @param int user_id ID of user to clear permissions for
+	 * @return bool True on successful removal
+	 */
+	function clear_cache($user_id = null)
+	{
+		if ($user_id == null)
+		{
+			// Clear all permissions
+			$sql = 'DELETE FROM permission_cache';
+			$query = $this->db->query($sql);
+		}
+		else
+		{
+			if (!is_numeric($user_id))
+			{
+				$this->lasterr = 'Invalid User ID $user_id.';
+				return false;
+			}
+			$sql = 'DELETE FROM permission_cache WHERE user_id = ? LIMIT 1';
+			$query = $this->db->query($sql, array($user_id));
+		}
+		return $query;
+	}
+	
 	
 	
 	

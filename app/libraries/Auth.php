@@ -23,6 +23,8 @@ class Auth
 	
 	var $user_id;
 	var $room_id;
+	
+	var $_permission_cache;
 
 
 	public function __construct()
@@ -57,37 +59,23 @@ class Auth
 		
 		$user_id = $this->CI->session->userdata('user_id');
 		
-		//$this->CI->session->unset_userdata('permissions');
-		
-		$session_permissions = $this->CI->session->userdata('permissions');
-		
-		// Cache the permissions in the session
-		if (empty($session_permissions))
+		if (empty($this->_permission_cache))
 		{
-			// Get the roles for this user
-			$user_roles = $this->CI->permissions_model->get_user_roles($user_id);
-			if (is_array($user_roles))
+			// Permission cache on object for this request is empty.
+			// Get/set DB cache
+			$permissions = $this->CI->permissions_model->get_from_cache($user_id);
+			log_message('debug', 'Auth: check(): permissions loaded from DB [cache].');
+			$this->_permission_cache = $permissions;
+			log_message('debug', 'Auth: check(): request object cache has been loaded!');
+			if (is_array($permissions))
 			{
-				foreach ($user_roles as $r)
-				{
-					$roles[] = $r->role_id;
-				}
-				// Now get permissions for those roles
-				$permissions = $this->CI->permissions_model->get_role_permissions($roles);
-				log_message('debug', 'Auth: check(): permissions - ' . implode(', ', $permissions));
-				log_message('debug', 'Auth: check(): storing in session.');
-				$this->CI->session->set_userdata('permissions', $permissions);
-			}
-			else
-			{
-				// No roles.
-				$permissions = array();
+				log_message('debug', 'Auth: check(): permissions: ' . implode(', ', $permissions));
 			}
 		}
 		else
 		{
-			log_message('debug', 'Auth: check(): permissions loaded from session.');
-			$permissions = $this->CI->session->userdata('permissions');
+			log_message('debug', 'Auth: check(): permissions loaded from request object cache.');
+			$permissions = $this->_permission_cache;
 		}
 		
 		// See if this action is in the permissions array for the user
@@ -479,6 +467,9 @@ class Auth
 			// Set session data
 			$this->CI->session->set_userdata($sessdata);
 			
+			// Save permissions to cache
+			$this->CI->permissions_model->save_to_cache($user->user_id);
+			
 			// Now set remember-me cookie if requested
 			if ($remember == TRUE)
 			{
@@ -611,6 +602,8 @@ class Auth
 		
 		// Destroy session
 		$this->CI->session->sess_destroy();
+		
+		$this->CI->permissions_model->clear_cache($user_id);
 		
 		// Remove cookies too
 		delete_cookie("crbs_key");
