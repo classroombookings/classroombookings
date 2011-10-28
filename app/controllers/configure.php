@@ -25,8 +25,8 @@ class Configure extends Configure_Controller
 	 */
 	function index()
 	{
-		$this->auth->check('configure');
-		if ($this->auth->check('configure', true))
+		//$this->auth->check('configure');
+		if ($this->auth->check('crbs.configure', true))
 		{
 			return $this->settings();
 		}
@@ -45,7 +45,7 @@ class Configure extends Configure_Controller
 	 */
 	function settings()
 	{
-		$this->auth->check('configure');
+		$this->auth->check('crbs.configure');
 		
 		// Retrieve settings
 		$settings_list = array('school_name', 'school_url', 'timetable_view', 'timetable_cols');
@@ -64,6 +64,7 @@ class Configure extends Configure_Controller
 	 */
 	function save_settings()
 	{
+		$this->auth->check('crbs.configure');
 		
 		$this->form_validation->set_rules('school_name', 'School name', 'required|max_length[100]|trim');
 		$this->form_validation->set_rules('school_url', 'Website address', 'max_length[255]|prep_url|trim');

@@ -261,6 +261,7 @@ class Account extends CB_Controller
 
 	function logout()
 	{
+		$this->output->enable_profiler(true);
 		$this->session->keep_flashdata('flash');
 		$logout = $this->auth->logout();
 		$logged_out = ($logout == true) ? 'ok' : 'fail';

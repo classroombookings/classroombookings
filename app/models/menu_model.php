@@ -35,11 +35,11 @@ class Menu_model extends CI_Model
 	function main()
 	{
 		$subnav = array();
-		$subnav[] = array('dashboard', lang('DASHBOARD'), 'dashboard', 'dashboard');
-		$subnav[] = array('bookings', lang('BOOKINGS'), 'bookings', 'bookings');
-		$subnav[] = array('configure', lang('CONFIGURE'), 'configure', 'configure');
-		$subnav[] = array('reports', lang('REPORTS'), 'reports', 'reports');
-		$subnav[] = array('reports', 'Event Log', 'reports', 'event-log');
+		$subnav[] = array('dashboard', lang('DASHBOARD'), 'crbs.dashboard.view', 'dashboard');
+		$subnav[] = array('bookings', lang('BOOKINGS'), 'bookings.view', 'bookings');
+		$subnav[] = array('configure', lang('CONFIGURE'), 'crbs.configure', 'configure');
+		$subnav[] = array('reports', lang('REPORTS'), 'reports.view', 'reports');
+		$subnav[] = array('reports', 'Event Log', 'eventlog.view', 'event-log');
 		return $subnav;
 	}
 	
@@ -51,19 +51,19 @@ class Menu_model extends CI_Model
 	function configure()
 	{
 		$subnav = array();
-		$subnav[] = array('configure/settings', lang('GENERAL_SETTINGS'), 'configure', 'configure-settings');
-		$subnav[] = array('authentication', lang('AUTHENTICATION'), 'configure', 'configure-authentication');
-		$subnav[] = array('users', lang('USERS'), 'users', 'configure-users');
-		$subnav[] = array('groups', lang('GROUPS'), 'groups', 'configure-groups');
-		$subnav[] = array('permissions', lang('PERMISSIONS'), 'permissions', 'configure-permissions');
-		$subnav[] = array('quota', 'Quota', 'permissions', 'configure-quota');
-		$subnav[] = array('departments', lang('DEPARTMENTS'), 'departments', 'configure-departments');
-		$subnav[] = array('rooms/manage', lang('ROOMS'), 'rooms', 'configure-rooms');
-		$subnav[] = array('academic/years', lang('ACADEMIC_YEARS'), 'years', 'configure-years');
-		$subnav[] = array('academic/terms', lang('TERM_DATES'), 'terms', 'configure-terms');
-		$subnav[] = array('academic/weeks', lang('TIMETABLE_WEEKS'), 'weeks', 'configure-weeks');
-		$subnav[] = array('academic/holidays', lang('HOLIDAYS'), 'holidays', 'configure-holidays');
-		$subnav[] = array('academic/periods', lang('PERIODS'), 'periods', 'configure-periods');
+		$subnav[] = array('configure/settings', lang('GENERAL_SETTINGS'), 'crbs.configure', 'configure-settings');
+		$subnav[] = array('authentication', lang('AUTHENTICATION'), 'crbs.configure', 'configure-authentication');
+		$subnav[] = array('users', lang('USERS'), 'users.view', 'configure-users');
+		$subnav[] = array('groups', lang('GROUPS'), 'groups.view', 'configure-groups');
+		$subnav[] = array('permissions', lang('PERMISSIONS'), 'permissions.view', 'configure-permissions');
+		$subnav[] = array('quota', 'Quota', 'permissions.view', 'configure-quota');
+		$subnav[] = array('departments', lang('DEPARTMENTS'), 'departments.view', 'configure-departments');
+		$subnav[] = array('rooms/manage', lang('ROOMS'), 'rooms.view', 'configure-rooms');
+		$subnav[] = array('academic/years', lang('ACADEMIC_YEARS'), 'years.view', 'configure-years');
+		$subnav[] = array('academic/terms', lang('TERM_DATES'), 'terms.view', 'configure-terms');
+		$subnav[] = array('academic/weeks', lang('TIMETABLE_WEEKS'), 'weeks.view', 'configure-weeks');
+		$subnav[] = array('academic/holidays', lang('HOLIDAYS'), 'holidays.view', 'configure-holidays');
+		$subnav[] = array('academic/periods', lang('PERIODS'), 'periods.view', 'configure-periods');
 		return $subnav;
 	}
 	

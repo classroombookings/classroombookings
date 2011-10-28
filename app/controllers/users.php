@@ -33,7 +33,7 @@ class Users extends Configure_Controller
 	function index($group_id = null)
 	{
 		// Check authorisation
-		$this->auth->check('users');
+		$this->auth->check('users.view');
 		
 		if ($group_id === null)
 		{
@@ -134,6 +134,15 @@ class Users extends Configure_Controller
 	function save()
 	{
 		$user_id = $this->input->post('user_id');
+		
+		if ($user_id == null)
+		{
+			$this->auth->check('users.add');
+		}
+		else
+		{
+			$this->auth->check('users.edit');
+		}
 		
 		$this->form_validation->set_rules('user_id', 'User ID');
 		if (!$user_id)

@@ -598,10 +598,10 @@ class Auth
 		
 		// Set empty session data
 		$this->CI->session->set_userdata($sessdata);
-		$this->CI->session->unset_userdata(array_keys($sessdata));
+		$this->CI->session->unset_userdata($sessdata);
 		
 		// Destroy session
-		@$this->CI->session->sess_destroy();
+		$this->CI->session->sess_destroy();
 		
 		// Remove cookies too
 		delete_cookie("crbs_key");

@@ -28,7 +28,7 @@ class Groups extends Configure_Controller
 	 */
 	function index()
 	{
-		$this->auth->check('groups');
+		$this->auth->check('groups.view');
 		// Get list of groups
 		$body['groups'] = $this->security_model->get_group();
 		if ($body['groups'] == false)
@@ -92,9 +92,18 @@ class Groups extends Configure_Controller
 	
 	
 	
-	function save(){
-		
+	function save()
+	{
 		$group_id = $this->input->post('group_id');
+		
+		if ($group_id == null)
+		{
+			$this->auth->check('groups.add');
+		}
+		else
+		{
+			$this->auth->check('groups.edit');
+		}
 		
 		$this->form_validation->set_rules('group_id', 'Group ID');
 		$this->form_validation->set_rules('name', 'Name', 'required|max_length[20]|trim');
@@ -158,7 +167,8 @@ class Groups extends Configure_Controller
 	
 	
 	
-	function delete($group_id = NULL){
+	function delete($group_id = NULL)
+	{
 		$this->auth->check('groups.delete');
 		
 		// Check if a form has been submitted; if not - show it to ask user confirmation

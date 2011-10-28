@@ -28,7 +28,7 @@ class Permissions extends Configure_Controller
 	 */
 	function index($active_tab = 'roles')
 	{
-		$this->auth->check('permissions');
+		$this->auth->check('permissions.view');
 		
 		$this->load->helper('text_helper');
 		

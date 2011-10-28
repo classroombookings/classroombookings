@@ -13,7 +13,8 @@ class Authentication extends Configure_Controller
 {
 	
 	
-	function __construct(){
+	function __construct()
+	{
 		parent::__construct();
 		$this->load->model('security_model');
 	}
@@ -26,7 +27,7 @@ class Authentication extends Configure_Controller
 	 */
 	function index($active_tab = null)
 	{
-		$this->auth->check('configure');
+		$this->auth->check('crbs.configure.authentication');
 		
 		// Body data for each tab
 		$tab['settings'] = $this->settings->get();
@@ -80,6 +81,7 @@ class Authentication extends Configure_Controller
 	 */
 	function save_main()
 	{
+		$this->auth->check('crbs.configure.authentication');
 		$this->form_validation->set_rules('auth_anonuserid', 'Anonymous user', 'required|max_length[10]|integer');
 		$this->form_validation->set_rules('auth_ldap_enable', 'Enable LDAP', 'required|exact_length[1]');
 		$this->form_validation->set_rules('auth_preauth_enable', 'Enable pre-authentication', 'required|exact_length[1]');
@@ -124,6 +126,7 @@ class Authentication extends Configure_Controller
 	 */
 	function save_ldap()
 	{
+		$this->auth->check('crbs.configure.authentication');
 		$this->form_validation->set_rules('auth_ldap_host', 'LDAP host', 'required|max_length[50]|trim');
 		$this->form_validation->set_rules('auth_ldap_port', 'LDAP TCP port', 'required|max_length[5]|integer|callback__port_check');
 		$this->form_validation->set_rules('auth_ldap_base', 'LDAP Base DN', 'required|max_length[65535]');
@@ -165,7 +168,8 @@ class Authentication extends Configure_Controller
 	 *
 	 * Runs through the procedure one line at a time and tests for success.
 	 */	 	
-	function test_ldap(){
+	function test_ldap()
+	{
 		$this->_d('Testing for PHP LDAP module... ', FALSE);
 		if(!function_exists('ldap_bind')){
 			$this->_d("It appears you don't have the PHP LDAP module installed - cannot continue!");
@@ -277,7 +281,9 @@ class Authentication extends Configure_Controller
 	/**
 	 * FORM POST: Lookup and store the LDAP groups
 	 */
-	function get_ldap_groups(){
+	function get_ldap_groups()
+	{
+		$this->auth->check('crbs.configure.authentication');
 		// Get auth settings
 		$settings = $this->settings->get('auth.');
 		// Set the tab for when returning to config page
@@ -398,6 +404,7 @@ class Authentication extends Configure_Controller
 	 */
 	function save_preauth()
 	{
+		$this->auth->check('crbs.configure.authentication');
 		// Determine which button was clicked
 		$actions['save'] = $this->input->post('action_save');
 		$actions['newkey'] = $this->input->post('action_newkey');
