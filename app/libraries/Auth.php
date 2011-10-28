@@ -25,8 +25,8 @@ class Auth
 	var $room_id;
 
 
-	public function __construct(){
-		
+	public function __construct()
+	{
 		// Load original CI object to global CI variable
 		$this->CI =& get_instance();
 		
@@ -40,7 +40,6 @@ class Auth
 		
 		// Cookie salt for hash - can be any text string
 		$this->cookiesalt = 'CL455R00Mb00k1ng5'.$_SERVER['SERVER_NAME'];
-		
 	}
 	
 	
@@ -52,43 +51,54 @@ class Auth
 	 * @param action The action the user is wanting to perform
 	 * @param return TRUE: Just return the boolean answer. FALSE: Redirect/show error page/stop execution
 	 */
-	function check($action, $return = FALSE){
-		
+	function check($action, $return = FALSE)
+	{
 		log_message('debug', 'Auth: check(): Action - ' . $action . '.');
 		
-		// Get group ID
-		$group_id = $this->CI->session->userdata('group_id');
+		$this->CI->session->unset_userdata('permissions');
 		
+		$user_id = $this->CI->session->userdata('user_id');
 		
-		//$group_id = ($group_id == FALSE) ? 0 : $group_id;
-		
-		// Hopefully speed up access by putting the group permissions into the session
-		// instead of additional DB lookups each time we run the check() function.
-		if(!$this->CI->session->userdata('permissions')){
+		// Cache the permissions in the session
+		if (!$this->CI->session->userdata('permissions'))
+		{
 			// Get the group permissions for the user's group
-			$group_permissions = $this->CI->security_model->get_group_permissions($group_id);
-			$this->CI->session->set_userdata('permissions', $group_permissions);
-		} else {
-			$group_permissions = $this->CI->session->userdata('permissions');
+			$user_roles = $this->CI->permissions_model->get_user_roles($user_id);
+			foreach ($user_roles as $r)
+			{
+				$roles[] = $r->role_id;
+			}
+			$permissions = $this->CI->permissions_model->get_role_permissions($roles);
+			log_message('debug', 'Auth: check(): permissions - ' . implode(', ', $permissions));
+			$this->CI->session->set_userdata('permissions', $permissions);
+		}
+		else
+		{
+			log_message('debug', 'Auth: check(): permissions loaded from session.');
+			$permissions = $this->CI->session->userdata('permissions');
 		}
 		
 		// See if this action is in the permissions array for the user
-		if(is_array($group_permissions)){
-			$check = in_array($action, $group_permissions);
-		} else {
-			$check = FALSE;
+		if( is_array($permissions))
+		{
+			$check = in_array($action, $permissions);
+		}
+		else
+		{
+			$check = false;
 		}
 		
 		log_message('debug', 'Auth: check(): Result: ' . $check . '.');
 		
 		// Return true/false if we only want the return value
-		if($return == TRUE){
-			return ($check == FALSE) ? FALSE : TRUE;
+		if ($return == true)
+		{
+			return ($check == true);
 		}
-		// Otherwise, error if failed check ...
 		
-		if($check == FALSE){
-			
+		// Otherwise, show error page if failed check ...
+		if ($check == false)
+		{
 			// User is not allowed for that action - do stuff
 			
 			// Get the URI string they requested so can redirect to it after successful login
@@ -98,18 +108,19 @@ class Auth
 			
 			// User logged in? If not then they must at least login.
 			// If yes, then they just don't have the necessary privileges.
-			if($this->logged_in() == FALSE){
+			if( $this->logged_in() == false)
+			{
 				$this->lasterr = $this->CI->lang->line('AUTH_MUST_LOGIN');
 				$this->lasterr2 = anchor('account/login', 'Click here to login.');
-			} else {
+			}
+			else
+			{
 				$this->lasterr = $this->CI->lang->line('AUTH_NO_PRIVS');
 				$this->lasterr2 = anchor($this->CI->agent->referrer(), 'Click here to go back.');
 			}
-			
 			$error =& load_class('Exceptions', 'core');
 			echo $error->show_error($this->lasterr, $this->lasterr2);
 			exit;
-			
 		}
 		
 	}
@@ -586,7 +597,8 @@ class Auth
 		$sessdata['is_anon'] = NULL;
 		
 		// Set empty session data
-		$this->CI->session->unset_userdata($sessdata);
+		$this->CI->session->set_userdata($sessdata);
+		$this->CI->session->unset_userdata(array_keys($sessdata));
 		
 		// Destroy session
 		@$this->CI->session->sess_destroy();

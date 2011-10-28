@@ -21,7 +21,7 @@ class Dashboard extends CB_Controller
 	
 	
 	function index(){
-		$this->auth->check('dashboard');
+		$this->auth->check('crbs.dashboard.view');
 		$tpl['title'] = 'Dashboard';
 		$tpl['pagetitle'] = $tpl['title'];
 		if($this->auth->logged_in() == TRUE){

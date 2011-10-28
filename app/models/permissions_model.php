@@ -330,6 +330,158 @@ class Permissions_model extends CI_Model
 	
 	
 	/**
+	 * Get all assigned roles for a user (via group/department membership or direct)
+	 *
+	 * @param int user_id User ID to get roles for
+	 * @return array Array of roles in weight order (highest first)
+	 */
+	function get_user_roles($user_id = null)
+	{
+		if (!is_numeric($user_id))
+		{
+			$this->lasterr = 'Invalid format for User ID.';
+			return false;
+		}
+		
+		$sql = "SELECT
+					r2u.role_id AS role_id,
+					roles.name AS role_name,
+					roles.weight AS role_weight,
+					r2u.user_id AS entity_id,
+					'U' AS entity_type,
+					IFNULL(users.displayname, users.username) AS entity_name
+				FROM
+				roles2users r2u
+				LEFT JOIN roles ON r2u.role_id = roles.role_id
+				LEFT JOIN users ON r2u.user_id = users.user_id
+				WHERE r2u.user_id = '%d'
+				UNION
+				SELECT
+					r2d.role_id AS role_id,
+					r.name AS role_name,
+					r.weight AS role_weight,
+					r2d.department_id AS entity_id,
+					'D' AS entity_type,
+					d.name AS entity_name
+				FROM
+				roles2departments r2d, users2departments u2d, roles r, departments d
+				WHERE r2d.department_id = u2d.department_id
+				AND r2d.role_id = r.role_id
+				AND d.department_id = r2d.department_id
+				AND u2d.user_id = '%d'
+				UNION
+				SELECT
+					r2g.role_id AS role_id,
+					roles.name AS role_name,
+					roles.weight AS role_weight,
+					r2g.group_id AS entity_id,
+					'G' AS entity_type,
+					g.name AS entity_name
+				FROM
+				roles2groups r2g
+				LEFT JOIN roles ON r2g.role_id = roles.role_id
+				LEFT JOIN groups g ON r2g.group_id = g.group_id
+				WHERE r2g.group_id = (SELECT group_id FROM users WHERE user_id = '%d')
+				ORDER BY role_weight ASC";
+		
+		$sql = sprintf($sql, $user_id, $user_id, $user_id);
+		$query = $this->db->query($sql);
+		
+		if ($query->num_rows() > 0)
+		{
+			$result = $query->result();
+			$roles = array();
+			foreach ($result as $row)
+			{
+				$roles[$row->role_id] = $row;
+			}
+			return $roles;
+		}
+		else
+		{
+			$this->lasterr = 'No roles assigned.';
+			return false;
+		}
+	}
+	
+	
+	
+	
+	/**
+	 * Get the permission values for provided role(s)
+	 * 
+	 * Takes role weight into consideration - ask "what can these roles do"
+	 *
+	 * @param mixed role_ids Integer or array of integers
+	 * @return array Simple array of permission names
+	 */
+	function get_role_permissions($role_ids = array())
+	{
+		$sql_out = null;
+		$sql = 'SELECT
+					permissions2roles.val,
+					permissions2roles.permission_id,
+					permissions2roles.role_id,
+					permissions.name
+				FROM
+				permissions2roles
+				LEFT JOIN permissions ON permissions2roles.permission_id = permissions.permission_id
+				LEFT JOIN roles ON permissions2roles.role_id = roles.role_id
+				WHERE permissions2roles.role_id IN(%s)
+				ORDER BY roles.weight DESC';
+		
+		if (is_numeric($role_ids))
+		{
+			// Single role ID
+			$sql_out = sprintf($sql, (int) $role_ids);
+		}
+		elseif (is_array($role_ids))
+		{
+			// Multiple role IDs
+			$sql_out = sprintf($sql, implode(',', $role_ids));
+		}
+		
+		if ($sql_out == null)
+		{
+			$this->lasterr = 'Invalid format for Role ID.';
+			return false;
+		}
+		
+		$query = $this->db->query($sql_out);
+		
+		if ($query->num_rows() > 0)
+		{
+			$result = $query->result();
+			// Array of permission names to be returned
+			$permissions = array();
+			foreach ($result as $row)
+			{
+				//echo "Permission {$row->name} value: {$row->val}\n";
+				if ($row->val == '1')
+				{
+					// echo "Permission $row->name granted via role ID $row->role_id ...\n";
+					$permissions[$row->permission_id] = $row->name;
+				}
+				if ($row->val === '0')
+				{
+					// echo "Permission $row->name being revoked via role ID $row->role_id...\n";
+					unset($permissions[$row->permission_id]);
+				}
+			}
+			return $permissions;
+		}
+		else
+		{
+			$this->lasterr = 'No permissions returned for supplied role(s).';
+			return array();
+		}
+		
+	}
+	
+	
+	
+	
+	/**
 	 * Permissions
 	 * ===========
 	 */

@@ -25,6 +25,32 @@ class Account extends CB_Controller
 	function index()
 	{
 		$data['title'] = 'My Account';
+		
+		
+		$user_id = $this->session->userdata('user_id');
+		
+		$body = "User ID: $user_id\n\n";
+		
+		$user_roles = $this->permissions_model->get_user_roles($user_id);
+		
+		$body .= var_export($user_roles, true);
+		
+		foreach ($user_roles as $r)
+		{
+			$roles[] = $r->role_id;
+		}
+		
+		$body .= var_export($roles, true);
+		
+		$permissions = $this->permissions_model->get_role_permissions($roles);
+		
+		$body .= var_export($permissions, true);
+		
+		$body .= $this->permissions_model->lasterr;
+		
+		$data['body'] = $body;
+		
+		
 		$this->page($data);
 	}
 	
