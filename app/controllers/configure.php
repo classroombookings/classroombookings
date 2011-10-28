@@ -25,13 +25,14 @@ class Configure extends Configure_Controller
 	 */
 	function index()
 	{
-		//$this->auth->check('configure');
-		if ($this->auth->check('crbs.configure', true))
+		if ($this->auth->check('crbs.configure.settings', true))
 		{
 			return $this->settings();
 		}
 		else
 		{
+			// User has configure permission, but not settings.
+			// Hopefully, they'll have permissions for at least one other thing...
 			$data['body'] = '';
 			$this->page($data);
 		}
@@ -45,7 +46,7 @@ class Configure extends Configure_Controller
 	 */
 	function settings()
 	{
-		$this->auth->check('crbs.configure');
+		$this->auth->check('crbs.configure.settings');
 		
 		// Retrieve settings
 		$settings_list = array('school_name', 'school_url', 'timetable_view', 'timetable_cols');
@@ -64,7 +65,7 @@ class Configure extends Configure_Controller
 	 */
 	function save_settings()
 	{
-		$this->auth->check('crbs.configure');
+		$this->auth->check('crbs.configure.settings');
 		
 		$this->form_validation->set_rules('school_name', 'School name', 'required|max_length[100]|trim');
 		$this->form_validation->set_rules('school_url', 'Website address', 'max_length[255]|prep_url|trim');

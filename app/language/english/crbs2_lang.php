@@ -165,12 +165,15 @@ $lang['permission_bookings.view'] = 'View the bookings page';
 
 $lang['permission_crbs.account.changepwd'] = 'Change password';
 $lang['permission_crbs.account.view'] = 'View account page';
-$lang['permission_crbs.configure'] = 'View the configure section';
+$lang['permission_crbs.configure'] = 'View items in the configuration section';
+$lang['permission_crbs.configure.settings'] = 'Configure general settings';
+$lang['permission_crbs.configure.authentication'] = 'Configure authentication';
 $lang['permission_crbs.dashboard.view'] = 'View dashboard';
 $lang['permission_crbs.dashboard.viewdept'] = 'Dashboard - show department information';
 $lang['permission_crbs.dashboard.viewown'] = 'Dashboard - show own information';
 $lang['permission_crbs.rooms.exempt'] = 'Exempt from specific room permissions';
 $lang['permission_crbs.year.change'] = 'Change the working academic year';
+$lang['permission_crbs.eventlog.view'] = 'Access to the Event Log';
 
 $lang['permission_departments.add'] = 'Add a new department';
 $lang['permission_departments.delete'] = 'Delete a department';

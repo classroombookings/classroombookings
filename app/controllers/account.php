@@ -26,7 +26,6 @@ class Account extends CB_Controller
 	{
 		$data['title'] = 'My Account';
 		
-		
 		$user_id = $this->session->userdata('user_id');
 		
 		$body = "User ID: $user_id\n\n";
@@ -261,7 +260,6 @@ class Account extends CB_Controller
 
 	function logout()
 	{
-		$this->output->enable_profiler(true);
 		$this->session->keep_flashdata('flash');
 		$logout = $this->auth->logout();
 		$logged_out = ($logout == true) ? 'ok' : 'fail';

@@ -55,7 +55,7 @@ class AuthHook
 	 */
 	function activeuser(){
 		
-		if($this->CI->auth->logged_in() == true && $this->CI->auth->is_anon() == false){
+		if($this->CI->auth->logged_in() == true){
 			
 			// Get the logged in user ID and current time
 			$user_id = (int)$this->CI->session->userdata('user_id');

@@ -23,7 +23,7 @@ class CB_Controller extends CI_Controller
 		// Enable profiling or not
 		$this->output->enable_profiler($this->config->item('profiler'));
 		// Set up session if need to
-		$this->_init_session();
+		//$this->_init_session();
 	}
 	
 	
@@ -42,6 +42,7 @@ class CB_Controller extends CI_Controller
 	}
 	
 	
+	/*
 	private function _init_session()
 	{
 		log_message('debug', 'Creating anonymous session if required.');
@@ -56,6 +57,7 @@ class CB_Controller extends CI_Controller
 			}
 		}
 	}
+	*/
 	
 }
 

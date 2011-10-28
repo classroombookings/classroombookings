@@ -39,7 +39,7 @@ class Menu_model extends CI_Model
 		$subnav[] = array('bookings', lang('BOOKINGS'), 'bookings.view', 'bookings');
 		$subnav[] = array('configure', lang('CONFIGURE'), 'crbs.configure', 'configure');
 		$subnav[] = array('reports', lang('REPORTS'), 'reports.view', 'reports');
-		$subnav[] = array('reports', 'Event Log', 'eventlog.view', 'event-log');
+		$subnav[] = array('events', 'Event Log', 'crbs.eventlog.view', 'event-log');
 		return $subnav;
 	}
 	
@@ -51,8 +51,8 @@ class Menu_model extends CI_Model
 	function configure()
 	{
 		$subnav = array();
-		$subnav[] = array('configure/settings', lang('GENERAL_SETTINGS'), 'crbs.configure', 'configure-settings');
-		$subnav[] = array('authentication', lang('AUTHENTICATION'), 'crbs.configure', 'configure-authentication');
+		$subnav[] = array('configure/settings', lang('GENERAL_SETTINGS'), 'crbs.configure.settings', 'configure-settings');
+		$subnav[] = array('authentication', lang('AUTHENTICATION'), 'crbs.configure.authentication', 'configure-authentication');
 		$subnav[] = array('users', lang('USERS'), 'users.view', 'configure-users');
 		$subnav[] = array('groups', lang('GROUPS'), 'groups.view', 'configure-groups');
 		$subnav[] = array('permissions', lang('PERMISSIONS'), 'permissions.view', 'configure-permissions');

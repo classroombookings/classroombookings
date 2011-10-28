@@ -2,7 +2,7 @@
 		
 <?php
 
-if($this->auth->is_anon())
+if(!$this->auth->logged_in())
 {
 
 	echo '<li>' . anchor('account/login', lang('LOGIN'), 'class="i security"') . '</li>';

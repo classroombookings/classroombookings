@@ -55,22 +55,34 @@ class Auth
 	{
 		log_message('debug', 'Auth: check(): Action - ' . $action . '.');
 		
-		$this->CI->session->unset_userdata('permissions');
-		
 		$user_id = $this->CI->session->userdata('user_id');
 		
+		//$this->CI->session->unset_userdata('permissions');
+		
+		$session_permissions = $this->CI->session->userdata('permissions');
+		
 		// Cache the permissions in the session
-		if (!$this->CI->session->userdata('permissions'))
+		if (empty($session_permissions))
 		{
-			// Get the group permissions for the user's group
+			// Get the roles for this user
 			$user_roles = $this->CI->permissions_model->get_user_roles($user_id);
-			foreach ($user_roles as $r)
+			if (is_array($user_roles))
 			{
-				$roles[] = $r->role_id;
+				foreach ($user_roles as $r)
+				{
+					$roles[] = $r->role_id;
+				}
+				// Now get permissions for those roles
+				$permissions = $this->CI->permissions_model->get_role_permissions($roles);
+				log_message('debug', 'Auth: check(): permissions - ' . implode(', ', $permissions));
+				log_message('debug', 'Auth: check(): storing in session.');
+				$this->CI->session->set_userdata('permissions', $permissions);
 			}
-			$permissions = $this->CI->permissions_model->get_role_permissions($roles);
-			log_message('debug', 'Auth: check(): permissions - ' . implode(', ', $permissions));
-			$this->CI->session->set_userdata('permissions', $permissions);
+			else
+			{
+				// No roles.
+				$permissions = array();
+			}
 		}
 		else
 		{
@@ -463,8 +475,6 @@ class Auth
 			$sessdata['display']			= $user->display;	#($user->display == NULL) ? $user->username : $user->display;
 			$sessdata['year_active']		= $this->CI->years_model->get_active_id();
 			$sessdata['year_working']		= $sessdata['year_active'];
-			$sessdata['permissions']		= $this->CI->security_model->get_group_permissions($user->group_id);
-			$sessdata['is_anon']			= false;
 			
 			// Set session data
 			$this->CI->session->set_userdata($sessdata);
@@ -518,7 +528,7 @@ class Auth
 	
 	
 	
-	
+	/*
 	function session_create_anon()
 	{
 		$anon_user_id = $this->CI->settings->get('auth_anonuserid');
@@ -569,6 +579,7 @@ class Auth
 		}
 		
 	}
+	*/
 	
 	
 	
@@ -593,8 +604,6 @@ class Auth
 		$sessdata['year_active'] = NULL;
 		$sessdata['year_working'] = NULL;
 		$sessdata['permissions'] = NULL;
-		$sessdata['group_permissions'] = NULL;
-		$sessdata['is_anon'] = NULL;
 		
 		// Set empty session data
 		$this->CI->session->set_userdata($sessdata);
@@ -934,17 +943,18 @@ class Auth
 	function logged_in()
 	{
 		$user_id = $this->CI->session->userdata('user_id');
-		return ($user_id && !$this->is_anon());
+		return ($user_id);
 	}
 	
 	
-	
+	/*
 	function is_anon()
 	{
 		$anon_user_id = $this->CI->settings->get('auth_anonuserid');
 		$session_user_id = $this->CI->session->userdata('user_id');
 		return ($session_user_id == $anon_user_id);
 	}
+	*/
 	
 	
 	
