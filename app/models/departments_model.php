@@ -1,31 +1,23 @@
-<?php
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+
 /*
-	This file is part of Classroombookings.
-
-	Classroombookings is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
-
-	Classroombookings is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with Classroombookings.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Classroombookings. Hassle-free resource booking for schools. <http://classroombookings.com/>
+ * Copyright (C) 2006-2011 Craig A Rodway <craig.rodway@gmail.com>
+ *
+ * This file is part of Classroombookings.
+ * Classroombookings is licensed under the Affero GNU GPLv3 license.
+ * Please see license-classroombookings.txt for the full license text.
+ */
 
 
-class Departments_model extends CI_Model{
-
-
-	var $lasterr;
+class Departments_model extends CI_Model
+{
 	
 	
-	function __construct(){
+	function __construct()
+	{
 		parent::__construct();
-		
+		$this->lasterr = null;		
 	}
 	
 	
@@ -35,34 +27,38 @@ class Departments_model extends CI_Model{
 	 * get one or more departments
 	 *
 	 * @param int department_id
-	 * @param arr pagination limit,start
 	 * @return mixed (object on success, false on failure)
 	 */
-	function get($department_id = NULL, $page = NULL){
-		
-		if ($department_id == NULL) {
-		
+	function get($department_id = null)
+	{
+		if ($department_id == null)
+		{
 			// Getting all departments
-			$this->db->select('*', FALSE);
-			$this->db->from('departments');
+			$sql = "SELECT
+						d.*,
+						GROUP_CONCAT(ldapgroups.name SEPARATOR ', ') AS ldap_groups,
+						(SELECT COUNT(user_id) FROM users2departments WHERE department_id = d.department_id) AS user_count
+					FROM departments d
+					LEFT JOIN departments2ldapgroups d2ldap USING(department_id)
+					LEFT JOIN ldapgroups USING(ldapgroup_id)
+					GROUP BY department_id";
 			
-			$this->db->orderby('name ASC');
-			
-			if (isset($page) && is_array($page)) {
-				$this->db->limit($page[0], $page[1]);
-			}
-			
-			$query = $this->db->get();
-			if ($query->num_rows() > 0){
+			$query = $this->db->query($sql);
+			if ($query->num_rows() > 0)
+			{
 				return $query->result();
-			} else {
+			}
+			else
+			{
 				$this->lasterr = 'There are no departments.';
 				return 0;
 			}
-			
-		} else {
-			
-			if (!is_numeric($department_id)) {
+		}
+		else
+		{
+			if (!is_numeric($department_id))
+			{
+				$this->lasterr = 'Invalid Department ID';
 				return FALSE;
 			}
 			
@@ -70,33 +66,37 @@ class Departments_model extends CI_Model{
 			$sql = 'SELECT * FROM departments WHERE department_id = ? LIMIT 1';
 			$query = $this->db->query($sql, array($department_id));
 			
-			if($query->num_rows() == 1){
-				
+			if ($query->num_rows() == 1)
+			{
 				// Got the department
 				$department = $query->row();
 				$department->ldapgroups = array();
 				
 				// Fetch the LDAP groups that are mapped (if any)
-				$sql = 'SELECT ldapgroup_id FROM departments2ldapgroups WHERE department_id = ?';
+				$sql = 'SELECT ldapgroup_id FROM departments2ldapgroups 
+						WHERE department_id = ?';
 				$query = $this->db->query($sql, array($department_id));
-				if($query->num_rows() > 0){
+				
+				if ($query->num_rows() > 0)
+				{
 					$ldapgroups = array();
-					foreach($query->result() as $row){
+					foreach ($query->result() as $row)
+					{
 						array_push($ldapgroups, $row->ldapgroup_id);
 					}
+					
 					// Assign array of LDAP groups to main group object that is to be returned
 					$department->ldapgroups = $ldapgroups;
 					unset($ldapgroups);
 				}
-				
 				return $department;
-			} else {
-				return FALSE;
 			}
-			
-		}
-		
-	}
+			else
+			{
+				return false;
+			}		// query->num_rows == 1
+		}		// department_id == null 
+	}		// function
 	
 	
 	

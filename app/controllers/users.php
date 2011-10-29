@@ -114,7 +114,7 @@ class Users extends Configure_Controller
 		
 		if ($body['user'])
 		{
-			$data['title'] = 'Edit ' . $body['user']->displayname;
+			$data['title'] = 'Edit user: ' . $body['user']->displayname;
 			$data['body'] = $this->load->view('users/addedit', $body, true);
 		}
 		else
@@ -590,14 +590,6 @@ class Users extends Configure_Controller
 					base64_decode('WW91IGNhbm5vdCBkZWxldGUgeW91cnNlbGYsIHRoZSB1bml2ZXJzZSB3aWxsIGltcGxvZGUu'),
 					base64_decode('RXJyb3IgSUQjMTBU')
 				);
-				redirect('users');
-			}
-			
-			// Deleting the annymous user?
-			$anon = $this->settings->get('auth_anonuserid');
-			if ($user_id == $anon)
-			{
-				$this->msg->add('err', 'Cannot delete the anonymous user.');
 				redirect('users');
 			}
 			

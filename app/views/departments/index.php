@@ -1,42 +1,66 @@
-<?php
-if($departments != 0){
-?>
-
-<table class="list" width="100%" cellpadding="0" cellspacing="0" border="0">
-	<col /><col /><col />
+<table class="list2 middle" summary="Department list" id="departments">
+	
 	<thead>
-	<tr class="heading">
-		<td class="h" title="Colour">Colour</td>
-		<td class="h" title="Name">Name</td>
-		<td class="h" title="Description">Description</td>
-		<td class="h" title="Users">Number of people</td>
-		<td class="h" title="X">&nbsp;</td>
-	</tr>
+		<tr>
+			<th scope="col" width="20">&nbsp;</th>
+			<th scope="col">Department name</th>
+			<th scope="col">Description</th>
+			<?php if ($this->settings->get('auth_ldap_enable') == 1): ?>
+				<th scope="col">LDAP groups</th>
+			<?php endif; ?>
+			<th scope="col">Actions</th>
+		</tr>
 	</thead>
+	
 	<tbody>
-	<?php
-	$i = 0;
-	foreach ($departments as $department) {
-	?>
-	<tr>
-		<td class="x" align="center" width="20"><div style="width:14px;height:14px;background-color:<?php echo $department->colour ?>">&nbsp;</div></td>
-		<td class="x"><?php echo anchor('departments/edit/'.$department->department_id, $department->name) ?></td>
-		<td class="x"><span title="<?php echo $department->description ?>"><?php echo word_limiter($department->description, 5) ?>&nbsp;</span></td>
-		<td class="x"><?php #echo $department->usercount ?>&nbsp;</td>
-		<td class="il">
-		<?php
-		unset($actiondata);
-		$actiondata[] = array('departments/delete/'.$department->department_id, ' ', 'cross_sm.gif', 'Delete department');
-		$this->load->view('parts/linkbar', $actiondata);
-		#$this->load->view('parts/delete', array('url' => 'security/users/delete/'.$user->user_id));
-		?></td>
-	</tr>
-	<?php $i++; } ?>
+		
+		<?php foreach($departments as $department): ?>
+				
+		<tr>
+		
+			<td align="center" width="20">
+				<div style="width: 14px; height: 14px; background-color: <?php echo $department->colour ?>">&nbsp;</div>
+			</td>
+			
+			<td class="title">
+				<?php echo anchor(
+					'departments/edit/' . $department->department_id, 
+					$department->name . " ", 'rel="edit"')
+				?>
+				<span>
+					<?php 
+					$word = ($department->user_count == 1) ? 'person' : 'people';
+					if ($department->user_count > 0)
+					{
+						echo $department->user_count . " $word";
+					}
+					else
+					{
+						echo 'No members';
+					}
+					?>
+				</span>
+			</td>
+			
+			<td>
+				<?php echo $department->description ?>
+			</td>
+			
+			<?php if ($this->settings->get('auth_ldap_enable') == 1): ?>
+			<td>
+				<?php echo $department->ldap_groups ?>
+			</td>
+			<?php endif; ?>
+			
+			<td class="actions">
+				<a href="<?php echo site_url(sprintf('departments/delete/%d', $department->department_id)) ?>" 
+					class="button red small">Delete</a>
+			</td>
+			
+		</tr>
+		
+		<?php endforeach; ?>
+		
 	</tbody>
+	
 </table>
-
-<?php } else { ?>
-
-<p>No departments currently exist!</p>
-
-<?php } ?>

@@ -110,6 +110,20 @@ class Menu_model extends CI_Model
 	
 	
 	
+	/**
+	 * Configure / Departments
+	 */
+	function departments()
+	{
+		$subnav = array();
+		$subnav[] = array('departments/add', 'Add new department', 'departments.add', 'add');
+		return $subnav;
+	}
+	
+	
+	
+	
+	
 }
 
 

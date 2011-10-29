@@ -37,6 +37,7 @@ $changeyear = $this->auth->check('changeyear', true);
 	<link rel="stylesheet" href="css/skeleton.css">
 	<link rel="stylesheet" href="css/layout-fluid.css">
 	<link rel="stylesheet" href="css/layout.css">
+	<link rel="stylesheet" href="3rdparty/syronex-colorpicker/syronex-colorpicker.css">
 	
 	<link rel="shortcut icon" type="image/x-icon" href="favicon3.ico" />
 	
@@ -199,8 +200,8 @@ var $loader = $LAB
 		UseLocalXHR: false,
 		UseCachePreload: false})
 	.script("js/jquery-1.6.2.min.js")
-	.script("js/syronex-colorpicker-mod.js")
 	.script("js/jquery.tools.min.js")
+	.script("3rdparty/syronex-colorpicker/syronex-colorpicker-mod.js")
 	.script(extras).wait(function(){
 		if (typeof(window['_jsQ']) != "undefined") {
 			for (var i=0, len =_jsQ.length; i<len; i++) {
