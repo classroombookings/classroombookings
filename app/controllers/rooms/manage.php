@@ -26,7 +26,7 @@
 */
 
 
-class Manage extends Controller{
+class Manage extends Configure_Controller{
 	
 	
 	var $tpl;
@@ -35,9 +35,9 @@ class Manage extends Controller{
 	var $types;
 	
 	
-	function Manage(){
-		parent::Controller();
-		$this->load->model('security');
+	function __construct(){
+		parent::__construct();
+		$this->load->model('security_model');
 		$this->load->model('rooms_model');
 		$this->load->model('departments_model');
 		$this->load->helper('text');
@@ -55,25 +55,21 @@ class Manage extends Controller{
 	 */
 	function index(){
 		
-		$this->auth->check('rooms');
-		
-		$links[] = array('rooms/manage/add', 'Add a new room', 'add');
-		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
+		$this->auth->check('rooms.view');
 		
 		$body['rooms'] = $this->rooms_model->get_in_categories();
 		$body['cats'] = $this->rooms_model->get_categories_dropdown();
 		$body['cats'][-1] = '(Uncategorised)';
 		
 		if($body['rooms'] == FALSE){
-			$tpl['body'] = $this->msg->err($this->rooms_model->lasterr);
+			$data['body'] = $this->msg->err($this->rooms_model->lasterr);
 		} else {
-			$tpl['body'] = $this->load->view('rooms/index', $body, TRUE);
+			$data['body'] = $this->load->view('rooms/index', $body, TRUE);
 		}
 		
-		$tpl['subnav'] = $this->rooms_model->subnav();
-		$tpl['title'] = 'Rooms';
-		$tpl['pagetitle'] = $tpl['title'];
-		$this->load->view($this->tpl, $tpl);
+		//$tpl['subnav'] = $this->rooms_model->subnav();
+		$data['title'] = 'Rooms';
+		$this->page($data);
 		
 	}
 	
