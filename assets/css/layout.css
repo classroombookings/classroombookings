@@ -362,7 +362,7 @@ table.list2 td {
 }
 table.list2 td.title { font-weight: bold; }
 table.list2 td.title a { font-size: 110%; }
-table.list2 td.title span { font-weight: normal; font-size: 85%; }
+table.list2 td.title span { font-weight: normal; font-size: 85%; margin-left: 5px; }
 table.list2 td a { text-decoration: none; }
 table.list2 tbody tr:hover td {
 	background-color: #E0E4ED;
