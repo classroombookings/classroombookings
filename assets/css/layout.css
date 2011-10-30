@@ -401,6 +401,7 @@ fieldset.tristates label { margin-bottom: 7px; }
 
 
 
+
 .button {
 	padding: 5px 10px;
 	display: inline;
@@ -461,4 +462,10 @@ fieldset.tristates label { margin-bottom: 7px; }
 	font-size: 22px;
 	font-weight: normal;
 	line-height: 150%;
+}
+
+
+
+.inline-calendar {
+	height: 240px;
 }

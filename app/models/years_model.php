@@ -109,17 +109,17 @@ class Years_model extends CI_Model
 		
 		$active = FALSE;
 		// Use the proper function to make it active (to de-activate other years)
-		if($data['active'] == 1){
-			$active = TRUE;
+		if($data['current'] == 1){
+			$active = true;
 		}
-		$data['active'] = NULL;
+		$data['current'] = null;
 		
 		// Update year info
 		$this->db->where('year_id', $year_id);
 		$edit = $this->db->update('years', $data);
 		
 		if($active == TRUE){
-			echo $this->activate($year_id);
+			$this->activate($year_id);
 		}
 		
 		return $edit;
@@ -176,11 +176,11 @@ class Years_model extends CI_Model
 		}
 		
 		// Clear all other years making them inactive
-		$sql = 'UPDATE years SET active = NULL';
+		$sql = 'UPDATE years SET current = NULL';
 		$query = $this->db->query($sql);
 		
 		// Now set the given year as the active one
-		$sql = 'UPDATE years SET active = 1 WHERE year_id = ? LIMIT 1';
+		$sql = 'UPDATE years SET current = 1 WHERE year_id = ? LIMIT 1';
 		$query = $this->db->query($sql, array($year_id));
 		
 		return $query;
@@ -190,13 +190,13 @@ class Years_model extends CI_Model
 	
 	
 	function get_dropdown(){
-		$sql = 'SELECT year_id, name, active FROM years ORDER BY date_start ASC';
+		$sql = 'SELECT year_id, name, current FROM years ORDER BY date_start ASC';
 		$query = $this->db->query($sql);
 		if($query->num_rows() > 0){
 			$result = $query->result();
 			$years = array();
 			foreach($result as $year){
-				$year->name = ($year->active == 1) ? $year->name . ' (active)' : $year->name;
+				$year->name = ($year->current == 1) ? $year->name . ' (current)' : $year->name;
 				$years[$year->year_id] = $year->name;
 			}
 			return $years;
@@ -210,14 +210,14 @@ class Years_model extends CI_Model
 	
 	
 	function get_active_id(){
-		$sql = 'SELECT year_id FROM years WHERE active = 1 LIMIT 1';
+		$sql = 'SELECT year_id FROM years WHERE current = 1 LIMIT 1';
 		$query = $this->db->query($sql);
 		if($query->num_rows() == 1){
 			$row = $query->row();
 			$year_id = $row->year_id;
 			return $year_id;
 		} else {
-			$this->lasterr = 'No active year defined.';
+			$this->lasterr = 'No current year defined.';
 			return FALSE;
 		}
 	}

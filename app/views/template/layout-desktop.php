@@ -38,6 +38,7 @@ $changeyear = $this->auth->check('changeyear', true);
 	<link rel="stylesheet" href="css/layout-fluid.css">
 	<link rel="stylesheet" href="css/layout.css">
 	<link rel="stylesheet" href="3rdparty/syronex-colorpicker/syronex-colorpicker.css">
+	<link rel="stylesheet" href="css/calendar.css">
 	
 	<link rel="shortcut icon" type="image/x-icon" href="favicon3.ico" />
 	
@@ -54,7 +55,6 @@ $changeyear = $this->auth->check('changeyear', true);
 	var tt_view = "<?php echo $this->settings->get('timetable_view') ?>";
 	var _jsQ = [];
 	</script>
-
 	
 	<script type="text/javascript" src="js/LAB.min.js"></script>
 

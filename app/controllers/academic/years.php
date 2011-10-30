@@ -48,102 +48,125 @@ class Years extends Configure_Controller
 	
 	
 	
-	function add(){
+	/**
+	 * PAGE: Add a new academic year
+	 */
+	function add()
+	{
 		$this->auth->check('years.add');
-		$body['year'] = NULL;
-		$body['year_id'] = NULL;
-		#$tpl['sidebar'] = $this->load->view('academic/years/addedit-side', NULL, TRUE);
-		$tpl['subnav'] = $this->academic->subnav();
-		$tpl['title'] = 'Add academic year';
-		$tpl['pagetitle'] = 'Add a new academic year';
-		$tpl['body'] = $this->load->view('academic/years/addedit', $body, TRUE);
-		$this->load->view($this->tpl, $tpl);
+		$body['year'] = null;
+		$body['year_id'] = null;
+		$data['title'] = 'Add academic year';
+		$data['body'] = $this->load->view('academic/years/addedit', $body, true);
+		$this->page($data);
 	}
 	
 	
 	
 	
-	function edit($year_id){
+	/**
+	 * PAGE: Edit an academic year
+	 */
+	function edit($year_id)
+	{
 		$this->auth->check('years.edit');
+		
 		$body['year'] = $this->years_model->get($year_id);
 		$body['year_id'] = $year_id;
 		
-		$tpl['subnav'] = $this->academic->subnav();
-		$tpl['title'] = 'Edit academic year';
-		
-		if($body['year'] != FALSE){
-			$tpl['pagetitle'] = 'Edit academic year: ' . $body['year']->name;
-			$tpl['body'] = $this->load->view('academic/years/addedit', $body, TRUE);
-		} else {
-			$tpl['pagetitle'] = 'Error getting academic year';
-			$tpl['body'] = $this->msg->err('Could not load the specified academic year. Please check the ID and try again.');
+		if ($body['year'] != false)
+		{
+			$data['title'] = 'Edit academic year: ' . $body['year']->name;
+			$data['body'] = $this->load->view('academic/years/addedit', $body, true);
+		}
+		else
+		{
+			$data['title'] = 'Error getting academic year';
+			$data['body'] = $this->msg->err('Could not load the specified academic year. ' . $this->years_model->lasterr);
 		}
 		
-		$this->load->view($this->tpl, $tpl);
+		$this->page($data);
 	}
 	
 	
 	
 	
-	function save(){
-		
+	/**
+	 * FORM DESTINATION: Add/edit an academic year
+	 */  
+	function save()
+	{
 		$year_id = $this->input->post('year_id');
+		
+		if ($year_id == null)
+		{
+			$this->auth->check('years.add');
+		}
+		else
+		{
+			$this->auth->check('years.edit');
+		}
 		
 		$this->form_validation->set_rules('year_id', 'Year ID');
 		$this->form_validation->set_rules('name', 'Name', 'required|max_length[20]|trim');
 		$this->form_validation->set_rules('date_start', 'Start date', 'required|exact_length[10]|trim|callback__is_valid_date');
 		$this->form_validation->set_rules('date_end', 'End date', 'required|exact_length[10]|trim|callback__is_valid_date|callback__is_after[date_start]');
-		$this->form_validation->set_rules('active', 'Active');
+		$this->form_validation->set_rules('current', 'Current');
 		$this->form_validation->set_error_delimiters('<li>', '</li>');
 		
-		if($this->form_validation->run() == FALSE){
-			
+		if ($this->form_validation->run() == false)
+		{
 			// Validation failed - load required action depending on the state of user_id
-			($year_id == NULL) ? $this->add() : $this->edit($year_id);
-			
-		} else {
-			
+			return ($year_id == null) ? $this->add() : $this->edit($year_id);
+		}
+		else
+		{
 			// Validation OK
 			$data['name'] = $this->input->post('name');
 			$data['date_start'] = $this->input->post('date_start');
 			$data['date_end'] = $this->input->post('date_end');
-			$data['active'] = ($this->input->post('active') == '1') ? 1 : NULL;
+			$data['current'] = ($this->input->post('current') == '1') ? 1 : null;
 			
-			#print_r($data);
-			
-			if($year_id == NULL){
-				
+			if ($year_id == null)
+			{
 				$add = $this->years_model->add($data);
-				
-				if($add == TRUE){
-					$this->msg->add('info', sprintf($this->lang->line('YEARS_ADD_OK'), $data['name']));
-				} else {
-					$this->msg->add('err', sprintf($this->lang->line('YEARS_ADD_FAIL', $this->years_model->lasterr)));
+				if ($add == true)
+				{
+					$msg = sprintf(lang('YEARS_ADD_OK'), $data['name']);
+					$this->msg->add('info', $msg);
 				}
-				
-			} else {
-				
+				else
+				{
+					$msg = sprintf(lang('YEARS_ADD_FAIL'), $this->years_model->lasterr);
+					$this->msg->add('err', $msg);
+				}
+			}
+			else
+			{
 				$edit = $this->years_model->edit($year_id, $data);
-				
-				if($edit == TRUE){
-					$this->msg->add('info', sprintf($this->lang->line('YEARS_EDIT_OK'), $data['name']));
-				} else {
-					$this->msg->add('err', sprintf($this->lang->line('YEARS_EDIT_FAIL', $this->years_model->lasterr)));
+				if ($edit == true)
+				{
+					$msg = sprintf(lang('YEARS_EDIT_OK'), $data['name']);
+					$this->msg->add('info', $msg);
 				}
-				
+				else
+				{
+					$msg = sprintf(lang('YEARS_EDIT_FAIL'), $this->years_model->lasterr);
+					$this->msg->add('err', $msg);
+				}
 			}
 			
 			// Update session data if active year was set
-			if($data['active'] == 1){
-				$this->session->set_userdata('year_active', $this->years_model->get_active_id());
-				$this->session->set_userdata('year_working', $this->years_model->get_active_id());
+			if ($data['current'] == 1)
+			{
+				$current_id = $this->years_model->get_active_id();
+				$this->session->set_userdata('year_active', $current_id);
+				$this->session->set_userdata('year_working', $current_id);
 			}
 			
 			// All done, redirect!
 			redirect('academic/years');
-			
 		}
-		
 	}
 	
 	
