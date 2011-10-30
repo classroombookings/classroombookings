@@ -1,64 +1,48 @@
-<?php
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+
 /*
-	This file is part of Classroombookings.
+ * Classroombookings. Hassle-free resource booking for schools. <http://classroombookings.com/>
+ * Copyright (C) 2006-2011 Craig A Rodway <craig.rodway@gmail.com>
+ *
+ * This file is part of Classroombookings.
+ * Classroombookings is licensed under the Affero GNU GPLv3 license.
+ * Please see license-classroombookings.txt for the full license text.
+ */
 
-	Classroombookings is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
-
-	Classroombookings is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with Classroombookings.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-
-class Years extends Controller {
-
-
-	var $tpl;
+class Years extends Configure_Controller
+{
 	
-
-	function Years(){
-		parent::Controller();
-		$this->load->model('academic');
+	
+	function __construct()
+	{
+		parent::__construct();
 		$this->load->model('years_model');
-		$this->tpl = $this->config->item('template');
-		$this->output->enable_profiler($this->config->item('profiler'));
 	}
 	
 	
 	
 	
-	
-	function index(){
-		$this->auth->check('years');
-		
-		$links[] = array('academic/years/add', 'Add a new academic year', 'add');
-		/*$links[] = array('academic/main', 'Academic setup');
-		$links[] = array('academic/years', 'Years', TRUE);
-		$links[] = array('academic/terms', 'Term dates');
-		$links[] = array('academic/weeks', 'Timetable weeks');
-		$links[] = array('academic/periods', 'Periods');
-		$links[] = array('academic/holidays', 'Holidays');*/
-		$tpl['links'] = $this->load->view('parts/linkbar', $links, TRUE);
+	/**
+	 * PAGE: Academic years listing
+	 */
+	function index()
+	{
+		$this->auth->check('years.view');
 		
 		// Get list of years
 		$body['years'] = $this->years_model->get();
-		if($body['years'] == FALSE){
-			$tpl['body'] = $this->msg->err($this->years_model->lasterr);
-		} else {
-			$tpl['body'] = $this->load->view('academic/years/index', $body, TRUE);
+		
+		if ($body['years'] == false)
+		{
+			$data['body'] = $this->msg->err('No years found. ' . $this->years_model->lasterr);
+		}
+		else
+		{
+			$data['body'] = $this->load->view('academic/years/index', $body, true);
 		}
 		
-		$tpl['subnav'] = $this->academic->subnav();
-		$tpl['title'] = 'Academic years';
-		$tpl['pagetitle'] = $tpl['title'];
-		$this->load->view($this->tpl, $tpl);
+		$data['title'] = 'Academic years';
+		$this->page($data);
 	}
 	
 	

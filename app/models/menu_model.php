@@ -123,6 +123,19 @@ class Menu_model extends CI_Model
 	
 	
 	
+	/**
+	 * Configure / Years
+	 */
+	function years()
+	{
+		$subnav = array();
+		$subnav[] = array('academic/years/add', 'Add new academic year', 'years.add', 'add');
+		return $subnav;
+	}
+	
+	
+	
+	
 	
 }
 

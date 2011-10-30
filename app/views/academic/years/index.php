@@ -1,47 +1,49 @@
-<?php
-if($years != 0){
-?>
-
-<table class="list" width="100%" cellpadding="0" cellspacing="0" border="0">
-	<col /><col /><col />
+<table class="list2 middle" summary="Academic years list" id="years">
+	
 	<thead>
-	<tr class="heading">
-		<td class="h" title="Active">Active</td>
-		<td class="h" title="Name">Name</td>
-		<td class="h" title="DateStart">Start Date</td>
-		<td class="h" title="DateEnd">End Date</td>
-		<td class="h" title="X">&nbsp;</td>
-	</tr>
+		<tr>
+			<th scope="col" width="20">Current</th>
+			<th scope="col">Name</th>
+			<th scope="col">Start date</th>
+			<th scope="col">End date</th>
+			<th scope="col">Actions</th>
+		</tr>
 	</thead>
+	
 	<tbody>
-	<?php
-	$i = 0;
-	foreach($years as $year) {
-	?>
-	<tr>
-		<td align="center" width="20">
-			<?php $img = ($year->active == 1) ? 'ico/f_yes.gif' : 's.gif'; ?>
-			<img src="img/<?php echo $img ?>" width="16" height="16" alt="" />
-		</td>
-		<td><?php echo anchor('academic/years/edit/'.$year->year_id, $year->name) ?></td>
-		<td><?php echo date("l jS F Y", todate($year->date_start)) ?></td>
-		<td><?php echo date("l jS F Y", todate($year->date_end)) ?></td>
-		<td class="il">
-		<?php
-		unset($actiondata);
-		if($year->active != 1){
-			$actiondata[] = array('academic/years/activate/'.$year->year_id, ' ', 'tick_sm.gif', 'Make active year');
-		}
-		$actiondata[] = array('academic/years/delete/'.$year->year_id, ' ', 'cross_sm.gif', 'Delete year');
-		$this->load->view('parts/linkbar', $actiondata);
-		?></td>
-	</tr>
-	<?php $i++; } ?>
+	
+		<?php foreach ($years as $year): ?>
+	
+		<tr>
+		
+			<td align="center" width="20">
+				<?php if ($year->active == 1): ?>
+					<img src="img/ico/checkmark2.png" width="16" height="16" class="remove-bottom" style="margin:0">
+				<?php endif; ?>
+			</td>
+			
+			<td class="title">
+				<?php echo anchor('academic/years/edit/' . $year->year_id, $year->name) ?>
+			</td>
+			
+			<td><?php echo date("l jS F Y", todate($year->date_start)) ?></td>
+			<td><?php echo date("l jS F Y", todate($year->date_end)) ?></td>
+			
+			<?php echo form_open('academic/years/make_active', null, array('year_id' => $year->year_id)); ?>
+			
+			<td class="actions">
+				<a href="<?php echo site_url(sprintf('scademic/years/delete/%d', $year->year_id)) ?>" class="button red small">Delete</a>
+				<?php if ($year->active != 1): ?>
+					<input type="submit" class="small green button makecurrent" value="Make current">
+				<?php endif; ?>
+			</td>
+			
+			<?php echo form_close() ?>
+		
+		</tr>
+	
+		<?php endforeach; ?>
+	
 	</tbody>
+	
 </table>
-
-<?php } else { ?>
-
-<p>No years currently exist!</p>
-
-<?php } ?>
