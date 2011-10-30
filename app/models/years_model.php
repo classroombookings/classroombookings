@@ -79,18 +79,18 @@ class Years_model extends CI_Model
 	
 	function add($data){
 		
-		$active = FALSE;
+		$current = FALSE;
 		// Use the proper function to make it active (to de-activate other years)
-		if($data['active'] == 1){
+		if($data['current'] == 1){
 			// Set flag to check to activate it later as we don't have the ID yet
-			$active = TRUE;
+			$current = TRUE;
 		}
-		$data['active'] = NULL;
+		$data['current'] = NULL;
 		
 		$add = $this->db->insert('years', $data);
 		$year_id = $this->db->insert_id();
 		
-		if($active == TRUE){
+		if($current == TRUE){
 			// Now we have the ID of the new year, and we need to make it active
 			$this->activate($year_id);
 		}

@@ -32,7 +32,7 @@
 			<?php echo form_open('academic/years/make_current', null, array('year_id' => $year->year_id)); ?>
 			
 			<td class="actions">
-				<a href="<?php echo site_url(sprintf('scademic/years/delete/%d', $year->year_id)) ?>" class="button red small">Delete</a>
+				<a href="<?php echo site_url(sprintf('academic/years/delete/%d', $year->year_id)) ?>" class="button red small">Delete</a>
 				<?php if ($year->current != 1): ?>
 					<input type="submit" class="small green button makecurrent" value="Make current">
 				<?php endif; ?>

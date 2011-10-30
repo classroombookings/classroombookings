@@ -42,6 +42,8 @@ class Years extends Configure_Controller
 		}
 		
 		$data['title'] = 'Academic years';
+		$data['submenu'] = $this->menu_model->years();
+		
 		$this->page($data);
 	}
 	
