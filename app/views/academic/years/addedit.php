@@ -107,7 +107,7 @@ $this->load->view('parts/buttons', array('buttons' => $buttons));
 
 <script type="text/javascript">
 _jsQ.push(function(){
-	$("input.date_input").dateinput({ format: 'yyyy-mm-dd' });
+	$("input.date_input").dateinput({ format: 'yyyy-mm-dd', firstDay: 1 });
 	
 	$("input.date_input:first").data("dateinput").change(function(){
 		$("input.date_input:last").data("dateinput").setMin(this.getValue(), true);

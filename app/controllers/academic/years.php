@@ -135,7 +135,7 @@ class Years extends Configure_Controller
 				if ($add == true)
 				{
 					$msg = sprintf(lang('YEARS_ADD_OK'), $data['name']);
-					$this->msg->add('info', $msg);
+					$this->msg->add('noteice', $msg);
 				}
 				else
 				{
@@ -149,7 +149,7 @@ class Years extends Configure_Controller
 				if ($edit == true)
 				{
 					$msg = sprintf(lang('YEARS_EDIT_OK'), $data['name']);
-					$this->msg->add('info', $msg);
+					$this->msg->add('notice', $msg);
 				}
 				else
 				{
@@ -174,103 +174,96 @@ class Years extends Configure_Controller
 	
 	
 	
-	function delete($year_id = NULL){
+	function delete($year_id = null)
+	{
 		$this->auth->check('years.delete');
 		
 		// Check if a form has been submitted; if not - show it to ask user confirmation
-		if($this->input->post('id')){
-		
+		if ($this->input->post('id'))
+		{
 			// Form has been submitted (so the POST value exists)
 			// Call model function to delete year
 			$delete = $this->years_model->delete($this->input->post('id'));
-			if($delete == FALSE){
-				$this->msg->add('err', $this->years_model->lasterr, 'An error occured');
-			} else {
-				$this->msg->add('info', 'The year has been deleted.');
+			if ($delete == false)
+			{
+				$this->msg->add('err', 'Error. ' . $this->years_model->lasterr);
+			}
+			else
+			{
+				$this->msg->add('notice', 'The year has been deleted.');
 			}
 			// Redirect
 			redirect('academic/years');
-			
-		} else {
-		
-			$tpl['title'] = 'Delete academic year';
-			$tpl['pagetitle'] = $tpl['title'];
-			
-			if($year_id == NULL){
-				
-				$tpl['title'] = 'Delete academic year';
-				$tpl['pagetitle'] = $tpl['title'];
-				$tpl['body'] = $this->msg->err('Cannot find the academic year or no year ID given.');
-				
-			} else {
-				
+		}
+		else
+		{
+			if ($year_id == null)
+			{
+				$data['title'] = 'Delete academic year';
+				$data['body'] = $this->msg->err('Cannot find the academic year or no year ID given.');
+			}
+			else
+			{
 				// Get year info so we can present the confirmation page with a name
 				$year = $this->years_model->get($year_id);
-				
-				if($year == FALSE){
-				
-					$tpl['body'] = $this->msg->err('Could not find that year or no year ID given.');
-					
-				} else {
-					
+				if ($year == false)
+				{
+					$data['body'] = $this->msg->err('Could not find that year or no year ID given.');
+				}
+				else
+				{
 					// Initialise page
 					$body['action'] = 'academic/years/delete';
 					$body['id'] = $year_id;
 					$body['cancel'] = 'academic/years';
 					$body['text'] = 'If you delete this academic year, the following associated items will also be removed:';
-					$body['text'] .= '<ul><li>Periods</li><li>Holidays</li><li>Weeks</li><li>Bookings</li></ul>';
-					$tpl['title'] = 'Delete academic year';
-					$tpl['pagetitle'] = 'Delete academic year ' . $year->name;
-					$tpl['body'] = $this->load->view('parts/deleteconfirm', $body, TRUE);
-					
+					$body['text'] .= '<ul class="square"><li>Periods</li><li>Holidays</li><li>Weeks</li><li>Bookings</li></ul>';
+					$body['title'] = 'Delete academic year ' . $year->name;
+					$data['title'] = $body['title'];
+					$data['body'] = $this->load->view('parts/deleteconfirm', $body, true);
 				}
-				
 			}
-			
-			$tpl['subnav'] = $this->academic->subnav();
-			$this->load->view($this->tpl, $tpl);
-			
+			$this->page($data);
 		}
-		
 	}
 	
 	
 	
 	
-	function activate($year_id = NULL){
-		
+	/**
+	 * XHR/FORM SUBMISSION: Make a year current
+	 */
+	function make_current()
+	{
 		$this->auth->check('years.edit');
 		
-		if($year_id == NULL){
-			
-			$tpl['subnav'] = $this->academic->subnav();
-			$tpl['title'] = 'Make year active';
-			$tpl['pagetitle'] = $tpl['title'];
-			$tpl['body'] = $this->msg->err($this->lang->line('YEARS_ACTIVATE_NOID'));
-			$this->load->view($this->tpl, $tpl);
-			
-		} else {
-			
-			$activate = $this->years_model->activate($year_id);
-			
-			if($activate == TRUE){
-				$this->msg->add('info', $this->lang->line('YEARS_ACTIVATE_OK'));
-				$this->session->set_userdata('year_active', $this->years_model->get_active_id());
-				$this->session->set_userdata('year_working', $this->years_model->get_active_id());
-				redirect('academic/years');
-			} else {
-				$this->msg->add('err', $this->years_model->lasterr);
-				redirect('academic/years');
-			}
-			
-		}
+		$year_id = $this->input->post('year_id');
 		
+		$res = $this->years_model->activate($year_id);
+					
+		if ($res == true){
+			$this->msg->add('notice', $this->lang->line('YEARS_ACTIVATE_OK'));
+			$this->session->set_userdata('year_active', $this->years_model->get_active_id());
+			$this->session->set_userdata('year_working', $this->years_model->get_active_id());
+		}
+		else
+		{
+			$this->msg->add('err', 'Error. ' . $this->years_model->lasterr);
+		}
+		redirect('academic/years');
 	}
 	
 	
 	
 	
-	function change_working(){
+	/**
+	 * TODO: Re-visit this when working on the booking (?) page
+	 */
+	function change_working()
+	{
+		echo "Changeme.";
+		die();
+		/*
 		$this->load->library('user_agent');
 		$uri = $this->input->post('uri');
 		$year_id = $this->input->post('workingyear_id');
@@ -288,6 +281,7 @@ class Years extends Configure_Controller
 		delete_cookie('crbsb.week_requested_date');
 		
 		redirect($uri);
+		*/
 	}
 	
 	
@@ -302,17 +296,21 @@ class Years extends Configure_Controller
 	 * @return	bool on success	 
 	 * 
 	 */	 	 	 	 	 	 	
-	function _is_valid_date($date){
+	function _is_valid_date($date)
+	{
 		$datearray = explode('-', $date);
 		$check = @checkdate($datearray[1], $datearray[2], $datearray[0]);
-		if($check == TRUE){
-			return TRUE;
-		} else {
-			$this->form_validation->set_message('_is_valid_date', 'You entered an invalid date. It must be in the format YYYY-MM-DD.');
-			return FALSE;
+		if ($check == true)
+		{
+			return true;
 		}
-	}
-	
+		else
+		{
+			$this->form_validation->set_message('_is_valid_date', 
+				'You entered an invalid date. It must be in the format YYYY-MM-DD.');
+			return false;
+		}
+	}	
 	
 	
 	
@@ -326,7 +324,8 @@ class Years extends Configure_Controller
 	 * @return		bool on success	 
 	 *
 	 */	 	 	 	 	 	 
-	function _is_after($date){
+	function _is_after($date)
+	{
 		$start = $this->input->post('date_start');
 		$startarr = explode('-', $start);
 		$startint = mktime(0, 0, 0, $startarr[1], $startarr[2], $startarr[0]);
@@ -334,11 +333,15 @@ class Years extends Configure_Controller
 		$endarr = explode('-', $date);
 		$endint = mktime(0, 0, 0, $endarr[1], $endarr[2], $endarr[0]);
 		
-		if($endint > $startint){
-			return TRUE;
-		} else {
-			$this->form_validation->set_message('_is_after', 'The end date must be after the start date (' . $start . '.)');
-			return FALSE;
+		if ($endint > $startint)
+		{
+			return true;
+		}
+		else
+		{
+			$this->form_validation->set_message('_is_after', 
+				"The end date must be after the start date ($start).");
+			return false;
 		}
 	}
 	

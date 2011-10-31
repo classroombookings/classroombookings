@@ -160,7 +160,7 @@ class Departments extends Configure_Controller
 				if ($edit == true)
 				{
 					$msg = sprintf(lang('DEPARTMENTS_EDIT_OK'), $data['name']);
-					$this->msg->add('info', $msg);
+					$this->msg->add('notice', $msg);
 				}
 				else
 				{
