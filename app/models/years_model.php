@@ -33,83 +33,90 @@ class Years_model extends CI_Model
 		
 		if ($year_id == null)
 		{
-		
 			// Getting all years
 			$this->db->select('*', FALSE);
 			$this->db->from('years');
 			
 			$this->db->order_by('date_start ASC');
 			
-			if(isset($page) && is_array($page)){
+			if (isset($page) && is_array($page))
+			{
 				$this->db->limit($page[0], $page[1]);
 			}
 			
 			$query = $this->db->get();
-			if ($query->num_rows() > 0){
+			if ($query->num_rows() > 0)
+			{
 				return $query->result();
-			} else {
+			}
+			else
+			{
 				$this->lasterr = 'There are no academic years defined.';
 				return 0;
 			}
-			
-		} else {
-			
-			if (!is_numeric($year_id)) {
-				return FALSE;
+		}
+		else
+		{
+			if (!is_numeric($year_id))
+			{
+				return false;
 			}
-			
 			// Getting one year
 			$sql = 'SELECT * FROM years WHERE year_id = ? LIMIT 1';
 			$query = $this->db->query($sql, array($year_id));
-			
-			if($query->num_rows() == 1){
+			if ($query->num_rows() == 1)
+			{
 				// Got the year
 				$year = $query->row();				
 				return $year;
-			} else {
-				return FALSE;
 			}
-			
+			else
+			{
+				return false;
+			}
 		}
-		
 	}
 	
 	
 	
 	
-	function add($data){
-		
-		$current = FALSE;
+	function add($data)
+	{
+		$current = false;
 		// Use the proper function to make it active (to de-activate other years)
-		if($data['current'] == 1){
+		if ($data['current'] == 1)
+		{
 			// Set flag to check to activate it later as we don't have the ID yet
-			$current = TRUE;
+			$current = true;
 		}
-		$data['current'] = NULL;
+		$data['current'] = null;
 		
 		$add = $this->db->insert('years', $data);
 		$year_id = $this->db->insert_id();
 		
-		if($current == TRUE){
+		if ($current == true)
+		{
 			// Now we have the ID of the new year, and we need to make it active
-			$this->activate($year_id);
+			$this->make_current($year_id);
 		}
-		
 		return $year_id;
 	}
 	
 	
 	
 	
-	function edit($year_id = NULL, $data){
-		if($year_id == NULL){
+	function edit($year_id = null, $data)
+	{
+		if ($year_id == null)
+		{
 			$this->lasterr = 'Cannot update a year without its ID.';
-			return FALSE;
+			return false;
 		}
 		
-		$active = FALSE;
+		$active = false;
 		// Use the proper function to make it active (to de-activate other years)
-		if($data['current'] == 1){
+		if ($data['current'] == 1)
+		{
 			$active = true;
 		}
 		$data['current'] = null;
@@ -118,8 +125,9 @@ class Years_model extends CI_Model
 		$this->db->where('year_id', $year_id);
 		$edit = $this->db->update('years', $data);
 		
-		if($active == TRUE){
-			$this->activate($year_id);
+		if ($active == true)
+		{
+			$this->make_current($year_id);
 		}
 		
 		return $edit;
@@ -128,51 +136,38 @@ class Years_model extends CI_Model
 	
 	
 	
-	function delete($year_id){
-		
+	function delete($year_id)
+	{
 		$sql = 'DELETE FROM years WHERE year_id = ? LIMIT 1';
 		$query = $this->db->query($sql, array($year_id));
 		
-		if($query == FALSE){
-			
+		if ($query == false)
+		{
 			$this->lasterr = 'Could not delete year. Does it exist?';
-			return FALSE;
-			
-		} else {
-			
-			/* $sql = 'DELETE FROM bookings WHERE user_id = ?';
-			$query = $this->db->query($sql, array($user_id));
-			if($query == FALSE){ $failed[] = 'bookings'; }*/
-			
-			/*$sql = 'UPDATE rooms SET user_id = NULL WHERE user_id = ?';
-			$query = $this->db->query($sql, array($user_id));
-			if($query == FALSE){ $failed[] = 'rooms'; }
-			
-			if(isset($failed)){
-				$this->lasterr = 'The user was deleted successfully, but an error occured while removing their bookings and/or updating any rooms they owned.';
-			}*/
-			
-			return TRUE;
-			
+			return false;
 		}
-		
+		else
+		{
+			return true;
+		}
 	}
 	
 	
 	
 	
-	/* Activate
+	/**
+	 * Make the given year the current one
 	 *
-	 * Make a given year the active one
 	 */
-	function activate($year_id){
-		
+	function make_current($year_id)
+	{
 		// Check the year is valid first
 		$sql = 'SELECT year_id FROM years WHERE year_id = ?';
 		$query = $this->db->query($sql, array($year_id));
-		if($query->num_rows() != 1){
+		if ($query->num_rows() != 1)
+		{
 			$this->lasterr = 'No year by that ID';
-			return FALSE;
+			return false;
 		}
 		
 		// Clear all other years making them inactive
@@ -189,36 +184,48 @@ class Years_model extends CI_Model
 	
 	
 	
-	function get_dropdown(){
+	function get_dropdown()
+	{
 		$sql = 'SELECT year_id, name, current FROM years ORDER BY date_start ASC';
 		$query = $this->db->query($sql);
-		if($query->num_rows() > 0){
+		if ($query->num_rows() > 0)
+		{
 			$result = $query->result();
 			$years = array();
-			foreach($result as $year){
+			foreach ($result as $year)
+			{
 				$year->name = ($year->current == 1) ? $year->name . ' (current)' : $year->name;
 				$years[$year->year_id] = $year->name;
 			}
 			return $years;
-		} else {
+		}
+		else
+		{
 			$this->lasterr = 'No years found';
-			return FALSE;
+			return false;
 		}
 	}
 	
 	
 	
 	
-	function get_active_id(){
+	/**
+	 * Get the 'current' academic year ID
+	 */
+	function get_current_id()
+	{
 		$sql = 'SELECT year_id FROM years WHERE current = 1 LIMIT 1';
 		$query = $this->db->query($sql);
-		if($query->num_rows() == 1){
+		if ($query->num_rows() == 1)
+		{
 			$row = $query->row();
 			$year_id = $row->year_id;
 			return $year_id;
-		} else {
+		}
+		else
+		{
 			$this->lasterr = 'No current year defined.';
-			return FALSE;
+			return false;
 		}
 	}
 	
@@ -226,8 +233,6 @@ class Years_model extends CI_Model
 	
 	
 }
-
-
 
 
 /* End of file: app/models/years_model.php */

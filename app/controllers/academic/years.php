@@ -161,7 +161,7 @@ class Years extends Configure_Controller
 			// Update session data if active year was set
 			if ($data['current'] == 1)
 			{
-				$current_id = $this->years_model->get_active_id();
+				$current_id = $this->years_model->get_current_id();
 				$this->session->set_userdata('year_active', $current_id);
 				$this->session->set_userdata('year_working', $current_id);
 			}
@@ -239,12 +239,14 @@ class Years extends Configure_Controller
 		
 		$year_id = $this->input->post('year_id');
 		
-		$res = $this->years_model->activate($year_id);
+		$res = $this->years_model->make_current($year_id);
 					
-		if ($res == true){
+		if ($res == true)
+		{
 			$this->msg->add('notice', $this->lang->line('YEARS_ACTIVATE_OK'));
-			$this->session->set_userdata('year_active', $this->years_model->get_active_id());
-			$this->session->set_userdata('year_working', $this->years_model->get_active_id());
+			$current_year_id = $this->years_model->get_current_id();
+			$this->session->set_userdata('year_active', $current_year_id);
+			$this->session->set_userdata('year_working', $current_year_id);
 		}
 		else
 		{
