@@ -461,7 +461,7 @@ class Auth
 			$sessdata['group_id']			= $user->group_id;
 			$sessdata['username']			= $user->username;
 			$sessdata['display']			= $user->display;	#($user->display == NULL) ? $user->username : $user->display;
-			$sessdata['year_active']		= $this->CI->years_model->get_active_id();
+			$sessdata['year_active']		= $this->CI->years_model->get_current_id();
 			$sessdata['year_working']		= $sessdata['year_active'];
 			
 			// Set session data
