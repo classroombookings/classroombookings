@@ -1,0 +1,108 @@
+	/* <!-- */
+	/* General styles */
+	body {
+		margin:0;
+		padding:0;
+		border:0;			/* This removes the border around the viewport in old versions of IE */
+		width:100%;
+		background:#fff;
+		min-width:960px;    /* Minimum width of layout - remove line if not required */
+							/* The min-width property does not work in old versions of Internet Explorer */
+	}
+	a {
+		color:#369;
+	}
+	a:hover {
+		/*color:#fff;
+		background:#369;*/
+		text-decoration:none;
+	}
+	h1, h2, h3 {
+		margin:.8em 0 .2em 0;
+		padding:0;
+	}
+	p {
+		margin:.4em 0 .8em 0;
+		padding:0;
+	}
+	img {
+		margin:10px 0 5px;
+	}
+	/* Header styles */
+	#header {
+		clear:both;
+		float:left;
+		width:100%;
+	}
+	#header {
+		padding: 10px 0;
+		border-bottom:0px solid #999;
+		background: #333;
+	}
+	#header div.header-left {
+		margin: 0 15px;
+	}
+	#header div.header-right {
+		margin: 0;
+	}
+
+
+	/* column container */
+	.colmask {
+		position:relative;		/* This fixes the IE7 overflow hidden bug and stops the layout jumping out of place */
+		clear:both;
+		float:left;
+		width:100%;			/* width of whole page */
+		overflow:hidden;	/* This chops off any overhanging divs */
+	}
+	/* 2 column left menu settings */
+	.leftmenu {
+		background:#F2F2F2;
+	}
+	.leftmenu .colright {
+		float:left;
+		width:200%;
+		position:relative;
+		left:250px;	/* 200px */
+		background:#fff;
+		border-left: 0px solid #ccc;
+	}
+	.leftmenu .col1wrap {
+		float:right;
+		width:50%;
+		position:relative;
+		right:250px;	/* 200px */
+		padding-bottom:1em;
+	}
+	.leftmenu .col1 {
+		margin:0 15px 0 265px;	/* 215px */
+		position:relative;
+		right:100%;
+		overflow:hidden;
+		padding-top: 15px;
+		padding-bottom: 20px;
+	}
+	.leftmenu .col2 {
+		float:left;
+		width:220px;	/* 170px */
+		position:relative;
+		right:235px;
+		padding-top: 15px;
+		padding-bottom: 15px;
+	}
+	/* Footer styles */
+	#footer {
+		clear:both;
+		float:left;
+		width:100%;
+		border-top:2px solid #ddd;
+		background: #fff;
+		color: #333;
+	}
+	#footer p {
+		padding:10px;
+		margin:0;
+		font-size: 11px;
+	}
+	#footer a { color: #333; }
+	/* --> */
