@@ -427,12 +427,13 @@ class Auth extends CI_Driver_Library
 			preauth/ldap/local to override this
 		*/
 		
-		$this->users_model->set_filter(array(
+		$this->_CI->load->model('users_model');
+		$this->_CI->users_model->set_filter(array(
 			'u_username' => $username,
 			'u_enabled' => 1,
 		));
-		$this->users_model->limit(1);
-		$user = $this->users_model->get_all();
+		$this->_CI->users_model->limit(1);
+		$user = $this->_CI->users_model->get_all();
 		
 		if ($user)
 		{
@@ -440,7 +441,7 @@ class Auth extends CI_Driver_Library
 			
 			// Update last login datetime
 			$data = array('u_datetime_lastlogin' => date('Y-m-d H:i:s'));
-			$this->users_model->update($user['u_id'], $data);
+			$this->_CI->users_model->update($user['u_id'], $data);
 			
 			// Add user data to session but remove password
 			unset($session['u_password']);
