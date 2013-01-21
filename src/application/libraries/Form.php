@@ -47,9 +47,15 @@ class Form
 	
 	
 	
-	public function add_section($id = '', $title = '')
+	public function add_section($id = '', $title = '', $hint = '')
 	{
-		$this->sections[$id] = $title;
+		$this->sections[$id]['title'] = $title;
+		
+		if ($hint !== '')
+		{
+			$this->sections[$id]['hint'] = $hint;
+		}
+		
 		return $this;
 	}
 	
