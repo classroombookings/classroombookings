@@ -1,12 +1,128 @@
 <?php
 
-/* Status messages */
+$lang = array(
+	
+	
+	/**
+	 * Words
+	 */
+	
+	
+	'period' =>
+	'Period',
+	
+	'department' =>
+	'Department',
+	
+	'week' =>
+	'Week',
+	
+	'weeks' =>
+	'Weeks',
+	
+	'year' =>
+	'Year',
+	
+	'years' =>
+	'Years',
+	
+	'school' =>
+	'School',
+	
+	'name' =>
+	'Name',
+	
+	'details' =>
+	'Details',
+	
+	'settings' =>
+	'Settings',
+	
+	'login' =>
+	'Log in',
+	
+	'logout' =>
+	'Log out',
+	
+	'username' =>
+	'Username',
+	
+	'password' =>
+	'Password',
+	
+	'add' =>
+	'Add',
+	
+	'new' =>
+	'New',
+	
+	'save' =>
+	'Save',
+	
+	'delete' =>
+	'Delete',
+	
+	'remove' =>
+	'Remove',
+	
+	'cancel' =>
+	'Cancel',
+	
+	
+	
+	
+	/**
+	 * App sections
+	 */
+	
+	
+	'home' =>
+	'Home',
+	
+	'bookings' =>
+	'Bookings',
+	
+	'reports' =>
+	'Reports',
+	
+	'event_log' =>
+	'Event Log',
+	
+	'configure' =>
+	'Configure',
+	
+	
+	
+	
+	/**
+	 * Global Messages
+	 */
+	
+	
+	'auth_login_success' =>
+	'You are now logged in!',
+	
+	'auth_login_error' =>
+	'Incorrect username and/or password.',
+	
+	'auth_logout_success' =>
+	'You have been successfully logged out.',
+	
+	'auth_logout_error' =>
+	'You could not be logged out. Please close all browser windows to log out.',
+	
+	'auth_check_permission_404' =>
+	'Permission does not exist.',
+	
+	'auth_check_not_logged_in' =>
+	'You must log in to access this section.',
+	
+	'auth_check_no_permission' =>
+	'You do not have the correct privileges to access this section.',
+	
+);
 
-$lang['AUTH_FAIL_USERPASS'] = 'Incorrect username and/or password';
-$lang['AUTH_OK'] = 'You are now logged in.';
-
-$lang['AUTH_LOGOUT_OK'] = 'You have been successfully logged out.';
-$lang['AUTH_LOGOUT_FAIL'] = 'Your logout request was unsuccessful. Please close all browser windows to ensure your session is closed properly.';
+/*
 
 $lang['AUTH_CHECK_NO_PID'] = 'Could not locate privilege ID for requested action (%s)';
 $lang['AUTH_MUST_LOGIN'] = 'You are required to login to access this section.';
@@ -78,35 +194,8 @@ $lang['FIELDS_ADD_FAIL'] = 'An error occured and the field could not be added (%
 $lang['FIELDS_EDIT_OK'] = 'The field details were saved successfully';
 $lang['FIELDS_EDIT_FAIL'] = 'An error occured and the field details could not be saved (%s).';
 
-// Misc
-$lang['PERMISSIONS_EFFECTIVE_USER_FAIL'] = 'Could not find the given user, or no user ID supplied.';
-$lang['FORM_ERRORS'] = 'Please check the following invalid item(s) and try again.';
-$lang['ADD_ANOTHER'] = 'and add another';
-
-// Words
-$lang['W_PERIOD'] = 'Period';
-$lang['W_PERIODS'] = 'Periods';
-$lang['W_DEPARTMENT'] = 'Department';
-$lang['W_DEPARTMENTS'] = 'Departments';
-$lang['W_WEEK'] = 'Week';
-$lang['W_WEEKS'] = 'Weeks';
-$lang['W_YEAR'] = 'Year';
-$lang['W_YEARS'] = 'Years';
-$lang['W_FIELD'] = 'Field';
-$lang['W_SCHOOL'] = 'School';
-$lang['W_NAME'] = 'Name';
-$lang['W_DETAILS'] = 'Details';
-$lang['W_SETTINGS'] = 'Settings';
-
-// Login/out terminology
-$lang['LOGIN'] = 'Log in';		// Could be 'Sign in'...
-$lang['LOGOUT'] = 'Log out';		// Could be 'Sign out'...
-
-$lang['USERNAME'] = 'Username';
-$lang['PASSWORD'] = 'Password';
-
 // Modules
-$lang['DASHBOARD'] = 'Dashboard';
+$lang['HOME'] = 'Home';
 $lang['BOOKINGS'] = 'Bookings';
 
 $lang['CONFIGURE'] = 'Configure';
@@ -237,3 +326,5 @@ $lang['permission_years.add'] = 'Add a new academic year';
 $lang['permission_years.delete'] = 'Delete an academic year';
 $lang['permission_years.edit'] = 'Edit and make active an academic year';
 $lang['permission_years.view'] = 'View academic years';
+
+*/
