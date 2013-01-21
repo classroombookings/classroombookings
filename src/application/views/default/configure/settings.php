@@ -1,172 +1,178 @@
 <?php
-$errors = validation_errors();
-if($errors){
-	echo $this->msg->err('<ul class="square">' . $errors . '</ul>', 'Please check the following invalid item(s) and try again.');
-}
+
+// ===== School Details
+
+$section = 'school_details';
+
+$this->form->add_section($section, lang('school') . ' ' . strtolower(lang('details')));
+
+
+	// ----- School name
+
+	$name = 'school_name';
+	
+	$this->form->add_input($section, $name, lang('school') . ' ' . lang('name'));
+	
+	$this->form->set_content($section, $name, form_input(array(
+		'name' => $name,
+		'id' => $name,
+		'class' => 'text-input',
+		'size' => 30,
+		'max_length' => 100,
+		'tabindex' => tab_index(),
+		'value' => set_value($name, element($name, $settings)),
+	)));	
+	
+	
+	// ----- School URL
+
+	$name = 'school_url';
+
+	$this->form->add_input($section, $name, lang('settings_school_url'));
+	
+	$this->form->set_content($section, $name, form_input(array(
+		'name' => $name,
+		'id' => $name,
+		'class' => 'text-input',
+		'size' => 50,
+		'maxlength' => 255,
+		'tabindex' => tab_index(),
+		'value' => set_value($name, element($name, $settings)),
+	)));
+	
+	
+// ===== Booking page
+
+$section = 'booking';
+
+$this->form->add_section($section, lang('settings_booking_page'));
+	
+	
+	// ----- Timetable view
+	
+	$name = 'timetable_view';
+	$this->form->add_input($section, $name, lang('settings_timetable_view'));
+	
+	$content = '';
+	
+	$value = 'day';
+	$content .= '<label class="radio">';
+	$content .= form_radio(array(
+		'name' => $name,
+		'id' => $name . '_day',
+		'tabindex' => tab_index(),
+		'value' => $value,
+		'checked' => set_radio($name, $value, (element($name, $settings) === $value)),
+	));
+	$content .= lang('settings_timetable_day');
+	$content .= '</label>';
+	
+	$value = 'room';
+	$content .= '<label class="radio">';
+	$content .= form_radio(array(
+		'name' => $name,
+		'id' => $name . '_room',
+		'tabindex' => tab_index(),
+		'value' => $value,
+		'checked' => set_radio($name, $value, (element($name, $settings) === $value)),
+	));
+	$content .= lang('settings_timetable_room');
+	$content .= '</label>';
+	
+	$this->form->set_content($section, $name, $content);
+	
+	$this->form->set_hint($section, $name, lang('settings_timetable_view_hint'));
+	
+	
+	
+	// ----- Timetable columns
+	
+	$name = 'timetable_cols';
+	$this->form->add_input($section, $name, lang('settings_timetable_cols'));
+	
+	$content = '';
+	
+	$value = 'rooms';
+	$content .= '<label class="radio">';
+	$content .= form_radio(array(
+		'name' => $name,
+		'id' => $name . '_rooms',
+		'tabindex' => tab_index(),
+		'value' => $value,
+		'class' => 'view-day',
+		'checked' => set_radio($name, $value, (element($name, $settings) === $value)),
+	));
+	$content .= lang('settings_timetable_rooms');
+	$content .= '</label>';
+	
+	$value = 'periods';
+	$content .= '<label class="radio">';
+	$content .= form_radio(array(
+		'name' => $name,
+		'id' => $name . '_periods',
+		'tabindex' => tab_index(),
+		'value' => $value,
+		'class' => 'view-day view-room',
+		'checked' => set_radio($name, $value, (element($name, $settings) === $value)),
+	));
+	$content .= lang('settings_timetable_periods');
+	$content .= '</label>';
+	
+	$value = 'days';
+	$content .= '<label class="radio">';
+	$content .= form_radio(array(
+		'name' => $name,
+		'id' => $name . '_days',
+		'tabindex' => tab_index(),
+		'value' => $value,
+		'class' => 'view-room',
+		'checked' => set_radio($name, $value, (element($name, $settings) === $value)),
+	));
+	$content .= lang('settings_timetable_days');
+	$content .= '</label>';
+	
+	
+	$this->form->set_content($section, $name, $content);
+	
+	$this->form->set_hint($section, $name, lang('settings_timetable_cols_hint'));
+	
+
+$this->form->add_button(form_button(array(
+	'type' => 'submit',
+	'class' => 'blue',
+	'text' => lang('save_settings'),
+	'tab_index' => tab_index(),
+)));
+
+
+// Render form
+
+echo form_open(current_url(), array('id' => 'settings_form'));
+echo $this->form->render();
+echo '</form>';
+
 ?>
 
 
-<?php
-echo form_open('configure/save_settings', 'class="form-horizontal"');
 
-// Start tabindex
-$t = 1;
-?>
-
-
-<fieldset>
+<script>
+Q.push(function() {
 	
-	<legend><?php echo lang('W_SCHOOL') ?> <?php echo strtolower(lang('W_DETAILS')) ?></legend>
-	
-	<div class="control-group">
-		<label class="control-label" for="input01">
-			<?php echo lang('W_SCHOOL') ?> <?php echo strtolower(lang('W_NAME')) ?>
-		</label>
-		<div class="controls">
-			<?php
-			unset($input);
-			$input['accesskey'] = 'N';
-			$input['name'] = 'school_name';
-			$input['id'] = 'school_name';
-			$input['size'] = '40';
-			$input['maxlength'] = '100';
-			$input['tabindex'] = $t;
-			$input['value'] = set_value('school_name', $settings['school_name']);
-			echo form_input($input);
-			$t++;
-			?>
-		</div>
-	</div>
-	
-	<div class="control-group">
-		<label class="control-label" for="input01">
-			<?php echo lang('W_SCHOOL') ?> <?php echo strtolower(lang('WEBADDR')) ?>
-		</label>
-		<div class="controls">
-			<?php
-			unset($input);
-			$input['accesskey'] = 'N';
-			$input['name'] = 'school_url';
-			$input['id'] = 'school_url';
-			$input['size'] = '60';
-			$input['maxlength'] = '255';
-			$input['tabindex'] = $t;
-			$input['value'] = set_value('school_url', $settings['school_url']);
-			echo form_input($input);
-			$t++;
-			?>
-		</div>
-	</div>
+	// Handle interactively enabling/disabling timetable view radio options
+	$("input[name=timetable_view]").on("change", function(e) {
 		
-</fieldset>
-
-
-
-<fieldset>
+		// Get value of checked item
+		var value = $(this).filter(":checked").val();
+		
+		// Disable all other radio group's options
+		$("input[name=timetable_cols]")
+			.prop("disabled", "disabled");
+		
+		// Enable other radio group's relevant options
+		var inputs = $("input[name='timetable_cols'].view-" + value);
+		inputs.prop("disabled", false);
+		
+	}).filter(":checked").trigger("change");
 	
-	<legend>Booking page</legend>
-	
-	<div class="control-group">
-		<label class="control-label">Timetable view</label>
-		<div class="controls">
-			<label class="radio">
-			<?php
-			unset($input);
-			$input['name'] = 'timetable_view';
-			$input['id'] = 'timetable_view_day';
-			$input['value'] = 'day';
-			$input['checked'] = set_radio($input['name'], $input['value'], 
-				($settings['timetable_view'] == $input['value']));
-			$input['tabindex'] = $t;
-			echo form_radio($input);
-			$t++;
-			?>
-			One day at a time
-		  </label>
-			<label class="radio">
-			<?php
-			unset($input);
-			$input['name'] = 'timetable_view';
-			$input['id'] = 'timetable_view_room';
-			$input['value'] = 'room';
-			$input['checked'] = set_radio($input['name'], $input['value'], 
-				($settings['timetable_view'] == $input['value']));
-			$input['tabindex'] = $t;
-			echo form_radio($input);
-			$t++;
-			?>
-			One room at a time
-		  </label>
-		</div>
-	</div>
-	
-	<div class="control-group">
-		<label class="control-label">Timetable column item</label>
-		<div class="controls">
-			<label class="radio">
-			<?php
-			unset($input);
-			$input['name'] = 'timetable_cols';
-			$input['id'] = 'timetable_cols_periods';
-			$input['value'] = 'periods';
-			$input['checked'] = set_radio($input['name'], $input['value'], 
-				($settings['timetable_cols'] == $input['value']));
-			$input['tabindex'] = $t;
-			echo form_radio($input);
-			$t++;
-			?>
-			Periods
-		  </label>
-			<label class="radio">
-			<?php
-			unset($input);
-			$input['name'] = 'timetable_cols';
-			$input['id'] = 'timetable_cols_days';
-			$input['value'] = 'days';
-			$input['checked'] = set_radio($input['name'], $input['value'],
-				($settings['timetable_cols'] == $input['value']));
-			$input['tabindex'] = $t;
-			echo form_radio($input);
-			$t++;
-			?>
-			Days of the week
-		  </label>
-		</div>
-	</div>
-	
-</fieldset>
-
-
-
-<fieldset>
-	<div class="form-actions">
-		<button type="submit" class="btn btn-primary"><?php echo lang('ACTION_SAVE') . ' ' . strtolower(lang('W_SETTINGS')) ?></button>
-		<button class="btn">Cancel</button>
-	</div>
-</fieldset>
-
-
-</form>
-
-
-
-
-<script type="text/javascript">
-function tt_day(){
-	$("#timetable_cols_periods").removeAttr("disabled");
-	$("#timetable_cols_days").attr("disabled","disabled");
-	$("#timetable_cols_rooms").attr("disabled","disabled");
-	$("#timetable_cols_periods").attr("checked", "checked");
-}
-function tt_room(){
-	$("#timetable_cols_periods").removeAttr("disabled");
-	$("#timetable_cols_days").removeAttr("disabled");
-	$("#timetable_cols_rooms").attr("disabled", "disabled");
-}
-_jsQ.push(function(){
-	$("#timetable_view_day").bind("click", function(e){ tt_day(); });
-	$("#timetable_view_room").bind("click", function(e){ tt_room(); });
-	if($("#timetable_view_day").attr("checked")){ tt_day(); }
-	if($("#timetable_view_room").attr("checked")){ tt_room(); }
 });
 </script>

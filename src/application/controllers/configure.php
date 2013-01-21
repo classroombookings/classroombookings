@@ -9,13 +9,16 @@
  * Please see license-classroombookings.txt for the full license text.
  */
  
-class Configure extends Configure_Controller
+class Configure extends MY_Controller
 {
 	
 	
-	function __construct(){
+	function __construct()
+	{
 		parent::__construct();
-		//$this->load->model('security_model');
+		$this->layout->add_breadcrumb(lang('configure'), 'configure');
+		$this->lang->load('configure');
+		$this->lang->load('settings');
 	}
 	
 	
@@ -25,36 +28,53 @@ class Configure extends Configure_Controller
 	 */
 	function index()
 	{
-		if ($this->auth->check('crbs.configure.settings', true))
-		{
-			return $this->settings();
-		}
-		else
-		{
-			// User has configure permission, but not settings.
-			// Hopefully, they'll have permissions for at least one other thing...
-			$data['body'] = '';
-			$this->page($data);
-		}
+		$this->layout->set_title(lang('configure'));
 	}
 	
 	
 	
 	
 	/*
-	 * PAGE: Main settings
+	 * Main settings page
 	 */
 	function settings()
 	{
-		$this->auth->check('crbs.configure.settings');
+		$this->auth->restrict('crbs.configure.settings');
+		$this->data['nav_current'][] = 'configure/settings';
 		
-		// Retrieve settings
-		$settings_list = array('school_name', 'school_url', 'timetable_view', 'timetable_cols');
-		$body['settings'] = $this->settings->get($settings_list);
+		$this->layout->add_breadcrumb(lang('settings'), 'configure/settings');
 		
-		$data['title'] = 'Configure';
-		$data['body'] = $this->load->view('configure/settings', $body, true);
-		$this->page($data);
+		if ($this->input->post())
+		{
+			$this->form_validation->set_rules('school_name', 'School name', 'required|max_length[100]|trim')
+								  ->set_rules('school_url', 'Website address', 'required|max_length[255]|prep_url|trim')
+								  ->set_rules('timetable_view', 'Timetable view', 'required')
+								  ->set_rules('timetable_cols', 'Timteable columns', 'required');
+			
+			if ($this->form_validation->run())
+			{
+				$options = array(
+					'school_name' => $this->input->post('school_name'),
+					'school_url' => $this->input->post('school_url'),
+					'timetable_view' => $this->input->post('timetable_view'),
+					'timetable_cols' => $this->input->post('timetable_cols'),
+				);
+				
+				if ($this->options_model->set($options))
+				{
+					$this->flash->set('success', 'Settings have been updated successfully.', TRUE);
+					redirect(current_url());
+				}
+				else
+				{
+					$this->flash->set('error', 'The settings could not be updated. Please try again.');
+				}
+			}
+		}
+		
+		$this->load->library('form');
+		
+		$this->data['settings'] = $this->options_model->get_all(TRUE);
 	}
 	
 	
@@ -85,10 +105,15 @@ class Configure extends Configure_Controller
 			$data['timetable_view'] = $this->input->post('timetable_view');
 			$data['timetable_cols'] = $this->input->post('timetable_cols');
 			
-			$this->settings->save($data);
+			if ($this->settings->save($data))
+			{
+				$this->flash->set('success', lang('configure_settings_save_success'));
+			}
+			else
+			{
+				$this->flash->set('error', lang('configure_settings_save_error'));
+			}
 			
-			$this->session->set_flashdata('flash', 
-				$this->msg->notice(lang('CONF_MAIN_SAVE_OK')));
 			redirect('configure/settings');
 		}
 	}
