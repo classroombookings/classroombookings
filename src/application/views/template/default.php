@@ -1,12 +1,3 @@
-<?php
-// URI segments
-$seg1 = $this->uri->segment(1, 'home');
-$seg2 = $this->uri->segment(2);
-
-// Can user change working academic year?
-$changeyear = $this->auth->check('changeyear', true);
-
-?>
 <!DOCTYPE html>
 <!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
 <!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
@@ -22,16 +13,6 @@ $changeyear = $this->auth->check('changeyear', true);
 <![endif]-->
 
 <?php echo $this->layout->get_css() ?>
-<?php
-/*
-<link rel="stylesheet" href="css/base.css">
-<link rel="stylesheet" href="css/skeleton.css">
-<link rel="stylesheet" href="css/layout-fluid.css">
-<link rel="stylesheet" href="css/layout.css">
-<link rel="stylesheet" href="3rdparty/syronex-colorpicker/syronex-colorpicker.css">
-<link rel="stylesheet" href="css/calendar.css">
-*/
-?>
 
 <script>
 var CRBS = {}, Q = [];
@@ -44,87 +25,124 @@ CRBS.tt_view = "<?php echo config_item('timetable_view') ?>";
 <body>
 
 
-<div id="header">
+	<header class="header">
+		
+		<div class="row">
+		
+			<div class="grid_8 header-left">
+				<ul class="nav primary">
+					<li class="logo"><a href="<?php echo site_url() ?>" ?><img src="img/template/crbs-logo1.png" style="margin-right: 20px"></a></li>
+					<?php
+					foreach ($nav['primary'] as $item => $data)
+					{
+						$href = $item;
+						$text = $data['label'];
+						$class = $data['class'];
+						echo '<li>' . anchor(site_url($href), $text, 'class=" ' . $class . '"') . '</li>';
+					}
+					?>
+				</ul>
+			</div>
+			
+			<div class="grid_4 header-right">
+				<ul class="nav primary">
+				<?php
+				if ( ! $this->auth->is_logged_in())
+				{
+					echo '<li>' . anchor('account/login', lang('login'), 'class=" security"') . '</li>';
+				}
+				else
+				{
+					echo '<li><strong>' . anchor('account', $this->session->userdata('u_display'), 'class=" account"') . '</strong></li>';
+					echo '<li>' . anchor('account/logout', lang('logout'), 'class=" security"') . '</li>';
+				}
+				?>
+				</ul>
+			</div>
+			
+		</div>
+		
+	</header>
+
+
 	
-	<div class="header-left">
-		<ul class="horiz">
-			<li class="name"><?php echo anchor(option('school_url'), option('school_name'), 'target="_blank"') ?></li>
+	<div class="row">
+		<div class="grid_12">
 			<?php
-			foreach ($nav['primary'] as $item => $data)
+			echo $this->flash->get();
+			$validation_errors = validation_errors('<li>', '</li>');
+			if ( ! empty($validation_errors))
 			{
-				$href = $item;
-				$text = $data['label'];
-				$class = $data['class'];
-				echo '<li>' . anchor(site_url($href), $text, 'class=" ' . $class . '"') . '</li>';
+				echo $this->flash->string('error', '<ul>' . $validation_errors . '</ul>');
 			}
 			?>
-		</ul>
+		</div>
 	</div>
 	
-	<div class="header-right">
-		<ul class="horiz">
-		<?php
-		if ( ! $this->auth->logged_in())
-		{
-			echo '<li>' . anchor('account/login', lang('LOGIN'), 'class=" security"') . '</li>';
-		}
-		else
-		{
-			echo '<li>' . anchor('account/logout', lang('LOGOUT'), 'class=" security"') . '</li>';
-			echo '<li><strong>' . anchor('account', $this->session->userdata('display'), 'class=" account"') . '</strong></li>';
-		}
-		?>
-		</ul>
+	
+	
+	<?php
+	$bread = $this->layout->get_breadcrumb();
+	$bread_markup = array();
+	?>
+	
+	<?php if ($bread): ?>
+	
+	<div class="row breadcrumb">
+		<div class="grid_12">
+			<?php
+			foreach ($this->layout->get_breadcrumb() as $bc)
+			{
+				if (count($bc) === 1)
+				{
+					$bread_markup[] = '<span>' . $bc[0] . '</span>';
+				}
+				else
+				{
+					$bread_markup[] = '<a href="' . $bc[1] . '">' . $bc[0] . '</a>';
+				}
+			}
+			
+			echo implode('<span class="separator">/</span>', $bread_markup);
+			?>
+		</div>
 	</div>
 	
-</div>
+	<?php endif; ?>
+	
+	
+	<!-- page body -->
+	<section class="row body big-bottom">
+		<?php echo $this->layout->get('content') ?>
+	</section>
+	<!-- end page body -->
+	
+	
+	
+	
+	<footer class="row footer">
+		<div class="grid_6"> 
+			<p><a href="http://classroombookings.com/" target="_blank">Classroombookings</a> is released under the Open Software License v3.0.</p>
+			<p>&copy; 2006 &mdash; <?php echo date('Y') ?> Craig A Rodway.</p>
+		</div>
+		<div class="grid_6 text-right">
+			<?php echo anchor(option('school_url'), option('school_name'), 'target="_blank"') ?>
+		</div>
+	</footer>
 
 
-<?php
-if ($this->layout->has('sidebar'))
-{
-	$this->load->view('template/default/content_width_sidebar');
-}
-else
-{
-	$this->load->view('template/default/content_no_sidebar');
-}
-?>
-
-
-<?php
-/* $submenu_html = '';
-if (!empty($submenu))
-{
-	$submenu_html .= '<div class="submenu">';
-	$submenu_html .= $this->load->view('configure/sidebar', array(
-		'menu' => $submenu,
-		'ulclass' => 'horiz subnav'
-	), true);
-	$submenu_html .= '</div>'."\n\n";
-}
-$body = $submenu_html . $body; */
-?>
-
-
-
-
-<div id="footer"> 
-	<p><a href="http://classroombookings.com/" target="_blank">Classroombookings</a> is released under the Open Software License v3.0.<br>
-	&copy; 2006 &mdash; <?php echo date('Y') ?> Craig A Rodway.</p>
-</div>
-
-
-<?php echo $this->layout->get_js() ?>
-<script>
-$(document).ready(function() {
-	if (typeof(window['Q']) != "undefined") {
-		for (var i = 0, len = Q.length; i < len; i++) {
-			Q[i];
+	<?php echo $this->layout->get_js() ?>
+	
+	
+	<script>
+	$(document).ready(function() {
+		if (typeof(window['Q']) !== "undefined") {
+			for (var i = 0, len = Q.length; i < len; i++) {
+				Q[i]();
+			}
 		}
-	}
-});
-</script>
+	});
+	</script>
 
 
 </body>
