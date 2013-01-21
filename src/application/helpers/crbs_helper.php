@@ -53,7 +53,7 @@ function image_large($name){
 /**
  * Language helper. Just make it shorter!
  */
-function lang($language_key = NULL, $variable = NULL){
+/*function lang($language_key = NULL, $variable = NULL){
 	$CI =& get_instance();
 	#$CI->lang->load('crbs2','English');
 	
@@ -62,36 +62,18 @@ function lang($language_key = NULL, $variable = NULL){
 	}
 	
 	return $CI->lang->line($language_key);
-}
+}*/
 
 
 
 
 /**
- * Menu link helper. Crates menu links.
- *
- * seg1 - the segment of the current URI at the position we want
- * href - path/to/url (gets truned into array)
- * text - text of link
- * i - index of href array to check uri segment to
+ * Get a single option that has been set in the 'options' category in the config
  */
-function dolink($seg, $href, $text, $i = 0){
-	$hrefarr = (strpos($href, '/') === FALSE) ? array($href) : explode('/', $href);
-	#echo $hrefarr[$i] . "/ ";
-	#echo "Seg: $seg/ ";
-	#$hrefarr = explode('/', $href);
-	$link = '<li%s><a href="%s">%s</a></li>';
-	$sel = ($seg == $hrefarr[$i]) ? ' class="current"' : '';
-	return sprintf($link, $sel, site_url($href), $text);
-}
-
-
-
-
 function option($name)
 {
-	$_CI =& get_instance();
-	return $_CI->config->item($name, 'options');
+	$CI =& get_instance();
+	return $CI->config->item($name, 'options');
 }
 
 
@@ -99,6 +81,24 @@ function option($name)
 
 function flash($type = 'notice', $content = '')
 {
-	$_CI =& get_instance();
-	$_CI->session->set_flashdata('notice', $content);
+	die("FLASH FUNCTION!");
+}
+
+
+
+
+/** 
+ * Calls to tab_index() will return an incrementing number.
+ */
+function tab_index($reset = FALSE)
+{
+	static $t;
+	
+	if ($reset === TRUE OR ! is_numeric($t))
+	{
+		$t = 0;
+	}
+	
+	$t++;
+	return $t;
 }
