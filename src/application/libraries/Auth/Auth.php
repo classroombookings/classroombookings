@@ -15,31 +15,31 @@
 class Auth extends CI_Driver_Library
 {
 	
-	protected $valid_drivers = array('Auth_local', 'Auth_ldap');
+	public $valid_drivers = array('auth_local', 'auth_ldap', 'auth_preauth');
 	
-	private $_CI;
-	private $_db_user;
-	private $_cookie_salt;
-	private $_levels;
-	private $_settings;
-	private $_error_page;
+	public $CI;
 	
-	private $_user_id;
-	private $_room_id;
+	//private $_db_user;
+	//private $_cookie_salt;
+	//private $_levels;
+	//private $_settings;
+	//private $_error_page;
 	
-	private $_permission_cache;
+	private $_permission_cache = NULL;
 	
-	public $error_msg;
-
-
+	public $reason;		// Reason for return failure from functions
+	
+	
+	
+	
 	public function __construct()
 	{
-		$this->_CI =& get_instance();
+		$this->CI =& get_instance();
 		
 		// Load helpers/models required by the library
-		$this->_CI->load->helper('cookie');
-		$this->_CI->load->model('security_model');
-		$this->_CI->load->library('user_agent');
+		$this->CI->load->helper('cookie');
+		$this->CI->load->model('security_model');
+		$this->CI->load->library('user_agent');
 	}
 	
 	
@@ -49,78 +49,79 @@ class Auth extends CI_Driver_Library
 	 * Auth check function to see if a user has the appropriate privileges
 	 *
 	 * @param action The action the user is wanting to perform
-	 * @param return TRUE: Just return the boolean answer. FALSE: Redirect/show error page/stop execution
 	 */
-	function check($action, $return = FALSE)
+	function check($action = '')
 	{
-		log_message('debug', 'Auth: check(): Action - ' . $action . '.');
+		$u_id = (int) $this->CI->session->userdata('u_id');
 		
-		$u_id = $this->_CI->session->userdata('u_id');
+		log_message('debug', "Auth: check($action): checking for User ID $u_id...");
 		
-		if (empty($this->_permission_cache))
+		//print_r($this->_permission_cache);
+		
+		if ($this->_permission_cache === NULL)
 		{
 			// Permission cache on object for this request is empty.
 			// Get/set DB cache
-			$permissions = $this->_CI->permissions_model->get_from_cache($u_id);
-			log_message('debug', 'Auth: check(): permissions loaded from DB [cache].');
+			$permissions = $this->CI->permissions_model->get_cache($u_id);
+			
+			log_message('debug', "Auth: check($action): permissions loaded from DB cache. Storing locally.");
+			
 			$this->_permission_cache = $permissions;
-			log_message('debug', 'Auth: check(): request object cache has been loaded!');
-			if (is_array($permissions))
-			{
-				log_message('debug', 'Auth: check(): permissions: ' . implode(', ', $permissions));
-			}
-		}
-		else
-		{
-			log_message('debug', 'Auth: check(): permissions loaded from request object cache.');
-			$permissions = $this->_permission_cache;
 		}
 		
-		// See if this action is in the permissions array for the user
-		if( is_array($permissions))
+		if (is_array($this->_permission_cache))
 		{
-			$check = in_array($action, $permissions);
+			log_message('debug', "Auth: check($action): _permission_cache IS an array!");
+			$check = in_array($action, $this->_permission_cache);
 		}
 		else
 		{
+			log_message('debug', "Auth: check($action): _permission_cache is not an array.");
 			$check = FALSE;
 		}
 		
-		log_message('debug', 'Auth: check(): Result: ' . $check . '.');
+		log_message('debug', "Auth: check($action): Result: " . var_export($check, TRUE) . ".");
 		
-		// Return true/false if we only want the return value
-		if ($return === TRUE)
-		{
-			return ($check === TRUE);
-		}
-		
-		// Otherwise, show error page if failed check ...
-		if ($check === FALSE)
+		return ($check === TRUE);
+	}
+	
+	
+	
+	
+	/**
+	 * Restrict access to the page by checking user permission for the action
+	 * and stopping execution if the check fails.
+	 *
+	 * @param int 
+	 */
+	public function restrict($action = '')
+	{
+		if ( ! $this->check($action))
 		{
 			// User not allowed for that action - do stuff
 			
 			// Get URI string requested so can redirect to it after successful login
-			$this->_CI->session->set_userdata('uri', $this->_CI->uri->uri_string());
+			$this->CI->session->set_userdata('uri', $this->CI->uri->uri_string());
 			
-			$this->_CI->load->library('user_agent');
+			$this->CI->load->library('user_agent');
 			
 			// User logged in? If not then they must at least login.
 			// If yes, then they just don't have the necessary privileges.
-			if( $this->logged_in() === FALSE)
+			if ($this->is_logged_in() === FALSE)
 			{
-				$this->lasterr = $this->_CI->lang->line('AUTH_MUST_LOGIN');
-				$this->lasterr2 = anchor('account/login', 'Click here to login.');
+				$this->CI->flash->set('error', lang('AUTH_MUST_LOGIN'), TRUE);
+				redirect('account/login');
 			}
 			else
 			{
-				$this->lasterr = $this->_CI->lang->line('AUTH_NO_PRIVS');
-				$this->lasterr2 = anchor($this->_CI->agent->referrer(), 'Click here to go back.');
+				$err1 = lang('AUTH_NO_PRIVS');
+				$err2 = anchor($this->CI->agent->referrer(), 'Click here to go back.');
 			}
+			
 			$error =& load_class('Exceptions', 'core');
-			echo $error->show_error($this->lasterr, $this->lasterr2);
+			echo $error->show_error($err1, $err2);
 			exit;
 		}
-		
 	}
 	
 	
@@ -129,32 +130,21 @@ class Auth extends CI_Driver_Library
 	/**
 	 * Check a room permission for set user and room ID. (set_user(), set_room())
 	 */
-	function check_room($permission, $room_id = NULL){
-		
-		// If room ID supplied as parameter, use it instead
-		$room_id = ($room_id != NULL) ? $room_id : $this->room_id;
-		
-		if(!is_numeric($room_id)){
-			$this->lasterr = 'Room ID has not been set.';
-			return FALSE;
-		}
-		
-		if(!is_numeric($this->user_id)){
-			$this->lasterr = 'User ID has not been set.';
-			return FALSE;
-		}
-		
+	function check_room($action = '', $rm_id = 0, $u_id = 0)
+	{
 		// Get permissions on given room for the user. TRUE if user is exempt, otherwise array.
-		$perms = $this->_CI->rooms_model->permission_check($this->user_id, $this->room_id);
+		$perms = $this->CI->rooms_model->permission_check($u_id, $rm_id);
 		
 		// Allowed
-		$cando = array();
+		$can_do = array();
 		
-		if(is_array($perms)){
-			foreach($perms as $p){
-				$cando[] = $p[1];
+		if (is_array($perms))
+		{
+			foreach ($perms as $p)
+			{
+				$can_do[] = $p[1];
 			}
-			$perms = $cando;
+			$perms = $can_do;
 		}
 		
 		// Finally complete the check
@@ -170,154 +160,25 @@ class Auth extends CI_Driver_Library
 	/**
 	 * Return array of all permissions that the user has on the set room
 	 */
-	function room_permissions(){
+	function room_permissions($rm_id = 0, $u_id)
+	{
+		die("Move room_permissions() to permissions_model or something!");
 		
-		$perms = $this->_CI->rooms_model->permission_check($this->user_id, $this->room_id);
+		$perms = $this->CI->rooms_model->permission_check($rm_id, $u_id);
 		
 		// Allowed
-		$cando = array();
-
-		if(is_array($perms)){
-			foreach($perms as $p){
-				$cando[] = $p[1];
+		$can_do = array();
+		
+		if (is_array($perms))
+		{
+			foreach ($perms as $p)
+			{
+				$can_do[] = $p[1];
 			}
-			$perms = $cando;
+			$perms = $can_do;
 		}
 		
 		return $perms;
-		
-	}
-	
-	
-	
-	
-	/**
-	 * Set the class instance variable User ID
-	 */
-	function set_user($user_id = NULL){
-		if($user_id == NULL){
-			$user_id = $this->session->userdata('user_id');
-		}
-		$this->user_id = $user_id;
-	}
-	
-	
-	
-	
-	/**
-	 * Set the class instance variable room ID
-	 */
-	function set_room($room_id){
-		if(is_numeric($room_id)){
-			$this->room_id = $room_id;
-		}
-	}
-	
-	
-	
-	
-	/**
-	 * Login user via a cookie
-	 *
-	 * Cookie key is stored in DB against a user and is selected to retrieve the user info.
-	 * It is then passed to the login() function
-	 *
-	 * @param	string	key		Cookie key which should be a SHA1 hash
-	 * @return	bool
-	 */
-	function cookielogin($key = NULL){
-		// Check to see if key was supplied
-		if($key == NULL){
-			
-			// No cookie key supplied, fatal!
-			$this->lasterr = $this->_CI->load->view('msg/err', 'Error with login cookie.', TRUE);
-			$ret = FALSE;
-			
-		} else {
-		
-			// Got a key, now to see if it is correct format.
-			
-			if(strlen($key) != 40){
-				
-				// Is not valid key
-				$this->lasterr = $this->_CI->msg->err('Cookie is not the correct length.');
-				$ret = FALSE;
-				
-			} else {
-				
-				// Got cookie key! hopefully should be in the DB
-				$sql = 'SELECT user_id, username, lastlogin 
-						FROM users 
-						WHERE cookiekey = ? 
-						LIMIT 1';
-				// Run query
-				$query = $this->_CI->db->query($sql, array($key));
-				
-				// Check to see how many rows we got from selecting via the cookie key
-				if($query->num_rows() == 1){
-					
-					// Ok, got user!
-					$user = $query->row();
-					
-					// Generate original cookie key hash (what we *expect* it to be, if valid) to compare to
-					$cookiekey = sha1(implode("", array(
-						$this->cookiesalt,
-						$user->user_id, 
-						$user->username,
-						$user->lastlogin,
-						$this->_CI->agent->agent_string(),
-					)));
-					
-					// Compare hash
-					if($cookiekey == $key){
-						
-						// Matched! We can now log the user in and set the remember-me option again
-						//$login = $this->login($userinfo->username, $userinfo->password, TRUE);
-						$login = $this->session_create($user->username, TRUE);
-						$ret = $login;
-						
-					} else {
-						
-						// Did not match!
-						$this->lasterr = $this->_CI->msg->err("Invalid cookie (did not match database entry). Did you log in from another computer?");	//<br />Compare $cookiekey to $key.");
-						$ret = FALSE;
-						
-					}
-					
-				} else {
-					
-					// No rows returned from the DB with that cookie key
-					$this->lasterr = $this->_CI->msg->err('Could not find your cookie in the database. Did you log in from another computer?');
-					$ret = FALSE;
-					
-				}		// End of num_rows() check
-				
-			}		// End of strlen() check on cookie key
-			
-		}		// End of key == NULL check
-		
-		// Check the return value
-		if($ret == FALSE){
-			
-			// Remove cookies - they're useless now
-			// If we kept them, CRBS would keep using them to login and we would be in an endless loop...
-			delete_cookie("crbs_key");
-			delete_cookie("crbs_user_id");
-			
-			// This code has now been moved to the Msg library
-			/* $error =& load_class('Exceptions');
-			echo $error->show_error("Cannot login via cookie", $this->lasterr);
-			exit; */
-			
-			// Generate and show error with link to login page
-			$this->lasterr .= '<br />' . anchor('account/login', 'Click here to login using your username and password.');			
-			$this->_CI->msg->fail('Cannot login via cookie', $this->lasterr);
-			
-		} else {
-			
-			return $ret;
-			
-		}
 		
 	}
 	
@@ -331,81 +192,129 @@ class Auth extends CI_Driver_Library
 	 * @param	string	username	Username
 	 * @param	string	password	Password in either sha1 or plaintext
 	 * @param	bool	remember	Whether or not to set the remember cookie (default is false)
-	 * @param	bool	is_sha1		Is password already sha1
+	 * @param	bool	is_sha1		Is password already sha1	
 	 * @return	bool
 	 */
-	function login($username = '', $password = '', $remember = FALSE)
+	function login($username = '', $password = '')
 	{
 		// Retrieve auth settings
 		$ldap_enable = option('auth_ldap_enable');
 		
-		if ( ! empty($username) && ! empty($password))
+		log_message('debug', "Auth: login($username): LDAP enabled: $ldap_enable");
+		
+		if (empty($username) || empty($password))
 		{
-			// Get user details
-			$this->_CI->load->model('users_model');
-			$this->_CI->users_model->limit(1);
-			
-			$user = $this->_CI->users_model->get_by('u_username', $username);
-			
-			$try_local = TRUE;
-			$try_ldap = FALSE;
-			
-			if ( ! $user OR $user['u_auth_method'] === 'ldap')
-			{
-				// If no user, or their auth method is LDAP, then we should be checking LDAP.
-				$try_ldap = TRUE;
-			}
-			
-			// If LDAP is enabled, and should try that for this user, do it.
-			if ($ldap_enable === TRUE && $try_ldap === TRUE)
-			{
-				// Don't try local auth unless this fails
-				$try_local = FALSE;
-				
-				// We are using LDAP. First, send the supplied user and password to the ldap function
-				//$ldapauth = $this->auth_ldap($username, $password);
-				$auth_response = $this->ldap->auth($username, $password);
-				
-				if ($auth_response === TRUE)
-				{
-					return $this->session_create($username, $remember);
-				}
-				else
-				{
-					// Fail if the LDAP auth function failed (lasterr is already set by that function)
-					#$trylocal = TRUE;
-					return FALSE;
-				}
-			}
-			elseif($ldap_enable === FALSE && $try_ldap === TRUE)
-			{
-				$this->lasterr = 'User authenticates via LDAP but system is not configured to use LDAP.';
-				return FALSE;
-			}
-			
-			// Not using LDAP or LDAP auth failed, so we look up a local user in the DB (trylocal should be TRUE now)
-			
-			if ($try_local === TRUE)
-			{
-				$auth_response = $this->local->auth($username, $password);
-				if ($auth_response === TRUE)
-				{
-					return $this->session_create($username, $remember);
-				}
-				else
-				{
-					$this->lasterr = (isset($this->lasterr)) 
-						? $this->lasterr 
-						: "Incorrect username and/or password";
-				}
-			}
-		}
-		else
-		{
-			// No username and password supplied
-			$this->lasterr = "No username and/or password supplied to Auth library.";
+			log_message('debug', "Auth: login($username): Empty username and password");
+			$this->reason = 'Empty username and/or password.';
 			return FALSE;
 		}
+		
+		$user = $this->CI->users_model->get_by_username($username);
+		
+		log_message('debug', "Auth: login($username): User: " . var_export($user, TRUE));
+		log_message('debug', "Auth: login($username): Query: " . $this->CI->db->last_query());
+		
+		
+		// Early enough to check if their account is disabled. If it is, exit here.
+		if ($user && $user['u_enabled'] == 0)
+		{
+			log_message('debug', "Auth: login($username): Account disabled.");
+			$this->reason = 'Account not enabled';
+			return FALSE;
+		}
+		
+		// Default places to try to authenticate the user
+		$try_local = TRUE;
+		$try_ldap = FALSE;
+		
+		if ( ! $user || $user['u_auth_method'] === 'ldap')
+		{
+			// If no user, or their auth method is LDAP, then we should be checking LDAP.
+			log_message('debug', "Auth: login($username): No user or their auth method is LDAP (setting try_ldap = true)");			
+			$try_ldap = TRUE;
+		}
+			
+		// If LDAP is enabled, and should try that for this user, do it.
+		if ($ldap_enable === TRUE && $try_ldap === TRUE)
+		{
+			log_message('debug', "Auth: login($username): LDAP is enabled and trying LDAP for this user");
+			
+			// Don't try local auth unless this fails
+			$try_local = FALSE;
+			
+			// We are using LDAP. First, send the supplied user and password to the ldap function.
+			$auth_response = $this->ldap->auth($username, $password);
+			
+			if ($auth_response === TRUE)
+			{
+				log_message('debug', "Auth: login($username): LDAP response successful.");
+				
+				// Potentially, a new user could have been created here. Get latest info
+				$user = $this->CI->users_model->get_by_username($username);
+				$session = $this->create_session($user['u_id']);
+				
+				if ($session)
+				{
+					// Update last login datetime
+					$this->CI->users_model->set_last_login($user['u_id']);
+					
+					// Set as an active user and get token that will identify this session
+					$active_token = $this->CI->users_model->set_active($user['u_id']);
+					log_message('debug', "Auth: login($username): New active entry - " . $this->CI->db->last_query());
+					$this->CI->session->set_userdata('active_token', $active_token);
+				}
+				
+				return $session;
+			}
+			else
+			{
+				log_message('debug', "Auth: login($username): LDAP response failure.");
+				$this->reason = $this->ldap->reason;
+				$try_local = TRUE;
+			}
+		}
+		elseif($ldap_enable === FALSE && $try_ldap === TRUE)
+		{
+			log_message('debug', "Auth: login($username): User auth method is LDAP but LDAP not enabled.");
+			$this->reason = 'LDAP is not enabled, but account settings require LDAP.';
+			return FALSE;
+		}
+		
+		// Not using LDAP or LDAP auth failed, so we look up a local user in the DB (trylocal should be TRUE now)
+		
+		if ($try_local === TRUE)
+		{
+			log_message('debug', "Auth: login($username): Local authentication attempt");
+			
+			$auth_response = $this->local->auth($username, $password);
+			
+			if ($auth_response === TRUE)
+			{
+				$session = $this->create_session($user['u_id']);
+				
+				if ($session)
+				{
+					// Update last login datetime
+					$this->CI->users_model->set_last_login($user['u_id']);
+					
+					// Set as an active user and get token that will identify this session
+					$active_token = $this->CI->users_model->set_active($user['u_id']);
+					log_message('debug', "Auth: login($username): New active entry - " . $this->CI->db->last_query());
+					$this->CI->session->set_userdata('active_token', $active_token);
+				}
+				
+				return $session;
+			}
+			else
+			{
+				$this->reason = ($this->reason) ?: "Incorrect username and/or password";
+				return FALSE;
+			}
+		}
+		
+		log_message('debug', "Auth: login($username): All options exhausted.");
+		
+		return FALSE;
 	}
 	
 	
@@ -415,153 +324,51 @@ class Auth extends CI_Driver_Library
 	 * Create login session
 	 *
 	 * This function should only be called once the user has been validated via ldap/local/preauth.
-	 * The user MUST exist.
+	 * The user MUST exist - and it is presumed that they are enabled.
 	 *
 	 * @param string username
 	 * @return bool
 	 */
-	function session_create($username = '')
+	function create_session($u_id = 0)
 	{
-		/*
-			We need to check of the enabled=1 at this stage because we dont want 
-			preauth/ldap/local to override this
-		*/
-		
-		$this->_CI->load->model('users_model');
-		$this->_CI->users_model->set_filter(array(
-			'u_username' => $username,
-			'u_enabled' => 1,
-		));
-		$this->_CI->users_model->limit(1);
-		$user = $this->_CI->users_model->get_all();
+		log_message('debug', 'Auth: create_session(): Creating session for User ID ' . $u_id);
+		$this->CI->load->model('users_model');
+		$user = $this->CI->users_model->get($u_id);
 		
 		if ($user)
 		{
-			// Cool, got the user we wanted
+			// Academic year data for session
+			$this->CI->load->model('years_model');
+			$year = $this->CI->years_model->get_current();
 			
-			// Update last login datetime
-			$data = array('u_datetime_lastlogin' => date('Y-m-d H:i:s'));
-			$this->_CI->users_model->update($user['u_id'], $data);
+			// All session data
+			$session_data = array(
+				'u_id' => $user['u_id'],
+				'u_username' => $user['u_username'],
+				'u_email' => $user['u_email'],
+				'u_display' => $user['u_display'],
+				'year_active' => $year['y_id'],
+				'year_working' => $year['y_id'],
+			);
 			
-			// Add user data to session but remove password
-			unset($session['u_password']);
+			$this->CI->session->set_userdata($session_data);
 			
-			// Academic year data 
-			// Create session data array
-			$sessdata['user_id']			= $user->user_id;
-			$sessdata['group_id']			= $user->group_id;
-			$sessdata['username']			= $user->username;
-			$sessdata['display']			= $user->display;	#($user->display == NULL) ? $user->username : $user->display;
-			$sessdata['year_active']		= $this->_CI->years_model->get_current_id();
-			$sessdata['year_working']		= $sessdata['year_active'];
-			
-			// Set session data
-			$this->_CI->session->set_userdata($sessdata);
-			
-			// Save permissions to cache
-			$this->_CI->permissions_model->save_to_cache($user->user_id);
-			
-			// Now set remember-me cookie if requested
-			if ($remember == TRUE)
-			{
-				// Generate hash using details we just retrieved
-				$cookiekey = sha1(implode("", array(
-					$this->cookiesalt,
-					$user->user_id, 
-					$user->username,
-					$timestamp,
-					$this->_CI->agent->agent_string(),
-				)));
-				
-				// Set cookie data
-				$cookie['expire'] = 60 * 60 * 24 * 14;		// 14 days
-				
-				$cookie['name'] = 'crbs_key';
-				$cookie['value'] = $cookiekey;
-				set_cookie($cookie);
-				$cookie['name'] = 'crbs_user_id';
-				$cookie['value'] = $user->user_id;
-				set_cookie($cookie);
-				
-				// Update DB table with the hash that we will later check on return visit
-				$sql = 'UPDATE users 
-						SET cookiekey = ? 
-						WHERE user_id = ?';
-				$query = $this->_CI->db->query($sql, array($cookiekey, $user->user_id));
-			}
+			// Save permissions for this user to cache
+			$this->CI->permissions_model->set_cache($u_id);
 			
 			// Delete some cookies that might have been left over that we don't want
 			delete_cookie("cal_month");
 			delete_cookie("cal_year");
 			
-			// Done all we needed to do.
-			// TODO: Should we check the session data has actually been set before returning success?
 			return TRUE;
-			
 		}
 		else
 		{
 			// FAIL! User account is *probably*: 1) LDAP, but 2) Disabled
-			$this->lasterr = 'Logon failed - could not find details to initialise session.';
+			log_message('debug', 'Auth: create_session(): Could not get user by ID');
 			return FALSE;
 		}
-		
 	}
-	
-	
-	
-	/*
-	function session_create_anon()
-	{
-		$anon_user_id = $this->_CI->settings->get('auth_anonuserid');
-		if (empty($anon_user_id))
-		{
-			$this->lasterr = 'No anonymous user has been configured.';
-			log_message('debug', 'Auth: session_create_anon(): ' . $this->lasterr);
-			return false;
-		}
-		
-		$sql = 'SELECT 
-					user_id, 
-					group_id, 
-					username, 
-					displayname,
-					IFNULL(displayname, username) AS display
-				FROM users
-				WHERE user_id = ? 
-				AND enabled = 1 
-				LIMIT 1';
-		$query = $this->_CI->db->query($sql, array($anon_user_id));
-		
-		if($query->num_rows() == 1){
-
-			// Cool, got the user we wanted
-			$user = $query->row();
-			
-			// Create session data array
-			$sessdata['user_id']			= $user->user_id;
-			$sessdata['group_id']			= $user->group_id;
-			$sessdata['username']			= $user->username;
-			$sessdata['display']			= $user->display;
-			$sessdata['year_active']		= $this->_CI->years_model->get_active_id();
-			$sessdata['year_working']		= $sessdata['year_active'];
-			$sessdata['permissions']		= $this->_CI->security_model->get_group_permissions($user->group_id);
-			$sessdata['is_anon']			= true;
-
-			// Set session data
-			$this->_CI->session->set_userdata($sessdata);
-			
-			return true;
-			
-		}
-		else
-		{
-			$this->lasterr = 'Anonymous user not found in database.';
-			return false;
-		}
-		
-	}
-	*/
 	
 	
 	
@@ -571,45 +378,22 @@ class Auth extends CI_Driver_Library
 	 *
 	 * @return	bool
 	 */	 	
-	function logout()
+	function destroy_session()
 	{
-		$user_id = $this->_CI->session->userdata('user_id');
+		$u_id = $this->CI->session->userdata('u_id');
+		$active_token = $this->CI->session->userdata('active_token');
 		
-		$sql = 'DELETE FROM usersactive WHERE user_id = ?';
-		$query = $this->_CI->db->query($sql, array($user_id));
+		$this->CI->load->model(array('users_model', 'permissions_model'));
 		
-		// Set session data to NULL (include all fields!)
-		$sessdata['user_id'] = NULL;
-		$sessdata['group_id'] = NULL;
-		$sessdata['username'] = NULL;
-		$sessdata['display'] = NULL;
-		$sessdata['year_active'] = NULL;
-		$sessdata['year_working'] = NULL;
-		$sessdata['permissions'] = NULL;
-		
-		// Set empty session data
-		$this->_CI->session->set_userdata($sessdata);
-		$this->_CI->session->unset_userdata($sessdata);
+		// Housekeeping
+		$this->CI->users_model->remove_active($u_id, $active_token);
+		$this->CI->permissions_model->clear_cache($u_id);
 		
 		// Destroy session
-		$this->_CI->session->sess_destroy();
+		$this->CI->session->unset_userdata('u_id');
+		$this->CI->session->sess_destroy();
 		
-		$this->_CI->permissions_model->clear_cache($user_id);
-		
-		// Remove cookies too
-		delete_cookie("crbs_key");
-		delete_cookie("crbs_user_id");
-		delete_cookie("crbsb.room_id");
-		delete_cookie("crbsb.week");
-		delete_cookie("crbsb.week_requested_date");
-		delete_cookie("tab.bookings");
-		
-		// NULLify the cookie key in the DB
-		//$sql = 'UPDATE users SET cookiekey = NULL WHERE user_id = ?';
-		//$query = $this->_CI->db->query($sql, array($user_id));
-		
-		// Verify session has been destroyed by retrieving info 
-		return ($this->_CI->session->userdata('user_id') == FALSE) ? TRUE : FALSE;
+		return ( ! $this->CI->session->userdata('u_id'));
 	}
 	
 	
@@ -653,7 +437,7 @@ class Auth extends CI_Driver_Library
 		}
 		
 		// Get the current key from the database
-		$preauthkey = $this->_CI->settings->get('auth_preauth_key');
+		$preauthkey = $this->CI->settings->get('auth_preauth_key');
 		
 		// Work out what we *should* get based on their info + our preauthkey
 		$expected_final = sha1("{$data['username']}|{$data['timestamp']}|{$preauthkey}");
@@ -678,6 +462,7 @@ class Auth extends CI_Driver_Library
 	 * @param	string	password
 	 * @return	bool
 	 */
+	/*
 	function auth_local($username, $password){
 		
 		$sql = 'SELECT password 
@@ -687,7 +472,7 @@ class Auth extends CI_Driver_Library
 				AND ldap = 0
 				LIMIT 1';
 				
-		$query = $this->_CI->db->query($sql, array($username));
+		$query = $this->CI->db->query($sql, array($username));
 		
 		if ($query->num_rows() == 1)
 		{
@@ -712,6 +497,7 @@ class Auth extends CI_Driver_Library
 		}
 		
 	}
+	*/
 	
 	
 	
@@ -728,6 +514,7 @@ class Auth extends CI_Driver_Library
 	 * @param	bool	updateinfo		Update the local DB with info from LDAP or not
 	 * @return	mixed	local user_id on success, FALSE on failure
 	 */
+	/*
 	function auth_ldap($username, $password){
 		
 		if(!function_exists('ldap_bind')){
@@ -801,10 +588,10 @@ class Auth extends CI_Driver_Library
 		}
 		
 		
-		/*
-			... otherwise, add if they dont exist; and update if they do.
-			... either way, we need to fetch some data. Do that now...
-		*/
+		//
+		//	... otherwise, add if they dont exist; and update if they do.
+		//	... either way, we need to fetch some data. Do that now...
+		//
 		
 		// Get group mappings
 		unset($info[0]['memberof']['count']);
@@ -846,10 +633,10 @@ class Auth extends CI_Driver_Library
 		$data['password'] = NULL;
 		
 		
-		/*
-			At this point, we have authenticated and we need to know if we should update
-			user details or add them as a new user.
-		*/
+		//
+		//	At this point, we have authenticated and we need to know if we should update
+		//	user details or add them as a new user.
+		//
 		
 		if($userexists == TRUE){
 			
@@ -892,63 +679,44 @@ class Auth extends CI_Driver_Library
 	
 	
 	/**
-	 * Check if a user exists
-	 *
-	 * @param string Username to check
-	 * @return bool
-	 */
-	function userexists($username){
-		$sql = 'SELECT user_id FROM users WHERE username = ? LIMIT 1';
-		$query = $this->_CI->db->query($sql, array($username));
-		return ($query->num_rows() == 1) ? TRUE : FALSE;
-	}
-	
-	
-	
-	
-	/**
-	 * Check if an email address is already used in the DB for any user
-	 *
-	 * @param string Email address to look up
-	 * @return bool
-	 */
-	function emailexists($email){
-		$sql = 'SELECT uid FROM userinfo WHERE email = ? LIMIT 1';
-		$query = $this->dbuser->query($sql, array($email));
-		return ($query->num_rows() == 1) ? TRUE : FALSE;
-	}
-	
-	
-	
-	
-	/**
 	 * Return if user is logged in or not
+	 *
+	 * @return bool
 	 */
-	function logged_in()
+	function is_logged_in()
 	{
-		$user_id = $this->_CI->session->userdata('user_id');
-		return ($user_id);
+		return ($this->CI->session->userdata('u_id'));
 	}
+	
+	
+	
+	
+	/**
+	 * Require the user to be logged in.
+	 *
+	 * @param bool $redirect		Redirect to login page if not logged in
+	 * @return void
+	 */
+	function require_logged_in($redirect = TRUE)
+	{
+		if ( ! $this->is_logged_in())
+		{
+			$this->CI->flash->set('error', lang('ERR_NOT_LOGGED_IN'));
+			if ( $redirect ) redirect('account/login');
+			return;
+		}
+	}
+	
 	
 	
 	/*
-	function is_anon()
+	function active_users()
 	{
-		$anon_user_id = $this->_CI->settings->get('auth_anonuserid');
-		$session_user_id = $this->_CI->session->userdata('user_id');
-		return ($session_user_id == $anon_user_id);
-	}
-	*/
-	
-	
-	
-	
-	function active_users(){
 		
 		$sql = 'SELECT users.user_id, users.username, users.displayname, usersactive.timestamp
 				FROM users
 				RIGHT JOIN usersactive ON users.user_id = usersactive.user_id';
-		$query = $this->_CI->db->query($sql);
+		$query = $this->CI->db->query($sql);
 		
 		$result = $query->result();
 		$activeusers = array();
@@ -962,40 +730,7 @@ class Auth extends CI_Driver_Library
 		return $activeusers;
 		
 	}
-	
-	
-	
-	
-	public function hash_password($password)
-	{
-		$this->_CI->load->helper('string');
-		$salt = random_string('alnum', 10);
-		return $this->hash_with_salt($password, $salt);
-	}
-	
-	
-	
-	
-	private function hash_with_salt($password, $salt)
-	{
-		$global_salt = $this->_CI->config->item('encryption_key');
-		$sha1 = sha1($salt . $password . $global_salt);
-		for ($i = 0; $i < 1000; $i++)
-		{
-			$sha1 = sha1($sha1 . (($i % 2 == 0) ? $password : $salt));
-		}
-		return 'crbs#' . $salt . '#' . $sha1;
-	}
-	
-	
-	
-	
-	public function check_password($password, $hashed)
-	{
-		$parts = explode('#', $hashed);
-		$salt = $parts[1];
-		return ($this->hash_with_salt($password, $salt) == $hashed);
-	}
+	*/
 	
 	
 	
