@@ -70,6 +70,9 @@ class MY_Model extends CI_Model
 
 
     protected $_filter_data = array();
+	
+	
+	protected $_join = NULL;
 
 
     /**
@@ -221,6 +224,7 @@ class MY_Model extends CI_Model
     {
         $sql = 'SELECT *
                 FROM `' . $this->_table . '`
+				' . $this->join_sql() . '
                 WHERE `' . $this->_primary . '` = ?
                 LIMIT 1';
         
@@ -240,7 +244,8 @@ class MY_Model extends CI_Model
     public function get_by($key, $value)
     {
         $sql = 'SELECT * 
-                FROM `' . $this->_table . '` 
+                FROM `' . $this->_table . '`
+				' . $this->join_sql() . ' 
                 WHERE `' . $key .'` = ?' .
                 $this->order_sql() .
                 $this->limit_sql();
@@ -315,10 +320,12 @@ class MY_Model extends CI_Model
      */
     public function delete($id)
     {
-        $sql = 'DELETE FROM `' . $this->_table . '` 
-                WHERE `' . $this->_primary . '` = ?
-                LIMIT 1';
-        return $this->db->query($sql, array($id));
+		$sql = 'DELETE `' . $this->_table . '` FROM `' . $this->_table . '`
+				' . $this->join_sql() . ' 
+				WHERE `' . $this->_primary . '` = ?
+				LIMIT 1';
+		
+		return $this->db->query($sql, array($id));
     }
 
 
@@ -412,6 +419,15 @@ class MY_Model extends CI_Model
         
         return " LIMIT " . $offset . $this->_limit;
     }
+	
+	
+	
+	
+	protected function join_sql()
+	{
+		if ($this->_join === NULL) return '';
+		return ' LEFT JOIN `' . $this->_join[0] . '` ON ' . $this->_join[1];
+	}
 
 
 
@@ -496,7 +512,7 @@ class MY_Model extends CI_Model
 class School_model extends MY_Model {
 
 
-    private $_s_id;       // School ID
+    protected $_s_id;       // School ID
 
 
     public function __construct()
@@ -517,8 +533,10 @@ class School_model extends MY_Model {
      *
      * @return string       String containing table-relative SQL
      */  
-    protected function _sch_sql()
+    protected function sch_sql()
     {
+        if ( (int) $this->_s_id === 0) log_message('error', 'School_model: sch_sql(): School ID should NOT be 0 here!');
+        
         return ' AND `' . $this->_sch_key . '` = ' . (int) $this->_s_id . ' ';
     }
     
@@ -533,8 +551,12 @@ class School_model extends MY_Model {
      */ 
     public function insert($data = array())
     {
-        // Add the school ID to this insert
-        $data[$this->_sch_key] = $this->_sch_id;
+		if ($this->_join === NULL)
+		{
+			// Add the school ID to this insert
+			$data[$this->_sch_key] = $this->_sch_id;
+		}
+        
         // Delegate responsibility to parent
         return parent::insert($data);
     }
@@ -550,10 +572,11 @@ class School_model extends MY_Model {
      */
     public function delete($id = 0)
     {
-        $sql = 'DELETE FROM `' . $this->_table . '`
-                WHERE `' . $this->_primary . '` = ? ' . 
-                $this->sch_sql() . '
-                LIMIT 1';
+        $sql = 'DELETE `' . $this->_table . '` FROM `' . $this->_table . '`
+                ' . $this->join_sql() . '
+                WHERE `' . $this->_primary . '` = ?
+				' . $this->sch_sql() . '
+				LIMIT 1';
         
         return $this->db->query($sql, array($id));
     }
@@ -570,11 +593,13 @@ class School_model extends MY_Model {
     {
         $sql = 'SELECT *
                 FROM `' . $this->_table . '`
-                WHERE 1 = 1'.
-                $this->sch_sql() .
-                $this->order_sql() .
-                $this->limit_sql();
-        
+				' . $this->join_sql() . '
+                WHERE 1 = 1
+				' . $this->sch_sql() . '
+                ' . $this->filter_sql() . '
+				' . $this->order_sql() . '
+				' . $this->limit_sql();
+		
         return $this->db->query($sql)->result_array();
     }
     
@@ -591,10 +616,11 @@ class School_model extends MY_Model {
     {
         $sql = 'SELECT *
                 FROM `' . $this->_table . '`
-                WHERE `' . $this->_primary . '` = ? ' .
-                $this->sch_sql() . '
+				' . $this->join_sql() . '
+                WHERE `' . $this->_primary . '` = ?
+				' . $this->sch_sql() . '
                 LIMIT 1';
-        
+		
         return $this->db->query($sql, array($id))->row_array();
     }
     
@@ -657,11 +683,10 @@ class School_model extends MY_Model {
         
         $sql = "SELECT `$key`, `$value` 
                 FROM `{$this->_table}` 
-                WHERE 1 = 1";
-        
-        $sql .= $this->sch_sql();
-        
-        $sql .= " ORDER BY `$value` ASC ";
+				" . $this->join_sql() . "
+                WHERE 1 = 1
+				" . $this->sch_sql() . "
+				ORDER BY `$value` ASC";
         
         $result = $this->db->query($sql)->result_array();
         
