@@ -1,71 +1,49 @@
-<div class="row">
+<?php echo form_open('account/login', array('id' => 'login_form'), array('uri' => $this->session->userdata('uri'))) ?>
 
-<?php
-$foo = validation_errors();
-if($foo)
-{
-	echo '<div style="margin-top: 20px;">';
-	echo $this->msg->err('Check form fields and try again.');
-	echo '</div>';
-}
+		<div class="grid_4">&nbsp;</div>
 
-echo form_open(
-	'account/login',
-	array('id' => 'login'),
-	array('uri' => $this->session->userdata('uri'))
-);
+		<div class="grid_4">
 
-// Start tabindex
-$t = 1;
-?>
+			<h3 class="add-bottom"><?php echo lang('login') ?></h3>
 
-<div class="one-third column">&nbsp;</div>
+			<div class="login-form">
 
-<div class="one-third column">
+				<label for="username"><?php echo lang('username') ?></label>
+				<?php echo form_input(array(
+					'name' => 'username',
+					'id' => 'username',
+					'size' => 30,
+					'maxlength' => 104,
+					'tabindex' => tab_index(),
+					'value' => set_value('username', ''),
+				)) ?>
 
-	<h3 class="add-bottom"><?php echo lang('LOGIN') ?></h3>
+				<label for="password"><?php echo lang('password') ?></label>
+				<?php echo form_password(array(
+					'name' => 'password',
+					'id' => 'password',
+					'size' => 30,
+					'maxlength' => 104,
+					'tabindex' => tab_index(),
+				)) ?>
 
-	<div class="login-form">
+				<br>
+				
+				<?php
+				echo form_button(array(
+					'type' => 'submit',
+					'class' => 'blue',
+					'text' => lang('login'),
+					'tab_index' => tab_index()
+				));
+				?>
 
-		<label for="username"><?php echo lang('USERNAME') ?></label>
-		<?php
-		unset($input);
-		$input['accesskey'] = 'U';
-		$input['name'] = 'username';
-		$input['id'] = 'usernamename';
-		$input['size'] = '30';
-		$input['maxlength'] = '104';
-		$input['tabindex'] = $t;
-		$input['value'] = set_value('username', '');
-		echo form_input($input);
-		$t++;
-		?>
+			</div>
+			
+		</div>
 
-		<label for="password"><?php echo lang('PASSWORD') ?></label>
-		<?php
-		unset($input);
-		$input['accesskey'] = 'P';
-		$input['name'] = 'password';
-		$input['id'] = 'password';
-		$input['size'] = '30';
-		$input['maxlength'] = '104';
-		$input['tabindex'] = $t;
-		echo form_password($input);
-		$t++;
-		?>
-
-		<br>
-		
-		<?php
-		unset($buttons);
-		$buttons[] = array('submit', 'blue', lang('LOGIN'), $t);
-		$this->load->view('parts/buttons', array('buttons' => $buttons));
-		?>
+		<div class="one-third column">&nbsp;</div>
 
 	</div>
-	
-</div>
 
-<div class="one-third column">&nbsp;</div>
-
-</div>
+</form>
