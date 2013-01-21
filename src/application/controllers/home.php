@@ -19,34 +19,20 @@ class Home extends MY_Controller
 	function __construct()
 	{
 		$this->data['nav_current'] = array('home');
-		
 		parent::__construct();
 	}
 	
 	
 	
 	
-	function index(){
-		//$this->auth->check('crbs.dashboard.view');
-		$tpl['title'] = 'Dashboard';
-		$tpl['pagetitle'] = $tpl['title'];
-		if($this->auth->logged_in() == TRUE){
-			$body['active_users'] = $this->auth->active_users();
-			$tpl['body'] = $this->load->view('dashboard/index', $body, TRUE);
-		} else {
-			//$tpl['body'] = 'You are not currently logged in. ' . anchor('account/login', 'Login now') . '.';
-			redirect('account/login');
-		}
-		$this->page($tpl);
-	}
-	
-	
-	
-	
-	function error(){
-		$tpl['title'] = 'An error occured';
-		$tpl['body'] = '';
-		$this->load->view($this->tpl, $tpl);
+	function index()
+	{
+		$this->auth->require_logged_in();
+		
+		$this->load->model('users_model');
+		
+		$this->data['title'] = 'Dashboard';
+		$this->data['active_users'] = $this->users_model->get_active();
 	}
 	
 	
