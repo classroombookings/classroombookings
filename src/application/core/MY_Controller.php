@@ -143,13 +143,6 @@ class MY_Controller extends CI_Controller
 		$nav = config_item('nav');
 		
 		$this->data['nav']['primary'] = $this->layout->get_nav_level($nav, 0, $this->data['nav_current']);
-		$this->data['nav']['secondary'] = $this->layout->get_nav_level($nav, 1, $this->data['nav_current']);
-		//$this->data['nav']['page'] = $this->layout->get_nav_level(2, $this->data['nav_current']);
-		
-		if ($this->data['nav']['secondary'])
-		{
-			$this->layout->set_view('sidebar', 'template/default/sidebar');
-		}
 		
 		// Load the variables from $this->data so they can be accessed in the layout view
 		$this->load->vars($this->data);
