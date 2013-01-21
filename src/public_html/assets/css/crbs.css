@@ -1,190 +1,300 @@
-body{
-	background: #E0E4ED;
-}
+/**
+ * Classroombookings
+ *
+ * crbs.css: styles for various aspects of the layout, global styles and per-page CSS.
+ */
 
-/* Different text style for headings */
-h1, h2, h3, h4, h5, h6{ font-weight:normal; font-family:Arial,sans-serif; }
-h1, h2, h3{ letter-spacing:-1px; }
-
-a{ color:#204A87; }
-a:hover{ color:#A40000; }
-
-a.ext{ background: url(../img/extlink.gif) right 50% no-repeat #fff; padding-right: 18px; }
-
-input, select, textarea{ font: inherit; }
-
-form{ margin: 0; padding: 0; }
-
-div.box{ border: 1px solid #BABDB6; background: #EEEEEC; }
-div.box>div{ margin: 5px; }
-
-sup {
-	vertical-align: super;
-	font-size: smaller;
-}
-
-
-/* Full page width layer for menu background colour */
-div#header{
-	background: #2C4056;
-	padding: 10px 0 0 0;
-	border-bottom: 4px solid #507AAA;
-	margin-bottom: 1em;
-}
-div#footer{
-	padding: 1em 0;
-	border-top: 2px solid #ccc;
-	margin-top: 4em;
-	font-size: 85%;
-}
-
-
-/* Top menu */
-div#header ul{
-	list-style: none;
+body {
 	margin: 0;
 	padding: 0;
-}
-div#header ul li{
-	margin: 0 10px 0 0;
-	padding: 0;
-	display: block;
-	float: left;
-	font-weight: bold;
-}
-div#header ul li a{ text-decoration:none; color:#fff; display: block; padding: 5px 8px; font-weight: normal; }
-div#header ul li a:hover{ color: #dfdfdf; }
-div#header ul li a.current{ background: #507AAA; }
-
-div#header-right{
-	text-align: right;
-}
-div#header-right ul li{
-	float: right;
-	margin: 0 0 0 20px;
+	border: 0;			/* This removes the border around the viewport in old versions of IE */
+	width: 100%;
+	background: #fff;
 }
 
+html { overflow-y: scroll; }
 
-/* Page title beneath menu */
-div#title{ border-bottom: 0px solid #ccc; margin-top: 1.5em; margin-bottom: 1em;  }
-div#title h1{ margin: 0; font-size: 26px; padding: 0; }
-div#title p{ margin: 0; padding: 0; }
+div hr { height: 1px; }
 
-div#main{ background: #fff; padding: 15px 0; }
-div#content{ margin-left: 10px; }
-div#sidebar{ margin-right: 10px; }
-
-/* Link bar beneath title */
-ul.linkbar, ul.linkbar{ list-style:none; margin:5px 0 15px 0; }
-ul.linkbar li{ margin:0 20px 0 0; float:left; }
-ul.linkbar li a, ul.linkbar span{ background-repeat:no-repeat; background-position:0 50%; padding:2px 2px 2px 22px; text-decoration:none; }
-
-ul.linkbar-vertical li{ margin:0 0 10px 0; float:none; }
+.sub-heading { color: #ff6400; font-weight: normal; margin-bottom: 15px; }
 
 
-/* Messages */
-p.error, p.success{ color:#000; padding:4px; font-weight:bold; font-size:90%; }
-p.error{ background: #E67373;	/*#BF3030;*/ }
-p.success{ background: #ABE673;	/*#77BF30;*/ }
 
 
-/* List tables */
-table.list{ width:100%; font-size:90%; }
-table.list tr td, table.list tr th{ padding:6px 4px; vertical-align:middle; }
-table.list tr.heading th{ text-align:left; background:#729FCF; color:#fff; }
-table.list tr.heading th a{ color:#fff; }
-table.list tr td{ border-bottom:1px solid #ccc; }
-table.list tr td.name{ font-weight:bold; font-size:110%; }
+/* Header bar
+========== */
 
-table.list tr td ul.linkbar{ font-size:90%; }
+	.header {
+		clear: both;
+		float: left;
+		width: 100%;
+		padding: 10px 0 8px 0;
+		background: #333;
+		margin-bottom: 20px;
+	}
+		.header .header-left {
+			
+		}
+			.header .header-left .nav li a {
+				margin-right: 20px;
+			}
+		
+		.header .header-right {
+			text-align: right;
+		}
+			.header .header-right .nav {
+				float: right;
+			}
+			.header .header-right .nav li a {
+				margin-right: 0;
+				margin-left: 20px;
+			}
+		
+		.header .name {
+			font-weight: bold;
+			margin-right: 40px;
+		}
+		
+		.header .nav li a {
+			color: #fff;
+			text-decoration: none;
+			margin: 0 20px 0 0;
+			padding: 0;
+			font-size: 12px;
+			border-bottom: 1px solid transparent;
+		}
+		
+		.header .nav li a:hover,
+		.header .nav li a.active { border-bottom: 1px solid #fff; }
+		
+		.header .nav .logo a,
+		.header .nav .logo a:hover {
+			border: 0;
+		}
+		
+		.header-right .nav li a {
+			float: right;
+		}
 
-table.list tr.filters td input, table.list tr.filters td select{ font-size: 90%; padding:0; }
-table.list tr.filters td{ background: #EEEEEC; }
 
 
-/* Form table */
-table.form{ width: 100%; font-size: 90%; }
-table.form tr td{ padding: 8px 4px; }
-table.form tr td.label{ width:175px; text-align: right; vertical-align: top; }
-table.form tr td.label label{ font-weight: bold; }
-table.form tr td.input label.check{
-	display:block;
-	padding-left:15px;
-	text-indent:-15px;
+
+/* Content with sidebar (from http://matthewjamestaylor.com/blog/ultimate-2-column-left-menu-pixels.htm)
+========== */
+
+	/* column container */
+	.colmask {
+		position: relative;		/* This fixes the IE7 overflow hidden bug and stops the layout jumping out of place */
+		clear: both;
+		float: left;
+		width: 100%;		/* width of whole page */
+		overflow: hidden;		/* This chops off any overhanging divs */
+	}
+	
+	/* 2 column left menu settings */
+	.leftmenu {
+		background: #F2F2F2;
+	}
+	
+		.leftmenu .colright {
+			float: left;
+			width: 200%;
+			position: relative;
+			left: 250px;
+			background: #fff;
+			border-left: 0px solid #ccc;
+		}
+		
+		.leftmenu .col1wrap {
+			float: right;
+			width: 50%;
+			position: relative;
+			right: 250px;
+			padding-bottom: 1em;
+		}
+		
+		.leftmenu .col1 {
+			margin: 0 15px 0 265px;	/* 215px */
+			position: relative;
+			right: 100%;
+			overflow: hidden;
+			padding-top: 15px;
+			padding-bottom: 20px;
+		}
+		
+		.leftmenu .col2 {
+			float: left;
+			width: 220px;
+			position: relative;
+			right: 235px;
+			padding-top: 15px;
+			padding-bottom: 15px;
+		}
+		
+	.col1 .container {
+		margin: 0;
+	}
+
+
+/* Footer
+========== */
+	
+	.row.footer {
+		border-top: 2px solid #ddd;
+		background: #eee;
+		color: #333;
+		padding-top: 15px;
+		padding-bottom: 15px;
+	}
+	
+	.footer p {
+		padding: 0;
+		margin: 0;
+		font-size: 12px;
+		line-height: 2;
+	}
+	
+	.footer a { color: #333; }
+
+
+
+
+.breadcrumb {
+	font-size: 18px;
+	margin-bottom: 40px;
 }
-table.form tr td.field label.check input{
-	border:0px solid #000 !important;
-	width:13px;
-	height:13px;
-	padding:0;
-	margin:4px;
-	vertical-align:middle;
-	position:relative;
-	z-index:2;
-	top:0px;
-	*overflow: hidden;
+	.breadcrumb .grid_12 {
+		border-bottom: 1px dotted #ccc;
+		padding-bottom: 10px;
+	}
+	.breadcrumb a {
+		text-decoration: none;
+		color: #0070ba;
+	}
+		.breadcrumb a:hover {
+			background: #0070ba;
+			color: #fff;
+		}
+	
+	.breadcrumb .separator {
+		margin: 0 10px;
+		font-weight: bold;
+		font-size: 20px;
+	}
+
+
+
+/* Icon items
+========== */
+
+.i {
+	background-repeat: no-repeat;
+	background-position: 8px 50%;
+	padding-left: 32px;
+	line-height: 16px;
 }
 
+	.i.dashboard { background-image: url(../img/ico/home.png); }
+	.i.bookings { background-image: url(../img/ico/bookings.png); }
+	.i.configure { background-image: url(../img/ico/configure.png); }
+	.i.reports { background-image: url(../img/ico/reports.png); }
+	.i.event-log { background-image: url(../img/ico/event-log.png); }
+	.i.account { background-image: url(../img/ico/person.png); }
+	.i.security { background-image: url(../img/ico/key.png); }
 
-div.login-form
-{
-	width: 400px;
-	border: 1px solid #ccc;
-	padding: 5px;
-	background: #E0E4ED;
+	.i.add { background-image: url(../img/ico/add.png); }
+
+	.i.assign { background-image: url(../img/ico/assign.png); }
+
+	.i.upload { background-image: url(../img/ico/upload.png); }
+
+	.i.tick { background-image: url(../img/ico/tick.png); }
+	.i.disk { background-image: url(../img/ico/disk.png); }
+
+	.i.configure-settings{ background-image: url(../img/ico/settings.png); }
+	.i.configure-authentication{ background-image: url(../img/ico/auth.png); }
+	.i.configure-users{ background-image: url(../img/ico/users.png); }
+	.i.configure-groups{ background-image: url(../img/ico/groups.png); }
+	.i.configure-permissions{ background-image: url(../img/ico/permissions.png); }
+	.i.configure-quota{ background-image: url(../img/ico/quota.png); }
+	.i.configure-departments{ background-image: url(../img/ico/departments.png); }
+	.i.configure-rooms{ background-image: url(../img/ico/rooms.png); }
+	.i.configure-years{ background-image: url(../img/ico/years.png); }
+	.i.configure-terms{ background-image: url(../img/ico/term-dates.png); }
+	.i.configure-weeks{ background-image: url(../img/ico/timetable-weeks.png); }
+	.i.configure-holidays{ background-image: url(../img/ico/holidays6.png); }
+	.i.configure-periods{ background-image: url(../img/ico/periods.png); }
+	.i.configure-style{ background-image: url(../img/ico/colour.png); }
+
+
+
+
+
+/* Sidebar menu 
+========== */
+
+.menu.secondary li {
+    margin: 0;
+    padding: 0;
 }
 
+	.menu.secondary li a {
+		display: block;
+		width: auto;
+		margin: 0;
+		border: 0;
+		color: #333;
+		padding: 8px 8px 8px 25px;
+		margin-bottom: 4px;
+		text-decoration: none;
+		font-size: 12px;
+	}
+		
+		.menu.secondary li a:hover,
+		.menu.secondary li a.active {
+			background-color: #fff;
+			color: #333;
+			border: 0px solid #ccc;
+		}
 
-/* Form buttons */
-input.btn, a.btn, button.btn{
-	padding:4px 6px;
-	border:none;
-	text-overflow:ellipsis;
-	text-decoration:none;
-	white-space:nowrap;
-	cursor:pointer;
-	text-transform:uppercase;
-	font:12px/1.5 Tahoma,Verdana,Helvetica,Arial,'Liberation Sans',FreeSans,sans-serif;
-	font-weight:bold;
-	color:#fff;
-	-moz-border-radius:4px;
-	-webkit-border-radius:4px;
-	margin:0 10px 0 0;
+
+
+
+.configure-menu h4 {
+	margin-bottom: 15px;
 }
-a.btnlink{
-	padding:4px 6px;
-}
-a.btn{ display: inline-block; }
-.btn_pos{ background: #84C44E; }
-.btn_pos:hover{ background: #52812B; color: #fff; }
-.btn_neg{ background: #C91537; }
-.btn_neg:hover{ background: #B21331; color: #fff; }
-.btn_misc{ background: #0076BD; }
-.btn_misc:hover{ background: #00598E; color: #fff; }
-
-
-
-
-#easyNotification
-{
-	padding: 5px 10px;
-	position: relative;
-}
-#easyNotification span
-{
-	float: right;
-	cursor: pointer;
+.configure-menu ul li {
+	margin-bottom: 10px;
 }
 
-.notify-notice
-{
-	background: #fffed0;
-	border: 1px solid #d4d287;
+.configure-menu ul li a {
+	padding: 0 0 0 24px;
+	background-position: 0 50%;
 	color: #333;
+	font-size: 13px;
+	font-weight: bold;
+	display: block;
+	margin-bottom: 3px;
 }
-.notify-err
-{
-	background: #CF3541;
-	color: #fff !important;
-	border: 1px solid #9B1A15;
-}
+	.configure-menu ul li p {
+		font-size: 11px;
+		padding-left: 24px;
+		line-height: 1.5;
+	}
+
+
+
+
+/* Misc
+========== */
+
+	.list .user-disabled td,
+	.list .user-disabled .title a { color: #999 !important; }
+
+	.no-results {
+		background: #F2F2F2;
+		border: 1px solid #ccc;
+		padding: 10px;
+		text-align: center;
+		font-size: 12px;
+	}
