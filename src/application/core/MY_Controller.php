@@ -28,7 +28,10 @@ class MY_Controller extends CI_Controller
 		
 		$this->load->driver('auth');
 		
-		$this->data['nav_current'] = array();
+		if ( ! isset($this->data['nav_current']))
+		{
+			$this->data['nav_current'] = array();
+		}
 		
 		// Get school info
 		$school = $this->_get_school();
@@ -44,27 +47,17 @@ class MY_Controller extends CI_Controller
 		$this->config->set_item('options', $school_options);
 		
 		// Load all other models necessary for running core app
-		$this->load->model(array('permissions_model', 'weeks_model'));
-		
-		// Load the navigation
-		$this->load->config('nav');
-		$this->data['nav']['primary'] = $this->layout->get_nav_level(0, $this->data['nav_current']);
-		$this->data['nav']['secondary'] = $this->layout->get_nav_level(1, $this->data['nav_current']);
-		$this->data['nav']['page'] = $this->layout->get_nav_level(3, $this->data['nav_current']);
-		
-		if ($this->data['nav']['secondary'])
-		{
-			$this->layout->set_view('sidebar', 'template/default/sidebar');
-		}
+		$this->load->model(array('permissions_model', 'roles_model', 'weeks_model', 'users_model'));
 		
 		// Configure layout and default assets
-		$css = array('base', 'skeleton', 'layout-fluid', 'layout', site_url('css'));
+		//$css = array('base', 'skeleton', 'layout-fluid', 'layout', site_url('css'));
+		$css = array('base', 'amazium', 'crbs', site_url('css'));
 		
 		$js = array(
 			'libraries/jquery-1.8.2.min',
 			'plugins/jquery.cookie',
 			'plugins/jquery.simplemodal.1.4.3.min',
-			'plugins/tabs',
+			'views/default',
 		);
 		
 		$template = 'default';
@@ -76,6 +69,8 @@ class MY_Controller extends CI_Controller
 		
 		// Enable profiler in development mode only and when GET param is present
 		$this->output->enable_profiler(ENVIRONMENT === 'development' && $this->input->get('profiler'));
+		
+		$this->_manage_active_users();
 	}
 	
 	
@@ -137,9 +132,23 @@ class MY_Controller extends CI_Controller
 				}
 				else
 				{
-					$this->layout->set_content('content', '<div class="alert error" style="font-size: 12px"><strong>System error</strong> - required view file not found (' . $view . ')</div>');
+					$content = $this->flash->string('error', '<strong>System Error</strong> - required view file ' . $view . ' not found.');
+					$this->layout->set_content('content', '<br>' . $content);
 				}
 			}
+		}
+		
+		// Load the navigation
+		$this->load->config('nav');
+		$nav = config_item('nav');
+		
+		$this->data['nav']['primary'] = $this->layout->get_nav_level($nav, 0, $this->data['nav_current']);
+		$this->data['nav']['secondary'] = $this->layout->get_nav_level($nav, 1, $this->data['nav_current']);
+		//$this->data['nav']['page'] = $this->layout->get_nav_level(2, $this->data['nav_current']);
+		
+		if ($this->data['nav']['secondary'])
+		{
+			$this->layout->set_view('sidebar', 'template/default/sidebar');
 		}
 		
 		// Load the variables from $this->data so they can be accessed in the layout view
@@ -165,28 +174,31 @@ class MY_Controller extends CI_Controller
 		$this->load->model('schools_model');
 		$this->schools_model->limit(1);
 		
+		log_message('debug', 'MY_Controller: _get_school(): Mode: ' . config_item('mode'));
+		
 		// Check which mode the app is running in to determine how to load
 		if (config_item('mode') === 'multi')
 		{
 			$host = preg_replace('/www\./', '', $this->input->server('HTTP_HOST'));
-			$subdomain_parts = explode('.', $host);  
 			
-			if (count($subdomain_parts) < 3)
-			{
-				show_error('Invalid hostname specified. Not enough parts.');
-			}
+			log_message('debug', 'MY_Controller: _get_school(): Host: ' . $host);
 			
-			$subdomain = $subdomain_parts[0];
+			$subdomain = current(explode($host));
+			
+			log_message('debug', 'MY_Controller: _get_school(): Subdomain: ' . $subdomain);
+			
 			$school = $this->schools_model->get_by('sch_subdomain', $subdomain);
+			
 			if ( ! $school)
 			{
-				show_error("School {$subdomain_parts[0]} not found.", 404);
+				show_error("School $subdomain not found.", 404);
 			}
 		}
 		elseif (config_item('mode') === 'single')
 		{
 			// Single site. Just get the only school
 			$schools = $this->schools_model->get_all();
+			
 			if ( ! $schools)
 			{
 				show_error('School not configured');
@@ -194,8 +206,26 @@ class MY_Controller extends CI_Controller
 			$school = $schools[0];
 		}
 		
+		log_message('debug', 'MY_Controller: _get_school(): Name: ' . $school['s_name']);
+		
 		// Return school
 		return $school;
+	}
+	
+	
+	
+	
+	private function _manage_active_users()
+	{
+		if ($this->auth->is_logged_in())
+		{
+			//echo "Updating active user entry. ";
+			$this->users_model->set_active($this->session->userdata('u_id'), $this->session->userdata('active_token'));
+		}
+		
+		//echo $this->db->last_query();
+		
+		$this->users_model->prune_active();
 	}
 	
 	
@@ -211,16 +241,7 @@ class Configure_Controller extends MY_Controller
 	public function __construct()
 	{
 		parent::__construct();
-	}
-	
-	
-	
-	public function page($data)
-	{
-		$sidebar['menu'] = $this->menu_model->configure();
-		$sidebar['ulclass'] = 'nav';
-		$data['sidebar'] = $this->load->view('configure/sidebar', $sidebar, true);
-		parent::page($data);
+		$this->layout->add_breadcrumb('Configure', 'configure');
 	}
 
 
