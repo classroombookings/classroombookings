@@ -25,52 +25,61 @@ class Authentication extends Configure_Controller
 	/**
 	 * PAGE: Authentication index page (with tabs)
 	 */
-	function index($active_tab = null)
+	function index($t = 'global')
 	{
-		$this->auth->check('crbs.configure.authentication');
+		$this->data['nav_current'][] = 'authentication';
+		$this->auth->restrict('crbs.configure.authentication');
 		
-		// Body data for each tab
-		$tab['settings'] = $this->settings->get();
-		$tab['users'] = $this->security_model->get_users_dropdown();
-		$tab['groups'] = $this->security_model->get_groups_dropdown();
-		$tab['ldapgroups'] = $this->security_model->get_ldap_groups();		
+		$this->load->model('groups_model');
+		
+		$this->data['settings'] = $this->options_model->get_all(TRUE);
+		$this->data['users'] = $this->users_model->dropdown('u_id', 'u_username');
+		$this->data['groups'] = $this->groups_model->dropdown('g_id', 'g_name');
+		
+		$tabs = array();	
 		
 		// List of tabs
 		$tabs[] = array(	
-			'id' => 'main',
+			'id' => 'global',
 			'title' => 'Global',
-			'view' => $this->load->view('authentication/global', $tab, true),
+			'view' => 'default/authentication/global',
 		);
-		if ($this->settings->get('auth_ldap_enable') == 1)
+		
+		if (option('auth_ldap_enable'))
 		{
+			// @TODO Get actual LDAP groups
+			$this->data['ldap_groups'] = array();	//$this->security_model->get_ldap_groups();
+		
 			$tabs[] = array(
 				'id' => 'ldap',
 				'title' => 'LDAP',
-				'view' => $this->load->view('authentication/ldap', $tab, true),
+				'view' => 'default/authentication/ldap',
 			);
 			$tabs[] = array(
-				'id' => 'ldapgroups',
+				'id' => 'ldap_groups',
 				'title' => 'LDAP Groups',
-				'view' => $this->load->view('authentication/ldap-groups', $tab, true),
+				'view' => 'default/authentication/ldap_groups',
 			);
+			
+			$this->layout->set_js('views/authentication/ldap');
 		}
-		if ($this->settings->get('auth_preauth_enable') == 1)
+		
+		if (option('auth_preauth_enable'))
 		{
 			$tabs[] = array(
 				'id' => 'preauth',
 				'title' => 'Pre-authentication',
-				'view' => $this->load->view('authentication/preauth', $tab, true),
+				'view' => 'default/authentication/preauth',
 			);
 		}
 		
-		// Tab data for main page
-		$body['tabs'] = $tabs;
-		$body['active_tab'] = ($active_tab == null) ? $this->session->flashdata('active_tab') : $active_tab;
-		$body['active_tab'] = (empty($body['active_tab'])) ? 'main' : $body['active_tab'];
 		
-		$data['title'] = 'Configure';
-		$data['body'] = $this->load->view('parts/tabs', $body, TRUE);
-		$this->page($data);
+		// Tab data for main page
+		$this->data['tabs'] = $tabs;
+		$this->data['active_tab'] = $t;
+		
+		$this->auto_view = FALSE;
+		$this->layout->set_view('content', 'parts/tabs');
 	}
 	
 	
@@ -79,44 +88,49 @@ class Authentication extends Configure_Controller
 	/**
 	 * FORM POST: Save global auth settings
 	 */
-	function save_main()
+	function save_global()
 	{
-		$this->auth->check('crbs.configure.authentication');
-		$this->form_validation->set_rules('auth_anonuserid', 'Anonymous user', 'required|max_length[10]|integer');
-		$this->form_validation->set_rules('auth_ldap_enable', 'Enable LDAP', 'required|exact_length[1]');
-		$this->form_validation->set_rules('auth_preauth_enable', 'Enable pre-authentication', 'required|exact_length[1]');
-		$this->form_validation->set_error_delimiters('<li>', '</li>');
+		$this->auth->restrict('crbs.configure.authentication');
 		
-		if ($this->form_validation->run() == false)
+		$this->form_validation->set_rules('auth_anon_u_id', 'Anonymous user', 'max_length[10]|integer')
+							  ->set_rules('auth_ldap_enable', 'Enable LDAP', 'required|exact_length[1]')
+							  ->set_rules('auth_preauth_enable', 'Enable pre-authentication', 'required|exact_length[1]');
+		
+		if ($this->form_validation->run())
 		{
-			// Validation failed
-			return $this->index();
+			$options = array(
+				'auth_anon_u_id' => (int) $this->input->post('auth_anon_u_id'),
+				'auth_ldap_enable' => (int) $this->input->post('auth_ldap_enable'),
+				'auth_preauth_enable' => (int) $this->input->post('auth_preauth_enable'),
+			);
+			
+			// Check if there is an existing pre-auth key. If not, make one.
+			if ($options['auth_preauth_enable'] === 1 && strlen(option('auth_preauth_key')) === 0)
+			{
+				$options['auth_preauth_key'] = $this->auth->preauth->generate_key();
+			}
+			
+			// Save options
+			if ($this->options_model->set($options))
+			{
+				$this->flash->set('success', 'Authantication settings have been updated successfully.', TRUE);
+				redirect('authentication/index/global');
+			}
+			else
+			{
+				$this->flash->set('error', 'The settings could not be updated. Please try again.');
+			}
 		}
 		else
 		{
-			$data['auth_anonuserid'] = $this->input->post('auth_anonuserid');
-			$data['auth_ldap_enable'] = $this->input->post('auth_ldap_enable');
-			$data['auth_preauth_enable'] = $this->input->post('auth_preauth_enable');
-			
-			// Check if there is an existing pre-auth key. If not, make one.
-			$preauthkey = $this->settings->get('auth_preauth_key');
-			if (empty($preauthkey))
-			{
-				$data['auth_preauth_key'] = $this->_genpak();
-			}
-
-			$this->settings->save($data);
-
-			$this->session->set_flashdata('flash', 
-				$this->msg->notice(lang('CONF_AUTH_SAVE_OK')));
-			redirect('authentication');
+			return $this->index();
 		}
 	}
 	
 	
 	
 	
-	/* ============= LDAP ========== */
+	// ---------- LDAP ---------- //
 	
 	
 	
@@ -126,153 +140,86 @@ class Authentication extends Configure_Controller
 	 */
 	function save_ldap()
 	{
-		$this->auth->check('crbs.configure.authentication');
-		$this->form_validation->set_rules('auth_ldap_host', 'LDAP host', 'required|max_length[50]|trim');
-		$this->form_validation->set_rules('auth_ldap_port', 'LDAP TCP port', 'required|max_length[5]|integer|callback__port_check');
-		$this->form_validation->set_rules('auth_ldap_base', 'LDAP Base DN', 'required|max_length[65535]');
-		$this->form_validation->set_rules('auth_ldap_filter', 'LDAP filter', 'required|max_length[65535]');
-		$this->form_validation->set_rules('auth_ldap_groupid', 'LDAP group', 'required|integer');
-		$this->form_validation->set_rules('ldaptestuser', 'LDAP test username');
+		$this->auth->restrict('crbs.configure.authentication');
 		
-		$this->form_validation->set_error_delimiters('<li>', '</li>');
+		$this->form_validation->set_rules('auth_ldap_host', 'Server host', 'required|max_length[50]|trim')
+							  ->set_rules('auth_ldap_port', 'Server port', 'required|max_length[5]|integer|callback__port_check')
+							  ->set_rules('auth_ldap_base', 'Base DN', 'required|max_length[65535]')
+							  ->set_rules('auth_ldap_filter', 'Query filter', 'required|max_length[65535]')
+							  ->set_rules('auth_ldap_g_id', 'Default group', 'required|integer')
+							  ->set_rules('auth_ldap_update', 'Login update', 'required|integer');
 		
-		if($this->form_validation->run() == false)
+		if ($this->form_validation->run())
 		{
-			$this->index('ldap');
+			$options = array(
+				'auth_ldap_host' => $this->input->post('auth_ldap_host'),
+				'auth_ldap_port' => (int) $this->input->post('auth_ldap_port'),
+				'auth_ldap_base' => $this->input->post('auth_ldap_base'),
+				'auth_ldap_filter' => $this->input->post('auth_ldap_filter'),
+				'auth_ldap_g_id' => (int) $this->input->post('auth_ldap_g_id'),
+				'auth_ldap_update' => (int) $this->input->post('auth_ldap_update'),
+			);
+			
+			// Save options
+			if ($this->options_model->set($options))
+			{
+				$this->flash->set('success', lang('CONF_AUTH_LDAP_SAVE_OK'), TRUE);
+				redirect('authentication/index/ldap');
+			}
+			else
+			{
+				$this->flash->set('error', 'The settings could not be updated. Please try again.');
+			}
 		}
 		else
 		{
-			// All fields were validated!
-			$data['auth_ldap_host'] = $this->input->post('auth_ldap_host');
-			$data['auth_ldap_port'] = $this->input->post('auth_ldap_port');
-			$data['auth_ldap_base'] = $this->input->post('auth_ldap_base');
-			$data['auth_ldap_filter'] = $this->input->post('auth_ldap_filter');
-			$data['auth_ldap_groupid'] = $this->input->post('auth_ldap_groupid');
-			$data['auth_ldap_loginupdate'] = $this->input->post('auth_ldap_loginupdate');
-			
-			$save = $this->settings->save($data);
-			
-			$this->session->set_flashdata('active_tab', 'ldap');
-			$this->session->set_flashdata('flash', 
-				$this->msg->notice(lang('CONF_AUTH_LDAP_SAVE_OK')));
-			redirect('authentication');
+			return $this->index('ldap');
 		}
-		
 	}
 	
 	
 	
 	
-	/**
-	 * FORM POST: Test LDAP settings
-	 *
-	 * Runs through the procedure one line at a time and tests for success.
-	 */	 	
-	function test_ldap()
+	public function test_ldap()
 	{
-		$this->_d('Testing for PHP LDAP module... ', FALSE);
-		if(!function_exists('ldap_bind')){
-			$this->_d("It appears you don't have the PHP LDAP module installed - cannot continue!");
-			exit();
-		} else {
-			$this->_d('OK');
-		}
+		$settings = array(
+			'auth_ldap_host' => $this->input->post('auth_ldap_host'),
+			'auth_ldap_port' => $this->input->post('auth_ldap_port'),
+			'auth_ldap_base' => $this->input->post('auth_ldap_base'),
+			'auth_ldap_filter' => $this->input->post('auth_ldap_filter'),
+		);
 		
-		// Get form values
-		$ldaphost = $this->input->post('auth_ldap_host');
-		$ldapport = $this->input->post('auth_ldap_port');
-		$ldapbase = $this->input->post('auth_ldap_base');
-		$ldapfilter = str_replace("%u", $this->input->post('ldaptestuser'), $this->input->post('auth_ldap_filter'));
-		$ldaptestuser = "cn=" . $this->input->post('ldaptestuser');
-		$ldaptestpass = $this->input->post('ldaptestpass');
+		$this->load->library('ldap', $settings);
 		
-		if(!$ldaphost){
-			$this->_d('No LDAP server was specified - cannot continue.');
-			exit();
-		}
-		if(!$ldapport){
-			$this->_d('No LDAP server port was specified - cannot continue.');
-			exit();
-		}
-		if(!$ldapbase){
-			$this->_d("No LDAP search base was specified - cannot continue.");
-			exit();
-		}
-		if(!$ldapfilter){
-			$this->_d("No LDAP search query filter was specified - cannot continue.");
-			exit();
-		}
-		
-		// Try to connect to server
-		$this->_d(sprintf("Trying to connect to '%s' on port %d... ", $ldaphost, $ldapport), FALSE);
-		$connect = ldap_connect($ldaphost, $ldapport);
-		if(!$connect){
-			$this->_d('Failed!');
-			exit();
-		} else {
-			$this->_d("OK!");
-			#$this->_d($connect);
-		}
-		
-		// Connected... now see if we have user & pass.
-		if(!$ldaptestuser){
-			$this->_d("You didn't specify a username to test the authentication with.");
-			exit();
-		}
- 		if(!$ldaptestpass){
- 			$this->_d("You didn't specify a password to test the authentication with.");
- 			exit();
- 		}
-		
-		// Now go through the supplied DNs and see if we can bind as the user in them
-		$dns = explode(";", $ldapbase);
-		$found = FALSE;
-		
-		foreach($dns as $dn){
-			if($found == FALSE){ 
-				$thisdn = trim($dn);
-				$this->_d("Trying $ldaptestuser,$thisdn... ", FALSE);
-				$bind = @ldap_bind($connect, "$ldaptestuser,$thisdn", $ldaptestpass);
-				if(!$bind){ 
-					$this->_d("Failed."); 
-				} else {
-					$this->_d("Success!");
-					$correctdn = $thisdn;
-					$found = TRUE;
-				}
+		if ($this->ldap->is_supported())
+		{
+			$username = $this->input->post('username');
+			$password = $this->input->post('password');
+			
+			$response = $this->ldap->authenticate($username, $password, TRUE);
+			
+			if (is_array($response))
+			{
+				$this->json = array(
+					'status' => 'ok',
+					'user' => $response,
+				);
+			}
+			else
+			{
+				$this->json = array(
+					'status' => 'err',
+					'reason' => $this->ldap->reason,
+				);
 			}
 		}
-		
-		if($found == FALSE){
-			$this->_d("Failed to bind with the given user in any of the supplied base DNs");
-			exit();
+		else
+		{
+			$this->json = array(
+				'status' => 'err',
+				'reason' => 'LDAP support is not enabled in PHP.',
+			);
 		}
-		
-		$this->_d("The user authentication was OK. Going to find their details...");
-		
-		$search = @ldap_search($connect, $correctdn, $ldapfilter);
-		if(!$search){
-			$this->_d("Could not find the user's details - the query filter is probably incorrect.");
-			exit();
-		}
-		 
-		$info = ldap_get_entries($connect, $search); 
-		print_r($info);
-		$user['displayname'] = $info[0]['displayname'][0];
-		$user['email'] = $info[0]['mail'][0];
-		$user['memberof'] = $info[0]['memberof'];
-		//echo var_export($user, true);
-		$str = "<strong>Username:</strong> {$this->input->post('ldaptestuser')}<br />";
-		$str = "<strong>Display name:</strong> {$user['displayname']}<br />";
-		$str .= "<strong>Email:</strong> {$user['email']}<br />";
-		$str .= "<strong>Member of:</strong><ul>";
-		unset($info[0]['memberof']['count']);
-		foreach($info[0]['memberof'] as $group){
-			$str .= "<li>$group</li>";
-		}
-		$str .= "</ul>";
-		$this->_d($str);
-		
 	}
 	
 	
@@ -283,20 +230,32 @@ class Authentication extends Configure_Controller
 	 */
 	function get_ldap_groups()
 	{
-		$this->auth->check('crbs.configure.authentication');
-		// Get auth settings
-		$settings = $this->settings->get('auth.');
-		// Set the tab for when returning to config page
-		#$this->session->set_flashdata('tab', 'conf-ldap-groups');
+		$this->auth->restrict('crbs.configure.authentication');
 		
-		$base = $this->input->post('ldapbase');
-		$user = $this->input->post('user');
-		$pass = $this->input->post('pass');
-		$clear = ($this->input->post('clear') == '1') ? TRUE : FALSE;
-		$ignorespecial = ($this->input->post('ignorespecial') == '1') ? TRUE : FALSE;
+		$base = $this->input->post('auth_ldap_base');
+		$username = $this->input->post('username');
+		$password = $this->input->post('password');
+		
+		$mode = $this->input->post('mode');
 		
 		$filter = '(&(objectCategory=group)(samaccounttype=268435456)(cn=*))';
 		$fields = array('samaccountname');
+		
+		// Load LDAP library
+		
+		$settings = array(
+			'auth_ldap_host' => option('auth_ldap_host'),
+			'auth_ldap_port' => option('auth_ldap_port'),
+			'auth_ldap_base' => $base,
+			'auth_ldap_filter' => $filter,
+		);
+		
+		$this->load->library('ldap', $settings);
+		
+		// Get the groups within the base DNs defined
+		$this->ldap->get_groups($username, $password);
+		
+		/*
 		
 		// Connect to LDAP server
 		$connect = ldap_connect($settings['auth.ldap.host'], $settings['auth.ldap.port']);
@@ -388,6 +347,7 @@ class Authentication extends Configure_Controller
 		}
 		
 		redirect('configure/ldapgroups');
+		*/
 		
 	}
 	
@@ -404,60 +364,60 @@ class Authentication extends Configure_Controller
 	 */
 	function save_preauth()
 	{
-		$this->auth->check('crbs.configure.authentication');
-		// Determine which button was clicked
-		$actions['save'] = $this->input->post('action_save');
-		$actions['newkey'] = $this->input->post('action_newkey');
-		$actions = array_flip($actions);
-		$submit = $this->input->post('submit');
-		$action = $actions[$submit];
+		$this->auth->restrict('crbs.configure.authentication');
+		$this->auto_view = FALSE;
 		
-		if ($action == 'newkey')
+		if ($this->input->get('new_key'))
 		{
-			// Generate a new key only. Don't alter settings
+			$new_key = $this->auth->preauth->generate_key();
+			$options = array('auth_preauth_key' => $new_key);
 			
-			$data['auth_preauth_key'] = $this->_genpak();
-			$save = $this->settings->save($data);
-			$msg = $this->msg->notice(lang('CONF_AUTH_PREAUTH_NEWKEY'));
-			$this->session->set_flashdata('active_tab', 'preauth');
-			$this->session->set_flashdata('flash', $msg);
-			redirect('authentication');
-		}
-		elseif ($action == 'save')
-		{
-			// Save settings, don't generate a new key
-			
-			$this->form_validation->set_rules('auth_preauth_groupid', 'Preauth group', 'required|integer');
-			$this->form_validation->set_rules('auth_preauth_emaildomain', 'Preauth email domain', 'required|max_length[50]');
-			
-			$this->form_validation->set_error_delimiters('<li>', '</li>');
-		
-			if($this->form_validation->run() == false)
+			// Save options
+			if ($this->options_model->set($options))
 			{
-				$this->index('preauth');
+				$this->flash->set('success', lang('CONF_AUTH_PREAUTH_NEWKEY'), TRUE);
 			}
 			else
 			{
-				$data['auth_preauth_groupid'] = $this->input->post('auth_preauth_groupid');
-				$data['auth_preauth_emaildomain'] = str_replace('@', '', $this->input->post('auth_preauth_emaildomain'));
-				$save = $this->settings->save($data);
-				$msg = $this->msg->notice(lang('CONF_AUTH_PREAUTH_SAVE_OK'));
-				$this->session->set_flashdata('active_tab', 'preauth');
-				$this->session->set_flashdata('flash', $msg);
-				redirect('authentication');
-			}	// form validation else
-		}	// $action elseif=save
-	}
-	
-	
-	
-	
-	/**
-	 * Generate a new key for pre-authentication
-	 */
-	function _genpak()
-	{
-		return sha1($this->config->item('encryption_key').sha1(uniqid().time()));
+				$this->flash->set('error', 'The new key could not be saved.', TRUE);
+			}
+			
+			redirect('authentication/index/preauth');
+		}
+		
+		if ($this->input->post())
+		{
+		
+			$this->form_validation->set_rules('auth_preauth_g_id', 'Default Classroombookings group', 'required|integer')
+								  ->set_rules('auth_preauth_email_domain', 'Default email domain', 'required|max_length[100]|trim');
+			
+			if ($this->form_validation->run())
+			{
+				$email_domain = preg_replace('/^@/', '', $this->input->post('auth_preauth_email_domain'));
+				
+				$options = array(
+					'auth_preauth_g_id' => (int) $this->input->post('auth_preauth_g_id'),
+					'auth_preauth_email_domain' => $email_domain,
+				);
+				
+				// Save options
+				if ($this->options_model->set($options))
+				{
+					$this->flash->set('success', lang('CONF_AUTH_PREAUTH_SAVE_OK'), TRUE);
+					redirect('authentication/index/preauth');
+				}
+				else
+				{
+					$this->flash->set('error', 'The settings could not be updated. Please try again.');
+				}
+			}
+			else
+			{
+				return $this->index('preauth');
+			}
+			
+		}
+		
 	}
 	
 	

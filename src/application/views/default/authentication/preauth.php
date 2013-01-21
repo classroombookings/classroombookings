@@ -1,55 +1,78 @@
-<?php
-$errors = validation_errors();
-if ($errors)
-{
-  echo '<div class="row">';
-  echo $this->msg->err('<ul class="square">' . $errors . '</ul>', 'Please check the following invalid item(s) and try again.');
-  echo '</div>';
-}
-?>
+<?php echo form_open('authentication/save_preauth', array('id' => 'auth_preauth_form')) ?>
 
-<?php
-echo form_open('authentication/save_preauth');
-
-// Start tabindex
-$t = 1;
-?>
-
-
-
-<div class="alpha three columns"><h6>Options</h6></div>
-
-<div class="omega nine columns">
-
-	<label for="auth_preauth_groupid">Default Classroombookings group</label>
-	<?php
-	echo form_dropdown(
-		'auth_preauth_groupid', 
-		$groups, 
-		set_value(
-			'auth_preauth_groupid', 
-			(isset($settings['auth_preauth_groupid'])) ? $settings['auth_preauth_groupid'] : 0
-		), 
-		'tabindex="' . $t . '" id="auth_preauth_groupid"'
-	);
-	$t++;
-	?>
+	<fieldset class="form clearfix">
+		
+		<legend>Options</legend>
+		
+		<div class="inputs">
+			
+			<?php $name = 'auth_preauth_g_id' ?>
+			<label for="<?php echo $name ?>">Default Classroombookings group</label>
+			<?php
+			echo form_dropdown(
+				$name,
+				$groups, set_value($name, element($name, $settings)),
+				'tabindex="' . tab_index() . '" id="' . $name . '"'
+			);
+			?>
+			
+			<?php
+			$name = 'auth_preauth_email_domain';
+			$default_parts = explode('@', $this->session->userdata('u_email'));
+			$default = end($default_parts);
+			?>
+			<label for="<?php echo $name ?>">Email domain</label>
+			<?php echo form_input(array(
+				'name' => $name,
+				'id' => $name,
+				'size' => 30,
+				'maxlength' => 100,
+				'class' => 'text-input half-bottom',
+				'value' => set_value($name, element($name, $settings, $default)),
+			)) ?>
+			<p class="hint light">Email domain appended to the username of 
+			authenticated users to generate their email address. No <strong>@</strong>.</p>
+			<br>
+			
+		</div>
+		
+	</fieldset>
 	
-	<label for="school_name">Email domain</label>
-	<?php
-	unset($input);
-	$input['accesskey'] = 'E';
-	$input['name'] = 'auth_preauth_emaildomain';
-	$input['id'] = 'auth_preauth_emaildomain';
-	$input['size'] = '60';
-	$input['maxlength'] = '100';
-	$input['tabindex'] = $t;
-	$input['value'] = set_value($input['name'], $settings['auth_preauth_emaildomain']);
-	$input['class'] = 'remove-bottom';
-	echo form_input($input);
-	$t++;
-	?>
-	<p class="hint add-bottom">Default email address domain applied to new users created via preauthentication.</p>
+	
+	<fieldset class="form clearfix">
+		
+		<legend>Your key</legend>
+		
+		<div class="inputs">
+		
+			<?php echo element('auth_preauth_key', $settings, '(Not set)') ?>
+			<br><br>
+			<?php echo form_button(array(
+				'type' => 'link',
+				'url' => 'authentication/save_preauth?new_key=1',
+				'class' => 'small grey',
+				'text' => 'Generate new key',
+				'tab_index' => tab_index(),
+			)) ?>
+			<br><br>
+			
+		</div>
+		
+	</fieldset>
+	
+	
+	<fieldset class="form clearfix actions">
+		<?php echo form_button(array(
+			'type' => 'submit',
+			'class' => 'blue',
+			'text' => lang('ACTION_SAVE') . ' pre-authentication ' . strtolower(lang('W_SETTINGS')),
+			'tab_index' => tab_index(),
+		)) ?>
+	</fieldset>
+
+</form>
+
+<!--
 	
 </div>
 
@@ -88,3 +111,5 @@ $this->load->view('parts/buttons', array('buttons' => $buttons));
 
 
 </form>
+
+-->
