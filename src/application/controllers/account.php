@@ -18,8 +18,8 @@ class Account extends MY_Controller
 	
 	function __construct()
 	{
-		parent::__construct();
 		$this->data['nav_current'] = array('account');
+		parent::__construct();
 	}
 	
 	
@@ -27,33 +27,36 @@ class Account extends MY_Controller
 	
 	function index()
 	{
+		$this->auth->require_logged_in();
+		
 		$title = 'My Account';
 		
-		$user_id = $this->session->userdata('user_id');
+		$u_id = $this->session->userdata('u_id');
 		
-		$body = "User ID: $user_id\n\n";
+		$body = "User ID: $u_id\n\n";
 		
-		$user_roles = $this->permissions_model->get_user_roles($user_id);
+		$user_roles = $this->roles_model->for_user($u_id);
 		
 		$body .= var_export($user_roles, true);
 		
 		foreach ($user_roles as $r)
 		{
-			$roles[] = $r->role_id;
+			$roles[] = $r['r_id'];
 		}
 		
 		$body .= var_export($roles, true);
 		
-		$permissions = $this->permissions_model->get_role_permissions($roles);
+		$permissions = $this->permissions_model->for_role($roles);
 		
 		$body .= var_export($permissions, true);
 		
-		$body .= $this->permissions_model->lasterr;
+		//$body .= $this->permissions_model->lasterr;
 		
 		$data['body'] = $body;
 		
+		//print_r($data);
 		
-		$this->page($data);
+		//$this->page($data);
 	}
 	
 	
@@ -88,12 +91,10 @@ class Account extends MY_Controller
 	
 	/**
 	 * Account login page
-	 *
-	 * @param string $logged_out Set to ok|fail to show status of logout action
 	 */
-	function login($logged_out = FALSE)
+	function login()
 	{
-		if ($this->auth->logged_in())
+		if ($this->auth->is_logged_in())
 		{
 			redirect('account');
 		}
@@ -103,7 +104,6 @@ class Account extends MY_Controller
 			// Validation rules for login form
 			$this->form_validation->set_rules('username', 'Username', 'required|max_length[104]');
 			$this->form_validation->set_rules('password', 'Password', 'required|max_length[104]');
-			$this->form_validation->set_error_delimiters('<li>', '</li>');
 			
 			$username = $this->input->post('username');
 			$password = $this->input->post('password');
@@ -111,18 +111,25 @@ class Account extends MY_Controller
 			if ($this->form_validation->run() && $this->auth->login($username, $password))
 			{
 				// Login successful
-				$this->msg->flash('notice', lang('AUTH_OK'));
-				$uri = ($this->session->userdata('uri')) ?: 'home';
-				redirect($uri);
+				$this->flash->set('success', lang('auth_login_success'), TRUE);
+				redirect(($this->session->userdata('uri')) ?: 'home');
 			}
 			else
 			{
 				// Login failed
-				flash('error', 'Error: ' . $this->auth->error_msg);
+				if ( ! empty($this->auth->reason))
+				{
+					$this->flash->set('error', $this->auth->reason);
+				}
 			}
 		}
 		
-		$this->data['title'] = lang('W_LOGIN');
+		if ($this->input->get('status') == 1)
+		{
+			$this->flash->set('success', lang('auth_logout_success'));
+		}
+		
+		$this->layout->set_title(lang('login'));
 	}
 	
 	
@@ -232,16 +239,18 @@ class Account extends MY_Controller
 
 	function logout()
 	{
+		$this->view = FALSE;
 		$this->session->keep_flashdata('flash');
-		$logout = $this->auth->logout();
-		$logged_out = ($logout == true) ? 'ok' : 'fail';
-		redirect("account/login/$logged_out");
+		$logout = $this->auth->destroy_session();
+		$status = ($logout === true) ? 1 : 0;
+		redirect("account/login?status=$status");
 	}
 	
 	
 	
 	
-	function view(){
+	function view()
+	{
 		$user_id = $this->uri->segment(3);
 		$tpl['title'] = 'View Account Profile';
 		$tpl['pagetitle'] = $tpl['title'] . ' ('.$user_id.')';
