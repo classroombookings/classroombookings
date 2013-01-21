@@ -30,7 +30,11 @@ class Layout
 	private $_views = array(); 
 	private $_content = array();
 	private $_template;
-	public $lasterr;
+	
+	private $breadcrumb = array();
+	
+	public $lasterr;	
+	
 	
 	
 	function __construct()
@@ -84,7 +88,7 @@ class Layout
 		
 		if ($type === 'full')
 		{
-			$titles = array($this->title, $this->_CI->config->item('site_name'));
+			$titles = array($this->title, 'Classroombookings', option('school_name'));
 			$titles = array_filter($titles, 'strlen');
 			return implode(' - ', $titles);
 		}
@@ -92,6 +96,30 @@ class Layout
 		{
 			return $this->title;
 		}
+	}
+	
+	
+	
+	
+	public function add_breadcrumb($title = '', $uri = NULL)
+	{
+		if ($uri === NULL)
+		{
+			$this->breadcrumb[] = array($title);
+		}
+		else
+		{
+			$this->breadcrumb[] = array($title, site_url($uri));
+		}
+	}
+	
+	
+	
+	
+	public function get_breadcrumb()
+	{
+		unset($this->breadcrumb[count($this->breadcrumb)-1][1]);
+		return $this->breadcrumb;
 	}
 	
 	
@@ -282,40 +310,6 @@ class Layout
 		return (isset($this->_content[$section]));
 	}
 	
-	
-	
-	
-	public function get_nav_level($level = 0, $nav_current = array())
-	{
-		$nav = config_item('nav');
-		$nav_final = array();
-		
-		//if ($level < count($nav_current)) $level = count($nav_current) - 1;
-		$index = element($level, $nav_current);
-		
-		if ($level > 0)
-		{
-			if ( ! isset($nav[$index])) return $nav_final;
-			$nav = $nav[$index];
-		}
-		
-		foreach ($nav as $uri => $item)
-		{
-			$p = $item['permission'];
-			if ($this->_CI->auth->check($p, TRUE))
-			{
-				unset($item['nav']);
-				$nav_final[$uri] = $item;
-			}
-			
-			if ($index === $uri)
-			{
-				$item['class'] .= ' active';
-			}
-		}
-		
-		return $nav_final;
-	}
 	
 	
 	
