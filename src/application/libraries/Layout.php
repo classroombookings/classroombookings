@@ -312,6 +312,55 @@ class Layout
 	
 	
 	
+	public function get_nav_level($nav = array(), $level = 0, $nav_current = array())
+	{
+		$nav_final = array();
+		
+		// string to match item URI to set as active, based on requested level being "active" item in nav_current 
+		$active = element($level, $nav_current, '');
+		
+		//echo "Active: $active.";
+		
+		if ($level > 0)
+		{
+			// build up array from nav_current items
+			foreach ($nav_current as $i => $uri)
+			{
+				$j = $i + 1;
+				if ($j > $level) continue;
+				if (isset($nav[$uri]['nav']))
+				{
+					$nav = $nav[$uri]['nav'];
+				}
+				else
+				{
+					$nav = array();
+				}
+			}
+		}
+		
+		//print_r($nav);
+		
+		foreach ($nav as $uri => $item)
+		{
+			$p = $item['permission'];
+			if ($this->_CI->auth->check($p))
+			{
+				unset($item['nav']);
+				
+				if ($active === $uri)
+				{
+					$item['class'] .= ' active';
+				}
+				
+				$nav_final[$uri] = $item;
+			}
+		}
+		
+		return $nav_final;
+	}
+	
+	
 	
 }
 
