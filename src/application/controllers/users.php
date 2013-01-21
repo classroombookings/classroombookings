@@ -16,10 +16,9 @@ class Users extends Configure_Controller
 	function __construct()
 	{
 		parent::__construct();
-		$this->load->model('security_model');
-		$this->load->model('departments_model');
-		$this->load->model('quota_model');
-		$this->lasterr = false;
+		$this->load->model(array('users_model', 'groups_model', 'departments_model', 'quota_model'));
+		$this->load->helper('user_helper');
+		$this->data['nav_current'][] = 'users';
 	}
 	
 	
@@ -27,55 +26,32 @@ class Users extends Configure_Controller
 	
 	/**
 	 * PAGE: Main user list.
-	 *
-	 * Is also called by ingroup()
 	 */
-	function index($group_id = null)
+	function index($page = 0)
 	{
-		// Check authorisation
-		$this->auth->check('users.view');
+		$this->auth->restrict('users.view');
 		
-		if ($group_id === null)
-		{
-			// ALL users
-			$body['group_id'] = -1;
-			$body['users'] = $this->security_model->get_user(null, null);
-			$data['title'] = 'Users';
-		}
-		else
-		{
-			// Users in one group
-			$groupname = $this->security_model->get_group_name($group_id);
-			$body['group_id'] = $group_id;
-			$body['users'] = $this->security_model->get_user(null, $group_id);
-			$data['title'] = sprintf('Users (%s group)', $groupname);
-		}
+		$filter = $this->input->get(NULL, TRUE);
 		
-		$body['groups'] = $this->security_model->get_groups_dropdown();
+		$this->load->library('pagination');
+		$config = array(
+			'base_url' => site_url('users/index'),
+			'total_rows' => $this->users_model->count_all(),
+			'per_page' => 30,
+			'uri_segment' => 3,
+		);
+		$this->pagination->initialize($config);
 		
-		// Got list of users?
-		if ($body['users'] == false)
-		{
-			$data['body'] = $this->msg->err($this->security_model->lasterr);
-		}
-		else
-		{
-			$data['body'] = $this->load->view('users/index', $body, true);
-		}
-		$data['js'] = array('js/crbs.users.js');
-		$data['submenu'] = $this->menu_model->users();
-		$this->page($data);
-	}
-	
-	
-	
-	
-	/**
-	 * PAGE: Users in a group
-	 */
-	function ingroup($group_id)
-	{
-		$this->index($group_id);
+		$this->users_model->set_filter($filter);
+		$this->users_model->order_by('u_username', 'asc');
+		$this->users_model->limit($config['per_page'], $page);
+		
+		$this->data['filter'] = $filter;
+		$this->data['users'] = $this->users_model->get_all();
+		$this->data['groups'] = $this->groups_model->dropdown('g_id', 'g_name');
+		
+		$this->layout->set_js('views/users/index');
+		$this->layout->set_title('Users');
 	}
 	
 	
@@ -84,6 +60,7 @@ class Users extends Configure_Controller
 	/**
 	 * PAGE: Add a user
 	 */
+	/*
 	function add()
 	{
 		$this->auth->check('users.add');
@@ -95,6 +72,7 @@ class Users extends Configure_Controller
 		$data['body'] = $this->load->view('users/addedit', $body, true);
 		$this->page($data);
 	}
+	*/
 	
 	
 	
@@ -102,6 +80,7 @@ class Users extends Configure_Controller
 	/**
 	 * PAGE: Edit a user
 	 */
+	/*
 	function edit($user_id)
 	{
 		$this->auth->check('users.edit');
@@ -124,13 +103,14 @@ class Users extends Configure_Controller
 		}
 		$this->page($data);
 	}
-	
+	*/
 	
 	
 	
 	/**
 	 * FORM POST: Destination for form submission for add/edit pages
 	 */
+	/*
 	function save()
 	{
 		$user_id = $this->input->post('user_id');
@@ -233,6 +213,7 @@ class Users extends Configure_Controller
 			redirect('users');
 		}
 	}
+	*/
 	
 	
 	
