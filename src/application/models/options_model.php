@@ -49,7 +49,7 @@ class Options_model extends School_Model
 		$sql = "SELECT o_name, o_value
 				FROM `{$this->_table}`
 				WHERE 1 = 1
-				" . $this->_sch_sql();
+				" . $this->sch_sql();
 		
 		$result = $this->db->query($sql)->result_array();
 		return $this->_format_options($result);
@@ -69,7 +69,7 @@ class Options_model extends School_Model
 		$sql = "SELECT o_value
 				FROM `{$this->_table}`
 				WHERE o_name = ?
-				" . $this->_sch_sql() . "
+				" . $this->sch_sql() . "
 				LIMIT 1";
 		
 		$query = $this->db->query($sql, array($name));
@@ -97,8 +97,6 @@ class Options_model extends School_Model
 	 */
 	public function set($name = NULL, $value = NULL)
 	{
-		// Get school ID to use
-		$s_id = $this->_s_id();
 		$errors = 0;
 		
 		if ($name !== NULL && $value !== NULL)
@@ -121,13 +119,13 @@ class Options_model extends School_Model
 						o_name = ?,
 						o_value = ?
 					ON DUPLICATE KEY UPDATE
-						o_pct_id = VALUES(o_pct_id),
+						o_s_id = VALUES(o_s_id),
 						o_name = VALUES(o_name),
 						o_value = VALUES(o_value)";
 			
 			foreach ($name as $o_name => $o_value)
 			{
-				$query = $this->db->query($sql, array($s_id, $o_name, $o_value));
+				$query = $this->db->query($sql, array($this->_s_id, $o_name, $o_value));
 				if ( ! $query) $errors++;
 			}
 		}

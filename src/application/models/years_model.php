@@ -10,10 +10,16 @@
  */
 
 
-class Years_model extends CI_Model
+class Years_model extends School_Model
 {
 	
 	
+	protected $_table = 'years';		// DB table
+	protected $_sch_key = 'y_s_id';		// Foreign key for school
+	
+	public $error;
+
+
 	function __construct()
 	{
 		parent::__construct();
@@ -210,23 +216,17 @@ class Years_model extends CI_Model
 	
 	
 	/**
-	 * Get the 'current' academic year ID
+	 * Get the 'current' academic year
 	 */
-	function get_current_id()
+	function get_current()
 	{
-		$sql = 'SELECT year_id FROM years WHERE current = 1 LIMIT 1';
-		$query = $this->db->query($sql);
-		if ($query->num_rows() == 1)
-		{
-			$row = $query->row();
-			$year_id = $row->year_id;
-			return $year_id;
-		}
-		else
-		{
-			$this->lasterr = 'No current year defined.';
-			return false;
-		}
+		$sql = 'SELECT *
+				FROM years
+				WHERE y_current = 1
+				' . $this->sch_sql() . '
+				LIMIT 1';
+		
+		return $this->db->query($sql)->row_array();
 	}
 	
 	
