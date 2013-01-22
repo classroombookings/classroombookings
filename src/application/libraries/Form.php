@@ -62,9 +62,31 @@ class Form
 	
 	
 	
-	public function add_input($section = '', $id = '', $label = '')
+	public function add_input($data = array())
 	{
+		if ( ! is_array($data))
+		{
+			return FALSE;
+		}
+		
+		$section = element('section', $data);
+		$id = element('name', $data);
+		$label = element('label', $data);
+		$hint = element('hint', $data);
+		$content = element('content', $data);
+		
 		$this->inputs[$section][$id]['label'] = $label;
+		
+		if ($hint)
+		{
+			$this->inputs[$section][$id]['hint'] = $hint;
+		}
+		
+		if ($content)
+		{
+			$this->inputs[$section][$id]['content'] = $content;
+		}
+		
 		return $this;
 	}
 	
