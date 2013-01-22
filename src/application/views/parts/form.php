@@ -2,18 +2,23 @@
 
 	<?php foreach ($sections as $section_name => $section): ?>
 	
-	<?php
-	$section_hint = element('hint', $section, FALSE);
-	$inputs_class = ($section_hint) ? 'grid_6' : 'grid_9';
-	?>
+	<?php $section_hint = element('hint', $section, FALSE); ?>
 
 	<div class="row section section-<?php echo $section_name ?>">
 	
 		<div class="grid_3">
+			
 			<h3 class="sub-heading"><?php echo $section['title'] ?></h3>
+			
+			<?php if ($section_hint): ?>
+			<div class="hint">
+				<p><?php echo $section_hint ?></p>
+			</div>
+			<?php endif; ?>
+			
 		</div>
 		
-		<div class="<?php echo $inputs_class ?> inputs">
+		<div class="grid_9 inputs">
 		
 			<?php $current_inputs = element($section_name, $inputs, array()); ?>
 			
@@ -26,7 +31,7 @@
 					<?php endif; ?>
 					<?php echo $input['content'] ?>
 				</div>
-				<?php if (element('hint', $input) && ! $section_hint): ?>
+				<?php if (element('hint', $input)): ?>
 				<div class="grid_3">
 					<div class="hint">
 						<h6><?php echo $input['label'] ?></h6>
@@ -39,18 +44,6 @@
 			<?php endforeach; ?>
 			
 		</div> <!-- / .grid_9 -->
-		
-		
-		<?php if ($section_hint): ?>
-		
-		<div class="grid_3">
-			<div class="hint">
-				<h6><?php echo $section['title'] ?></h6>
-				<p><?php echo $section_hint ?></p>
-			</div>
-		</div>
-		
-		<?php endif; ?>
 		
 		
 	</div> <!-- / .row.form-section-....... -->
