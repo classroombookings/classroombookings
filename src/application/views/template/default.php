@@ -88,23 +88,30 @@ CRBS.tt_view = "<?php echo config_item('timetable_view') ?>";
 	
 	<?php if ($bread): ?>
 	
-	<div class="row breadcrumb">
+	<div class="row">
 		<div class="grid_12">
-			<?php
-			foreach ($this->layout->get_breadcrumb() as $bc)
-			{
-				if (count($bc) === 1)
-				{
-					$bread_markup[] = '<span>' . $bc[0] . '</span>';
-				}
-				else
-				{
-					$bread_markup[] = '<a href="' . $bc[1] . '">' . $bc[0] . '</a>';
-				}
-			}
-			
-			echo implode('<span class="separator">/</span>', $bread_markup);
-			?>
+			<div class="row subnav">
+				<div class="grid_7 grid breadcrumb">
+					<?php
+					foreach ($this->layout->get_breadcrumb() as $bc)
+					{
+						if (count($bc) === 1)
+						{
+							$bread_markup[] = '<span>' . $bc[0] . '</span>';
+						}
+						else
+						{
+							$bread_markup[] = '<a href="' . $bc[1] . '">' . $bc[0] . '</a>';
+						}
+					}
+					
+					echo implode('<span class="separator">/</span>', $bread_markup);
+					?>
+				</div>
+				<div class="grid_5 nav-items">
+				<?php if (isset($subnav)) $this->load->view('parts/nav') ?>
+				</div>
+			</div>
 		</div>
 	</div>
 	

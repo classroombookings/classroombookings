@@ -16,7 +16,7 @@ html { overflow-y: scroll; }
 
 div hr { height: 1px; }
 
-.sub-heading { color: #ff6400; font-weight: normal; margin-bottom: 15px; }
+.sub-heading { color: #ff6400; font-weight: normal; margin-bottom: 15px; line-height: 1; }
 
 
 
@@ -159,29 +159,61 @@ div hr { height: 1px; }
 
 
 
-.breadcrumb {
-	font-size: 18px;
+.row.subnav {
 	margin-bottom: 40px;
+	border-bottom: 1px dotted #ccc;
+	padding-bottom: 10px;
 }
-	.breadcrumb .grid_12 {
-		border-bottom: 1px dotted #ccc;
-		padding-bottom: 10px;
-	}
-	.breadcrumb a {
-		text-decoration: none;
-		color: #0070ba;
-	}
-		.breadcrumb a:hover {
-			background: #0070ba;
-			color: #fff;
-		}
-	
-	.breadcrumb .separator {
-		margin: 0 10px;
-		font-weight: bold;
-		font-size: 20px;
-	}
 
+	.breadcrumb {
+		font-size: 18px;
+	}
+		
+		.breadcrumb a {
+			text-decoration: none;
+			color: #0070ba;
+		}
+			.breadcrumb a:hover {
+				background: #0070ba;
+				color: #fff;
+			}
+		
+		.breadcrumb .separator {
+			margin: 0 10px;
+			font-weight: bold;
+			font-size: 20px;
+		}
+
+	.nav-items {
+		text-align: right;
+	}
+		.nav-items ul {
+			margin: 0;
+			padding: 0;
+		}
+		.nav-items ul li {
+			margin: 0;
+			padding: 0;
+			font-size: 13px;
+			display: inline;
+			margin-left: 10px;
+			border-left: 1px solid #333;
+			padding-left: 10px;
+			line-height: 1;
+		}
+		.nav-items ul li:first-child {
+			border: 0;
+			margin-left: 0;
+			padding-left: 0;
+		} 
+		.nav-items ul li a {
+			color: #0070ba;
+			text-decoration: none;
+		}
+		.nav-items ul li a:hover {
+			color: #fff;
+			background: #0070ba;
+		}
 
 
 /* Icon items

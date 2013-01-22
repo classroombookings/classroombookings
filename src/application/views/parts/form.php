@@ -13,13 +13,13 @@
 			<h3 class="sub-heading"><?php echo $section['title'] ?></h3>
 		</div>
 		
-		<div class="<?php echo $inputs_class ?>">
+		<div class="<?php echo $inputs_class ?> inputs">
 		
 			<?php $current_inputs = element($section_name, $inputs, array()); ?>
 			
 			<?php foreach ($current_inputs as $input_name => $input): ?>
 			
-			<div class="row">
+			<div class="row inputs">
 				<div class="grid_6">
 					<?php if (element('label', $input)): ?>
 					<label for="<?php echo $input_name ?>"><?php echo $input['label'] ?></label>
