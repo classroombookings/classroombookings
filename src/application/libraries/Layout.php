@@ -12,14 +12,17 @@
  * http://opensource.org/licenses/OSL-3.0
  */
 
+// -----------------------------------------------------------------------------
 
 /**
- * Layout class
+ * Layout class to handle page layout, partials, content, navigation, breadcrumbs and assets.
  *
- * Handles page layout
- *
+ * @package		Classroombookings
+ * @subpackage	Libraries
+ * @category	Layout
  * @author		Craig A Rodway
  */
+
 class Layout
 {
 
