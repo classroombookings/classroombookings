@@ -16,9 +16,10 @@ class Configure extends MY_Controller
 	function __construct()
 	{
 		parent::__construct();
-		$this->layout->add_breadcrumb(lang('configure'), 'configure');
 		$this->lang->load('configure');
 		$this->lang->load('settings');
+		
+		$this->layout->add_breadcrumb(lang('configure'), 'configure');
 	}
 	
 	
@@ -40,7 +41,6 @@ class Configure extends MY_Controller
 	function settings()
 	{
 		$this->auth->restrict('crbs.configure.settings');
-		$this->data['nav_current'][] = 'configure/settings';
 		
 		$this->layout->add_breadcrumb(lang('settings'), 'configure/settings');
 		
