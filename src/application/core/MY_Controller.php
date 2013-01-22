@@ -234,7 +234,7 @@ class Configure_Controller extends MY_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		$this->layout->add_breadcrumb('Configure', 'configure');
+		$this->layout->add_breadcrumb(lang('configure'), 'configure');
 	}
 
 
