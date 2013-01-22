@@ -11,35 +11,47 @@ $this->form->add_section($section, lang('school') . ' ' . strtolower(lang('detai
 
 	$name = 'school_name';
 	
-	$this->form->add_input($section, $name, lang('school') . ' ' . lang('name'));
-	
-	$this->form->set_content($section, $name, form_input(array(
+	$this->form->add_input(array(
+		
+		'section' => $section,
 		'name' => $name,
-		'id' => $name,
-		'class' => 'text-input',
-		'size' => 30,
-		'max_length' => 100,
-		'tabindex' => tab_index(),
-		'value' => set_value($name, element($name, $settings)),
-	)));	
+		'label' => lang('school') . ' ' . lang('name'),
+		
+		'content' => form_input(array(
+			'name' => $name,
+			'id' => $name,
+			'class' => 'text-input',
+			'size' => 30,
+			'max_length' => 100,
+			'tabindex' => tab_index(),
+			'value' => set_value($name, element($name, $settings)),
+		)),
+		
+	));
 	
 	
 	// ----- School URL
 
 	$name = 'school_url';
 
-	$this->form->add_input($section, $name, lang('settings_school_url'));
-	
-	$this->form->set_content($section, $name, form_input(array(
+	$this->form->add_input(array(
+		
+		'section' => $section,
 		'name' => $name,
-		'id' => $name,
-		'class' => 'text-input',
-		'size' => 50,
-		'maxlength' => 255,
-		'tabindex' => tab_index(),
-		'value' => set_value($name, element($name, $settings)),
-	)));
-	
+		'label' => lang('settings_school_url'),
+		
+		'content' => form_input(array(
+			'name' => $name,
+			'id' => $name,
+			'class' => 'text-input',
+			'size' => 50,
+			'maxlength' => 255,
+			'tabindex' => tab_index(),
+			'value' => set_value($name, element($name, $settings)),
+		)),
+		
+	));
+		
 	
 // ===== Booking page
 
@@ -51,7 +63,6 @@ $this->form->add_section($section, lang('settings_booking_page'));
 	// ----- Timetable view
 	
 	$name = 'timetable_view';
-	$this->form->add_input($section, $name, lang('settings_timetable_view'));
 	
 	$content = '';
 	
@@ -79,16 +90,20 @@ $this->form->add_section($section, lang('settings_booking_page'));
 	$content .= lang('settings_timetable_room');
 	$content .= '</label>';
 	
-	$this->form->set_content($section, $name, $content);
 	
-	$this->form->set_hint($section, $name, lang('settings_timetable_view_hint'));
+	$this->form->add_input(array(
+		'section' => $section,
+		'name' => $name,
+		'label' => lang('settings_timetable_view'),
+		'hint' => lang('settings_timetable_view_hint'),
+		'content' => $content,
+	));
 	
 	
 	
 	// ----- Timetable columns
 	
 	$name = 'timetable_cols';
-	$this->form->add_input($section, $name, lang('settings_timetable_cols'));
 	
 	$content = '';
 	
@@ -132,11 +147,15 @@ $this->form->add_section($section, lang('settings_booking_page'));
 	$content .= '</label>';
 	
 	
-	$this->form->set_content($section, $name, $content);
+	$this->form->add_input(array(
+		'section' => $section,
+		'name' => $name,
+		'label' => lang('settings_timetable_cols'),
+		'hint' => lang('settings_timetable_cols_hint'),
+		'content' => $content,
+	));
 	
-	$this->form->set_hint($section, $name, lang('settings_timetable_cols_hint'));
 	
-
 $this->form->add_button(form_button(array(
 	'type' => 'submit',
 	'class' => 'blue',
