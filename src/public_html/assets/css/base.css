@@ -445,6 +445,16 @@
 				padding: 0 2px;
 			}
 	
+	.section-extra h6 {
+		font-size: 13px;
+		color: #0070ba;
+		margin-bottom: 5px;
+	}
+	.section-extra p {
+		color: #666;
+		font-size: 12px;
+		line-height: 1.5;
+	}
 	
 	/*.hint {
 		background: #E6F1F9;

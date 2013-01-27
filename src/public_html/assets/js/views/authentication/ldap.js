@@ -1,6 +1,14 @@
 Q.push(function() {
 	
+	$("#ldap_test_username, #ldap_test_password").on("keypress", function(e) {
+		if (e.keyCode == 13) {
+			e.preventDefault();
+			$("#test_ldap").trigger("click");
+		}
+	});
+	
 	$("#test_ldap").on("click", function(e) {
+		
 		var data = {
 			auth_ldap_host: $("input[name='auth_ldap_host']").val(),
 			auth_ldap_port: $("input[name='auth_ldap_port']").val(),

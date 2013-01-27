@@ -149,6 +149,7 @@ class Authentication extends Configure_Controller
 		
 		$this->layout->add_breadcrumb(lang('authentication_ldap'), 'authentication/ldap');
 		$this->layout->set_title(lang('authentication_ldap'));
+		$this->layout->set_js('views/authentication/ldap');
 		$this->load->library('form');
 		$this->data['subnav_active'] = 'authentication/ldap';
 	}
