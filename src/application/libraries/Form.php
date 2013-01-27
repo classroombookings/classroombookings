@@ -62,6 +62,15 @@ class Form
 	
 	
 	
+	public function add_section_extra($id = '', $content = '')
+	{
+		$this->sections[$id]['extra'] = $content;
+		return $this;
+	}
+	
+	
+	
+	
 	public function add_input($data = array())
 	{
 		if ( ! is_array($data))

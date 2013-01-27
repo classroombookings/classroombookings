@@ -2,7 +2,11 @@
 
 	<?php foreach ($sections as $section_name => $section): ?>
 	
-	<?php $section_hint = element('hint', $section, FALSE); ?>
+	<?php
+	$section_hint = element('hint', $section, FALSE);
+	$section_extra = element('extra', $section, FALSE);
+	$inputs_class = ($section_extra) ? 'grid_6' : 'grid_9';
+	?>
 
 	<div class="row section section-<?php echo $section_name ?>">
 	
@@ -18,7 +22,7 @@
 			
 		</div>
 		
-		<div class="grid_9 inputs">
+		<div class="<?php echo $inputs_class ?> inputs">
 		
 			<?php $current_inputs = element($section_name, $inputs, array()); ?>
 			
@@ -31,7 +35,7 @@
 					<?php endif; ?>
 					<?php echo $input['content'] ?>
 				</div>
-				<?php if (element('hint', $input)): ?>
+				<?php if (element('hint', $input) && ! $section_extra): ?>
 				<div class="grid_3">
 					<div class="hint">
 						<h6><?php echo $input['label'] ?></h6>
@@ -43,7 +47,13 @@
 			
 			<?php endforeach; ?>
 			
-		</div> <!-- / .grid_9 -->
+		</div> <!-- / .<?php echo $inputs_class ?>.inputs -->
+		
+		<?php if ($section_extra): ?>
+		<div class="grid_3 section-extra">
+			<?php echo $section_extra ?>
+		</div>
+		<?php endif; ?>
 		
 		
 	</div> <!-- / .row.form-section-....... -->
