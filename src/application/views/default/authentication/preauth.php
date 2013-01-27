@@ -1,115 +1,118 @@
-<?php echo form_open('authentication/save_preauth', array('id' => 'auth_preauth_form')) ?>
+<?php
 
-	<fieldset class="form clearfix">
-		
-		<legend>Options</legend>
-		
-		<div class="inputs">
-			
-			<?php $name = 'auth_preauth_g_id' ?>
-			<label for="<?php echo $name ?>">Default Classroombookings group</label>
-			<?php
-			echo form_dropdown(
-				$name,
-				$groups, set_value($name, element($name, $settings)),
-				'tabindex="' . tab_index() . '" id="' . $name . '"'
-			);
-			?>
-			
-			<?php
-			$name = 'auth_preauth_email_domain';
-			$default_parts = explode('@', $this->session->userdata('u_email'));
-			$default = end($default_parts);
-			?>
-			<label for="<?php echo $name ?>">Email domain</label>
-			<?php echo form_input(array(
-				'name' => $name,
-				'id' => $name,
-				'size' => 30,
-				'maxlength' => 100,
-				'class' => 'text-input half-bottom',
-				'value' => set_value($name, element($name, $settings, $default)),
-			)) ?>
-			<p class="hint light">Email domain appended to the username of 
-			authenticated users to generate their email address. No <strong>@</strong>.</p>
-			<br>
-			
-		</div>
-		
-	</fieldset>
+// ===== Key
+
+$section = 'key';
+
+$this->form->add_section($section, lang('authentication_preauth_your_key'));
+
+	// ----- Display key
+	$name = 'key';
+	$this->form->add_input(array(
+		'section' => $section,
+		'name' => $name,
+		'content' => element('auth_preauth_key', $settings) . '<br><br>',
+	));
 	
+	// ----- Generate new key
+
+	$name = 'new_key';
 	
-	<fieldset class="form clearfix">
-		
-		<legend>Your key</legend>
-		
-		<div class="inputs">
-		
-			<?php echo element('auth_preauth_key', $settings, '(Not set)') ?>
-			<br><br>
-			<?php echo form_button(array(
-				'type' => 'link',
-				'url' => 'authentication/save_preauth?new_key=1',
-				'class' => 'small grey',
-				'text' => 'Generate new key',
-				'tab_index' => tab_index(),
-			)) ?>
-			<br><br>
-			
-		</div>
-		
-	</fieldset>
-	
-	
-	<fieldset class="form clearfix actions">
-		<?php echo form_button(array(
+	$this->form->add_input(array(
+		'section' => $section,
+		'name' => $name,
+		'content' => form_hidden($name, '1') . form_button(array(
 			'type' => 'submit',
-			'class' => 'blue',
-			'text' => lang('ACTION_SAVE') . ' pre-authentication ' . strtolower(lang('W_SETTINGS')),
+			'id' => 'new_key',
+			'class' => 'grey half-bottom',
+			'text' => lang('authentication_preauth_new_key'),
 			'tab_index' => tab_index(),
-		)) ?>
-	</fieldset>
-
-</form>
-
-<!--
+		)),
+	));
 	
-</div>
+echo form_open(current_url(), array('id' => 'auth_preauth_new_key_form'));
+echo $this->form->render();
+echo '</form>';
 
 
-<hr>
 
 
-<div class="alpha three columns"><h6>Your key</h6></div>
-
-<div class="omega nine columns">
-
-	<?php echo $settings['auth_preauth_key'] ?>
-
-</div>
+$this->form->clear();
 
 
-<hr>
 
 
-<div class="row">
-<div class="alpha three columns">&nbsp;</div>
-<div class="omega nine columns"><?php
+// ===== Defaults
 
-$save = 'Save pre-authentication settings';
-$newkey = 'Generate new key';
+$section = 'defaults';
 
-echo form_hidden('action_save', $save);
-echo form_hidden('action_newkey', $newkey);
+$this->form->add_section($section, lang('authentication_preauth_defaults'), lang('authentication_preauth_defaults_hint'));
 
-unset($buttons);
-$buttons[] = array('submit', 'blue', $save, $t);
-$buttons[] = array('submit', 'green', $newkey, $t);
-$this->load->view('parts/buttons', array('buttons' => $buttons));
-?></div>
-</div>
+	// ----- Default Group ID
+	
+	$name = 'auth_preauth_g_id';
+	
+	$default_groups = array('' => lang('authentication_preauth_no_create'));
+	$default_groups += $groups;
+	
+	$this->form->add_input(array(
+		
+		'section' => $section,
+		'name' => $name,
+		'label' => lang('authentication_preauth_default_group'),
+		
+		'content' => form_dropdown(
+			$name, 
+			$default_groups, 
+			set_value($name, element($name, $settings)), 
+			'tabindex="' . tab_index() . '" id="' . $name . '"'
+		),
+		
+	));
+	
+	
+	// ----- Email domain
+	
+	$name = 'auth_preauth_email_domain';
+	$default = end(explode('@', $this->session->userdata('u_email')));
+	
+	$this->form->add_input(array(
+		
+		'section' => $section,
+		'name' => $name,
+		'label' => lang('authentication_preauth_email_domain'),
+		'hint' => lang('authentication_preauth_email_domain_hint'),
+		
+		'content' => form_input(array(
+			'name' => $name,
+			'id' => $name,
+			'class' => 'text-input',
+			'size' => 30,
+			'max_length' => 100,
+			'tabindex' => tab_index(),
+			'value' => set_value($name, element($name, $settings), $default),
+		)),
+		
+	));
+	
+	
+$this->form->add_button(form_button(array(
+	'type' => 'submit',
+	'class' => 'blue',
+	'text' => lang('save'),
+	'tab_index' => tab_index(),
+)));
 
 
-</form>
 
--->
+
+echo form_open(current_url(), array('id' => 'auth_preauth_form'));
+echo $this->form->render();
+echo '</form>';
+
+?>
+
+
+
+<script>
+</script>

@@ -144,7 +144,7 @@ class Authentication extends Configure_Controller
 				}
 				else
 				{
-					$this->flash->set('error', lang('authentication_ldap_save_success'));
+					$this->flash->set('error', lang('authentication_ldap_save_error'));
 				}
 			}
 		}
@@ -227,61 +227,55 @@ class Authentication extends Configure_Controller
 	/**
 	 * Pre-authentication
 	 */
-	function save_preauth()
+	function preauth()
 	{
 		$this->auth->restrict('crbs.configure.authentication');
-		$this->auto_view = FALSE;
 		
-		if ($this->input->get('new_key'))
+		if ($this->input->post('new_key'))
 		{
-			$new_key = $this->auth->preauth->generate_key();
-			$options = array('auth_preauth_key' => $new_key);
+			$options = array('auth_preauth_key' => $this->auth->preauth->generate_key());
 			
 			// Save options
 			if ($this->options_model->set($options))
 			{
-				$this->flash->set('success', lang('CONF_AUTH_PREAUTH_NEWKEY'), TRUE);
+				$this->flash->set('success', lang('authentication_preauth_new_key_success'), TRUE);
+				redirect('authentication/preauth');
 			}
 			else
 			{
-				$this->flash->set('error', 'The new key could not be saved.', TRUE);
+				$this->flash->set('error', lang('authentication_preauth_new_key_error'));
 			}
-			
-			redirect('authentication/index/preauth');
 		}
 		
 		if ($this->input->post())
 		{
-		
-			$this->form_validation->set_rules('auth_preauth_g_id', 'Default Classroombookings group', 'required|integer')
+			$this->form_validation->set_rules('auth_preauth_g_id', 'Default Classroombookings group', 'integer')
 								  ->set_rules('auth_preauth_email_domain', 'Default email domain', 'required|max_length[100]|trim');
 			
 			if ($this->form_validation->run())
 			{
-				$email_domain = preg_replace('/^@/', '', $this->input->post('auth_preauth_email_domain'));
-				
 				$options = array(
 					'auth_preauth_g_id' => (int) $this->input->post('auth_preauth_g_id'),
-					'auth_preauth_email_domain' => $email_domain,
+					'auth_preauth_email_domain' => preg_replace('/^@/', '', $this->input->post('auth_preauth_email_domain')),
 				);
 				
 				// Save options
 				if ($this->options_model->set($options))
 				{
-					$this->flash->set('success', lang('CONF_AUTH_PREAUTH_SAVE_OK'), TRUE);
-					redirect('authentication/index/preauth');
+					$this->flash->set('success', lang('authentication_preauth_save_success'), TRUE);
+					redirect('authentication/preauth');
 				}
 				else
 				{
-					$this->flash->set('error', 'The settings could not be updated. Please try again.');
+					$this->flash->set('error', lang('authentication_preauth_save_error'));
 				}
 			}
-			else
-			{
-				return $this->index('preauth');
-			}
-			
 		}
+		
+		$this->layout->add_breadcrumb(lang('authentication_preauth'), 'authentication/preauth');
+		$this->layout->set_title(lang('authentication_preauth'));
+		$this->load->library('form');
+		$this->data['subnav_active'] = 'authentication/preauth';
 		
 	}
 	
