@@ -38,7 +38,6 @@ class Auth extends CI_Driver_Library
 		
 		// Load helpers/models required by the library
 		$this->CI->load->helper('cookie');
-		$this->CI->load->model('security_model');
 		$this->CI->load->library('user_agent');
 	}
 	
