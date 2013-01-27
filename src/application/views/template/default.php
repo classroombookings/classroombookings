@@ -127,13 +127,17 @@ CRBS.tt_view = "<?php echo config_item('timetable_view') ?>";
 	
 	
 	
-	<footer class="row footer">
-		<div class="grid_6"> 
-			<p><a href="http://classroombookings.com/" target="_blank">Classroombookings</a> is released under the Open Software License v3.0.</p>
-			<p>&copy; 2006 &mdash; <?php echo date('Y') ?> Craig A Rodway.</p>
-		</div>
-		<div class="grid_6 text-right">
-			<?php echo anchor(option('school_url'), option('school_name'), 'target="_blank"') ?>
+	<footer class="row">
+		<div class="grid_12 footer">
+			<div class="row">
+				<div class="grid_6"> 
+					<p><a href="http://classroombookings.com/" target="_blank">Classroombookings</a> is released under the Open Software License v3.0.</p>
+					<p>&copy; 2006 &mdash; <?php echo date('Y') ?> Craig A Rodway.</p>
+				</div>
+				<div class="grid_6 text-right">
+					<?php echo anchor(option('school_url'), option('school_name'), 'target="_blank"') ?>
+				</div>
+			</div>
 		</div>
 	</footer>
 
