@@ -89,6 +89,40 @@ $lang = array(
 	'authentication_ldap_groups' =>
 	'LDAP Groups',
 	
+		'authentication_ldap_groups_hint' =>
+		'Use this page to retrieve the user groups from your LDAP server so you 
+			can automatically assign members of LDAP groups to groups and 
+			departments within Classroombookings. This only needs to be done once, 
+			or if your LDAP groups change.<br><br>This will use the settings you 
+			configured in the <strong>LDAP</strong> tab, but you must supply a username 
+			and password that has the appropriate permissions to retrieve all 
+			the groups. The details you enter here are used once and 
+			<span>will not be saved</span>.',
+	
+		'authentication_ldap_groups_current' =>
+		'Current LDAP groups',
+		
+		'authentication_ldap_groups_hostport' =>
+		'Hostname and port',
+		
+		'authentication_ldap_groups_mode' =>
+		'Mode',
+		
+		'authentication_ldap_groups_mode_sync' =>
+		'Synchronise (all existing memberships will be maintained)',
+		
+		'authentication_ldap_groups_mode_reload' =>
+		'Reload (clear all existing LDAP groups first)',
+		
+		'authentication_ldap_groups_get' =>
+		'Get LDAP groups',
+		
+		'authentication_ldap_groups_reload_success' =>
+		'The groups have been updated successfully.',
+		
+		'authentication_ldap_groups_sync_success' =>
+		'The groups have been updated successfully.',
+	
 	'authentication_preauth' =>
 	'Pre-authentication',
 	

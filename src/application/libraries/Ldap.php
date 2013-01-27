@@ -31,6 +31,7 @@ class Ldap
 	public function __construct($settings = array())
 	{
 		$this->initialise($settings);
+		$this->CI =& get_instance();
 	}
 	
 	
@@ -129,10 +130,166 @@ class Ldap
 	
 	
 	
-	public function get_groups($username = '', $password = '')
+	// =======================================================================
+	// Get groups
+	// =======================================================================
+	
+	
+	
+	
+	/**
+	 * Get all LDAP groups from the server and clear existing groups before inserting new ones
+	 *
+	 * @param string $username		Username to authenticate with
+	 * @param string $password		Password to authenticate with
+	 * @return bool
+	 */
+	public function reload_groups($username = '', $password = '')
 	{
-		// @TODO
+		$this->CI->load->model('ldap_groups_model');
+		
+		$groups = $this->_get_groups($username, $password);
+		
+		if ($groups)
+		{
+			$clear = $this->CI->ldap_groups_model->clear_groups();
+			$add = $this->CI->ldap_groups_model->set_groups($groups);
+			return ($clear && $add !== FALSE) ? $add : FALSE;
+		}
+		else
+		{
+			return FALSE;
+		}
 	}
+	
+	
+	
+	
+	/**
+	 * Get all LDAP groups from the server and update existing ones if they exist
+	 *
+	 * @param string $username		Username to authenticate with
+	 * @param string $password		Password to authenticate with
+	 * @return bool
+	 */
+	public function sync_groups($username = '', $password = '')
+	{
+		$this->CI->load->model('ldap_groups_model');
+		
+		$groups = $this->_get_groups($username, $password);
+		
+		if ($groups)
+		{
+			return $this->CI->ldap_groups_model->sync_groups($groups);
+		}
+		else
+		{
+			return FALSE;
+		}
+	}
+	
+	
+	
+	
+	/**
+	 * Retrieve a list of groups from the LDAP server as an array
+	 */
+	private function _get_groups($username = '', $password = '')
+	{	
+		// Group types
+		$security = 268435456;
+		$distribution = 268435457;
+		
+		$account_type = $security;
+		
+		// Generate filter
+		$filter = '(&(objectCategory=group)';
+		if ($account_type !== NULL)
+		{
+			$filter .= '(samaccounttype='. $account_type .')';
+		}
+		$filter .= '(cn=*))';
+		
+		// Define which fields are needed
+		$fields = array('description', 'cn', 'objectguid');
+		
+		// Attempt connection to server
+		$connect = ldap_connect($this->_host, $this->_port);
+		
+		if ( ! $connect)
+		{
+			$this->reason = "Failed to connect to LDAP server {$this->_host} on port {$this->_port}.";
+			return FALSE;
+		}
+		
+		ldap_set_option($connect, LDAP_OPT_NETWORK_TIMEOUT, 5);
+		ldap_set_option($connect, LDAP_OPT_PROTOCOL_VERSION, 3);
+		
+		$bind = ldap_bind($connect, $username, $password);
+		
+		if ( ! $bind)
+		{
+			$this->reason = 'Unable to bind to LDAP server with the provided settings.';
+			return FALSE;
+		}
+		
+		$search = @ldap_search($connect, $this->_base, $filter, $fields);
+		
+		if ( ! $search)
+		{
+			$this->reason = 'Could not complete LDAP search.';
+			return FALSE;
+		}
+		
+		$entries = @ldap_get_entries($connect, $search);
+		
+		if ( ! isset($entries['count']) || $entries['count'] == 0)
+		{
+			$this->reason = 'No groups found.';
+			return FALSE;
+		}
+		
+		$groups = array(); 
+		
+		for ($i = 0; $i < $entries['count']; $i++)
+		{
+			$name = $entries[$i]['cn'][0];
+			
+			if (isset($entries[$i]['objectguid']))
+			{
+				$guid = bin2hex($entries[$i]['objectguid'][0]);
+			}
+			else
+			{
+				$guid = md5($name);
+			}
+			
+			if (isset($entries[$i]['description']))
+			{
+				$desc = $entries[$i]['description'][0];
+			}
+			else
+			{
+				$desc = $name;
+			}
+			
+			$groups[] = array(
+				'guid' => $guid,
+				'name' => $name,
+				'desc' => $desc,
+			);
+		}
+		
+		return $groups;
+		
+	}
+	
+	
+	
+	
+	// =======================================================================
+	// Utility methods
+	// =======================================================================
 	
 	
 	

@@ -72,6 +72,7 @@ div hr { height: 1px; }
 			border: 0;
 		}
 		
+		.header-right .nav li { margin: 0 0 0 10px; }
 		.header-right .nav li a {
 			float: right;
 		}
@@ -314,6 +315,16 @@ div hr { height: 1px; }
 		line-height: 1.5;
 	}
 
+
+
+
+.ldap-groups {
+	font-size: 12px;
+}
+	.ldap-groups li {
+		margin-bottom: 6px;
+		cursor: help;
+	}
 
 
 

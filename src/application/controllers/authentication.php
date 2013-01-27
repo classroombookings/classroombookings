@@ -54,7 +54,9 @@ class Authentication extends Configure_Controller
 	
 	
 	
-	// -------------------------------------------------------------------------
+	// =======================================================================
+	// Auth configuration pages
+	// =======================================================================
 	
 	
 	
@@ -157,187 +159,73 @@ class Authentication extends Configure_Controller
 	
 	
 	
-	public function test_ldap()
-	{
-		$settings = array(
-			'auth_ldap_host' => $this->input->post('auth_ldap_host'),
-			'auth_ldap_port' => $this->input->post('auth_ldap_port'),
-			'auth_ldap_base' => $this->input->post('auth_ldap_base'),
-			'auth_ldap_filter' => $this->input->post('auth_ldap_filter'),
-		);
-		
-		$this->load->library('ldap', $settings);
-		
-		if ($this->ldap->is_supported())
-		{
-			$username = $this->input->post('username');
-			$password = $this->input->post('password');
-			
-			$response = $this->ldap->authenticate($username, $password, TRUE);
-			
-			if (is_array($response))
-			{
-				$this->json = array(
-					'status' => 'ok',
-					'user' => $response,
-				);
-			}
-			else
-			{
-				$this->json = array(
-					'status' => 'err',
-					'reason' => $this->ldap->reason,
-				);
-			}
-		}
-		else
-		{
-			$this->json = array(
-				'status' => 'err',
-				'reason' => 'LDAP support is not enabled in PHP.',
-			);
-		}
-	}
-	
-	
-	
-	
 	/**
-	 * FORM POST: Lookup and store the LDAP groups
+	 * LDAP Groups
 	 */
-	function get_ldap_groups()
+	function ldap_groups()
 	{
 		$this->auth->restrict('crbs.configure.authentication');
 		
-		$base = $this->input->post('auth_ldap_base');
-		$username = $this->input->post('username');
-		$password = $this->input->post('password');
+		$this->load->model('ldap_groups_model');
 		
-		$mode = $this->input->post('mode');
-		
-		$filter = '(&(objectCategory=group)(samaccounttype=268435456)(cn=*))';
-		$fields = array('samaccountname');
-		
-		// Load LDAP library
-		
-		$settings = array(
-			'auth_ldap_host' => option('auth_ldap_host'),
-			'auth_ldap_port' => option('auth_ldap_port'),
-			'auth_ldap_base' => $base,
-			'auth_ldap_filter' => $filter,
-		);
-		
-		$this->load->library('ldap', $settings);
-		
-		// Get the groups within the base DNs defined
-		$this->ldap->get_groups($username, $password);
-		
-		/*
-		
-		// Connect to LDAP server
-		$connect = ldap_connect($settings['auth.ldap.host'], $settings['auth.ldap.port']);
-		if(!$connect){
-			$this->msg->add('err', 'Could not connect to LDAP server.');
-			redirect('configure/ldapgroups');
-		}
-		
-		// Now go through the supplied DNs and see if we can bind as the user in them
-		$dns = explode(";", $base);
-		$ldap_groups = array();
-		
-		// Loop through the DNs
-		foreach($dns as $dn){
-			$thisdn = trim($dn);
-			$bind = ldap_bind($connect, $user, $pass);
-			$search = ldap_search($connect, $dn, $filter, $fields);
-			$entries = ldap_get_entries($connect, $search);
-			for($i = 0; $i < $entries['count']; $i++){
-				//array_push($ldap_groups, $entries[$i]['samaccountname'][0]);
-				$dn = $entries[$i]['dn'];
-				$dnarray = explode(',', $dn);
-				array_push($ldap_groups, str_replace('CN=', '', $dnarray[0]));
-				unset($dnarray);
-			}
-		}
-		
-		#die(print_r($ldap_groups));
-		
-		// Empty the table if necessary before fetching the 'existing' groups
-		if($clear == TRUE){
-			$this->db->empty_table('ldapgroups');
-			$this->db->empty_table('groups2ldapgroups');
-			$this->db->empty_table('departments2ldapgroups');
-		}
-		
-		// Fetch the groups we already have in our DB
-		$existing_groups = $this->security->get_ldap_groups();
-		
-		// Now find out if there are new groups to add
-		$groups_to_add = array();
-		foreach($ldap_groups as $ldap_group){
-			if(!in_array($ldap_group, $existing_groups)){
-				if($ignorespecial == TRUE){
-					if(preg_match('/^([-a-z0-9_-\s])+$/i', $ldap_group) !== 0){
-						array_push($groups_to_add, $ldap_group);
-					}
-				} else {
-					array_push($groups_to_add, $ldap_group);
+		if ($this->input->post())
+		{
+			$this->form_validation->set_rules('username', lang('Username'), 'required|max_length[100]|trim')
+								  ->set_rules('password', lang('Password'), 'required|max_length[100]')
+								  ->set_rules('auth_ldap_base', lang('authentication_ldap_base'), 'max_length[65535]')
+								  ->set_rules('mode', lang('authentication_ldap_groups_mode'), 'required');
+			
+			if ($this->form_validation->run())
+			{
+				$base = $this->input->post('auth_ldap_base');
+				$username = $this->input->post('username');
+				$password = $this->input->post('password');
+				$mode = $this->input->post('mode');
+				
+				// Load LDAP library with provided settings
+				$this->load->library('ldap', array(
+					'auth_ldap_host' => option('auth_ldap_host'),
+					'auth_ldap_port' => option('auth_ldap_port'),
+					'auth_ldap_base' => $base,
+				));
+				
+				if ($mode == 'sync')
+				{
+					$result = $this->ldap->sync_groups($username, $password);
+					$flash_success = lang('authentication_ldap_groups_sync_success');
+				}
+				elseif ($mode == 'reload')
+				{
+					$result = $this->ldap->reload_groups($username, $password);
+					$flash_success = lang('authentication_ldap_groups_reload_success');
+				}
+				
+				if ($result)
+				{
+					$this->flash->set('success', $flash_success, TRUE);
+					redirect(current_url());
+				}
+				else
+				{
+					$this->flash->set('error', $this->ldap->reason);
 				}
 			}
 		}
 		
-		echo "Existing groups:\n\n";
-		#print_r($existing_groups);
+		$this->ldap_groups_model->order_by('lg_name', 'asc');
+		$this->data['ldap_groups'] = $this->ldap_groups_model->get_all();	
 		
-		echo "\n\n\n\n";
-		
-		echo "LDAP groups:\n\n";
-		print_r($ldap_groups);
-		
-		echo "\n\n\n\n";
-		
-		echo "New groups to add to db:\n\n";
-		#print_r($groups_to_add);
-		
-		
-		// Check if we need to add any groups to begin with...
-		if(count($groups_to_add) > 0){
-			
-			$sql = 'INSERT INTO ldapgroups (name) VALUES ';
-			foreach($groups_to_add as $group_to_add){
-				$sql .= "('$group_to_add'),";
-			}
-			// Remove last comma
-			$sql = preg_replace('/,$/', '', $sql);
-			$query = $this->db->query($sql);
-			
-			if($query == FALSE){
-				$this->msg->add('err', 'Could not insert LDAP groups into local database');
-			} else {
-				$this->msg->add('info', 'Groups were successfully imported.');
-			}
-			
-		} else {
-			
-			$this->msg->add('note', 'There were no new groups to add.');
-			
-		}
-		
-		redirect('configure/ldapgroups');
-		*/
-		
+		$this->layout->add_breadcrumb(lang('authentication_ldap_groups'), 'authentication/ldap_groups');
+		$this->layout->set_title(lang('authentication_ldap_groups'));
+		$this->load->library('form');
+		$this->data['subnav_active'] = 'authentication/ldap_groups';
 	}
 	
 	
 	
 	
-	/* ========== PRE-AUTH ========== */
-	
-	
-	
-	
 	/**
-	 * FORM POST: Save pre-authentication settings
+	 * Pre-authentication
 	 */
 	function save_preauth()
 	{
@@ -400,25 +288,53 @@ class Authentication extends Configure_Controller
 	
 	
 	
-	function _d($message, $br = TRUE){
-		echo $message;
-		echo ($br == TRUE) ? '<br /><br />' : '';
-		@ob_flush();
-	}
+	// =======================================================================
+	// AJAX
+	// =======================================================================
 	
 	
 	
 	
-	/**
-	 * Check TCP port given in the LDAP config is a valid TCP port number between 1-65536
-	 */	 	
-	function _port_check($port){
-		$port = (int)$port;
-		$check = ( ($port >= 1) && ($port <= 65536) );
-		if($check == FALSE){
-			$this->form_validation->set_message('_port_check', 'The %s must be between 1 and 65536.');
+	public function test_ldap()
+	{
+		$settings = array(
+			'auth_ldap_host' => $this->input->post('auth_ldap_host'),
+			'auth_ldap_port' => $this->input->post('auth_ldap_port'),
+			'auth_ldap_base' => $this->input->post('auth_ldap_base'),
+			'auth_ldap_filter' => $this->input->post('auth_ldap_filter'),
+		);
+		
+		$this->load->library('ldap', $settings);
+		
+		if ($this->ldap->is_supported())
+		{
+			$username = $this->input->post('username');
+			$password = $this->input->post('password');
+			
+			$response = $this->ldap->authenticate($username, $password, TRUE);
+			
+			if (is_array($response))
+			{
+				$this->json = array(
+					'status' => 'ok',
+					'user' => $response,
+				);
+			}
+			else
+			{
+				$this->json = array(
+					'status' => 'err',
+					'reason' => $this->ldap->reason,
+				);
+			}
 		}
-		return $check;
+		else
+		{
+			$this->json = array(
+				'status' => 'err',
+				'reason' => 'LDAP support is not enabled in PHP.',
+			);
+		}
 	}
 	
 	
@@ -426,7 +342,4 @@ class Authentication extends Configure_Controller
 	
 }
 
-
-
-
-/* End of file app/controllers/authentication.php */
+/* End of file ./application/controllers/authentication.php */

@@ -1,1 +1,178 @@
-<?php echo form_open('authentication/save_ldap_groups', array('id' => 'auth_ldap_groups_form')) ?>	<p class="hint large">Use this page to retrieve the user groups from your 	LDAP server so you can automatically assign LDAP users in their groups to 	a single group and multiple departments within Classroombookings.	This only needs to be done once, or if your LDAP groups change.	<br><br>	This will use the settings you configured in the <em>LDAP</em> tab, but you 	must supply a username and password here that has the appropriate 	permissions to retrieve all the groups. The details you enter here are used 	once and <strong>will not be saved</strong>.</p>			<fieldset class="form clearfix">				<legend>LDAP Connection</legend>				<div class="inputs">						<label>Hostname and Port</label>			<?php echo form_input(array(				'name' => 'host',				'id' => 'host',				'disabled' => 'disabled',				'class' => 'text-input',				'value' => element('auth_ldap_host', $settings, '(None)') . ':' . element('auth_ldap_port', $settings, '(0)'),			)) ?>						<?php $name = 'auth_ldap_base' ?>			<label for="<?php echo $name ?>">Base DNs</label>			<?php echo form_textarea(array(				'name' => $name,				'id' => $name,				'class' => 'text-input half-bottom',				'rows' => 10,				'cols' => 60,				'tabindex' => tab_index(),				'value' => set_value($name, element($name, $settings)),			)) ?>			<p class="hint light add-bottom">Separate multiple DNs to search with a semicolon.</p>						<p class="hint large">The user should have appropriate privileges on the LDAP server to retrieve a list of groups.</p>						<?php $name = 'username' ?>			<label for="<?php echo $name ?>">Username</label>			<?php echo form_input(array(				'name' => $name,				'id' => $name,				'class' => 'text-input',				'size' => 30,				'max_length' => 100,				'autocomplete' => 'off',				'tabindex' => tab_index(),				'value' => set_value($name),			)) ?>						<?php $name = 'password' ?>			<label for="<?php echo $name ?>">Password</label>			<?php echo form_password(array(				'name' => $name,				'id' => $name,				'class' => 'text-input',				'size' => 30,				'max_length' => 100,				'autocomplete' => 'off',				'tabindex' => tab_index(),			)) ?>					</div>			</fieldset>			<fieldset class="form clearfix">				<legend>Mode</legend>					<div class="inputs">						<div class="controls">								<?php $name = 'mode' ?>								<?php $value = 'sync' ?>				<label class="radio"><?php echo form_radio(array(					'name' => $name,					'id' => $name . '_sync',					'tabindex' => tab_index(),					'value' => 'sync',					'checked' => FALSE,				)) ?> Synchronise. All existing memberships will be maintained</label>								<?php $value = 'reset' ?>				<label class="radio"><?php echo form_radio(array(					'name' => $name,					'id' => $name . '_reset',					'tabindex' => tab_index(),					'value' => $value,					'checked' => FALSE,				)) ?> Reset. Existing memberships and groups will be removed.</span></label>							</div> <!-- / .controls -->					</div>			</fieldset>			<fieldset class="form clearfix actions">		<?php echo form_button(array(			'type' => 'submit',			'class' => 'blue',			'text' => 'Get LDAP Groups',			'tab_index' => tab_index(),		)) ?>	</fieldset>	</form><!--<hr><div class="row"><div class="alpha three columns"><h6>LDAP Groups</h6></div><div class="omega nine columns">		<table class="list" width="100%" cellpadding="0" cellspacing="0" border="0">	<?php	if (count($ldapgroups) > 0)	{		foreach($ldapgroups as $group)		{			echo sprintf('<tr><td class="m">%s</td></tr>', $group);		}	}	else	{		echo '<p>No groups exist at the moment.</p>';	}	?>	</table></div></div>-->
+<?php
+
+// ===== Server settings
+
+$section = 'ldap_groups';
+
+$this->form->add_section($section, lang('authentication_ldap_groups'), lang('authentication_ldap_groups_hint'));
+
+$current_groups = '<h3 class="sub-heading">' . lang('authentication_ldap_groups_current') . '</h3>';
+$current_groups .= '<p><strong>Total: </strong>' . count($ldap_groups) . '</p>';
+
+if ($ldap_groups)
+{
+	$current_groups .= '<ul class="ldap-groups">';
+	foreach ($ldap_groups as $group)
+	{
+		$current_groups .= '<li title="' . $group['lg_description'] . '">' . $group['lg_name'] . '</li>'."\n";
+	}
+	$current_groups .= '</ul>';
+}
+
+$this->form->add_section_extra($section, $current_groups);
+
+
+	// ----- Hostname and port
+	
+	$name = 'auth_ldap_groups_hostport';
+	
+	$this->form->add_input(array(
+		
+		'section' => $section,
+		'name' => $name,
+		'label' => lang('authentication_ldap_groups_hostport'),
+		
+		'content' => form_input(array(
+			'name' => $name,
+			'id' => $name,
+			'class' => 'text-input',
+			'size' => 30,
+			'max_length' => 100,
+			'tabindex' => tab_index(),
+			'disabled' => 'disabled',
+			'value' => element('auth_ldap_host', $settings, '(None)') . ':' . element('auth_ldap_port', $settings, '(0)'),
+		)),
+		
+	));
+	
+	
+	// ---- Base DNs
+	
+	$name = 'auth_ldap_base';
+	
+	$this->form->add_input(array(
+		
+		'section' => $section,
+		'name' => $name,
+		'label' => lang('authentication_ldap_base'),
+		
+		'content' => form_textarea(array(
+			'name' => $name,
+			'id' => $name,
+			'class' => 'text-input',
+			'rows' => 10,
+			'cols' => 60,
+			'tabindex' => tab_index(),
+			'value' => set_value($name),		//, element($name, $settings)),
+		)),
+		
+	));
+	
+	
+	// ----- Username
+	
+	$name = 'username';
+	
+	$this->form->add_input(array(
+		
+		'section' => $section,
+		'name' => $name,
+		'label' => lang('username'),
+		
+		'content' => form_input(array(
+			'name' => $name,
+			'id' => $name,
+			'class' => 'text-input',
+			'size' => 30,
+			'max_length' => 100,
+			'tabindex' => tab_index(),
+			'autocomplete' => 'off',
+			'value' => set_value($name),
+		)),
+		
+	));
+	
+	
+	// ----- Pasword
+	
+	$name = 'password';
+	
+	$this->form->add_input(array(
+		
+		'section' => $section,
+		'name' => $name,
+		'label' => lang('password'),
+		
+		'content' => form_password(array(
+			'name' => $name,
+			'id' => $name,
+			'class' => 'text-input',
+			'size' => 30,
+			'max_length' => 100,
+			'tabindex' => tab_index(),
+			'autocomplete' => 'off',
+			'value' => '',
+		)),
+		
+	));
+	
+	
+	// ----- Mode
+	
+	$name = 'mode';
+	
+	$content = '';
+	
+	$value = 'sync';
+	$content .= '<label class="radio">';
+	$content .= form_radio(array(
+		'name' => $name,
+		'id' => $name . '_day',
+		'tabindex' => tab_index(),
+		'value' => $value,
+		'checked' => set_radio($name, $value),
+	));
+	$content .= lang('authentication_ldap_groups_mode_sync');
+	$content .= '</label>';
+	
+	$value = 'reload';
+	$content .= '<label class="radio">';
+	$content .= form_radio(array(
+		'name' => $name,
+		'id' => $name . '_room',
+		'tabindex' => tab_index(),
+		'value' => $value,
+		'checked' => set_radio($name, $value),
+	));
+	$content .= lang('authentication_ldap_groups_mode_reload');
+	$content .= '</label><br><br>';
+	
+	
+	$this->form->add_input(array(
+		'section' => $section,
+		'name' => $name,
+		'label' => lang('authentication_ldap_groups_mode'),
+		'content' => $content,
+	));
+	
+	
+	// ----- Submit
+	
+	$name = 'submit';
+	
+	$this->form->add_input(array(
+		'section' => $section,
+		'name' => $name,
+		'content' => form_button(array(
+			'type' => 'submit',
+			'class' => 'blue',
+			'text' => lang('authentication_ldap_groups_get'),
+			'tab_index' => tab_index(),
+		)),
+	));
+
+echo form_open(current_url(), array('id' => 'auth_ldap_groups_form'));
+echo $this->form->render();
+echo '</form>';
+
+?>
