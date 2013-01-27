@@ -32,15 +32,12 @@ class Form
 	private $hints = array();
 	private $buttons = array();
 	
-	// Opening form string
-	private $form_open_str = '';
 	
 	/**
 	 * Create a new form. Params like form_open()
 	 */
-	public function __construct($action_uri = '', $params = array(), $hidden = array())
+	public function __construct()
 	{
-		$this->form_open_str = form_open($action_uri, $params, $hidden);
 		$this->CI =& get_instance();
 	}
 	
@@ -128,7 +125,7 @@ class Form
 	
 	public function render()
 	{
-		$output = $this->form_open_str . "\n";
+		$output = '';
 		
 		$data = array(
 			'sections' => $this->sections,
@@ -139,10 +136,23 @@ class Form
 		
 		$output .= $this->CI->load->view('parts/form', $data, TRUE);
 		
-		$output .= "</form>\n";
-		
 		return $output;
 	}
+	
+	
+	
+	
+	public function clear()
+	{
+		$this->sections = array();
+		$this->inputs = array();
+		$this->hints = array();
+		$this->buttons = array();
+		return $this;
+	}
+	
+	
+	
 	
 }
 
