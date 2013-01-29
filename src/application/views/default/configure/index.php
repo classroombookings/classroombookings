@@ -13,7 +13,7 @@
 			
 			<?php if ($this->auth->check('crbs.configure.settings')): ?>
 			<li>
-				<?php echo anchor('quota', lang('configure_quota'), 'class="i configure-quota"') ?>
+				<?php echo anchor('configure/quota', lang('configure_quota'), 'class="i configure-quota"') ?>
 				<p><?php echo lang('configure_quota_description') ?></p>
 			</li>
 			<?php endif; ?>
@@ -22,6 +22,13 @@
 			<li>
 				<?php echo anchor('configure/style', lang('configure_look_and_feel'), 'class="i configure-style"') ?>
 				<p><?php echo lang('configure_look_and_feel_description') ?></p>
+			</li>
+			<?php endif; ?>
+			
+			<?php if ($this->auth->check('crbs.configure.settings')): ?>
+			<li>
+				<?php echo anchor('email', lang('configure_email'), 'class="i configure-email"') ?>
+				<p><?php echo lang('configure_email_hint') ?></p>
 			</li>
 			<?php endif; ?>
 			

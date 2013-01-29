@@ -22,6 +22,12 @@ $lang = array(
 		
 		'configure_look_and_feel_description' =>
 		'Change how the system looks',
+		
+		'configure_email' =>
+		'Email',
+		
+		'configure_email_hint' =>
+		'Set email and notification options',
 	
 	'configure_security' =>
 	'Security',
@@ -33,7 +39,7 @@ $lang = array(
 		'Configure how users log in to classroombookings',
 		
 		'configure_users' =>
-		'Users',
+		'User Accounts',
 		
 		'configure_users_description' =>
 		'Manage user accounts',
