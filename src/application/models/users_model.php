@@ -39,6 +39,21 @@ class Users_model extends School_model
 	
 	
 	
+	public function get($u_id = 0)
+	{
+		$user = parent::get($u_id);
+		
+		if ($user)
+		{
+			$user['departments'] = $this->get_user_departments($u_id);
+		}
+		
+		return $user;
+	}
+	
+	
+	
+	
 	/**
 	 * Get a single user by their username
 	 *
@@ -173,6 +188,79 @@ class Users_model extends School_model
 	{
 		$sql = 'DELETE FROM users_active WHERE ua_timestamp <= (NOW() - INTERVAL 5 MINUTE)';
 		return $this->db->query($sql);
+	}
+	
+	
+	
+	
+	// ---------- Departments ---------- //
+	
+	
+	
+	
+	/**
+	 * Get simple list of department IDs => names that a user belongs to
+	 */
+	public function get_user_departments($u_id = 0)
+	{
+		$sql = 'SELECT
+					d.*
+				FROM
+					u2d
+				LEFT JOIN
+					departments d ON u2d_d_id = d_id
+				WHERE
+					u2d_u_id = ?
+				AND
+					d_s_id = ?
+				ORDER BY
+					d_name ASC';
+		
+		$result = $this->db->query($sql, array($u_id, $this->config->item('s_id')))->result_array();
+		
+		$departments = array();
+		
+		if ($result)
+		{
+			foreach ($result as $row)
+			{
+				$departments[$row['d_id']] = $row['d_name'];
+			}
+		}
+		
+		return $departments;
+	}
+	
+	
+	
+	
+	/**
+	 * Sets a user's department memberships
+	 *
+	 * @param int $u_id		ID of user to update departments for
+	 * @param array $d_ids		1D array of department IDs to set for user
+	 * @return bool
+	 */
+	public function set_user_departments($u_id = 0, $d_ids = array())
+	{
+		$sql = 'DELETE FROM u2d WHERE u2d_u_id = ?';
+		$this->db->query($sql, array($u_id));
+		
+		if (count($d_ids) > 0)
+		{
+			$values = array();
+			
+			foreach ($d_ids as $d_id)
+			{
+				$values[] = '(' . $u_id . ', ' . (int) $d_id . ')';
+			}
+			
+			$sql = 'INSERT INTO u2d (u2d_u_id, u2d_d_id) VALUES ' . implode(',', $values);
+			//echo $sql; die();
+			return $this->db->query($sql);
+		}
+		
+		return TRUE;
 	}
 	
 	

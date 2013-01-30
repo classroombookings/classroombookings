@@ -60,7 +60,7 @@ function user_delete($user = array())
 	return form_button(array(
 		'type' => 'link',
 		'url' => 'users/delete/' . $user['u_id'],
-		'class' => 'small red',
+		'class' => 'small red right',
 		'text' => 'Delete',
 	));
 }

@@ -16,17 +16,50 @@ class Users extends Configure_Controller
 	function __construct()
 	{
 		parent::__construct();
+		
+		$this->lang->load('configure');
+		$this->lang->load('users');
 		$this->load->model(array('users_model', 'groups_model', 'departments_model', 'quota_model'));
 		$this->load->helper('user_helper');
 		$this->data['nav_current'][] = 'users';
+		
+		$this->layout->add_breadcrumb(lang('configure_users'), 'users');
+		
+		$this->data['subnav'] = array(
+			array(
+				'uri' => 'users',
+				'text' => lang('configure_users'),
+				'test' => $this->auth->check('users.view'),
+			),
+			array(
+				'uri' => 'users/set',
+				'text' => lang('users_add_new'),
+				'test' => $this->auth->check('users.add'),
+			),
+			array(
+				'uri' => 'users/import',
+				'text' => lang('users_bulk_import'),
+				'test' => $this->auth->check('users.import'),
+			),
+		);
+		
+		// Valid authentication methods for users
+		$this->data['auth_methods'] = array(
+			'local' => lang('users_auth_method_local'),
+			'ldap' => lang('users_auth_method_ldap'),
+		);
 	}
 	
 	
 	
 	
-	/**
-	 * PAGE: Main user list.
-	 */
+	// =======================================================================
+	// User management pages
+	// =======================================================================
+	
+	
+	
+	
 	function index($page = 0)
 	{
 		$this->auth->restrict('users.view');
@@ -37,7 +70,7 @@ class Users extends Configure_Controller
 		$config = array(
 			'base_url' => site_url('users/index'),
 			'total_rows' => $this->users_model->count_all(),
-			'per_page' => 30,
+			'per_page' => $this->input->get('pp'),
 			'uri_segment' => 3,
 		);
 		$this->pagination->initialize($config);
@@ -51,169 +84,127 @@ class Users extends Configure_Controller
 		$this->data['groups'] = $this->groups_model->dropdown('g_id', 'g_name');
 		
 		$this->layout->set_js('views/users/index');
-		$this->layout->set_title('Users');
+		
+		$this->layout->set_title(lang('configure_users'));
+		$this->load->library('form');
+		$this->data['subnav_active'] = 'users';
 	}
 	
 	
 	
 	
 	/**
-	 * PAGE: Add a user
+	 * Add new or edit existing user
+	 *
+	 * @param int $u_id		ID of user to edit.
 	 */
-	/*
-	function add()
+	public function set($u_id = 0)
 	{
-		$this->auth->check('users.add');
-		$body['user'] = null;
-		$body['user_id'] = null;
-		$body['groups'] = $this->security_model->get_groups_dropdown();
-		$body['departments'] = $this->departments_model->get_dropdown();
-		$data['title'] = 'Add new user';
-		$data['body'] = $this->load->view('users/addedit', $body, true);
-		$this->page($data);
-	}
-	*/
-	
-	
-	
-	
-	/**
-	 * PAGE: Edit a user
-	 */
-	/*
-	function edit($user_id)
-	{
-		$this->auth->check('users.edit');
-		$body['user'] = $this->security_model->get_user($user_id);
-		$body['user_id'] = $user_id;
-		$body['groups'] = $this->security_model->get_groups_dropdown();
-		$body['departments'] = $this->departments_model->get_dropdown();
+		// Initial validation rules
+		$rules = array(
+			'u_username' => '',
+			'password1' => '',
+			'password2' => '',
+		);
 		
-		$data['title'] = 'Edit user';
-		
-		if ($body['user'])
+		if ($u_id)
 		{
-			$data['title'] = 'Edit user: ' . $body['user']->displayname;
-			$data['body'] = $this->load->view('users/addedit', $body, true);
-		}
-		else
-		{
-			$data['title'] = 'Error loading user';
-			$data['body'] = $this->msg->err($this->security_model->lasterr);
-		}
-		$this->page($data);
-	}
-	*/
-	
-	
-	
-	/**
-	 * FORM POST: Destination for form submission for add/edit pages
-	 */
-	/*
-	function save()
-	{
-		$user_id = $this->input->post('user_id');
-		
-		if ($user_id == null)
-		{
-			$this->auth->check('users.add');
-		}
-		else
-		{
-			$this->auth->check('users.edit');
-		}
-		
-		$this->form_validation->set_rules('user_id', 'User ID');
-		if (!$user_id)
-		{
-			$this->form_validation->set_rules('password1', 'Password', 'max_length[104]|required');
-			$this->form_validation->set_rules('password2', 'Password (confirmation)', 'max_length[104]|required|matches[password1]');
-			$username_rules = 'required|min_length[1]|max_length[64]|trim';
-		}
-		if ($user_id)
-		{
-			$username_rules = 'required|min_length[1]|max_length[64]|trim|callback__check_username';
-		}
-		$this->form_validation->set_rules('group_id', 'Group', 'required|integer');
-		$this->form_validation->set_rules('enabled', 'Enabled', 'exact_length[1]');
-		$this->form_validation->set_rules('email', 'Email address', 'max_length[256]|valid_email|trim');
-		$this->form_validation->set_rules('displayname', 'Display name', 'max_length[64]|trim');
-		$this->form_validation->set_rules('username', 'Username', $username_rules);
-		$this->form_validation->set_error_delimiters('<li>', '</li>');
-		
-		if ($this->form_validation->run() == false)
-		{
-			// Validation failed - load required action depending on the state of user_id
-			($user_id == NULL) ? $this->add() : $this->edit($user_id);
-		}
-		else
-		{
-			// Validation OK
-			$data['username'] = $this->input->post('username');
-			$data['displayname'] = $this->input->post('displayname');
-			$data['email'] = $this->input->post('email');
-			$data['group_id'] = $this->input->post('group_id');
-			$data['departments'] = $this->input->post('departments');
-			$data['enabled'] = $this->input->post('enabled');
-			$data['ldap'] = $this->input->post('ldap');
-			// Only set password if supplied.
+			// Updating user $u_id
+			$this->auth->restrict('users.edit');
+			$this->data['user'] = $this->users_model->get($u_id);
+			$title = lang('users_edit');
+			$this->layout->add_breadcrumb(lang('users_edit'), 'users/set/' . $u_id);
+			
+			// Username field validation to check it's not already taken
+			$rules['u_username'] = 'required|min_length[1]|max_length[104]|trim|valid_current_username';
+			
+			// Validate password fields only if new passowrd set
 			if ($this->input->post('password1'))
 			{
-				$data['password'] = $this->input->post('password1');
+				$rules['password1'] = 'required|min_length[1]|max_length[100]';
+				$rules['password2'] = 'required|matches[password1]';
 			}
+		}
+		else
+		{
+			// Adding new user
+			$this->auth->restrict('users.add');
+			$title = lang('users_add_new');
+			$this->layout->add_breadcrumb(lang('users_add_new'), 'users/set');
+			$this->data['subnav_active'] = 'users/set';
+			$this->data['user'] = array();
 			
-			#die(print_r($data));
+			// Validation rules specific for creating new accounts
+			$rules['u_username'] = 'required|min_length[1]|max_length[104]|trim|valid_new_username';
+			$rules['password1'] = 'required|min_length[1]|max_length[100]';
+			$rules['password2'] = 'required|matches[password1]';
+		}
+		
+		if ($this->input->post())
+		{
+			$this->form_validation->set_rules('u_username', lang('users_username'), $rules['u_username'])
+								  ->set_rules('password1', lang('password'), $rules['password1'])
+								  ->set_rules('password2', lang('password_confirm'), $rules['password2'])
+								  ->set_rules('u_email', lang('users_email'), 'required|trim|max_length[255]|valid_email')
+								  ->set_rules('u_display', lang('users_display'), 'trim|max_length[64]')
+								  ->set_rules('u_enabled', lang('users_account_enables'), 'required|integer')
+								  ->set_rules('u_auth_method', lang('users_auth_method'), 'required')
+								  ->set_rules('u_g_id', lang('users_group'), 'required|integer');
 			
-			if ($user_id == null)
+			if ($this->form_validation->run())
 			{
-				$add = $this->security_model->add_user($data);
-				if ($add == null)
+				$user_data = array(
+					'u_username' => $this->input->post('u_username'),
+					'u_email' => $this->input->post('u_email'),
+					'u_display' => $this->input->post('u_display'),
+					'u_enabled' => (int) $this->input->post('u_enabled'),
+					'u_auth_method' => $this->input->post('u_auth_method'),
+					'u_g_id' => (int) $this->input->post('u_g_id'),
+				);
+				
+				if ($this->input->post('password1'))
 				{
-					$this->msg->add('err', sprintf(lang('SECURITY_USER_ADD_FAIL'),
-						$this->security_model->lasterr));
-				}
-				else
-				{
-					// Set quota if supplied
-					if ($this->input->post('quota'))
-					{
-						$this->quota->set_quota_u($add, $this->input->post('quota'));
-					}
-					$message = ($data['enabled'] == 1) 
-						? 'SECURITY_USER_ADD_OK_ENABLED' 
-						: 'SECURITY_USER_ADD_OK_DISABLED';
-					$this->msg->add('notice', lang($message));
+					$user_data['u_password'] = $this->auth->local->hash_password($this->input->post('password1'));
 				}
 				
-			}
-			else
-			{
-				// Updating existing user
-				$edit = $this->security_model->edit_user($user_id, $data);
-				if ($edit == TRUE)
+				if ($u_id)
 				{
-					// Update quota if needed
-					if ($this->input->post('quota'))
-					{
-						$this->quota->set_quota_u($user_id, $this->input->post('quota'));
-					}
-					$message = ($data['enabled'] == 1) 
-						? 'SECURITY_USER_EDIT_OK_ENABLED' 
-						: 'SECURITY_USER_EDIT_OK_DISABLED';
-					$this->msg->add('notice', lang($message));
+					// Update
+					$u_id = $this->users_model->update($u_id, $user_data);
+					$success = lang('users_update_success');
+					$error = lang('users_update_error');
 				}
 				else
 				{
-					$this->msg->add('err', sprintf(lang('SECURITY_USER_EDIT_FAIL'),
-						$this->security->lasterr));
+					// Insert
+					$u_id = $this->users_model->insert($user_data);
+					$success = lang('users_insert_success');
+					$error = lang('users_insert_error');
+				}
+				
+				if ($u_id)
+				{
+					// Success
+					
+					// Set department membership
+					$this->users_model->set_user_departments($u_id, $this->input->post('departments'));
+					
+					$this->flash->set('success', $success, TRUE);
+					redirect('users');
+				}
+				else
+				{
+					$this->flash->set('error', $error);
 				}
 			}
-			// All done, redirect!
-			redirect('users');
 		}
+		
+		$this->data['groups'] = $this->groups_model->dropdown('g_name');
+		$this->data['departments'] = $this->departments_model->dropdown('d_name');
+		
+		$this->layout->set_title($title);
+		$this->load->library('form');
 	}
-	*/
 	
 	
 	

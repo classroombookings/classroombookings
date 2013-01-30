@@ -50,6 +50,9 @@ $lang = array(
 	'password' =>
 	'Password',
 	
+	'password_confirm' =>
+	'Password (again)',
+	
 	'add' =>
 	'Add',
 	
@@ -67,6 +70,30 @@ $lang = array(
 	
 	'cancel' =>
 	'Cancel',
+	
+	'email' =>
+	'Email',
+	
+	'group' =>
+	'Group',
+	
+	'status' =>
+	'Status',
+	
+	'any' =>
+	'Any',
+	
+	'enabled' =>
+	'Enabled',
+	
+	'disabled' =>
+	'Disabled',
+	
+	'filter' =>
+	'Filter',
+	
+	'clear' =>
+	'Clear',
 	
 	
 	
@@ -119,6 +146,17 @@ $lang = array(
 	
 	'auth_check_no_permission' =>
 	'You do not have the correct privileges to access this section.',
+	
+	
+	
+	
+	/**
+	 * Other system-wide references
+	 */
+	
+	
+	'per_page' =>
+	'Per page',
 	
 );
 
