@@ -306,7 +306,8 @@ class MY_Model extends CI_Model
             $where .= ' AND ' . $where_extra;
         }
         
-        return $this->db->query($this->db->update_string($this->_table, $data, $where));
+        $update = $this->db->query($this->db->update_string($this->_table, $data, $where));
+        return ($update) ? $id : $update;
     }
     
     
