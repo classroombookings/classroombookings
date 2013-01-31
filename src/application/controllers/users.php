@@ -212,33 +212,30 @@ class Users extends Configure_Controller
 	/**
 	 * PAGE: User import landing page
 	 */
-	function import($step = 0)
+	function import($step = 1)
 	{
-		$this->auth->check('users.add');
+		$this->auth->restrict('users.import');
 		
-		if ($step == 0)
-		{
-			$body['groups'] = $this->security_model->get_groups_dropdown();
-			$body['departments'] = $this->departments_model->get_dropdown();
-			$body['lasterr'] = (isset($this->lasterr)) ? $this->lasterr : '';
-			$data['title'] = 'Import users - Step 1';
-			$data['body'] = $this->load->view('users/import-1', $body, true);
-			$this->page($data);
-		}
-		else
-		{
-			switch ($step)
-			{
-				case 1:	return $this->_import_1(); break;
-				case 2: return $this->_import_2(); break;
-				case 3: return $this->_import_3(); break;
-			}
-		}
+		$this->data['groups'] = $this->groups_model->dropdown('g_name');
+		$this->data['departments'] = $this->departments_model->dropdown('d_name');
 		
-		if ($step === 'cancel')
+		$this->data['import'] = $this->session->userdata('import');
+		
+		$this->layout->add_breadcrumb(lang('import'), 'users/import');
+		
+		$this->layout->set_title(lang('users_bulk_import'));
+		$this->load->library('form');
+		$this->data['subnav_active'] = 'users/import';
+		
+		$this->auto_view = FALSE;
+		$this->layout->set_view('content', 'default/users/import/step_' . $step);
+		
+		switch ($step)
 		{
-			Events::trigger('users.import.end');
-			redirect('users');
+			case 1:	return $this->_import_1(); break;
+			case 2: return $this->_import_2(); break;
+			case 3: return $this->_import_3(); break;
+			case 'cancel': return $this->_import_cancel(); break;
 		}
 	}
 	
@@ -246,11 +243,22 @@ class Users extends Configure_Controller
 	
 	
 	/**
-	 * User Import: step 1 - user has uploaded a file and hopefully set some default values
+	 * User Import: Step 1: File upload and default values
 	 */
-	function _import_1()
+	private function _import_1()
 	{
+		$this->layout->add_breadcrumb(lang('step') . '1', 'users/import/1');
 		
+		if ($this->input->post())
+		{
+			// @TODO Process file and store defaults chosen
+			//die();
+			
+			// Go to next step!
+			redirect('users/import/2');
+		}
+		
+		/*
 		// Check where we are getting the CSV data from
 		
 		if ($this->input->post('step') == 1)
@@ -281,8 +289,8 @@ class Users extends Configure_Controller
 		}
 		else
 		{
-			$this->lasterr = $this->msg->err('Expected CSV data via form upload or session, but none was found');
-			return $this->import(0);
+			//$this->lasterr = $this->msg->err('Expected CSV data via form upload or session, but none was found');
+			return;
 		}
 		
 		// Test for valid data
@@ -327,6 +335,7 @@ class Users extends Configure_Controller
 			$this->page($data);
 			fclose($fhandle);
 		}
+		*/
 	}
 	
 	

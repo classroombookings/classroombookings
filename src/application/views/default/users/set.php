@@ -253,5 +253,3 @@ $this->form->add_button(form_button(array(
 echo form_open(current_url(), array('id' => 'user_set_form'));
 echo $this->form->render();
 echo '</form>';
-
-?>

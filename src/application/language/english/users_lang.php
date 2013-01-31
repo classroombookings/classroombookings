@@ -68,4 +68,24 @@ $lang = array(
 	'users_update_error' =>
 	'An error occurred when updating the user account.',
 	
+	'users_import_csv_file' =>
+	'CSV file',
+	
+	'users_import_csv_file_hint' =>
+	'The CSV file does not need to be in a specific format; you just need to specify which columns contain which data at the next step.',
+	
+	'users_import_defaults' =>
+	'Default values',
+	
+	'users_import_defaults_hint' =>
+	'Choose default values for required fields if there is any missing data in the uploaded file.',
+	
+	'users_import_email_domain' =>
+	'Email address domain',
+	
+	'users_import_enable_account' =>
+	'Enable account',
+	
+	
+	
 );

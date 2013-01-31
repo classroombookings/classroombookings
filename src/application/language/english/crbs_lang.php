@@ -95,6 +95,15 @@ $lang = array(
 	'clear' =>
 	'Clear',
 	
+	'step' =>
+	'Step',
+	
+	'import' =>
+	'Import',
+	
+	'next' =>
+	'Next',
+	
 	
 	
 	
