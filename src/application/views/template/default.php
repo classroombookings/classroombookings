@@ -146,13 +146,11 @@ CRBS.tt_view = "<?php echo config_item('timetable_view') ?>";
 	
 	
 	<script>
-	$(document).ready(function() {
-		if (typeof(window['Q']) !== "undefined") {
-			for (var i = 0, len = Q.length; i < len; i++) {
-				Q[i]();
-			}
+	if (typeof(window['Q']) !== "undefined") {
+		for (var i = 0, len = Q.length; i < len; i++) {
+			Q[i]();
 		}
-	});
+	}
 	</script>
 
 
