@@ -64,3 +64,20 @@ function user_delete($user = array())
 		'text' => 'Delete',
 	));
 }
+
+
+
+
+function user_import_status($user = array())
+{
+	$statuses = array(
+		'ignored' => 'grey',
+		'skipped' => 'blue',
+		'updated' => 'orange',
+		'added' => 'green',
+		'failed' => 'red',
+	);
+	
+	$str = '<span class="right label ' . $statuses[$user['action']] . '">' . lang('users_import_action_' . $user['action']) . '</span>';
+	return $str;
+}

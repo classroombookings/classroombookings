@@ -94,6 +94,128 @@ class Users_model extends School_model
 	
 	
 	
+	/**
+	 * Handle the import of user accounts from CSV file.
+	 *
+	 * @param array $users		Array of user account details
+	 * @return array 		Array of import results
+	 */
+	public function import($users = array(), $existing_action = 'skip')
+	{
+		// Existing usernames to check against
+		$existing_users = $this->dropdown('u_username', 'u_id');
+		
+		// Status counters
+		$total = count($users);
+		$ignored = 0;
+		$skipped = 0;
+		$added = 0;
+		$updated = 0;
+		$failed = 0;
+		
+		foreach ($users as &$user)
+		{
+			// Ignore the user if it should not be imported
+			if ( (int) $user['import'] !== 1)
+			{
+				$ignored++;
+				$user['action'] = 'ignored';
+				continue;
+			}
+			
+			// Default action to carry out
+			$action = 'insert';
+			
+			// Check for existing user
+			if (array_key_exists($user['u_username'], $existing_users))
+			{
+				if ($existing_action === 'skip')
+				{
+					// Existing users should be skipped
+					$skipped++;
+					$user['action'] = 'skipped';
+					continue;
+				}
+				elseif ($existing_action === 'update')
+				{
+					// Existing users should be updated
+					$user['action'] = 'updated';
+					$action = 'update';
+				}
+			}
+			
+			// Array of data specific to the table
+			$user_data = array(
+				'u_username' => $user['u_username'],
+				'u_password' => $this->auth->local->hash_password($user['u_password']),
+				'u_display' => $user['u_display'],
+				'u_email' => $user['u_email'],
+				'u_enabled' => (int) $user['u_enabled'],
+				'u_g_id' => (int) $user['u_g_id'],
+				'u_auth_method' => 'local',
+			);
+			
+			if ($action === 'insert')
+			{
+				$u_id = $this->insert($user_data);
+				if ($u_id)
+				{
+					$user['action'] = 'added';
+					$user['u_id'] = $u_id;
+					$added++;
+				}
+				else
+				{
+					$user['action'] = 'failed';
+					$failed++;
+				}
+			}
+			elseif ($action === 'update')
+			{
+				// Don't update their password
+				unset($user_data['u_password']);
+				
+				$u_id = $existing_users[$user['u_username']];
+				$u_id = $this->update($u_id, $user_data);
+				
+				if ($u_id)
+				{
+					$user['action'] = 'updated';
+					$user['u_id'] = $u_id;
+					$updated++;
+				}
+				else
+				{
+					$user['action'] = 'failed';
+					$failed++;
+				}
+			}
+			
+			if ($user['action'] !== 'failed' && ! empty($user['d_id']))
+			{
+				// Add them to the department
+				$sql = 'INSERT INTO u2d
+						SET u2d_u_id = ?, u2d_d_id = ?
+						ON DUPLICATE KEY UPDATE
+						u2d_u_id = VALUES(u2d_u_id), u2d_d_id = VALUES(u2d_d_id)';
+				$this->db->query($sql, array($u_id, $user['d_id']));
+			}
+		}
+		
+		// Return status array
+		return array(
+			'users' => $users,
+			'ignored' => $ignored,
+			'skipped' => $skipped,
+			'added' => $added,
+			'updated' => $updated,
+			'failed' => $failed,
+		);
+	}
+	
+	
+	
+	
 	// ---------- Active Users ---------- //
 	
 	
@@ -246,7 +368,7 @@ class Users_model extends School_model
 		$sql = 'DELETE FROM u2d WHERE u2d_u_id = ?';
 		$this->db->query($sql, array($u_id));
 		
-		if (count($d_ids) > 0)
+		if ( ! empty($d_ids))
 		{
 			$values = array();
 			

@@ -23,8 +23,47 @@ $this->form->add_section($section, lang('users_import_csv_file'), lang('users_im
 			'max_length' => 1024,
 			'tabindex' => tab_index(),
 			'autocomplete' => 'off',
-		)),
+		)) . '<br><br>',
 		
+	));
+	
+	
+	// ----- Existing users action
+	
+	$name = 'existing';
+	
+	$content = '';
+	
+	$value = 'skip';
+	$content .= '<label class="radio">';
+	$content .= form_radio(array(
+		'name' => $name,
+		'id' => $name . '_' . $value,
+		'tabindex' => tab_index(),
+		'value' => $value,
+		'checked' => TRUE,
+	));
+	$content .= lang('users_import_existing_skip');
+	$content .= '</label>';
+	
+	$value = 'update';
+	$content .= '<label class="radio">';
+	$content .= form_radio(array(
+		'name' => $name,
+		'id' => $name . '_' . $value,
+		'tabindex' => tab_index(),
+		'value' => $value,
+		'checked' => TRUE,
+	));
+	$content .= lang('users_import_existing_update');
+	$content .= '</label>';
+	
+	
+	$this->form->add_input(array(
+		'section' => $section,
+		'name' => $name,
+		'label' => lang('users_import_existing_action'),
+		'content' => $content,
 	));
 
 
@@ -71,26 +110,30 @@ $this->form->add_section($section, lang('users_import_defaults'), lang('users_im
 		
 		'content' => form_dropdown(
 			$name, 
-			$groups,  
-			'tabindex="' . tab_index() . '" id="' . $name . '"'
+			$groups, 
+			'',
+			'tabindex="' . tab_index() . '" id="' . $name . '" class="text-input" '
 		),
 		
 	));
 	
 	
-	// ----- Departments
+	// ----- Department
 	
-	$name = 'departments[]';
+	$local_departments = array('' => '');
+	$local_departments += $departments;
+	
+	$name = 'd_id';
 	
 	$this->form->add_input(array(
 		'section' => $section,
 		'name' => $name,
-		'label' => lang('users_departments'),
+		'label' => lang('users_import_department'),
 		'content' => form_dropdown(
 			$name, 
-			$departments,
+			$local_departments,
 			'',
-			'tabindex="' . tab_index() . '" id="departments" size="10" multiple="multiple" class="text-input" style="width: 150px" '
+			'tabindex="' . tab_index() . '" id="' . $name . '" class="text-input" '
 		),
 	));
 	
@@ -155,25 +198,3 @@ $this->form->add_button(form_button(array(
 echo form_open_multipart(current_url(), array('id' => 'user_import_1_form'));
 echo $this->form->render();
 echo '</form>';
-
-/*
-	
-	
-
-</div>
-
-
-<hr>
-
-
-<div class="alpha three columns">&nbsp;</div>
-<div class="omega nine columns"><?php
-unset($buttons);
-$buttons[] = array('submit', 'blue', "Next &rarr;", $t);
-$buttons[] = array('link', '', 'Cancel', $t + 1, site_url('users/import/cancel'));
-$this->load->view('parts/buttons', array('buttons' => $buttons));
-?></div>
-
-
-</form>
-*/

@@ -209,6 +209,13 @@ class Users extends Configure_Controller
 	
 	
 	
+	// =======================================================================
+	// User import
+	// =======================================================================
+	
+	
+	
+	
 	/**
 	 * PAGE: User import landing page
 	 */
@@ -219,7 +226,24 @@ class Users extends Configure_Controller
 		$this->data['groups'] = $this->groups_model->dropdown('g_name');
 		$this->data['departments'] = $this->departments_model->dropdown('d_name');
 		
+		$this->data['destination_fields'] = array(
+			'' => lang('users_import_header_ignore'),
+			'u_username' => lang('users_username'),
+			'u_email' => lang('users_email'),
+			'u_display' => lang('users_display'),
+			'u_password' => lang('password'),
+			'u_enabled' => lang('users_import_header_enabled'),
+			'u_g_id' => lang('users_group'),
+			'd_id' => lang('users_import_department'),
+		);
+		
 		$this->data['import'] = $this->session->userdata('import');
+		
+		// No import data and step isn't 1 means that data is expected but not present. GOTO start.
+		if (empty($this->data['import']) && $step != 1)
+		{
+			$step = 1;
+		}
 		
 		$this->layout->add_breadcrumb(lang('import'), 'users/import');
 		
@@ -235,7 +259,9 @@ class Users extends Configure_Controller
 			case 1:	return $this->_import_1(); break;
 			case 2: return $this->_import_2(); break;
 			case 3: return $this->_import_3(); break;
+			case 4: return $this->_import_4(); break;
 			case 'cancel': return $this->_import_cancel(); break;
+			case 'finish': return $this->_import_finish(); break;
 		}
 	}
 	
@@ -247,292 +273,326 @@ class Users extends Configure_Controller
 	 */
 	private function _import_1()
 	{
-		$this->layout->add_breadcrumb(lang('step') . '1', 'users/import/1');
+		$this->layout->add_breadcrumb(lang('step') . ' 1', 'users/import/1');
 		
 		if ($this->input->post())
 		{
-			// @TODO Process file and store defaults chosen
-			//die();
+			$upload_config = array(
+				'upload_path' => APPPATH . '/uploads',
+				'allowed_types' => 'csv|txt|tsv',
+				'encrypt_name' => TRUE,
+			);
+			
+			$this->load->library('upload', $upload_config);
+			
+			$upload = $this->upload->do_upload();
+			
+			if ( ! $upload)
+			{
+				// Fail
+				$this->flash->set('error', strip_tags($this->upload->display_errors()));
+				return;
+			}
+			
+			// OK. Upload data
+			$upload_data = $this->upload->data();
+			
+			// All import data that will be stored in the session between steps
+			$import_data = array(
+				'file_name' => $upload_data['file_name'],
+				'file_path' => $upload_data['full_path'],
+				'existing' => $this->input->post('existing'),
+				'password' => $this->input->post('password'),
+				'g_id' => $this->input->post('g_id'),
+				'd_id' => $this->input->post('d_id'),
+				'email_domain' => str_replace('@', '', $this->input->post('email_domain')),
+				'u_enabled' => $this->input->post('u_enabled'),
+				'step' => '2',
+			);
+			
+			// Store this info in the session for retrieval in next stages
+			$this->session->set_userdata('import', $import_data);
+			
+			// ALL DONE!!!
 			
 			// Go to next step!
 			redirect('users/import/2');
 		}
-		
-		/*
-		// Check where we are getting the CSV data from
-		
-		if ($this->input->post('step') == 1)
-		{
-			// Do upload if it was submitted
-			$config['upload_path'] = 'temp';
-			$config['allowed_types'] = 'csv|txt';
-			$config['encrypt_name'] = true;
-			$this->load->library('upload', $config);
-			
-			$upload = $this->upload->do_upload();
-			
-			// Get default values
-			$defaults['password'] = $this->input->post('default_password');
-			$defaults['group_id'] = $this->input->post('default_group_id');
-			$defaults['departments'] = $this->input->post('default_departments');
-			$defaults['enabled'] = (int) $this->input->post('default_enabled');
-			$defaults['emaildomain'] = str_replace('@', '', $this->input->post('default_emaildomain'));
-			
-			// Store defaults in session to retrieve later
-			$this->session->set_userdata('importdef', $defaults);
-		}
-		elseif (is_array($this->session->userdata('csvimport')))
-		{
-			// Otherwise fetch CSV data from 
-			$upload = true;
-			$csv = $this->session->userdata('csvimport');
-		}
-		else
-		{
-			//$this->lasterr = $this->msg->err('Expected CSV data via form upload or session, but none was found');
-			return;
-		}
-		
-		// Test for valid data
-		if ($upload == false)
-		{
-			// Upload failed
-			$this->lasterr = $this->msg->err(strip_tags($this->upload->display_errors()), 'File upload error');
-			return $this->import(0);
-		}
-		else
-		{
-			// Obtain the CSV data either from upload, or from session (if returning to here from an error)
-			$csv = (!isset($csv)) ? $this->upload->data() : $csv;
-			
-			// $csv now contains the array of the file upload info
-			
-			// Store it in session for use later
-			$this->session->set_userdata('csvimport', $csv);
-			
-			// Open the CSV file for reading
-			$fhandle = fopen($csv['full_path'], 'r');
-			
-			if ($fhandle == FALSE)
-			{
-				// Check we can actually open the file
-				$this->lasterr = $this->msg->err("Could not open uploaded file {$csv['full_path']}.");
-				return $this->import(0);
-			}
-			
-			#$fread = fread($fhandle, filesize($csv['full_path']));
-			
-			// Supply the CSV details to the view so it can open and then parse it
-			$body['csv'] = $csv;
-			$body['fhandle'] = $fhandle;
-			
-			#$body['csvdata'] = fgetcsv($fhandle, filesize($csv['full_path']), ',');
-			
-			// Load page
-			$data['title'] = 'Import users';
-			$body['lasterr'] = (isset($this->lasterr)) ? $this->lasterr : '';
-			$data['body'] = $this->load->view('users/import-2', $body, true);
-			$this->page($data);
-			fclose($fhandle);
-		}
-		*/
 	}
 	
 	
 	
 	
 	/**
-	 * User import: Stage 2 - preview the user page
+	 * User Import: Step 2: Review columns
 	 */
-	function _import_2()
+	private function _import_2()
 	{
-		$col = $this->input->post('col');
-		$col_num = $col;
-		$col = array_flip($col);
-		$rows = $this->input->post('row');
+		$this->layout->add_breadcrumb(lang('step') . ' 2', 'users/import/2');
 		
-		$groups_id = $this->security_model->get_groups_dropdown();
-		$groups_name = array_flip($groups_id);
+		$this->load->library('csv_data');
 		
-		$csv = $this->session->userdata('csvimport');
+		$this->csv_data->load($this->data['import']['file_path']);
 		
-		$defaults = $this->session->userdata('importdef');
-		
-		// No username column chosen? Can't continue
-		if (!isset($col['username']))
+		if ( ! $this->csv_data->countRows() > 1)
 		{
-			$this->lasterr = $this->msg->err('You have not chosen a column that contains the username.', 'Required column not selected');
-			return $this->import(1);
+			$this->flash->set('error', lang('users_import_insufficient_rows'));
+			return FALSE;
 		}
 		
-		// Check for password in column or default
-		$pass_col = in_array('password', $col_num);
-		$pass_def = !empty($defaults['password']);
-		
-		if ($pass_col == false && $pass_def == false)
+		// Check the data is symmetric (data columns match headers)
+		if ( ! $this->csv_data->isSymmetric())
 		{
-			$this->lasterr = $this->msg->err('You have not chosen a password column or set a default password on the previous page.');
-			return $this->import(1);
+			$this->csv_data->symmetrize();
 		}
 		
-		// Check if any users were selected
-		if (empty($rows))
+		// Get the CSV headers
+		$this->data['headers'] = $this->csv_data->getHeaders();
+		
+		if ($this->input->post())
 		{
-			$this->lasterr = $this->msg->err('You must choose at least one user to import.');
-			return $this->import(1);
+			// Get the matched fields but store them the other way round, with our data as keys and header index as value
+			$fields = $this->input->post('fields');
+			$fields = array_filter($fields, 'strlen');
+			$fields = array_flip($fields);
+			
+			// Iterate through the fields and update the CSV header value to use the name instead of the index
+			foreach ($fields as $crbs => &$csv_index)
+			{
+				$csv_index = $this->data['headers'][$csv_index];
+			}
+			
+			// Check that some of the required fields are valid
+			
+			if ( ! array_key_exists('u_username', $fields))
+			{
+				// No username field chosen
+				$this->flash->set('error', lang('users_import_no_username_field'));
+				return FALSE;
+			}
+			
+			if ( ! array_key_exists('u_password', $fields) && empty($this->data['import']['password']))
+			{
+				// No password field, and the default password is empty
+				$this->flash->set('error', lang('users_import_no_password_field'));
+				return FALSE;
+			}
+			
+			if ( ! array_key_exists('u_email', $fields) && empty($this->data['import']['email_domain']))
+			{
+				// No email field and the default email domain is empty
+				$this->flash->set('error', lang('users_import_no_email'));
+				return FALSE;
+			}
+			
+			// Update session data
+			$this->data['import']['fields'] = $fields;
+			$this->data['import']['step'] = '3';
+			$this->session->set_userdata('import', $this->data['import']);
+			
+			// Go to next step!
+			redirect('users/import/3');
+		}
+	}
+	
+	
+	
+	
+	/**
+	 * User Import: Step 3: Preview data
+	 */
+	private function _import_3()
+	{
+		$this->layout->add_breadcrumb(lang('step') . ' 3', 'users/import/3');
+		
+		$this->load->library('csv_data');
+		
+		$this->csv_data->load($this->data['import']['file_path']);
+		
+		// Check the data is symmetric (data columns match headers)
+		if ( ! $this->csv_data->isSymmetric())
+		{
+			$this->csv_data->symmetrize();
 		}
 		
+		// Get the CSV headers
+		$this->data['headers'] = $this->csv_data->getHeaders();
+		
+		if ($this->input->post())
+		{
+			$users = $this->input->post('users');
+			
+			if (empty($users))
+			{
+				$this->flash->set('error', lang('users_import_none_selected'));
+				return FALSE;
+			}
+			
+			// Do the import!
+			$result = $this->users_model->import($users, $this->data['import']['existing']);
+			
+			// Update session data
+			$this->data['import']['result'] = $result;
+			$this->data['import']['step'] = '4';
+			$this->session->set_userdata('import', $this->data['import']);
+			
+			// Go to next step!
+			redirect('users/import/4');
+		}
+		
+		/**
+		 * > Iterate through the CSV data rows
+		 * > Build up array of users using our columns as keys
+		 * > Get the value to use for each column from CSV or use default
+		 */
+		
+		$rows = $this->csv_data->connect();
 		$users = array();
 		
-		// Go through each row, and try to get proper user details from it
+		$fields = $this->data['import']['fields'];
+		
+		// Field names to use from CSV, based on matched fields
+		$username_field = element('u_username', $fields);
+		$email_field = element('u_email', $fields);
+		$display_field = element('u_display', $fields);
+		$password_field = element('u_password', $fields);
+		$enabled_field = element('u_enabled', $fields);
+		$group_field = element('u_g_id', $fields);
+		$department_field = element('d_id', $fields);
+		
+		$groups = array_change_key_case(array_flip($this->data['groups']), CASE_LOWER);
+		
+		// Loop through the CSV data rows to get our users
+			
 		foreach ($rows as $row)
 		{
-			$user = array();
+			// Create initial dataset based on defaults
+			$user = array(
+				'u_password' => $this->data['import']['password'],
+				'u_g_id' => $this->data['import']['g_id'],
+				'u_enabled' => $this->data['import']['u_enabled'],
+				'd_id' => $this->data['import']['d_id'],
+			);
 			
-			// USERNAME
-			$user['username'] = trim($row[$col['username']]);
+			// Gather data from other fields if they're set
 			
-			// PASSWORD
-			$user['password'] = $defaults['password'];
-			if(array_key_exists('password', $col)){
-				if(!empty($row[$col['password']])){
-					$user['password'] = trim($row[$col['password']]);
-				}
-			}
-			
-			// DISPLAY
-			$user['display'] = $user['username'];
-			if(array_key_exists('display', $col)){
-				if(!empty($row[$col['display']])){
-					$user['display'] = trim($row[$col['display']]);
-				}
-			}
-			
-			// EMAIL
-			$user['email'] = '';
-			if(!empty($defaults['emaildomain'])){
-				$user['email'] = sprintf('%s@%s', $user['username'], $defaults['emaildomain']);
-			}
-			if(array_key_exists('email', $col)){
-				$email = trim($row[$col['email']]);
-				if(!empty($email) && $this->form_validation->valid_email($email)){
-					$user['email'] = $email;
-				}
-			}
-			
-			// GROUP
-			$user['group_id'] = $defaults['group_id'];
-			if(array_key_exists('groupname', $col)){
-				$groupname = trim($row[$col['groupname']]);
-				if(array_key_exists($groupname, $groups)){
-					$user['group_id'] = $groups_name[$groupname];
-				}
-			}
-			
-			// DEPARTMENTS
-			if (!empty($defaults['departments']))
+			if ($username_field)
 			{
-				$user['departments'] = $defaults['departments'];
+				$user['u_username'] = strtolower(element($username_field, $row));
 			}
 			
-			// Enabled or not?
-			$user['enabled'] = $defaults['enabled'];
-			
-			// Finally add this user to the big list if we should import them
-			if(isset($row['import']) 
-				&& $row['import'] == 1 
-				&& !empty($user['username']))
+			if ($password_field)
 			{
-				array_push($users, $user);
+				$user['u_password'] = element($password_field, $row, $user['u_password']);
 			}
-			unset($user);
-		}
-		
-		$body['users'] = $users;
-		$body['groups'] = $groups_id;
-		$body['departments'] = $this->departments_model->get_dropdown();
-		
-		$this->session->set_userdata('users', $users);
-		
-		$body['lasterr'] = (isset($this->lasterr)) ? $this->lasterr : '';
-		
-		// Load page
-		$data['title'] = 'Import users';
-		$data['body'] = $this->load->view('users/import-3', $body, true);
-		$this->page($data);
-		
-	}
-	
-	
-	
-	
-	/**
-	 * User Import: Stage 3 - add the actual users and show success/failures
-	 */
-	function _import_3()
-	{
-		// Get array of users to add from the session (stored in previous stage)
-		$users = $this->session->userdata('users');
-		// Get CSV data
-		$csv = $this->session->userdata('csvimport');
-		
-		if(count($users) > 0)
-		{
-			// Arrays to hold details of successes and failures
-			$fail = array();
-			$success = array();
 			
-			// Loop through all users and add them to the database
-			foreach($users as $user)
+			if ($email_field)
 			{
-				// Create array of fields to be sent to the database
-				$data = array();
-				$data['username'] = $user['username'];
-				$data['displayname'] = $user['display'];
-				$data['email'] = $user['email'];
-				$data['group_id'] = $user['group_id'];
-				$data['enabled'] = $user['enabled'];
-				$data['password'] = $user['password'];
-				$data['departments'] = (!empty($user['departments'])) ? $user['departments'] : array();
-				$data['ldap'] = 0;
+				$user['u_email'] = trim(element($email_field, $row, $user['u_username'] . '@' . $this->data['import']['email_domain']));
+			}
+			else
+			{
+				$user['u_email'] = trim($user['u_username'] . '@' . $this->data['import']['email_domain']);
+			}
+			
+			if ($enabled_field)
+			{
+				$user['u_enabled'] = filter_var(element($enabled_field, $row, $user['u_enabled']), FILTER_VALIDATE_BOOLEAN);
+			}
+			
+			if ($display_field)
+			{
+				$user['u_display'] = element($display_field, $row, $user['u_username']);
+			}
+			
+			if ($group_field)
+			{
+				$group = element($group_field, $row, FALSE);
 				
-				// Add user to database
-				$add = $this->security_model->add_user($data);
-				
-				// Test result of the add
-				if ($add == false)
+				if (is_numeric($group) && element($group, $this->data['groups']))
 				{
-					$user['fail'] = $this->security_model->lasterr;
-					array_push($fail, $user);
+					// Supplied value for group is an ID.
+					$user['u_g_id'] = $group;
 				}
 				else
 				{
-					array_push($success, $user);
+					$group = strtolower($group);
+					if (array_key_exists($group, $groups))
+					{
+						// Supplied group is a name matching existing group
+						$user['u_g_id'] = $groups[$group];
+					}
 				}
-				unset($data);
 			}
 			
-			// Finished adding users
+			if ($department_field)
+			{
+				$department = element($department_field, $row, FALSE);
+				
+				if (is_numeric($department) && element($department, $this->data['departments']))
+				{
+					// Supplied value for department is a valid ID
+					$user['d_id'] = $department;
+				}
+				else
+				{
+					$department = strtolower($department);
+					if (array_key_exists($department, $departments))
+					{
+						// Supplied department is a name matching existing department
+						$user['d_id'] = $departments[$department];
+					}
+				}
+			}
 			
-			$body['fail'] = $fail;
-			$body['success'] = $success;
-			
-			// This will erase the temporary session data used during import
-			Events::trigger('users.import.end');
-			
-			// Load page
-			$data['title'] = 'Import users';
-			$data['body'] = $this->load->view('users/import-4', $body, true);
-			$this->page($data);
-			
+			$users[] = $user;
 		}
-		else
-		{
-			// No users - weird - shouldn't get to this stage without them.
-			$this->lasterr = $this->msg->err('No users were supplied');
-			return $this->import(2);
-		}
+		
+		$this->data['users'] = $users;
+		
 	}
+	
+	
+	
+	
+	/**
+	 * User Import: Step 4: Import Results
+	 */
+	private function _import_4()
+	{
+		$this->layout->add_breadcrumb(lang('step') . ' 4', 'users/import/4');
+	}
+	
+	
+	
+	
+	/**
+	 * Cancel the import process. Clear the session data and go to import step 1
+	 */
+	private function _import_cancel()
+	{
+		$this->session->set_userdata('import', array());
+		redirect('users/import');
+	}
+	
+	
+	
+	
+	/**
+	 * Complete the import process. Clear the session data and go to the users index
+	 */
+	private function _import_finish()
+	{
+		$this->session->set_userdata('import', array());
+		redirect('users');
+	}
+	
+	
+	
+	
+	// =======================================================================
+	// Other
+	// =======================================================================
 	
 	
 	
@@ -610,32 +670,6 @@ class Users extends Configure_Controller
 	
 	
 	
-	
-	/**
-	 * Validation function.
-	 *
-	 * When renaming a user, check if new name doesn't already exist
-	 */
-	function  _check_username($new_username)
-	{
-		$old_username = $this->input->post('old_username');
-		if ($new_username == $old_username)
-		{
-			return true;
-		}
-		
-		if ($this->auth->userexists($new_username))
-		{
-			$this->form_validation->set_message('_check_username',
-				"The username '$new_username' already exists.");
-			return false;
-		}
-	}
-	
-	
-	
-	
 }
 
-
-/* End of file app/controllers/security/users.php */
+/* End of file ./application/controllers/users.php */

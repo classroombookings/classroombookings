@@ -296,6 +296,8 @@
 		border-radius: 1000px;
 	}
 	
+	.label.right { margin-left: 5px; margin-right: 0; }
+	
 	/* Colors ---------- */
 	.blue.label				{ background-color: #00a6fc; }
 	.red.label				{ background-color: #e91c21; color: #fff; }
@@ -303,6 +305,7 @@
 	.white.label			{ background-color: #e9e9e9; color: #333; }
 	.orange.label			{ background-color: #ff9000; color: #fff; }
 	.black.label			{ background-color: #141414; }
+	.grey.label				{ background-color: #666; }
 	
 	.label a, a.label { color: #fff !important; }
 

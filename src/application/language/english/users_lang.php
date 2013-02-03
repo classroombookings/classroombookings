@@ -74,6 +74,15 @@ $lang = array(
 	'users_import_csv_file_hint' =>
 	'The CSV file does not need to be in a specific format; you just need to specify which columns contain which data at the next step.',
 	
+	'users_import_existing_action' =>
+	'Existing users action',
+	
+	'users_import_existing_skip' =>
+	'Skip users from the CSV file',
+	
+	'users_import_existing_update' =>
+	'Update existing user accounts with details from the CSV file',
+	
 	'users_import_defaults' =>
 	'Default values',
 	
@@ -86,6 +95,61 @@ $lang = array(
 	'users_import_enable_account' =>
 	'Enable account',
 	
+	'users_import_department' =>
+	'Department',
 	
+	'users_import_insufficient_rows' =>
+	'The uploaded file does not have enough data rows to import.',
+	
+	'users_import_csv_headers' =>
+	'CSV headers',
+	
+	'users_import_csv_headers_hint' =>
+	'Choose which fields to use from your CSV file, and how they should be used to populate user data in Classroombookings.',
+	
+	'users_import_header_source' =>
+	'CSV file header',
+	
+	'users_import_header_dest' =>
+	'System field',
+	
+	'users_import_header_ignore' =>
+	'',
+	
+	'users_import_header_enabled' =>
+	'Account enabled',
+	
+	'users_import_no_username_field' =>
+	'You did not specify a username field. This is required.',
+	
+	'users_import_no_password_field' =>
+	'You did not specify a password field or a default value. One of these are required.',
+	
+	'users_import_no_email' =>
+	'You did not specify an email address field or default email domain. One of these are required.',
+	
+	'users_import_preview' =>
+	'Preview users',
+	
+	'users_import_complete_summary' =>
+	'Import result summary',
+	
+	'users_import_action_total' =>
+	'Total',
+	
+	'users_import_action_ignored' =>
+	'Ignored',
+	
+	'users_import_action_skipped' =>
+	'Skipped',
+	
+	'users_import_action_added' =>
+	'Added',
+	
+	'users_import_action_updated' =>
+	'Updated',
+	
+	'users_import_action_failed' =>
+	'Failed',
 	
 );
