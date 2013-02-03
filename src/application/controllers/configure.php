@@ -123,6 +123,4 @@ class Configure extends MY_Controller
 	
 }
 
-
-
-/* End of file app/controllers/configure.php */
+/* End of file ./application/controllers/configure.php */
