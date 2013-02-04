@@ -576,8 +576,12 @@ class School_model extends MY_Model {
         $sql = 'DELETE `' . $this->_table . '` FROM `' . $this->_table . '`
                 ' . $this->join_sql() . '
                 WHERE `' . $this->_primary . '` = ?
-				' . $this->sch_sql() . '
-				LIMIT 1';
+				' . $this->sch_sql();
+                
+        if ( ! $this->join_sql())
+        {
+            $sql .= ' LIMIT 1';
+        }
         
         return $this->db->query($sql, array($id));
     }
