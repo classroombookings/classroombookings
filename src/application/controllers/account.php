@@ -124,11 +124,6 @@ class Account extends MY_Controller
 			}
 		}
 		
-		if ($this->input->get('status') == 1)
-		{
-			$this->flash->set('success', lang('auth_logout_success'));
-		}
-		
 		$this->layout->set_title(lang('login'));
 	}
 	
@@ -237,13 +232,18 @@ class Account extends MY_Controller
 	
 	
 
-	function logout()
+	function logout($status = 0)
 	{
 		$this->view = FALSE;
-		$this->session->keep_flashdata('flash');
-		$logout = $this->auth->destroy_session();
-		$status = ($logout === true) ? 1 : 0;
-		redirect("account/login?status=$status");
+		
+		if ($status == 1)
+		{
+			$this->flash->set('success', lang('auth_logout_success'), TRUE);
+			redirect("account/login");
+		}
+		
+		$this->auth->destroy_session();
+		redirect('account/logout/1');
 	}
 	
 	
