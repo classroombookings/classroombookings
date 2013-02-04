@@ -14,6 +14,9 @@ $lang = array(
 	'users_user_details' =>
 	'Account details',
 	
+	'users_delete_prompt' =>
+	'Are you sure you want to delete this user? All of their bookings will also be deleted.',
+	
 	'users_username' =>
 	'Username',
 	

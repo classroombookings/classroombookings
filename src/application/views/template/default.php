@@ -140,18 +140,37 @@ CRBS.tt_view = "<?php echo config_item('timetable_view') ?>";
 			</div>
 		</div>
 	</footer>
-
-
-	<?php echo $this->layout->get_js() ?>
 	
 	
-	<script>
-	if (typeof(window['Q']) !== "undefined") {
-		for (var i = 0, len = Q.length; i < len; i++) {
-			Q[i]();
-		}
-	}
+	<!-- Javascript template for delete dialogs -->
+	<script id="ich_delete" type="text/html">
+	<h3 class="sub-heading"><?php echo lang('delete') ?> {{name}}</h3>
+	<p class="text">{{prompt}}</p>
+	<form action="{{url}}" method="post" accept-charset="utf-8" id="delete_form">
+		<input type="hidden" name="id" value="{{id}}" />
+		<input type="hidden" name="redirect" value="{{redirect}}" />
+		<input type="hidden" name="crbscsrftoken" value="{{csrf}}" />
+		<div style="margin: 30px 0 15px 0; bottom: 0; position: absolute;">
+			<button type="submit" class="red button delete"><span><?php echo lang('delete') ?></span></button>
+			<a href="<?php echo current_url() ?>" class="grey button close-dialog"><?php echo lang('cancel') ?></a>
+		</div>
+	</form>
 	</script>
+	
+	
+	<div id="delete_dialog" class="hidden"></div>
+	
+	
+<?php echo $this->layout->get_js() ?>
+
+
+<script>
+if (typeof(window['Q']) !== "undefined") {
+	for (var i = 0, len = Q.length; i < len; i++) {
+		Q[i]();
+	}
+}
+</script>
 
 
 </body>

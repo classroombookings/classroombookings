@@ -55,8 +55,9 @@ class MY_Controller extends CI_Controller
 		
 		$js = array(
 			'libraries/jquery-1.8.2.min',
+			'libraries/ICanHaz.min',
 			'plugins/jquery.cookie',
-			'plugins/jquery.simplemodal.1.4.3.min',
+			'plugins/jquery.simplemodal.1.4.4.min',
 			'views/default',
 		);
 		

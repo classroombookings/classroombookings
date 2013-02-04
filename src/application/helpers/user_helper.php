@@ -60,8 +60,15 @@ function user_delete($user = array())
 	return form_button(array(
 		'type' => 'link',
 		'url' => 'users/delete/' . $user['u_id'],
-		'class' => 'small red right',
-		'text' => 'Delete',
+		'class' => 'small red right action-delete',
+		'text' => lang('delete'),
+		'data' => array(
+			'url' => site_url('users/delete'),
+			'redirect' => current_url(),
+			'id' => $user['u_id'],
+			'name' => $user['u_username'],
+			'prompt' => lang('users_delete_prompt'),
+		),
 	));
 }
 

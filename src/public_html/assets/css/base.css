@@ -20,6 +20,8 @@
 	$BUTTONS
 	$TABS
 	$FORMS
+	$PAGINATION
+	$MODAL
 	$MISC */
 
 
@@ -618,6 +620,29 @@
 	.pagination-wrapper strong {
 		color: #ff6400;
 	}
+
+
+
+/* $MODAL
+========== */
+
+.simplemodal-container {
+	background-color: #fff;
+	border: 1px solid #666;
+	padding: 15px;
+}
+
+.simplemodal-overlay {
+	background: #555;
+}
+
+.simplemodal-container h1 {
+	font-size: 14px;
+	padding: 10px;
+	line-height: 14px;
+	margin-bottom: 15px;
+	color: #ff6400;
+}
 
 		
 /* $MISC
