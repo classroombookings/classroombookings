@@ -156,6 +156,27 @@ $lang = array(
 	'auth_check_no_permission' =>
 	'You do not have the correct privileges to access this section.',
 	
+	'auth_preauth_no_username' =>
+	'Pre-authentication username not supplied.',
+	
+	'auth_preauth_no_timestamp' =>
+	'Pre-authentication timestamp not supplied.',
+	
+	'auth_preauth_no_preauth' =>
+	'Pre-authentication hash value not supplied',
+	
+	'auth_preauth_clock_skew' =>
+	'There is a pre-authentication time mis-match greater than five minutes.',
+	
+	'auth_preauth_failed' =>
+	'The pre-authentication value is not a match.',
+	
+	'auth_preauth_disabled' =>
+	'The pre-authentication setting has not been enabled.',
+	
+	'auth_preauth_no_create' =>
+	'Your account does not exist and it cannot be created automatically.',
+	
 	
 	
 	

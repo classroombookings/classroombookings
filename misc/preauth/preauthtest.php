@@ -1,30 +1,35 @@
 <?php
 
-/*
+/**
  * Pre-authentication example for Classroombookings in PHP
  */
 
-// User we are authenticating for
-$username = 'joe.bloggs';
+define('CRBS_PREAUTH_KEY', '');
+define('CRBS_PREAUTH_URL', '');
+
+// User to log in
+$username = 'admin';
 
 // Current timestamp
 $now = time();
 
-// The key generated in the Authentication configuration page
-$preauthkey = 'YOUR-KEY-HERE';
+// Specify if account should be created if it doesn't exist
+$create = 1;
 
-// Generate a string with the values
-$str = "$username|$now|$preauthkey";
+// Hash the values with the key
+$preauth = hash_hmac('sha1', "$username|$now|$create", CRBS_PREAUTH_KEY);
 
-// Hash it
-$key = sha1($str);
+// Generate array of query string parameters that are passed to CRBS
+$params = array(
+	'u' => $username,
+	'ts' => $now,
+	'create' => $create,
+	'preauth' => $preauth,
+);
 
 // This is the URL of classroombookings
-$uri = "http://localhost/projects/crbs2/index.php/account/preauth/%s/%d/%s";
-
-// Replace items in the string with the actual values to get the final URL to navigate to (http:// ... /preauth/user/timestamp/key)
-$uri = sprintf($uri, $username, $now, $key);
+$url = CRBS_PREAUTH_URL . '?' . http_build_query($params);
 
 ?>
 
-<a href="<?php echo $uri ?>">Click here to login as <?php echo $username ?></a>.
+<a href="<?php echo $url ?>">Click here to login as <?php echo $username ?></a>.

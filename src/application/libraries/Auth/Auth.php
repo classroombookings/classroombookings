@@ -319,6 +319,65 @@ class Auth extends CI_Driver_Library
 	
 	
 	
+	public function preauth($data = array())
+	{
+		if ( ! $this->preauth->auth($data))
+		{
+			$this->reason = $this->preauth->reason;
+			return FALSE;
+		}
+		
+		// Pre-auth was successful!
+		
+		// Does the user exist?
+		if ( ! $user = $this->CI->users_model->get_by_username($data['username']))
+		{
+			// Does not exist!
+			
+			// Should we create them?
+			if ($data['create'] === 0)
+			{
+				$this->reason = 'auth_preauth_no_create';
+				return FALSE;
+			}
+			
+			// Yes create.
+			$u_id = $this->CI->users_model->insert(array(
+				'u_username' => $data['username'],
+				'u_display' => $data['username'],
+				'u_email' => $data['username'] . '@' . option('auth_preauth_email_domain'),
+				'u_auth_method' => 'local',
+				'u_enabled' => 1,
+				'u_g_id' => option('auth_preauth_g_id'),
+			));
+		}
+		else
+		{
+			// They DO exist! o_O
+			$u_id = $user['u_id'];
+		}
+		
+		// Got a user now. Give them a session.
+		
+		$session = $this->create_session($u_id);
+				
+		if ($session)
+		{
+			// Update last login datetime
+			$this->CI->users_model->set_last_login($user['u_id']);
+			
+			// Set as an active user and get token that will identify this session
+			$active_token = $this->CI->users_model->set_active($user['u_id']);
+			log_message('debug', "Auth: preauth($username): New active entry - " . $this->CI->db->last_query());
+			$this->CI->session->set_userdata('active_token', $active_token);
+		}
+		
+		return $session;
+	}
+	
+	
+	
+	
 	/**
 	 * Create login session
 	 *
@@ -395,108 +454,6 @@ class Auth extends CI_Driver_Library
 		return ( ! $this->CI->session->userdata('u_id'));
 	}
 	
-	
-	
-	
-	/**
-	 * Pre-authentication handling feature
-	 *
-	 * @param array Data array. Must contain keys and values of: username, timestamp, preauth
-	 */
-	function preauth($data)
-	{
-		
-		// Check for username
-		if (!isset($data['username']))
-		{
-			$this->lasterr = 'No username supplied.';
-			return FALSE;
-		}
-		if (!isset($data['timestamp']))
-		{
-			$this->lasterr = 'No timestamp supplied.';
-			return FALSE;
-		}
-		if (!isset($data['preauth']))
-		{
-			$this->lasterr = 'No computed preauth supplied.';
-			return FALSE;
-		}
-		
-		// Work out current time and the tolerances/threshold
-		$timestamp = now();
-		$time_lower = strtotime("-5 minutes");
-		$time_upper = strtotime("+5 minutes");
-		
-		// Check if the supplied timestamp is within the allowed threshold
-		if ( ($data['timestamp'] < $time_lower) OR ($data['timestamp'] > $time_upper) )
-		{
-			$this->lasterr = 'Supplied timestamp falls outside of the allowed threshold of 5 minutes.';
-			return FALSE;
-		}
-		
-		// Get the current key from the database
-		$preauthkey = $this->CI->settings->get('auth_preauth_key');
-		
-		// Work out what we *should* get based on their info + our preauthkey
-		$expected_final = sha1("{$data['username']}|{$data['timestamp']}|{$preauthkey}");
-		
-		// Finally we compare our correct result with their result
-		$compare = ($expected_final == $data['preauth']);
-		
-		if ($compare == false){ $this->lasterr = 'Key did not match the expected value.'; }
-		
-		return $compare;
-	}
-	
-	
-	
-	
-	/**
-	 * Local authentication function
-	 *
-	 * Simply checks if a local user's password is valid
-	 *
-	 * @param	string	username
-	 * @param	string	password
-	 * @return	bool
-	 */
-	/*
-	function auth_local($username, $password){
-		
-		$sql = 'SELECT password 
-				FROM users
-				WHERE username = ?
-				AND enabled = 1
-				AND ldap = 0
-				LIMIT 1';
-				
-		$query = $this->CI->db->query($sql, array($username));
-		
-		if ($query->num_rows() == 1)
-		{
-			
-			$user = $query->row();
-			$match = $this->check_password($password, $user->password);
-			if ($match == true)
-			{
-				return true;
-			}
-			else
-			{
-				$this->lasterr = 'Local authentication failure. Incorrect username and/or password.';
-				return false;
-			}
-			
-		}
-		else
-		{
-			// Fail
-			$this->lasterr = 'Local authentication failure. Incorrect username and/or password.';
-		}
-		
-	}
-	*/
 	
 	
 	
@@ -708,33 +665,8 @@ class Auth extends CI_Driver_Library
 	
 	
 	
-	/*
-	function active_users()
-	{
-		
-		$sql = 'SELECT users.user_id, users.username, users.displayname, usersactive.timestamp
-				FROM users
-				RIGHT JOIN usersactive ON users.user_id = usersactive.user_id';
-		$query = $this->CI->db->query($sql);
-		
-		$result = $query->result();
-		$activeusers = array();
-		
-		foreach($result as $user){
-			$display = ($user->displayname != '' OR $user->displayname != NULL) ? $user->displayname : $user->username;
-			//array_push($activeusers, $display);
-			$activeusers[$user->user_id] = $display;
-		}
-		
-		return $activeusers;
-		
-	}
-	*/
-	
-	
-	
 	
 }
 
 
-/* End of file app/libraries/Auth.php */
+/* End of file ./application/libraries/Auth/Auth.php */
