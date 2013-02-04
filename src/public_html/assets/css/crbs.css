@@ -79,64 +79,6 @@ div hr { height: 1px; }
 
 
 
-
-/* Content with sidebar (from http://matthewjamestaylor.com/blog/ultimate-2-column-left-menu-pixels.htm)
-========== */
-
-	/* column container */
-	.colmask {
-		position: relative;		/* This fixes the IE7 overflow hidden bug and stops the layout jumping out of place */
-		clear: both;
-		float: left;
-		width: 100%;		/* width of whole page */
-		overflow: hidden;		/* This chops off any overhanging divs */
-	}
-	
-	/* 2 column left menu settings */
-	.leftmenu {
-		background: #F2F2F2;
-	}
-	
-		.leftmenu .colright {
-			float: left;
-			width: 200%;
-			position: relative;
-			left: 250px;
-			background: #fff;
-			border-left: 0px solid #ccc;
-		}
-		
-		.leftmenu .col1wrap {
-			float: right;
-			width: 50%;
-			position: relative;
-			right: 250px;
-			padding-bottom: 1em;
-		}
-		
-		.leftmenu .col1 {
-			margin: 0 15px 0 265px;	/* 215px */
-			position: relative;
-			right: 100%;
-			overflow: hidden;
-			padding-top: 15px;
-			padding-bottom: 20px;
-		}
-		
-		.leftmenu .col2 {
-			float: left;
-			width: 220px;
-			position: relative;
-			right: 235px;
-			padding-top: 15px;
-			padding-bottom: 15px;
-		}
-		
-	.col1 .container {
-		margin: 0;
-	}
-
-
 /* Footer
 ========== */
 	
