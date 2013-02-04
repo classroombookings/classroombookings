@@ -17,6 +17,12 @@ $lang = array(
 	'users_delete_prompt' =>
 	'Are you sure you want to delete this user? All of their bookings will also be deleted.',
 	
+	'users_delete_success' =>
+	'The user account has been deleted successfully.',
+	
+	'users_delete_error' =>
+	'An error occurred when deleting the user account.',
+	
 	'users_username' =>
 	'Username',
 	

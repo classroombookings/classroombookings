@@ -599,74 +599,30 @@ class Users extends Configure_Controller
 	
 	
 	/**
-	 * PAGE: Deleting a user
+	 * Delete a user account
 	 */
-	function delete($user_id = null)
+	function delete()
 	{
-		$this->auth->check('users.delete');
+		$this->auth->restrict('users.delete');
 		
-		// Check if a form has been submitted; if not - show it to ask user confirmation
-		if ($this->input->post('id'))
+		$id = $this->input->post('id');
+		
+		if ( ! $id)
 		{
-			// Form has been submitted (so the POST value exists)
-			// Call model function to delete user
-			$delete = $this->security_model->delete_user($this->input->post('id'));
-			if ($delete == false)
-			{
-				$this->msg->add('err', $this->security_model->lasterr, 'An error occured');
-			}
-			else
-			{
-				$this->msg->add('notice', 'The user has been deleted.');
-			}
-			// Redirect
-			redirect('users');
+			redirect('users/index');
+		}
+		
+		if ($this->users_model->delete($id))
+		{
+			$this->flash->set('success', lang('users_delete_success'), TRUE);
 		}
 		else
 		{
-			// Are we trying to delete ourself?
-			if ( ($this->session->userdata('user_id')) && ($user_id == $this->session->userdata('user_id')) )
-			{
-				$this->msg->add(
-					'err',
-					base64_decode('WW91IGNhbm5vdCBkZWxldGUgeW91cnNlbGYsIHRoZSB1bml2ZXJzZSB3aWxsIGltcGxvZGUu'),
-					base64_decode('RXJyb3IgSUQjMTBU')
-				);
-				redirect('users');
-			}
-			
-			if ($user_id == null)
-			{
-				$data['title'] = 'Delete user';
-				$data['body'] = $this->msg->err('Cannot find the user or no user ID given.');
-			}
-			else
-			{
-				// Get user info so we can present the confirmation page with a dsplayname/username
-				$user = $this->security_model->get_user($user_id);
-				if ($user == false)
-				{
-					$data['title'] = 'Delete user';
-					$data['body'] = $this->msg->err('Could not find that user or no user ID given.');
-				}
-				else
-				{
-					// Initialise page
-					$body['action'] = 'users/delete';
-					$body['id'] = $user_id;
-					$body['cancel'] = 'users';
-					$body['text'] = 'If you delete this user, all of their bookings and room owenership information will also be deleted.';
-					$body['title'] = 'Are you sure you want to delete user ' . $user->username . '?';
-					$data['title'] = 'Delete ' . $user->displayname;
-					$data['body'] = $this->load->view('parts/deleteconfirm', $body, true);
-				}	// if user == false-else
-			}	// if user_id == null-else
-			
-			$this->page($data);
-			
-		}	// if post(id) else
+			$this->flash->set('error', lang('users_delete_error'), TRUE);
+		}
 		
-	}	// endfunction
+		redirect($this->input->post('redirect'));
+	}
 	
 	
 	
