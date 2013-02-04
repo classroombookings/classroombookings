@@ -38,6 +38,10 @@
 		</tbody>
 		
 	</table>
+	
+	<div class="pagination-wrapper">
+		<?php echo $this->pagination->create_links() ?>
+	</div>
 
 	<?php else: ?>
 

@@ -65,12 +65,13 @@ class Users extends Configure_Controller
 		$this->auth->restrict('users.view');
 		
 		$filter = $this->input->get(NULL, TRUE);
+		$filter['pp'] = element('pp', $filter, 10);
 		
 		$this->load->library('pagination');
 		$config = array(
 			'base_url' => site_url('users/index'),
 			'total_rows' => $this->users_model->count_all(),
-			'per_page' => $this->input->get('pp'),
+			'per_page' => $filter['pp'],
 			'uri_segment' => 3,
 		);
 		$this->pagination->initialize($config);
