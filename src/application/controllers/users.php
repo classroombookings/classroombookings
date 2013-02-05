@@ -209,6 +209,35 @@ class Users extends Configure_Controller
 	
 	
 	
+	/**
+	 * Delete a user account (POST only)
+	 */
+	function delete()
+	{
+		$this->auth->restrict('users.delete');
+		
+		$id = $this->input->post('id');
+		
+		if ( ! $id)
+		{
+			redirect('users/index');
+		}
+		
+		if ($this->users_model->delete($id))
+		{
+			$this->flash->set('success', lang('users_delete_success'), TRUE);
+		}
+		else
+		{
+			$this->flash->set('error', lang('users_delete_error'), TRUE);
+		}
+		
+		redirect($this->input->post('redirect'));
+	}
+	
+	
+	
+	
 	// =======================================================================
 	// User import
 	// =======================================================================
@@ -585,42 +614,6 @@ class Users extends Configure_Controller
 	{
 		$this->session->set_userdata('import', array());
 		redirect('users');
-	}
-	
-	
-	
-	
-	// =======================================================================
-	// Other
-	// =======================================================================
-	
-	
-	
-	
-	/**
-	 * Delete a user account
-	 */
-	function delete()
-	{
-		$this->auth->restrict('users.delete');
-		
-		$id = $this->input->post('id');
-		
-		if ( ! $id)
-		{
-			redirect('users/index');
-		}
-		
-		if ($this->users_model->delete($id))
-		{
-			$this->flash->set('success', lang('users_delete_success'), TRUE);
-		}
-		else
-		{
-			$this->flash->set('error', lang('users_delete_error'), TRUE);
-		}
-		
-		redirect($this->input->post('redirect'));
 	}
 	
 	
