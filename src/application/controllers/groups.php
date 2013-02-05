@@ -19,7 +19,7 @@ class Groups extends Configure_Controller
 		
 		$this->lang->load('configure');
 		$this->lang->load('groups');
-		$this->load->model(array('groups_model'));
+		$this->load->model(array('groups_model', 'ldap_groups_model'));
 		$this->load->helper('group_helper');
 		$this->data['nav_current'][] = 'groups';
 		
@@ -84,10 +84,38 @@ class Groups extends Configure_Controller
 	
 	
 	
+	public function set($g_id = 0)
+	{
+		if ($g_id)
+		{
+			// Updating group $g_id
+			$this->auth->restrict('groups.edit');
+			$this->data['group'] = $this->groups_model->get($g_id);
+			$title = lang('groups_edit');
+			$this->layout->add_breadcrumb(lang('groups_edit'), 'groups/set/' . $g_id);
+		}
+		else
+		{
+			// Adding new group
+			$this->auth->restrict('groups.add');
+			$title = lang('groups_add_new');
+			$this->layout->add_breadcrumb(lang('groups_add_new'), 'groups/set');
+			$this->data['subnav_active'] = 'groups/set';
+			$this->data['group'] = array();
+		}
+		
+		$this->data['ldap_groups'] = $this->ldap_groups_model->dropdown('lg_name');
+		
+		$this->load->library('form');
+	}
+	
+	
+	
+	
 	/**
 	 * PAGE: Add a new group
 	 */
-	function add()
+	/*function add()
 	{
 		$this->auth->check('groups.add');
 		$body['group'] = null;
@@ -97,13 +125,14 @@ class Groups extends Configure_Controller
 		$data['body'] = $this->load->view('groups/addedit', $body, true);
 		$this->page($data);
 	}
-	
+	*/
 	
 	
 	
 	/**
 	 * PAGE: Edit a group
 	 */
+	/*
 	function edit($group_id)
 	{
 		$this->auth->check('groups.edit');
@@ -124,11 +153,12 @@ class Groups extends Configure_Controller
 			$data['body'] = $this->msg->err('Could not load the specified group. Please check the ID and try again.');
 		}
 		$this->page($data);
-	}
+	
+	*/
 	
 	
 	
-	
+	/*
 	function save()
 	{
 		$group_id = $this->input->post('group_id');
@@ -146,9 +176,9 @@ class Groups extends Configure_Controller
 		$this->form_validation->set_rules('name', 'Name', 'required|max_length[20]|trim');
 		$this->form_validation->set_rules('description', 'Description', 'max_length[255]|trim');
 		$this->form_validation->set_rules('ldapgroups[]', 'LDAP Groups');
-		/* $this->form_validation->set_rules('daysahead', 'Booking days ahead', 'max_length[3]|numeric');
-		$this->form_validation->set_rules('quota_num', 'Quota', 'max_length[5]|numeric');
-		$this->form_validation->set_rules('quota_type', 'Quota type'); */
+		// $this->form_validation->set_rules('daysahead', 'Booking days ahead', 'max_length[3]|numeric');
+		//$this->form_validation->set_rules('quota_num', 'Quota', 'max_length[5]|numeric');
+		//$this->form_validation->set_rules('quota_type', 'Quota type');
 		$this->form_validation->set_error_delimiters('<li>', '</li>');
 
 		if($this->form_validation->run() == FALSE){
@@ -162,9 +192,9 @@ class Groups extends Configure_Controller
 			$data['name'] = $this->input->post('name');
 			$data['description'] = $this->input->post('description');
 			$data['ldapgroups'] = ($this->input->post('ldapgroups')) ? $this->input->post('ldapgroups') : array();
-			/* $data['bookahead'] = $this->input->post('bookahead');
-			$data['quota_num'] = $this->input->post('quota_num');
-			$data['quota_type'] = $this->input->post('quota_type'); */
+			//$data['bookahead'] = $this->input->post('bookahead');
+			//$data['quota_num'] = $this->input->post('quota_num');
+			//$data['quota_type'] = $this->input->post('quota_type'); 
 			
 			if($data['quota_type'] == 'unlimited'){
 				$data['quota_type'] = NULL;
@@ -200,76 +230,34 @@ class Groups extends Configure_Controller
 		}
 		
 	}
+	*/
 	
 	
 	
-	
-	function delete($group_id = NULL)
+	/**
+	 * Delete a user group
+	 */
+	function delete()
 	{
-		$this->auth->check('groups.delete');
+		$this->auth->restrict('groups.delete');
 		
-		// Check if a form has been submitted; if not - show it to ask user confirmation
-		if($this->input->post('id')){
+		$id = $this->input->post('id');
 		
-			// Form has been submitted (so the POST value exists)
-			// Call model function to delete user
-			$delete = $this->security->delete_group($this->input->post('id'));
-			if($delete == FALSE){
-				$this->msg->add('err', $this->security->lasterr, 'An error occured');
-			} else {
-				$this->msg->add('info', 'The group has been deleted.');
-			}
-			// Redirect
-			redirect('security/groups');
-			
-		} else {
-		
-			if( ($this->session->userdata('group_id')) && ($group_id == $this->session->userdata('group_id')) ){
-				$this->msg->add(
-					'warn',
-					base64_decode('WW91IGNhbm5vdCBkZWxldGUgdGhlIGdyb3VwIHRoYXQgeW91IGFyZSBhIG1lbWJlciBvZiwgdGhlIHVuaXZlcnNlIGlzIGxpa2VseSB0byBpbXBsb2RlLg=='),
-					base64_decode('RXJyb3IgSUQjMTBU')
-				);
-				redirect('security/groups');
-			}
-			
-			if($group_id == NULL){
-				
-				$tpl['title'] = 'Delete group';
-				$tpl['pagetitle'] = $tpl['title'];
-				$tpl['body'] = $this->msg->err('Cannot find the group or no group ID given.');
-				
-			} else {
-				
-				// Get user info so we can present the confirmation page with a dsplayname/username
-				$group = $this->security->get_group($group_id);
-				
-				if($group == FALSE){
-				
-					$tpl['title'] = 'Delete group';
-					$tpl['pagetitle'] = $tpl['title'];
-					$tpl['body'] = $this->msg->err('Could not find that group or no group ID given.');
-					
-				} else {
-					
-					// Initialise page
-					$body['action'] = 'security/groups/delete';
-					$body['id'] = $group_id;
-					$body['cancel'] = 'security/groups';
-					$body['text'] = 'If you delete this group, all of its users (if any) will be re-assigned to the Guests group.';
-					$tpl['title'] = 'Delete group';
-					$tpl['pagetitle'] = 'Delete ' . $group->name;
-					$tpl['body'] = $this->load->view('parts/deleteconfirm', $body, TRUE);
-					
-				}
-				
-			}
-			
-			$tpl['subnav'] = $this->security->subnav();
-			$this->load->view($this->tpl, $tpl);
-			
+		if ( ! $id)
+		{
+			redirect('groups/index');
 		}
 		
+		if ($this->groups_model->delete($id))
+		{
+			$this->flash->set('success', lang('groups_delete_success'), TRUE);
+		}
+		else
+		{
+			$this->flash->set('error', lang('groups_delete_error'), TRUE);
+		}
+		
+		redirect($this->input->post('redirect'));
 	}
 	
 	
@@ -278,4 +266,4 @@ class Groups extends Configure_Controller
 }
 
 
-/* End of file controllers/security/groups.php */
+/* End of file ./application/controllers/groups.php */

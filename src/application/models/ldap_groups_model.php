@@ -149,6 +149,23 @@ class Ldap_groups_model extends School_model
 	
 	
 	
+	/**
+	 * Get the LDAP groups that have not been assigned to other groups.
+	 * But still include the groups assigned to supplied g_id (optional)
+	 *
+	 * @param int $g_id		ID of group - if specified, include any LDAP groups that may be assigned to it
+	 * @return array 		Array of LDAP group IDs => names
+	 */
+	public function ldap_groups_unassigned($g_id = 0)
+	{
+		$sql = 'SELECT lg_id, lg_name
+				FROM ldap_groups';
+		// @TODO
+	}
+	
+	
+	
+	
 }
 
 /* End of file: ./application/models/ldap_groups_model.php */
