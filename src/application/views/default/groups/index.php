@@ -1,41 +1,47 @@
-<table class="list2 middle" summary="Group list" id="groups">
+<div class="grid_12">
 
-	<thead>
-		<tr>
-			<th scope="col">Group name</th>
-			<th scope="col"># Users</th>
-			<th scope="col">Actions</th>
-		</tr>
-	</thead>
-	
-	<tbody>
-	
-		<?php foreach ($groups as $group): ?>
+	<?php $this->load->view('default/groups/index/filter') ?>
+
+	<?php if ($groups): ?>
+
+	<table class="list groups" id="groups">
 		
-		<td class="title">
-			<?php
-			$title = $group->description;
-			echo anchor('groups/edit/' . $group->group_id, $group->name . " ", 'rel="edit" class="' . $title . '"');
-			?>
-		</td>
+		<thead>
+			<th><?php echo lang('name') ?></th>
+			<th><?php echo lang('groups_num_users') ?></th>
+			<th></th>
+		</thead>
 		
-		<td width="100" align="left">
-			<?php echo $group->usercount ?>&nbsp;
-		</td>
+		<tbody>
+			
+			<?php foreach ($groups as $g): ?>
+			
+			<tr>
+				
+				<td class="title">
+					<?php echo anchor('groups/set/' . $g['g_id'], $g['g_name']) ?>
+				</td>
+				
+				<td><?php echo $g['user_count'] ?></td>
+				
+				<td class="text-right"><?php echo group_delete($g) ?></td>
+				
+			</tr>
+			
+			<?php endforeach; ?>
+			
+		</tbody>
 		
-		<td class="actions">
-			<?php
-				echo anchor(sprintf('groups/delete/%d', $group->group_id),	
-					'Delete', 'class="small red button"') . " ";
-				echo anchor(sprintf('users/ingroup/%d', $group->group_id),
-					'View users', 'class="small button"') . " ";
-			?>
-		</td>
+	</table>
+	
+	<div class="pagination-wrapper">
+		<?php echo $this->pagination->create_links() ?>
+	</div>
+
+	<?php else: ?>
+
+	<p class="no-results"><?php echo lang('groups_none') ?></p>
 		
-	</tr>
-	
-	<?php endforeach; ?>
-	
-	</tbody>
-	
-</table>
+	<?php endif; ?>
+
+</div>

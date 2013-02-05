@@ -16,32 +16,69 @@ class Groups extends Configure_Controller
 	function __construct()
 	{
 		parent::__construct();
-		$this->load->model('security_model');
-		$this->load->helper('text');
+		
+		$this->lang->load('configure');
+		$this->lang->load('groups');
+		$this->load->model(array('groups_model'));
+		$this->load->helper('group_helper');
+		$this->data['nav_current'][] = 'groups';
+		
+		$this->layout->add_breadcrumb(lang('configure_groups'), 'groups');
+		
+		$this->data['subnav'] = array(
+			array(
+				'uri' => 'groups',
+				'text' => lang('configure_groups'),
+				'test' => $this->auth->check('groups.view'),
+			),
+			array(
+				'uri' => 'groups/set',
+				'text' => lang('groups_add_new'),
+				'test' => $this->auth->check('groups.add'),
+			),
+		);
 	}
 	
 	
 	
 	
+	// =======================================================================
+	// Group management pages
+	// =======================================================================
+	
+	
+	
+	
 	/**
-	 * PAGE: Main list of groups
+	 * Index listing of groups
 	 */
-	function index()
+	function index($page = 0)
 	{
-		$this->auth->check('groups.view');
-		// Get list of groups
-		$body['groups'] = $this->security_model->get_group();
-		if ($body['groups'] == false)
-		{
-			$data['body'] = $this->msg->err($this->security_model->lasterr);
-		}
-		else
-		{
-			$data['body'] = $this->load->view('groups/index', $body, true);
-		}
-		$data['title'] = 'Groups';
-		$data['submenu'] = $this->menu_model->groups();
-		$this->page($data);
+		$this->auth->restrict('groups.view');
+		
+		$filter = $this->input->get(NULL, TRUE);
+		$filter['pp'] = element('pp', $filter, 10);
+		
+		$this->load->library('pagination');
+		$config = array(
+			'base_url' => site_url('groups/index'),
+			'total_rows' => $this->groups_model->count_all(),
+			'per_page' => $filter['pp'],
+			'uri_segment' => 3,
+		);
+		$this->pagination->initialize($config);
+		
+		$this->users_model->set_filter($filter);
+		$this->users_model->order_by('g_name', 'asc');
+		$this->users_model->limit($config['per_page'], $page);
+		
+		$this->data['filter'] = $filter;
+		$this->data['groups'] = $this->groups_model->get_all();
+		
+		$this->layout->set_js('views/groups/index');
+		
+		$this->layout->set_title(lang('configure_groups'));
+		$this->data['subnav_active'] = 'groups';
 	}
 	
 	

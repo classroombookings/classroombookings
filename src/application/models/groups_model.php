@@ -29,6 +29,33 @@ class Groups_model extends School_model
 	
 	
 	
+	/**
+	 * Get all rows from the table with additional school ID clause
+	 *
+	 * @return array
+	 */
+	public function get_all()
+	{
+		$sql = 'SELECT
+					g.*,
+					COUNT(u_id) AS user_count
+				FROM
+					groups g
+				LEFT JOIN
+					users ON g_id = u_g_id
+				WHERE 1 = 1
+				' . $this->sch_sql() . '
+				' . $this->filter_sql() . '
+				' . $this->order_sql() . '
+				' . $this->limit_sql() . '
+				GROUP BY g_id';
+		
+		return $this->db->query($sql)->result_array();
+	}
+	
+	
+	
+	
 }
 
 /* End of file: ./application/models/groups_model.php */
