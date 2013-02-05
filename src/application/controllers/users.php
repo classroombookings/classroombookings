@@ -87,7 +87,6 @@ class Users extends Configure_Controller
 		$this->layout->set_js('views/users/index');
 		
 		$this->layout->set_title(lang('configure_users'));
-		$this->load->library('form');
 		$this->data['subnav_active'] = 'users';
 	}
 	
