@@ -104,7 +104,7 @@ class Groups extends Configure_Controller
 			$this->data['group'] = array();
 		}
 		
-		$this->data['ldap_groups'] = $this->ldap_groups_model->dropdown('lg_name');
+		$this->data['ldap_groups'] = $this->ldap_groups_model->ldap_groups_unassigned($g_id);
 		
 		$this->load->library('form');
 	}

@@ -56,6 +56,58 @@ class Groups_model extends School_model
 	
 	
 	
+	public function get($g_id = 0)
+	{
+		$group = parent::get($g_id);
+		
+		if ($group)
+		{
+			$group['ldap_groups'] = $this->get_ldap_groups($g_id);
+		}
+		
+		return $group;
+	}
+	
+	
+	
+	
+	/**
+	 * Get simple list of LDAP group IDs => names that are assigned to this group
+	 */
+	public function get_ldap_groups($g_id = 0)
+	{
+		$sql = 'SELECT
+					lg_id,
+					lg_name
+				FROM
+					g2lg
+				LEFT JOIN
+					ldap_groups lg ON g2lg_lg_id = lg_id
+				WHERE
+					g2lg_g_id = ?
+				AND
+					lg_s_id = ?
+				ORDER BY
+					lg_name ASC';
+		
+		$result = $this->db->query($sql, array($g_id, $this->config->item('s_id')))->result_array();
+		
+		$ldap_groups = array();
+		
+		if ($result)
+		{
+			foreach ($result as $row)
+			{
+				$ldap_groups[$row['lg_id']] = $row['lg_name'];
+			}
+		}
+		
+		return $ldap_groups;
+	}
+	
+	
+	
+	
 }
 
 /* End of file: ./application/models/groups_model.php */

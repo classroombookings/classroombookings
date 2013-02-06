@@ -158,9 +158,32 @@ class Ldap_groups_model extends School_model
 	 */
 	public function ldap_groups_unassigned($g_id = 0)
 	{
-		$sql = 'SELECT lg_id, lg_name
-				FROM ldap_groups';
-		// @TODO
+		$sql = 'SELECT
+					lg_id, lg_name
+				FROM
+					ldap_groups
+				LEFT JOIN
+					g2lg
+					ON lg_id = g2lg_lg_id
+				WHERE
+					g2lg_g_id IS NULL
+				OR
+					g2lg_g_id = ?
+				GROUP BY
+					lg_id
+				ORDER BY
+					lg_name';
+		
+		$result = $this->db->query($sql, array($g_id))->result_array();
+		
+		$groups = array();
+		
+		foreach ($result as $row)
+		{
+			$groups[$row['lg_id']] = $row['lg_name'];
+		}
+		
+		return $groups;
 	}
 	
 	
