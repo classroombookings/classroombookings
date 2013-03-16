@@ -18,6 +18,7 @@ class Security_model extends CI_Model
 	
 	function __construct()
 	{
+		echo "You should not be loading the security model!";
 		parent::__construct();
 	}
 	
