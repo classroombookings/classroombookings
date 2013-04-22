@@ -98,139 +98,66 @@ class Groups extends Configure_Controller
 		{
 			// Adding new group
 			$this->auth->restrict('groups.add');
+			$this->data['group'] = array();
 			$title = lang('groups_add_new');
 			$this->layout->add_breadcrumb(lang('groups_add_new'), 'groups/set');
 			$this->data['subnav_active'] = 'groups/set';
-			$this->data['group'] = array();
 		}
+		
+		if ($this->input->post())
+		{
+			$this->form_validation->set_rules(array(
+				array('field' => 'g_name', 'label' => lang('groups_group_name'), 'rules' => 'required|max_length[20]|trim'),
+				array('field' => 'g_description', 'label' => lang('groups_group_description'), 'rules' => 'max_length[255]|trim'),
+			));
+			
+			
+			if ($this->form_validation->run())
+			{
+				$group_data = array(
+					'g_name' => $this->input->post('g_name'),
+					'g_description' => $this->input->post('g_description'),
+				);
+				
+				if ($g_id)
+				{
+					// Update
+					$g_id = $this->groups_model->update($g_id, $group_data);
+					$success = lang('groups_update_success');
+					$error = lang('groups_update_error');
+				}
+				else
+				{
+					// Insert
+					$g_id = $this->groups_model->insert($group_data);
+					$success = lang('groups_insert_success');
+					$error = lang('groups_insert_error');
+				}
+				
+				if ($g_id)
+				{
+					// Success
+					
+					// Set LDAP groups membership
+					$this->groups_model->set_ldap_groups($g_id, $this->input->post('ldap_groups'));
+					
+					$this->flash->set('success', $success, TRUE);
+					redirect('groups');
+				}
+				else
+				{
+					$this->flash->set('error', $error);
+				}
+				
+			}  // end validation->run()
+			
+		}  // end POST check
 		
 		$this->data['ldap_groups'] = $this->ldap_groups_model->ldap_groups_unassigned($g_id);
 		
 		$this->load->library('form');
 	}
 	
-	
-	
-	
-	/**
-	 * PAGE: Add a new group
-	 */
-	/*function add()
-	{
-		$this->auth->check('groups.add');
-		$body['group'] = null;
-		$body['group_id'] = null;
-		$body['ldapgroups'] = $this->security_model->get_ldap_groups_unassigned();
-		$data['title'] = 'Add group';
-		$data['body'] = $this->load->view('groups/addedit', $body, true);
-		$this->page($data);
-	}
-	*/
-	
-	
-	
-	/**
-	 * PAGE: Edit a group
-	 */
-	/*
-	function edit($group_id)
-	{
-		$this->auth->check('groups.edit');
-		$body['group'] = $this->security_model->get_group($group_id);
-		$body['group_id'] = $group_id;
-		$body['ldapgroups'] = $this->security_model->get_ldap_groups_unassigned($group_id);
-		
-		$data['title'] = 'Edit group';
-		
-		if ($body['group'] != false)
-		{
-			$data['title'] = 'Edit ' . $body['group']->name . ' group';
-			$data['body'] = $this->load->view('groups/addedit', $body, true);
-		}
-		else
-		{
-			$data['title'] = 'Error getting group';
-			$data['body'] = $this->msg->err('Could not load the specified group. Please check the ID and try again.');
-		}
-		$this->page($data);
-	
-	*/
-	
-	
-	
-	/*
-	function save()
-	{
-		$group_id = $this->input->post('group_id');
-		
-		if ($group_id == null)
-		{
-			$this->auth->check('groups.add');
-		}
-		else
-		{
-			$this->auth->check('groups.edit');
-		}
-		
-		$this->form_validation->set_rules('group_id', 'Group ID');
-		$this->form_validation->set_rules('name', 'Name', 'required|max_length[20]|trim');
-		$this->form_validation->set_rules('description', 'Description', 'max_length[255]|trim');
-		$this->form_validation->set_rules('ldapgroups[]', 'LDAP Groups');
-		// $this->form_validation->set_rules('daysahead', 'Booking days ahead', 'max_length[3]|numeric');
-		//$this->form_validation->set_rules('quota_num', 'Quota', 'max_length[5]|numeric');
-		//$this->form_validation->set_rules('quota_type', 'Quota type');
-		$this->form_validation->set_error_delimiters('<li>', '</li>');
-
-		if($this->form_validation->run() == FALSE){
-			
-			// Validation failed - load required action depending on the state of user_id
-			($group_id == NULL) ? $this->add() : $this->edit($group_id);
-			
-		} else {
-		
-			// Validation OK
-			$data['name'] = $this->input->post('name');
-			$data['description'] = $this->input->post('description');
-			$data['ldapgroups'] = ($this->input->post('ldapgroups')) ? $this->input->post('ldapgroups') : array();
-			//$data['bookahead'] = $this->input->post('bookahead');
-			//$data['quota_num'] = $this->input->post('quota_num');
-			//$data['quota_type'] = $this->input->post('quota_type'); 
-			
-			if($data['quota_type'] == 'unlimited'){
-				$data['quota_type'] = NULL;
-				$data['quota_num'] = NULL;
-			}
-
-			if($group_id == NULL){
-			
-				$add = $this->security->add_group($data);
-				
-				if($add == TRUE){
-					$this->msg->add('info', sprintf($this->lang->line('SECURITY_GROUP_ADD_OK'), $data['name']));
-					$this->msg->add('note', 'You can now configure the permissions for this group by '.anchor('security/permissions/forgroup/'.$add, 'clicking here.'));
-				} else {
-					$this->msg->add('err', sprintf($this->lang->line('SECURITY_GROUP_ADD_FAIL', $this->security->lasterr)));
-				}
-			
-			} else {
-			
-				// Updating existing group
-				$edit = $this->security->edit_group($group_id, $data);
-				if($edit == TRUE){
-					$this->msg->add('info', sprintf($this->lang->line('SECURITY_GROUP_EDIT_OK'), $data['name']));
-				} else {
-					$this->msg->add('err', sprintf($this->lang->line('SECURITY_GROUP_EDIT_FAIL', $this->security->lasterr)));
-				}
-				
-			}
-			
-			// All done, redirect!
-			redirect('security/groups');
-			
-		}
-		
-	}
-	*/
 	
 	
 	
@@ -264,6 +191,5 @@ class Groups extends Configure_Controller
 	
 	
 }
-
 
 /* End of file ./application/controllers/groups.php */

@@ -38,6 +38,16 @@ $lang = array(
 	'groups_ldap_groups_hint' =>
 	'Choose LDAP groups to assign to this group. Any members of chosen LDAP groups will then be assigned to this Classroombookings group.',
 	
+	'groups_insert_success' =>
+	'The new group has been created successfully.',
 	
+	'groups_inser_error' =>
+	'An error occurred when creating the new group.',
+	
+	'groups_update_success' =>
+	'The group has been updated successfully.',
+	
+	'groups_update_error' =>
+	'An error occurred when updating the group.',
 	
 );

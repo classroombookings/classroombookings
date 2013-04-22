@@ -71,6 +71,13 @@ class Groups_model extends School_model
 	
 	
 	
+	// ========================================================================
+	// LDAP groups
+	// ========================================================================
+	
+	
+	
+	
 	/**
 	 * Get simple list of LDAP group IDs => names that are assigned to this group
 	 */
@@ -103,6 +110,37 @@ class Groups_model extends School_model
 		}
 		
 		return $ldap_groups;
+	}
+	
+	
+	
+	/**
+	 * Sets a group's LDAP group assignments
+	 *
+	 * @param int $g_id		ID of group to update LDAP group assignments for
+	 * @param array $lg_ids		1D array of LDAP group IDs to set for user
+	 * @return bool
+	 */
+	public function set_ldap_groups($g_id = 0, $lg_ids = array())
+	{
+		$sql = 'DELETE FROM g2lg WHERE g2lg_g_id = ?';
+		$this->db->query($sql, array($g_id));
+		
+		if ( ! empty($lg_ids))
+		{
+			$values = array();
+			
+			foreach ($lg_ids as $lg_id)
+			{
+				$values[] = '(' . (int) $g_id . ', ' . (int) $lg_id . ')';
+			}
+			
+			$sql = 'INSERT INTO g2lg (g2lg_g_id, g2lg_lg_id) VALUES ' . implode(',', $values);
+			
+			return $this->db->query($sql);
+		}
+		
+		return TRUE;
 	}
 	
 	
