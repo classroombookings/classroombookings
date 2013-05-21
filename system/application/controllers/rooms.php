@@ -156,9 +156,9 @@ class Rooms extends Controller {
 		// Upload config
 		$upload['upload_path'] 			= './webroot/images/roomphotos/temp'; 
 		$upload['allowed_types']		= 'jpg|jpeg';
-		$upload['max_size']					= '1024';
-		$upload['max_width']				= '2400';
-		$upload['max_height']				= '1800';
+		$upload['max_size']					= '4096';
+		$upload['max_width']				= '3000';
+		$upload['max_height']				= '3000';
 		$this->upload->initialize($upload);
 		
 		// Validation rules

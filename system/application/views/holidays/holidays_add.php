@@ -39,7 +39,7 @@ echo form_open('holidays/save', array('class' => 'cssform', 'id' => 'holiday_add
 		'value' => $date_start,
 	));
 	?>
-	<img style="cursor:pointer" align="top" src="webroot/images/ui/cal_day.png" width="16" height="16" title="Choose date" onclick="displayDatePicker('date_start', false);" />
+	<img style="cursor:pointer" align="top" src="webroot/images/ui/cal_day.gif" width="16" height="16" title="Choose date" onclick="displayDatePicker('date_start', false);" />
 </p>
 <?php echo @field($this->validation->date_end_error) ?>
 
@@ -57,7 +57,7 @@ echo form_open('holidays/save', array('class' => 'cssform', 'id' => 'holiday_add
 		'value' => $date_end,
 	));
 	?>
-	<img style="cursor:pointer" align="top" src="webroot/images/ui/cal_day.png" width="16" height="16" title="Choose date" onclick="displayDatePicker('date_end', false);" />
+	<img style="cursor:pointer" align="top" src="webroot/images/ui/cal_day.gif" width="16" height="16" title="Choose date" onclick="displayDatePicker('date_end', false);" />
 </p>
 <?php echo @field($this->validation->date_end_error) ?>
 

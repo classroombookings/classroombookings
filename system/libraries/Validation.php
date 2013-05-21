@@ -546,7 +546,7 @@ class CI_Validation {
 	 */	
 	function numeric($str)
 	{
-		return ( ! ereg("^[0-9\.]+$", $str)) ? FALSE : TRUE;
+		return ( ! preg_match('/^[0-9\.]+$/', $str)) ? FALSE : TRUE;
 	}
 
 	// --------------------------------------------------------------------

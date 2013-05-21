@@ -239,7 +239,7 @@ class CI_Xmlrpcs extends CI_Xmlrpc
 		
 		// Check to see if it is a system call
 		// If so, load the system_methods
-		$sysCall = ereg("^system\.", $methName);
+		$sysCall = (substr($methName, 7) == "system.");
 		$methods = $sysCall ? $this->system_methods : $this->methods;
 		
 		//-------------------------------------
@@ -363,7 +363,7 @@ class CI_Xmlrpcs extends CI_Xmlrpc
 		$methName = $m->getParam(0);
 		$method_name = $methName->scalarval();
 		
-		$methods = ereg("^system\.", $method_name) ? $this->system_methods : $this->methods;
+		$methods = substr($method_name, 7) == "system." ? $this->system_methods : $this->methods;
 		
 		if (isset($methods[$method_name]))
 		{
@@ -405,7 +405,7 @@ class CI_Xmlrpcs extends CI_Xmlrpc
 		$methName = $m->getParam(0);
 		$method_name = $methName->scalarval();
 		
-		$methods = ereg("^system\.", $method_name) ? $this->system_methods : $this->methods;
+		$methods = substr($method_name, 7) == "system." ? $this->system_methods : $this->methods;
 	
 		if (isset($methods[$methName]))
 		{

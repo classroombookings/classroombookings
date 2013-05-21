@@ -174,7 +174,7 @@ class CI_Config {
 		
 		if ($pref != '')
 		{			
-			if (ereg("/$", $pref) === FALSE)
+			if (substr($pref, -1) != "/")
 			{
 				$pref .= '/';
 			}

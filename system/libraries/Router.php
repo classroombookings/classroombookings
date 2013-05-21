@@ -405,7 +405,7 @@ class CI_Router {
 	{
 		if ($this->config->item('permitted_uri_chars') != '')
 		{
-			if ( ! preg_match("|^[".preg_quote($this->config->item('permitted_uri_chars'))."]+$|i", $str))
+			if ( ! preg_match('/^['.$this->config->item('permitted_uri_chars').']+$/i', $str))
 			{
 				exit('The URI you submitted has disallowed characters: '.$str);
 			}

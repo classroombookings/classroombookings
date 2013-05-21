@@ -140,9 +140,9 @@ class Users extends Controller {
 
 		// Validation rules
 		$vrules['user_id']				= 'required';
-		$vrules['username']   		= 'required|max_length[20]|min_length[4]';
-		$vrules['password1']			= 'max_length[20]|min_length[6]';
-		$vrules['password2']			= 'max_length[20]|min_length[6]|matches[password1]';
+		$vrules['username']   		= 'required|max_length[20]|min_length[1]';
+		$vrules['password1']			= 'max_length[64]|min_length[1]';
+		$vrules['password2']			= 'max_length[64]|min_length[1]|matches[password1]';
 		$vrules['authlevel']			= 'required';
 		$vrules['bquota']					= 'numeric|max_length[3]';
 		$vrules['email']          = 'required|max_length[255]|valid_email';

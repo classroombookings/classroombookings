@@ -1,8 +1,8 @@
 <?php echo $this->session->flashdata('saved') ?>
 <?php
 $icondata[0] = array('weeks/add', 'Add Week', 'add.gif');
-$icondata[1] = array('weeks/dates', 'Week dates', 'school_manage_weeks.gif');
-$icondata[2] = array('weeks/academicyear', 'Academic Year', 'school_manage_weeks_academicyear.gif');
+//$icondata[1] = array('weeks/dates', 'Week dates', 'school_manage_weeks.gif');
+$icondata[1] = array('weeks/academicyear', 'Academic Year', 'school_manage_weeks_academicyear.gif');
 $this->load->view('partials/iconbar', $icondata);
 ?>
 <table width="100%" cellpadding="2" cellspacing="2" border="0" class="sort-table" id="jsst-weeks">

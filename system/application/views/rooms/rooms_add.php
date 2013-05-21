@@ -194,66 +194,72 @@ The main photo will be resized to 640x480, and small thumbnails will be created.
 
 
 
-<fieldset><legend accesskey="F" tabindex="<?php echo $t; $t++; ?>">Fields</legend>
-<?php
+<?php if ($fields): ?>
 
-$tabindex = 12;
-
-
-foreach($fields as $field){
-
-echo '<p>';
-echo '<label>'.$field->name.'</label>';
-
-	switch($field->type){
+<fieldset>
 	
-		case 'TEXT':
+	<legend accesskey="F" tabindex="<?php echo $t; $t++; ?>">Fields</legend>
+
+	<?php
+	$tabindex = 12;
+	
+	foreach($fields as $field){
+
+	echo '<p>';
+	echo '<label>'.$field->name.'</label>';
+
+		switch($field->type){
 		
-			$value = @field($fieldvalues[$field->field_id], NULL);
-			echo form_input(array(
-				'name' => 'f'.$field->field_id,
-				'id' => 'f'.$field->field_id,
-				'size' => '30',
-				'maxlength' => '255',
-				'tabindex' => $t,
-				'value' => $value,	#$location,
-			));
-			break;
-		
-		
-		case 'SELECT':
-		
-			$value = @field($fieldvalues[$field->field_id], NULL);
-			$options = $field->options;
-			foreach($options as $option){
-				$opts[$option->option_id] = $option->value; 
+			case 'TEXT':
+			
+				$value = @field($fieldvalues[$field->field_id], NULL);
+				echo form_input(array(
+					'name' => 'f'.$field->field_id,
+					'id' => 'f'.$field->field_id,
+					'size' => '30',
+					'maxlength' => '255',
+					'tabindex' => $t,
+					'value' => $value,	#$location,
+				));
+				break;
+			
+			
+			case 'SELECT':
+			
+				$value = @field($fieldvalues[$field->field_id], NULL);
+				$options = $field->options;
+				foreach($options as $option){
+					$opts[$option->option_id] = $option->value; 
+				}
+				echo form_dropdown('f'.$field->field_id, $opts, $value, 'tabindex="'.$t.'"');
+				unset($opts);
+				break;
+				
+				
+			case 'CHECKBOX':
+
+				$value = ( @field($fieldvalues[$field->field_id], NULL) == '1') ? true : false;
+				echo form_checkbox( array( 
+					'name' => 'f'.$field->field_id,
+					'id' => 'f'.$field->field_id,
+					'value' => '1',
+					'tabindex' => $t,
+					'checked' => $value,
+				));
+				break;
+
+				
 			}
-			echo form_dropdown('f'.$field->field_id, $opts, $value, 'tabindex="'.$t.'"');
-			unset($opts);
-			break;
-			
-			
-		case 'CHECKBOX':
-
-			$value = ( @field($fieldvalues[$field->field_id], NULL) == '1') ? true : false;
-			echo form_checkbox( array( 
-				'name' => 'f'.$field->field_id,
-				'id' => 'f'.$field->field_id,
-				'value' => '1',
-				'tabindex' => $t,
-				'checked' => $value,
-			));
-			break;
-
-			
-		}
-	echo '</p>';
+		echo '</p>';
+		
+		$t++;
+				
+	}  // endforeach
+	?>
 	
-	$t++;
-			
-}
-?>
 </fieldset>
+
+<?php endif; ?>
 
 
 

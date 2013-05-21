@@ -267,7 +267,7 @@ class CI_Trackback {
 		}
 		@fclose($fp);
 		
-		if ( ! eregi("<error>0</error>", $this->response))
+		if ( substr($this->response, "<error>0</error>"))
 		{
 			$message = 'An unknown error was encountered';
 			
@@ -370,7 +370,7 @@ class CI_Trackback {
 		}
 		else
 		{
-			if (ereg("/$", $url))
+			if (substr($url, -1) == '/')
 			{
 				$url = substr($url, 0, -1);
 			}

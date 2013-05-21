@@ -10,6 +10,7 @@
 		<td valign="middle">
 			<img style="cursor:pointer" align="top" src="webroot/images/ui/cal_day.gif" width="16" height="16" title="Choose date" onclick="displayDatePicker('chosen_date', false);" />
 		</td>
+		
 		<td> &nbsp; <input type="submit" value=" Load " /></td>
 	</tr>
 </table>

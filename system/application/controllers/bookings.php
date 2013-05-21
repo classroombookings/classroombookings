@@ -113,7 +113,7 @@ class Bookings extends Controller {
   	
 		$layout['title'] = 'Bookings';
 		$layout['showtitle'] = '';	//$layout['title'];
-		#$layout['body'] = $this->load->view('bookings/bookings_index', $this->school, True);
+		//$layout['body'] = $this->load->view('bookings/bookings_index', $this->school, True);
 		$layout['body'] = $this->session->flashdata('saved');
 		$layout['body'] .= $body['html'];
 		$this->load->view('layout', $layout);
@@ -154,7 +154,7 @@ class Bookings extends Controller {
     		case 'day':
     			// Display type is one day at a time - all rooms/periods
 		    	if($this->input->post('chosen_date')){
-						$datearr = split('/', $this->input->post('chosen_date'));
+						$datearr = explode('/', $this->input->post('chosen_date'));
 						if(count($datearr) == 3){
 							$chosen_date = sprintf("%s-%s-%s", $datearr[2], $datearr[1], $datearr[0]);
 							$url = sprintf('bookings/index/date/%s/direction/%s', $chosen_date, $this->input->post('direction'));

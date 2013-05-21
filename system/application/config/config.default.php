@@ -1,12 +1,12 @@
 <?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 // Full URL to your installation
-$config['base_url'] = 'http://www.example.com/classroombookings/';
+$config['base_url'] = 'http://localhost/projects/crbs1/';
 
 
-// Empty string if using .htaccess
-#$config['index_page'] = 'index.php';
-$config['index_page'] = '';
+// Empty string if using .htaccess mod_rewrite
+#$config['index_page'] = '';
+$config['index_page'] = 'index.php';
 
 // You shouldn't need to change any of these.
 $config['layout'] = 'layout';

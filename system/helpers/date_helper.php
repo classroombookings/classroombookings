@@ -415,7 +415,7 @@ function human_to_unix($datestr = '')
 	$datestr = trim($datestr);
 	$datestr = preg_replace("/\040+/", "\040", $datestr);
 
-	if ( ! ereg("^[0-9]{2,4}\-[0-9]{1,2}\-[0-9]{1,2}\040[0-9]{1,2}:[0-9]{1,2}.*$", $datestr))
+	if ( !preg_match('/^[0-9]{2,4}\-[0-9]{1,2}\-[0-9]{1,2}\040[0-9]{1,2}:[0-9]{1,2}.*$/', $datestr))
 	{
 		return FALSE;
 	}
@@ -433,7 +433,7 @@ function human_to_unix($datestr = '')
 	$hour = (strlen($ex['0']) == 1) ? '0'.$ex['0'] : $ex['0'];
 	$min  = (strlen($ex['1']) == 1) ? '0'.$ex['1'] : $ex['1'];
 
-	if (isset($ex['2']) AND ereg("[0-9]{1,2}", $ex['2']))
+	if (isset($ex['2']) AND preg_match('/[0-9]{1,2}/', $ex['2']))
 	{
 		$sec  = (strlen($ex['2']) == 1) ? '0'.$ex['2'] : $ex['2'];
 	}

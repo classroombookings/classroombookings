@@ -262,6 +262,7 @@ class Weeks extends Controller {
   	$body['academicyear'] = $this->M_weeks->GetAcademicYear();
   	
   	if(!$body['academicyear']){
+		$body['academicyear'] = new Stdclass();
 			$body['academicyear']->date_start = date("Y-m-d");
 			$body['academicyear']->date_end = date("Y-m-d", strtotime("+1 Year", strtotime(date("Y-m-d"))));
 		} 

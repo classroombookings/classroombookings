@@ -25,7 +25,7 @@ $jscript = '';
 	foreach( $rooms as $room ){ ?>
 	<tr class="tr<?php echo ($i & 1) ?>">
 		<?php
-		if( isset($room->icon) && $room->icon != ''){
+		if( isset($room->icon) && $room->icon != '' && $room->icon != '0'){
 			list(,,,$img_wh) = @getimagesize('webroot/images/standardicons/'.$room->icon);
 			$img_file = 'webroot/images/standardicons/'.$room->icon;
 		} else {
@@ -54,7 +54,7 @@ $jscript = '';
 			$photo_sm = 'webroot/images/roomphotos/160/'.$room->photo;
 			$jscript .= "messages[{$room->room_id}] = new Array('$photo_sm','{$room->name}');\n";
 			if( file_exists($photo) ){
-				echo '<a href="'.$photo.'" title="View Photo" onmouseover="doTooltip(event,'.$room->room_id.')" onmouseout="hideTip()"><img src="webroot/images/ui/picture.png" width="16" height="16" alt="View Photo" /></a>'."\n";
+				echo '<a href="'.$photo.'" title="View Photo" onmouseover="doTooltip(event,'.$room->room_id.')" onmouseout="hideTip()"><img src="webroot/images/ui/picture.gif" width="16" height="16" alt="View Photo" /></a>'."\n";
 			}
 		}
 		?>

@@ -78,7 +78,8 @@ function &DB($params = '', $active_record = FALSE)
 
 	// Instantiate the DB adapter
 	$driver = 'CI_DB_'.$params['dbdriver'].'_driver';
-	$DB =& new $driver($params);	
+	unset($DB);
+	$DB = new $driver($params);	
 	return $DB;
 }	
 

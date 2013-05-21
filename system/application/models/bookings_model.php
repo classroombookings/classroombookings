@@ -339,7 +339,7 @@ class Bookings_model extends Model{
 		
 		
 		// Open form
-		$html .= '<form name="bookings" method="POST" action="bookings/recurring">';
+		$html .= '<form name="bookings" method="POST" action="' . site_url('bookings/recurring') . '">';
 		$html .= form_hidden('room_id', $room_id);
 		
 
@@ -397,7 +397,6 @@ class Bookings_model extends Model{
 		#$results = $query->result_array();
 		
 		$bookings = array();
-		
 
 		// Here we go!		
 		switch($display){
@@ -420,7 +419,7 @@ class Bookings_model extends Model{
 						
 						foreach($school['days_list'] as $day_num => $day_name){
 						
-					
+							
 							// Get booking
 							// TODO: Need to get date("Y-m-d") of THIS weekday (Mon, Tue, Wed) for this week
 							$bookings = array();
@@ -446,12 +445,17 @@ class Bookings_model extends Model{
   						$day['name'] = $day_name;
 							$html .= $this->load->view('bookings/table/rowinfo/days', $day, True);
 							
+							//$booking_date_ymd = strtotime('+' . ($day_num - 1) . ' days', strtotime($date_ymd));
+							//$booking_date_ymd = date('Y-m-d', $booking_date_ymd);
+							$booking_date_ymd = $weekdates[$day_num];
+							
 							// Now all the other ones to fill in periods
 							foreach($periods as $period){
+								
 							
 								// URL
 								$url = 'period/%s/room/%s/day/%s/week/%s/date/%s';
-								$url = sprintf($url, $period->period_id, $room_id, $day_num, $this_week->week_id, $date_ymd);
+								$url = sprintf($url, $period->period_id, $room_id, $day_num, $this_week->week_id, $booking_date_ymd);
 								
 								// Check bitmask to see if this period is bookable on this day
 								$school['days_bitmask']->reverse_mask($period->days);
@@ -517,12 +521,18 @@ class Bookings_model extends Model{
 							$period->width = $col_width;
   						$html .= $this->load->view('bookings/table/rowinfo/periods', $period, True);
 							
+							//$booking_date_ymd = strtotime('+' . ($day_num - 1) . ' days', strtotime($date_ymd));
+							//$booking_date_ymd = date('Y-m-d', $booking_date_ymd);
+							
+							
 							foreach($school['days_list'] as $day_num => $day_name){
+								
+								$booking_date_ymd = $weekdates[$day_num];
 							
 								#$html .= '<td align="center" valign="middle">BOOK</td>';
 								
 								$url = 'period/%s/room/%s/day/%s/week/%s/date/%s';
-								$url = sprintf($url, $period->period_id, $room_id, $day_num, $this_week->week_id, $date_ymd);
+								$url = sprintf($url, $period->period_id, $room_id, $day_num, $this_week->week_id, $booking_date_ymd);
 								
 
 								// Check bitmask to see if this period is bookable on this day

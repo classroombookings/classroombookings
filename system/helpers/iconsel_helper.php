@@ -45,7 +45,7 @@ function iconsel($name, $folder, $selected, $attrs = ''){
 	$folder_array = directory_map( $folder, True );
 	$icons_array[''] = "None";
 	for( $i=0; $i<count($folder_array); $i++){
-		if( eregi( "(.png|.jpg|.jpeg|.gif)$", $folder_array[$i] ) ){
+		if( preg_match('/(.png|.jpg|.jpeg|.gif)$/i', $folder_array[$i] ) ){
 			$nicename = explode( ".", $folder_array[$i] );
 			$icons_array[$folder_array[$i]] = $nicename[0];
 			$nicename = "";
@@ -72,7 +72,7 @@ function iconbox($name, $folder, $selected, $attrs = ''){
 	$folder = 'webroot/images/'.$folder;
 	$folder_array = directory_map( $folder, True );
 	for( $i=0; $i<count($folder_array); $i++){
-		if( eregi( "(.png|.jpg|.jpeg|.gif)$", $folder_array[$i] ) ){
+		if( preg_match('/(.png|.jpg|.jpeg|.gif)$/', $folder_array[$i] ) ){
 			$nicename = explode( ".", $folder_array[$i] );
 			$icons_array[$i+1] = $folder_array[$i];	//$nicename[0];
 			$nicename = "";

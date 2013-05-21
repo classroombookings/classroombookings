@@ -21,12 +21,12 @@ $this->load->view('partials/iconbar', $icondata);
 	?>
 	<tr class="tr<?php echo ($i & 1) ?>">
 		<?php
-		if( isset($department->icon) && $department->icon != ''){
+		if( isset($department->icon) && $department->icon != '' && ! empty($department->icon)){
 			list(,,,$img_wh) = @getimagesize('webroot/images/standardicons/'.$department->icon);
 			$img_file = 'webroot/images/standardicons/'.$department->icon;
 		} else {
 			$img_wh = 'width="16" height="16"';
-			$img_file = 'webroot/images/blank.png';
+			$img_file = 'webroot/images/blank.gif';
 		}
 		?>
 		<td width="50" align="center"><img src="<?php echo $img_file ?>" <?php echo $img_wh; ?>  alt=" " /></td>

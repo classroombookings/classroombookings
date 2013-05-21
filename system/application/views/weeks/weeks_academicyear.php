@@ -20,7 +20,7 @@ echo form_open('weeks/saveacademicyear', array('class' => 'cssform', 'id' => 'sa
 		'value' => $date_start,
 	));
 	?>
-	<img style="cursor:pointer" align="top" src="webroot/images/ui/cal_day.png" width="16" height="16" title="Choose date" onclick="displayDatePicker('date_start', false);" />
+	<img style="cursor:pointer" align="top" src="webroot/images/ui/cal_day.gif" width="16" height="16" title="Choose date" onclick="displayDatePicker('date_start', false);" />
 </p>
 <?php echo @field($this->validation->date_start_error) ?>
 
@@ -38,7 +38,7 @@ echo form_open('weeks/saveacademicyear', array('class' => 'cssform', 'id' => 'sa
 		'value' => $date_end,
 	));
 	?>
-	<img style="cursor:pointer" align="top" src="webroot/images/ui/cal_day.png" width="16" height="16" title="Choose date" onclick="displayDatePicker('date_end', false);" />
+	<img style="cursor:pointer" align="top" src="webroot/images/ui/cal_day.gif" width="16" height="16" title="Choose date" onclick="displayDatePicker('date_end', false);" />
 </p>
 <?php echo @field($this->validation->date_end_error) ?>
 </fieldset>

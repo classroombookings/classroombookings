@@ -11,7 +11,7 @@ $menu[$i]['icon'] = 'school_manage_bookings.gif';
 $menu[$i]['href'] = site_url('bookings');
 
 $i++;
-$menu[$i]['text'] = 'My Profie';
+$menu[$i]['text'] = 'My Profile';
 $menu[$i]['icon'] = ($this->userauth->CheckAuthLevel(ADMINISTRATOR, $this->authlevel)) ? 'user_administrator.gif' : 'user_teacher.gif';
 $menu[$i]['href'] = site_url('profile');
 
@@ -58,10 +58,12 @@ $school[$i]['href'] = site_url('departments');
 
 $i = 0;
 
+/*
 $i++;
 $admin[$i]['text'] = 'Reports';
 $admin[$i]['icon'] = 'school_manage_reports.gif';
 $admin[$i]['href'] = site_url('reports');
+*/
 
 $i++;
 $admin[$i]['text'] = 'Users';

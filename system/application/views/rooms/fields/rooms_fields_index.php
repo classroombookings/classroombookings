@@ -1,7 +1,7 @@
 <?php echo $this->session->flashdata('saved') ?>
 <?php
-$icondata[0] = array('rooms/fields/add', 'Add Field', 'add.png' );
-$icondata[1] = array('rooms', 'Rooms', 'school_manage_rooms.png' );
+$icondata[0] = array('rooms/fields/add', 'Add Field', 'add.gif' );
+$icondata[1] = array('rooms', 'Rooms', 'school_manage_rooms.gif' );
 $this->load->view('partials/iconbar', $icondata);
 ?>
 <table width="100%" cellpadding="2" cellspacing="2" border="0" class="sort-table" id="jsst-roomfields">

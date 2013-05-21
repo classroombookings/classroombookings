@@ -40,7 +40,7 @@ echo form_open('weeks/save', array('class' => 'cssform', 'id' => 'week_add'), ar
 		'onchange' => '$(\'sample\').style.backgroundColor = this.value;',
 	));
 	?>
-	<img onclick="showColorPicker(this,$('bgcol'))" style="border:1px solid #ccc;cursor:pointer;" align="top" src="webroot/images/ui/coloursel.png" width="16" height="16" />
+	<img onclick="showColorPicker(this,$('bgcol'))" style="border:1px solid #ccc;cursor:pointer;" align="top" src="webroot/images/ui/coloursel.gif" width="16" height="16" />
 </p>
 <?php echo @field($this->validation->bgcol_error) ?>
 
@@ -58,7 +58,7 @@ echo form_open('weeks/save', array('class' => 'cssform', 'id' => 'week_add'), ar
 		'value' => $fgcol,
 	));
 	?>
-	<img onclick="showColorPicker(this,$('fgcol'))" style="border:1px solid #ccc;cursor:pointer;" align="top" src="webroot/images/ui/coloursel.png" width="16" height="16" />
+	<img onclick="showColorPicker(this,$('fgcol'))" style="border:1px solid #ccc;cursor:pointer;" align="top" src="webroot/images/ui/coloursel.gif" width="16" height="16" />
 </p>
 <?php echo @field($this->validation->fgcol_error) ?>
 
