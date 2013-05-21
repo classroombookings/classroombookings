@@ -25,7 +25,7 @@ class Login extends Controller {
 		$cols[0]['content'] = $this->load->view('login/login_index', NULL, True);
 		$cols[0]['width'] = '60%';
 
-		if(file_exists($logo)){
+		if(file_exists($logo) && ! empty($school_data->logo)){
 			$cols[1]['content'] = '<img src="'.$logo.'" />';
 		} else {
 			$cols[1]['content'] = '';
