@@ -1,6 +1,6 @@
-<div class="grid_12">
+<?php $this->load->view('parts/filter-toggle') ?>
 
-	<?php $this->load->view('default/groups/index/filter') ?>
+<div class="grid_9 filterable content">
 
 	<?php if ($groups): ?>
 
@@ -44,4 +44,8 @@
 		
 	<?php endif; ?>
 
+</div>
+
+<div class="grid_3 filterable filter">
+	<?php $this->load->view('default/groups/index/filter') ?>
 </div>

@@ -48,4 +48,28 @@ Q.push(function() {
 		$.modal.close();
 	});
 	
+	
+	$("body").on("click", ".toggle-filter", function(e) {
+		e.preventDefault();
+		var cur_state = $(this).data("state");
+		new_state = !cur_state;
+		$(this).data("state", new_state);
+		
+		if (new_state) {
+			// Show filter
+			$(".filterable.content").removeClass("grid_12").addClass("grid_9");
+			$(".filterable.filter").show();
+		} else {
+			// Hide filter
+			$(".filterable.content").removeClass("grid_9").addClass("grid_12");
+			$(".filterable.filter").hide();
+		}
+	});
+	$(".toggle-filter").trigger("click");
+	
+	
+	if ($(".alert.success")) {
+		window.setTimeout('$(".alert.success").fadeOut("slow");', 5000);
+	}
+	
 });

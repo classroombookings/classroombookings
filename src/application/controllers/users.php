@@ -21,7 +21,6 @@ class Users extends Configure_Controller
 		$this->lang->load('users');
 		$this->load->model(array('users_model', 'groups_model', 'departments_model', 'quota_model'));
 		$this->load->helper('user_helper');
-		$this->data['nav_current'][] = 'users';
 		
 		$this->layout->add_breadcrumb(lang('configure_users'), 'users');
 		
@@ -84,7 +83,7 @@ class Users extends Configure_Controller
 		$this->data['users'] = $this->users_model->get_all();
 		$this->data['groups'] = $this->groups_model->dropdown('g_id', 'g_name');
 		
-		$this->layout->set_js('views/users/index');
+		//$this->layout->set_js('views/users/index');
 		
 		$this->layout->set_title(lang('configure_users'));
 		$this->data['subnav_active'] = 'users';
