@@ -24,14 +24,13 @@ CRBS.tt_view = "<?php echo config_item('timetable_view') ?>";
 </head>
 <body>
 
-
-	<header class="header">
+	<header class="wrapper header">
 		
 		<div class="row">
 		
-			<div class="grid_8 header-left">
+			<div class="grid_7 header-left">
 				<ul class="nav primary">
-					<li class="logo"><a href="<?php echo site_url() ?>" ?><img src="img/template/crbs-logo1.png" style="margin-right: 20px"></a></li>
+					<li class="logo"><a href="<?php echo site_url() ?>" ?><img src="img/template/crbs-logo1.png"></a></li>
 					<?php
 					foreach ($nav['primary'] as $item => $data)
 					{
@@ -44,7 +43,7 @@ CRBS.tt_view = "<?php echo config_item('timetable_view') ?>";
 				</ul>
 			</div>
 			
-			<div class="grid_4 header-right">
+			<div class="grid_5 header-right">
 				<ul class="nav primary">
 				<?php
 				if ( ! $this->auth->is_logged_in())
@@ -53,7 +52,7 @@ CRBS.tt_view = "<?php echo config_item('timetable_view') ?>";
 				}
 				else
 				{
-					echo '<li><strong>' . anchor('account', $this->session->userdata('u_display'), 'class=" account"') . '</strong></li>';
+					echo '<li class="name">' . anchor('account', lang('logged_in_as') . ' <strong>' . $this->session->userdata('u_display') . '</strong>', 'class=" account"') . '</li>';
 					echo '<li>' . anchor('account/logout', lang('logout'), 'class=" security"') . '</li>';
 				}
 				?>
@@ -63,21 +62,7 @@ CRBS.tt_view = "<?php echo config_item('timetable_view') ?>";
 		</div>
 		
 	</header>
-
-
 	
-	<div class="row">
-		<div class="grid_12">
-			<?php
-			echo $this->flash->get();
-			$validation_errors = validation_errors('<li>', '</li>');
-			if ( ! empty($validation_errors))
-			{
-				echo $this->flash->string('error', '<ul>' . $validation_errors . '</ul>');
-			}
-			?>
-		</div>
-	</div>
 	
 	
 	
@@ -88,10 +73,13 @@ CRBS.tt_view = "<?php echo config_item('timetable_view') ?>";
 	
 	<?php if ($bread): ?>
 	
-	<div class="row">
-		<div class="grid_12">
-			<div class="row subnav">
-				<div class="grid_7 grid breadcrumb">
+	<section class="wrapper sub">
+		
+		<div class="row">
+			
+			<div class="grid_7">
+				
+				<div class="breadcrumb">
 					<?php
 					foreach ($this->layout->get_breadcrumb() as $bc)
 					{
@@ -107,36 +95,47 @@ CRBS.tt_view = "<?php echo config_item('timetable_view') ?>";
 					
 					echo implode('<span class="separator">/</span>', $bread_markup);
 					?>
-				</div>
-				<div class="grid_5 nav-items">
-				<?php if (isset($subnav)) $this->load->view('parts/nav') ?>
-				</div>
-			</div>
-		</div>
-	</div>
-	
+				</div> <!-- / .breadcrumb -->
+				
+				<div class="nav-items">
+					<?php if (isset($subnav)) $this->load->view('parts/nav') ?>
+				</div> <!-- / .nav-items -->
+				
+			</div> <!-- / .grid_7 -->
+			
+			<div class="grid_5 flash-container">
+				<?php echo $this->layout->get('flash') ?>
+			</div> <!-- / .grid_5 -->
+			
+		</div> <!-- / .row -->
+		
+	</section> <!-- / .wrapper.sub -->
+		
 	<?php endif; ?>
 	
 	
+	
+	
+	
 	<!-- page body -->
-	<section class="row body big-bottom">
-		<?php echo $this->layout->get('content') ?>
-	</section>
+	<main class="wrapper body">
+		<div class="row">
+			<?php echo $this->layout->get('content') ?>
+		</div>
+	</main>
 	<!-- end page body -->
 	
 	
 	
 	
-	<footer class="row">
-		<div class="grid_12 footer">
-			<div class="row">
-				<div class="grid_6"> 
-					<p><a href="http://classroombookings.com/" target="_blank">Classroombookings</a> is released under the Open Software License v3.0.</p>
-					<p>&copy; 2006 &mdash; <?php echo date('Y') ?> Craig A Rodway.</p>
-				</div>
-				<div class="grid_6 text-right">
-					<?php echo anchor(option('school_url'), option('school_name'), 'target="_blank"') ?>
-				</div>
+	<footer class="wrapper footer">
+		<div class="row">
+			<div class="grid_6"> 
+				<p><a href="http://classroombookings.com/" target="_blank">Classroombookings</a> is released under the Open Software License v3.0.</p>
+				<p>&copy; 2006 &mdash; <?php echo date('Y') ?> Craig A Rodway.</p>
+			</div>
+			<div class="grid_6 text-right">
+				<?php echo anchor(option('school_url'), option('school_name'), 'target="_blank"') ?>
 			</div>
 		</div>
 	</footer>

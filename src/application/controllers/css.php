@@ -26,13 +26,15 @@ class Css extends MY_Controller
 	
 	public function index()
 	{
-		$this->auto_view = FALSE;
+		$this->view = FALSE;
 		$this->output->set_content_type('text/css');
+		$this->output->set_output('');
+		
 		
 		// Load things needed to generate the CSS
-		$this->data['weeks'] = presenters('Week', $this->weeks_model->get());
+		//$this->data['weeks'] = presenters('Week', $this->weeks_model->get());
 		
-		$this->load->view('default/css/index', $this->data);
+		//$this->load->view('default/css/index', $this->data);
 	}
 	
 	

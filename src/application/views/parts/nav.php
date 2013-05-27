@@ -1,4 +1,4 @@
-<ul class="subnav">
+<ul class="nav">
 
 <?php
 $active = (isset($subnav_active)) ? $subnav_active : '';
@@ -7,7 +7,7 @@ foreach ($subnav as $item)
 {
 	if ($item['test'] === FALSE) continue;
 	
-	$class = ($item['uri'] === $active) ? 'active' : '';
+	$class = ($item['uri'] === $active) ? 'current' : '';
 	
 	echo '<li class="' . $class . '">';
 	if ($item['uri'] !== $active)
@@ -16,7 +16,7 @@ foreach ($subnav as $item)
 	}
 	else
 	{
-		echo $item['text'];
+		echo '<span>' . $item['text'] . '</span>';
 	}
 	echo '</li>';
 	

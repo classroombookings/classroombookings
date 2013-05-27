@@ -18,6 +18,7 @@ class Configure extends MY_Controller
 		parent::__construct();
 		$this->lang->load('configure');
 		$this->lang->load('settings');
+		$this->data['nav_current'][] = 'configure';
 		
 		$this->layout->add_breadcrumb(lang('configure'), 'configure');
 	}

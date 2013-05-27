@@ -50,8 +50,7 @@ class MY_Controller extends CI_Controller
 		$this->load->model(array('permissions_model', 'roles_model', 'weeks_model', 'users_model'));
 		
 		// Configure layout and default assets
-		//$css = array('base', 'skeleton', 'layout-fluid', 'layout', site_url('css'));
-		$css = array('base', 'amazium', 'crbs', site_url('css'));
+		$css = array('normalise', 'global', 'amazium', 'crbs', site_url('css'));
 		
 		$js = array(
 			'libraries/jquery-1.8.2.min',
@@ -71,6 +70,7 @@ class MY_Controller extends CI_Controller
 		// Enable profiler in development mode only and when GET param is present
 		$this->output->enable_profiler(ENVIRONMENT === 'development' && $this->input->get('profiler'));
 		
+		// Do routine maintenance for active users
 		$this->_manage_active_users();
 	}
 	
@@ -147,6 +147,16 @@ class MY_Controller extends CI_Controller
 		
 		// Load the variables from $this->data so they can be accessed in the layout view
 		$this->load->vars($this->data);
+		
+		// Set content for flash messages
+		$flash = $this->flash->get();
+		$validation_errors = validation_errors('<li>', '</li>');
+		if ( ! empty($validation_errors))
+		{
+			$flash .= $this->flash->string('error', '<ul>' . $validation_errors . '</ul>');
+		}
+		
+		$this->layout->set_content('flash', $flash);
 		
 		// Finally load the template as the final view (it should echo $content at least)
 		$this->load->view($this->layout->get_template());
@@ -235,6 +245,7 @@ class Configure_Controller extends MY_Controller
 	public function __construct()
 	{
 		parent::__construct();
+		$this->data['nav_current'][] = 'configure';
 		$this->layout->add_breadcrumb(lang('configure'), 'configure');
 	}
 

@@ -104,6 +104,9 @@ $lang = array(
 	'next' =>
 	'Next',
 	
+	'logged_in_as' =>
+	'Logged in as',
+	
 	
 	
 	

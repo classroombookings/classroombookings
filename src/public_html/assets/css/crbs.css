@@ -1,93 +1,142 @@
 /**
  * Classroombookings
  *
- * crbs.css: styles for various aspects of the layout, global styles and per-page CSS.
+ * crbs.css: styles for various aspects of the layout and per-page CSS.
  */
 
-body {
-	margin: 0;
-	padding: 0;
-	border: 0;			/* This removes the border around the viewport in old versions of IE */
-	width: 100%;
-	background: #fff;
-}
 
-html { overflow-y: scroll; }
+	.sub-heading {
+		color: #ff6400;
+		font-weight: normal;
+		margin-bottom: 15px;
+		line-height: 1;
+	}
+		
+	p { margin: 0 0 20px; }
+	
+	a:link, a:visited { color: #0070ba; text-decoration: none; }
+	a:hover { color: #55B10A; }
+	
+	a { color: inherit; }
 
-div hr { height: 1px; }
-
-.sub-heading { color: #ff6400; font-weight: normal; margin-bottom: 15px; line-height: 1; }
 
 
 
-
-/* Header bar
+/* $HEADER
 ========== */
 
 	.header {
-		clear: both;
-		float: left;
-		width: 100%;
-		padding: 10px 0 8px 0;
-		background: #333;
-		margin-bottom: 20px;
+		padding: 5px;
+		background: #000;
+		color: #fff;
 	}
-		.header .header-left {
-			
-		}
-			.header .header-left .nav li a {
-				margin-right: 20px;
-			}
 		
-		.header .header-right {
-			text-align: right;
-		}
-			.header .header-right .nav {
-				float: right;
-			}
-			.header .header-right .nav li a {
-				margin-right: 0;
-				margin-left: 20px;
-			}
+		.header .header-left,
+		.header .header-right { line-height: 32px; }
 		
-		.header .name {
-			font-weight: bold;
-			margin-right: 40px;
-		}
+		.header .header-right { text-align: right; }
 		
 		.header .nav li a {
 			color: #fff;
 			text-decoration: none;
-			margin: 0 20px 0 0;
+			margin: 0;
 			padding: 0;
 			font-size: 12px;
-			border-bottom: 1px solid transparent;
+			line-height: 1;
 		}
+		
+		.header .header-left .nav li a { margin-right: 20px; }
+		.header .header-right .nav li a { margin-left: 20px; }
 		
 		.header .nav li a:hover,
-		.header .nav li a.active { border-bottom: 1px solid #fff; }
+		.header .nav li a.active { color: #ff6400; }
 		
 		.header .nav .logo a,
-		.header .nav .logo a:hover {
-			border: 0;
+		.header .nav .logo a:hover { border: 0; }
+		
+		.header .nav .logo a img { vertical-align: middle; }
+
+
+
+
+/* $SUB
+========== */
+
+	.wrapper.sub {
+		background: no-repeat #1A5277;
+		color: #fff;
+	}
+
+	
+		.breadcrumb {
+			margin: 15px 0;
+			font-size: 18px; font-size: 1.8rem;
+			line-height: 1;
+		}
+			
+			.breadcrumb .separator {
+				margin: 0 15px;
+				font-weight: bold;
+				font-size: 20px; font-size: 2rem;
+				line-height: 0;
+				float: none;
+			}
+			
+			.breadcrumb a {
+				text-decoration: none;
+				color: #fff;
+			}			
+			
+			.breadcrumb a:hover {
+				text-decoration: none;
+				color: #ccc;
+			}
+		
+		.sub .nav {
+			margin-top: 20px;
 		}
 		
-		.header-right .nav li { margin: 0 0 0 10px; }
-		.header-right .nav li a {
-			float: right;
+		.sub .nav a,
+		.sub .nav span {
+			background: #547E99;
+			padding: 8px 12px;
+			display: inline-block;
+			margin: 0 10px 0 0;
+			color: #fff;
+			text-decoration: none;
+		}
+		
+		.sub .nav .current span,
+		.sub .nav a:hover {
+			background: #fff;
+			color: #000;
 		}
 
+	.flash-container {
+		padding-top: 15px;
+	}
 
 
-/* Footer
+
+/* $BODY
+========== */
+
+	.wrapper.body {
+		margin-top: 20px;
+	}
+
+
+
+
+/* $FOOTER
 ========== */
 	
 	.footer {
-		margin-top: 30px;
-		border-top: 1px dotted #ccc;
+		margin-top: 40px;
+		border-top: 1px solid #aaa;
+		padding: 20px 0;
+		line-height: normal;
 		color: #666;
-		padding-top: 10px;
-		padding-bottom: 15px;
 	}
 	
 	.footer p {
@@ -96,67 +145,10 @@ div hr { height: 1px; }
 		font-size: 12px;
 		line-height: 2;
 	}
-	
-	.footer a { color: #333; }
 
 
 
 
-.row.subnav {
-	margin-bottom: 40px;
-	border-bottom: 1px dotted #ccc;
-	padding-bottom: 10px;
-}
-
-	.breadcrumb {
-		font-size: 18px;
-	}
-		
-		.breadcrumb a {
-			text-decoration: none;
-			color: #0070ba;
-		}
-			.breadcrumb a:hover {
-				background: #0070ba;
-				color: #fff;
-			}
-		
-		.breadcrumb .separator {
-			margin: 0 10px;
-			font-weight: bold;
-			font-size: 20px;
-		}
-
-	.nav-items {
-		text-align: right;
-	}
-		.nav-items ul {
-			margin: 0;
-			padding: 0;
-		}
-		.nav-items ul li {
-			margin: 0;
-			padding: 0;
-			font-size: 13px;
-			display: inline;
-			margin-left: 10px;
-			border-left: 1px solid #333;
-			padding-left: 10px;
-			line-height: 1;
-		}
-		.nav-items ul li:first-child {
-			border: 0;
-			margin-left: 0;
-			padding-left: 0;
-		} 
-		.nav-items ul li a {
-			color: #0070ba;
-			text-decoration: none;
-		}
-		.nav-items ul li a:hover {
-			color: #fff;
-			background: #0070ba;
-		}
 
 
 /* Icon items
@@ -185,6 +177,7 @@ div hr { height: 1px; }
 
 	.i.tick { background-image: url(../img/ico/tick.png); }
 	.i.disk { background-image: url(../img/ico/disk.png); }
+	.i.find { background-image: url(../img/ico/find.png); }
 
 	.i.configure-settings{ background-image: url(../img/ico/settings.png); }
 	.i.configure-authentication{ background-image: url(../img/ico/auth.png); }
@@ -206,52 +199,31 @@ div hr { height: 1px; }
 
 
 
-/* Sidebar menu 
-========== */
-
-.menu.secondary li {
-    margin: 0;
-    padding: 0;
-}
-
-	.menu.secondary li a {
-		display: block;
-		width: auto;
-		margin: 0;
-		border: 0;
-		color: #333;
-		padding: 8px 8px 8px 25px;
-		margin-bottom: 4px;
-		text-decoration: none;
-		font-size: 12px;
-	}
-		
-		.menu.secondary li a:hover,
-		.menu.secondary li a.active {
-			background-color: #fff;
-			color: #333;
-			border: 0px solid #ccc;
-		}
-
-
-
-
 .configure-menu h4 {
 	margin-bottom: 15px;
 }
+
+.configure-menu ul {
+	margin: 0;
+	padding: 0;
+}
 .configure-menu ul li {
 	margin-bottom: 10px;
+	list-style: none;
+	padding: 0;
+	margin: 0;
 }
 
 .configure-menu ul li a {
 	padding: 0 0 0 24px;
 	background-position: 0 50%;
-	color: #333;
+	color: #000;
 	font-size: 13px;
 	font-weight: bold;
 	display: block;
 	margin-bottom: 3px;
 }
+	.configure-menu ul li a:hover { color: #55B10A; }
 	.configure-menu ul li p {
 		font-size: 11px;
 		padding-left: 24px;

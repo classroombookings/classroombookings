@@ -105,7 +105,7 @@ class Layout
 	
 	
 	public function add_breadcrumb($title = '', $uri = NULL)
-	{
+	{		
 		if ($uri === NULL)
 		{
 			$this->breadcrumb[] = array($title);
