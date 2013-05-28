@@ -84,7 +84,7 @@ if (option('auth_ldap_enable'))
 
 $this->form->add_button(form_button(array(
 	'type' => 'submit',
-	'class' => 'blue',
+	'class' => 'primary',
 	'text' => lang('save'),
 	'tab_index' => tab_index(),
 )));

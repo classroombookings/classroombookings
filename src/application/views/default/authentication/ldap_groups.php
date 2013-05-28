@@ -165,7 +165,7 @@ $this->form->add_section_extra($section, $current_groups);
 		'name' => $name,
 		'content' => form_button(array(
 			'type' => 'submit',
-			'class' => 'blue',
+			'class' => 'primary',
 			'text' => lang('authentication_ldap_groups_get'),
 			'tab_index' => tab_index(),
 		)),

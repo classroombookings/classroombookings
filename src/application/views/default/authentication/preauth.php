@@ -98,7 +98,7 @@ $this->form->add_section($section, lang('authentication_preauth_defaults'), lang
 	
 $this->form->add_button(form_button(array(
 	'type' => 'submit',
-	'class' => 'blue',
+	'class' => 'primary',
 	'text' => lang('save'),
 	'tab_index' => tab_index(),
 )));

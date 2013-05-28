@@ -158,7 +158,7 @@ $this->form->add_section($section, lang('settings_booking_page'));
 	
 $this->form->add_button(form_button(array(
 	'type' => 'submit',
-	'class' => 'blue',
+	'class' => 'primary',
 	'text' => lang('save_settings'),
 	'tab_index' => tab_index(),
 )));

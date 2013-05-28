@@ -163,14 +163,14 @@ $this->form->add_section($section, lang('authentication_ldap_test'), lang('authe
 		'content' => form_button(array(
 			'type' => 'button',
 			'id' => 'test_ldap',
-			'class' => 'grey half-bottom',
+			'class' => 'small grey half-bottom',
 			'text' => 'Test',
 			'tab_index' => tab_index(),
 		)),
 	));
 	
 	
-	$extra = '<div id="ldap_test_response">
+	$extra = '<div id="ldap_test_response" class="box">
 					<h6>LDAP server response</h6>
 					<p class="response-text"></p>
 				</div>';
@@ -234,7 +234,7 @@ $this->form->add_section($section, lang('authentication_ldap_integration'));
 	
 $this->form->add_button(form_button(array(
 	'type' => 'submit',
-	'class' => 'blue',
+	'class' => 'primary',
 	'text' => lang('save'),
 	'tab_index' => tab_index(),
 )));

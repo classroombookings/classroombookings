@@ -418,6 +418,11 @@ div hr { height: 1px; }
 /* $HELPERS
 ========== */
 
+	.box {
+		background: #F6F6F6;
+		padding: 10px;
+	}
+	
 	.remove-bottom { margin-bottom: 0 !important; }
 	.half-bottom { margin-bottom: 10px !important; }
 	.add-bottom { margin-bottom: 20px !important; }

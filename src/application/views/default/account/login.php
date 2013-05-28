@@ -32,7 +32,7 @@
 				<?php
 				echo form_button(array(
 					'type' => 'submit',
-					'class' => 'blue',
+					'class' => 'primary',
 					'text' => lang('login'),
 					'tab_index' => tab_index()
 				));

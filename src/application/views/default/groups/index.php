@@ -16,7 +16,7 @@
 			
 			<?php foreach ($groups as $g): ?>
 			
-			<tr>
+			<tr class="<?php echo alternator('odd', 'even') ?>">
 				
 				<td class="title">
 					<?php echo anchor('groups/set/' . $g['g_id'], $g['g_name']) ?>
