@@ -69,7 +69,7 @@ Q.push(function() {
 	$(".toggle-filter").trigger("click");
 	
 	// Bind forward slash to the show/hide filter toggler
-	$(document).bind('keyup', '/', function(){
+	$(document).bind('keyup', 'f', function(){
 		$(".toggle-filter").trigger("click");
 	});
 	
