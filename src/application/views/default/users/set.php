@@ -244,7 +244,7 @@ $this->form->add_section($section, lang('users_membership'));
 	
 $this->form->add_button(form_button(array(
 	'type' => 'submit',
-	'class' => 'blue',
+	'class' => 'primary',
 	'text' => lang('save'),
 	'tab_index' => tab_index(),
 )));

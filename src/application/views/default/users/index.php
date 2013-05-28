@@ -17,7 +17,7 @@
 			
 			<?php foreach ($users as $u): ?>
 			
-			<tr class="<?php echo user_classes($u) ?>">
+			<tr class="<?php echo user_classes($u) ?> <?php echo alternator('odd', 'even') ?>">
 				
 				<td><?php echo user_auth_icon($u, 'tag') ?></td>
 				

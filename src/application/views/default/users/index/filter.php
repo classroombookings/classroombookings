@@ -40,8 +40,8 @@
 		?>
 		
 		
-		<input type="submit" class="black button" name="filter" value="<?php echo lang('filter') ?>">
-		<a href="<?php echo site_url('users') ?>" class="grey button"><?php echo lang('clear') ?></a>
+		<input type="submit" class="primary button" name="filter" value="<?php echo lang('filter') ?>">
+		<a href="<?php echo site_url('users') ?>" class="empty button"><?php echo lang('clear') ?></a>
 	
 	</div>
 
