@@ -14,6 +14,8 @@
 
 <?php echo $this->layout->get_css() ?>
 
+<link rel="shortcut icon" href="favicon.ico">
+
 <script>
 var CRBS = {}, Q = [];
 CRBS.base_url = "<?php echo config_item('base_url') ?>";
