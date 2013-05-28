@@ -49,6 +49,7 @@ Q.push(function() {
 	});
 	
 	
+	// Handle show/hide filter toggle link
 	$("body").on("click", ".toggle-filter", function(e) {
 		e.preventDefault();
 		var cur_state = $(this).data("state");
@@ -58,7 +59,7 @@ Q.push(function() {
 		if (new_state) {
 			// Show filter
 			$(".filterable.content").removeClass("grid_12").addClass("grid_9");
-			$(".filterable.filter").show();
+			$(".filterable.filter").show().find("input:first").focus();
 		} else {
 			// Hide filter
 			$(".filterable.content").removeClass("grid_9").addClass("grid_12");
@@ -67,9 +68,21 @@ Q.push(function() {
 	});
 	$(".toggle-filter").trigger("click");
 	
+	// Bind forward slash to the show/hide filter toggler
+	$(document).bind('keyup', '/', function(){
+		$(".toggle-filter").trigger("click");
+	});
 	
+	// Allow "escaping" focus from an input via esc
+	$("input,textarea,select").bind("keyup", "esc", function() {
+		$(this).blur();
+	});
+	
+	
+	// Hide success alerts after a short period of time
 	if ($(".alert.success")) {
 		window.setTimeout('$(".alert.success").fadeOut("slow");', 5000);
 	}
+	
 	
 });

@@ -57,6 +57,7 @@ class MY_Controller extends CI_Controller
 			'libraries/ICanHaz.min',
 			'plugins/jquery.cookie',
 			'plugins/jquery.simplemodal.1.4.4.min',
+			'plugins/jquery.hotkeys',
 			'views/default',
 		);
 		
