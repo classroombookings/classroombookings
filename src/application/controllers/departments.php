@@ -16,223 +16,177 @@ class Departments extends Configure_Controller
 	function __construct()
 	{
 		parent::__construct();
-		$this->load->model('security_model');
-		$this->load->model('departments_model');
-		$this->load->helper('text');
+		
+		$this->lang->load('departments');
+		$this->lang->load('configure');
+		$this->load->model(array('departments_model', 'ldap_groups_model'));
+		$this->load->helper('department_helper');
+		
+		$this->layout->add_breadcrumb(lang('configure_departments'), 'departments');
+		
+		$this->data['subnav'] = array(
+			array(
+				'uri' => 'departments',
+				'text' => lang('configure_departments'),
+				'test' => $this->auth->check('departments.view'),
+			),
+			array(
+				'uri' => 'departments/set',
+				'text' => lang('departments_add_new'),
+				'test' => $this->auth->check('departments.add'),
+			),
+		);
+		
 	}
 	
 	
 	
 	
-	/**
-	 * PAGE: Departments listing
-	 */
-	function index()
+	// =======================================================================
+	// Department management
+	// =======================================================================
+	
+	
+	
+	
+	function index($page = 0)
 	{
-		$this->auth->check('departments.view');
+		$this->auth->restrict('departments.view');
 		
-		// Get list of departments
-		$body['departments'] = $this->departments_model->get();
+		$filter = $this->input->get(NULL, TRUE);
+		$filter['pp'] = element('pp', $filter, 10);
+		$this->departments_model->set_filter($filter);
 		
-		if ($body['departments'] == false)
-		{
-			$data['body'] = $this->msg->notice('No departments found. ' . $this->departments_model->lasterr);
-		}
-		else
-		{
-			$data['body'] = $this->load->view('departments/index', $body, true);
-		}
+		$this->load->library('pagination');
+		$config = array(
+			'base_url' => site_url('departments/index'),
+			'total_rows' => $this->departments_model->count_all(),
+			'per_page' => $filter['pp'],
+			'uri_segment' => 3,
+		);
+		$this->pagination->initialize($config);
 		
-		$data['title'] = 'Departments';
-		$data['submenu'] = $this->menu_model->departments();
+		$this->departments_model->order_by('d_name', 'asc');
+		$this->departments_model->limit($config['per_page'], $page);
 		
-		$this->page($data);
+		$this->data['filter'] = $filter;
+		$this->data['departments'] = $this->departments_model->get_all();
+		
+		$this->layout->set_title(lang('configure_departments'));
+		$this->data['subnav_active'] = 'departments';
+		
+		$this->session->set_return_uri('d');
 	}
 	
 	
 	
 	
-	/**
-	 * PAGE: Add a new department
-	 */
-	function add()
+	public function set($d_id = 0)
 	{
-		$this->auth->check('departments.add');
-		$body['department'] = null;
-		$body['department_id'] = null;
-		$body['ldapgroups'] = $this->security_model->get_ldap_groups();
-		$data['title'] = 'Add new department';
-		$data['body'] = $this->load->view('departments/addedit', $body, true);
-		$this->page($data);
-	}
-	
-	
-	
-	
-	/**
-	 * PAGE: Edit a department
-	 */
-	function edit($department_id)
-	{
-		$this->auth->check('departments.edit');
-		
-		$body['department'] = $this->departments_model->get($department_id);
-		$body['department_id'] = $department_id;
-		$body['ldapgroups'] = $this->security_model->get_ldap_groups();
-		
-		$data['title'] = 'Edit department';
-		
-		if ($body['department'])
+		if ($d_id)
 		{
-			$data['title'] = 'Edit department: ' . $body['department']->name;
-			$data['body'] = $this->load->view('departments/addedit', $body, true);
+			// Updating department $d_id
+			$this->auth->restrict('departments.edit');
+			$this->data['department'] = $this->departments_model->get($d_id);
+			$title = lang('departments_edit');
+			$this->layout->add_breadcrumb(lang('departments_edit'), 'departments/set/' . $d_id);
 		}
 		else
 		{
-			$data['title'] = 'Error loading department';
-			$data['body'] = $this->msg->err('Could not load requested department. ' . $this->departments_model->lasterr);
+			// Adding new department
+			$this->auth->restrict('departments.add');
+			$this->data['department'] = array();
+			$title = lang('departments_add_new');
+			$this->layout->add_breadcrumb(lang('departments_add_new'), 'departments/set');
+			$this->data['subnav_active'] = 'departments/set';
 		}
 		
-		$this->page($data);
-	}
-	
-	
-	
-	
-	/**
-	 * FORM DESTINATION: Add/Edit a department
-	 */
-	function save()
-	{
-		
-		$department_id = $this->input->post('department_id');
-		
-		if ($department_id == null)
+		if ($this->input->post())
 		{
-			$this->auth->check('departments.add');
-		}
-		else
-		{
-			$this->auth->check('departments.edit');
-		}
-		
-		$this->form_validation->set_rules('department_id', 'Department ID');
-		$this->form_validation->set_rules('name', 'Name', 'required|max_length[64]|trim');
-		$this->form_validation->set_rules('description', 'Description', 'max_length[255]|trim');
-		$this->form_validation->set_rules('colour', 'Colour', 'max_length[7]');
-		$this->form_validation->set_rules('ldapgroups[]', 'LDAP Groups');
-		$this->form_validation->set_error_delimiters('<li>', '</li>');
-		
-		if ($this->form_validation->run() == false)
-		{
-			// Validation failed - load required action depending on the state of user_id
-			return ($department_id == null) ? $this->add() : $this->edit($department_id);
-		}
-		else
-		{
-			// Validation OK
-			$data['name'] = $this->input->post('name');
-			$data['description'] = $this->input->post('description');
-			$data['colour'] = $this->input->post('colour');
-			$data['ldapgroups'] = ($this->input->post('ldapgroups')) 
-				? $this->input->post('ldapgroups')
-				: array();
+			$this->form_validation->set_rules(array(
+				array('field' => 'd_name', 'label' => lang('departments_department_name'), 'rules' => 'required|max_length[64]|trim'),
+				array('field' => 'd_description', 'label' => lang('departments_department_description'), 'rules' => 'max_length[255]|trim'),
+				array('field' => 'd_colour', 'label' => lang('departments_department_colour'), 'rules' => 'min_length[6]|max_length[7]|trim'),
+			));
 			
-			if ($department_id == null)
+			
+			if ($this->form_validation->run())
 			{
-				// Add a new department
-				$add = $this->departments_model->add($data);
-				if ($add == true)
+				$department_data = array(
+					'd_name' => $this->input->post('d_name'),
+					'd_description' => $this->input->post('d_description'),
+					'd_colour' => '#' . str_replace('#', '', $this->input->post('d_colour')),
+				);
+				
+				if ($d_id)
 				{
-					$msg = sprintf(lang('DEPARTMENTS_ADD_OK'), $data['name']);
-					$this->msg->add('notice', $msg);
+					// Update
+					$d_id = $this->departments_model->update($d_id, $department_data);
+					$success = sprintf(lang('departments_update_success'), $department_data['d_name']);
+					$error = sprintf(lang('departments_update_error'), $department_data['d_name']);
 				}
 				else
 				{
-					$msg = sprintf(lang('DEPARTMENTS_ADD_FAIL'), $this->departments_model->lasterr);
-					$this->msg->add('err', $msg);
+					// Insert
+					$d_id = $this->departments_model->insert($department_data);
+					$success = sprintf(lang('departments_insert_success'), $department_data['d_name']);
+					$error = sprintf(lang('departments_insert_error'), $department_data['d_name']);
 				}
-			}
-			else
-			{			
-				// Updating existing department
-				$edit = $this->departments_model->edit($department_id, $data);
-				if ($edit == true)
+				
+				if ($d_id)
 				{
-					$msg = sprintf(lang('DEPARTMENTS_EDIT_OK'), $data['name']);
-					$this->msg->add('notice', $msg);
+					// Success
+					
+					// Set LDAP groups membership
+					$this->departments_model->set_ldap_groups($d_id, $this->input->post('ldap_groups'));
+					
+					$this->flash->set('success', $success, TRUE);
+					redirect($this->session->get_return_uri('d', 'departments'));
 				}
 				else
 				{
-					$msg = sprintf(lang('DEPARTMENTS_EDIT_FAIL'), $this->departments_model->lasterr);
-					$this->msg->add('err', $msg);
+					$this->flash->set('error', $error);
 				}
-			}
+				
+			}  // end validation->run()
 			
-			// All done, redirect!
+		}  // end POST check
+		
+		$this->layout->set_css('colorPicker', 'vendor/rscp/');
+		$this->layout->set_js('jquery.colorPicker.min', 'vendor/rscp/');
+		$this->data['ldap_groups'] = $this->ldap_groups_model->dropdown('lg_name');
+		
+		$this->load->library('form');
+	}
+	
+	
+	
+	
+	/**
+	 * Delete a department
+	 */
+	function delete()
+	{
+		$this->auth->restrict('departments.delete');
+		
+		$id = $this->input->post('id');
+		
+		if ( ! $id)
+		{
 			redirect('departments');
 		}
-	}
-	
-	
-	
-	
-	/**
-	 * Delete a deparment
-	 */
-	function delete($department_id = null)
-	{
-		$this->auth->check('departments.delete');
 		
-		// Check if a form has been submitted; if not - show it to ask user confirmation
-		if ($this->input->post('id'))
+		if ($this->departments_model->delete($id))
 		{
-			// Form has been submitted (so the POST value exists)
-			// Call model function to delete department
-			$delete = $this->departments_model->delete($this->input->post('id'));
-			if ($delete == false)
-			{
-				$this->msg->add('err', $this->departments_model->lasterr, 'An error occured');
-			}
-			else
-			{
-				$this->msg->add('info', 'The department has been deleted.');
-			}
-			// Redirect
-			redirect('departments');
+			$this->flash->set('success', lang('departments_delete_success'), TRUE);
 		}
 		else
 		{
-			if ($department_id == null)
-			{
-				$data['title'] = 'Delete department';
-				$data['body'] = $this->msg->err('Cannot find the department or no department ID given.');
-			}
-			else
-			{
-				// Get department info so we can present the confirmation page with a name
-				$department = $this->departments_model->get($department_id);
-				if ($department == false)
-				{
-					$data['title'] = 'Delete department';
-					$data['body'] = $this->msg->err('Could not find that department or no department ID given.');
-				}
-				else
-				{
-					// Initialise page
-					$body['action'] = 'departments/delete';
-					$body['id'] = $department_id;
-					$body['cancel'] = 'departments';
-					$body['text'] = 'If you delete this department, all people assigned to it will be removed, and any role assignments will also be affected.';
-					$body['title'] = 'Are you sure you want to delete department ' . $department->name . '?';
-					$data['title'] = 'Delete department: ' . $department->name;
-					$data['body'] = $this->load->view('parts/deleteconfirm', $body, true);
-				}
-			}
-			$this->page($data);
+			$this->flash->set('error', lang('departments_delete_error'), TRUE);
 		}
+		
+		redirect($this->input->post('redirect'));
 	}
-
 	
 	
 	
@@ -240,4 +194,4 @@ class Departments extends Configure_Controller
 }
 
 
-/* End of file app/controllers/departments.php */
+/* End of file ./application/controllers/departments.php */

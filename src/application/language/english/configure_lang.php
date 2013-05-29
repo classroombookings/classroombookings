@@ -102,6 +102,6 @@ $lang = array(
 		'Departments',
 		
 		'configure_departments_description' =>
-		'Manage rooms available for booking',
+		'Group people and resources together by department.',
 		
 );
