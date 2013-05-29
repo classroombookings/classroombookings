@@ -68,9 +68,9 @@ class Groups extends Configure_Controller
 		);
 		$this->pagination->initialize($config);
 		
-		$this->users_model->set_filter($filter);
-		$this->users_model->order_by('g_name', 'asc');
-		$this->users_model->limit($config['per_page'], $page);
+		$this->groups_model->set_filter($filter);
+		$this->groups_model->order_by('g_name', 'asc');
+		$this->groups_model->limit($config['per_page'], $page);
 		
 		$this->data['filter'] = $filter;
 		$this->data['groups'] = $this->groups_model->get_all();
