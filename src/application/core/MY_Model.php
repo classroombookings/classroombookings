@@ -545,6 +545,25 @@ class School_model extends MY_Model {
     
     
     /**
+     * Count all rows in table without any filtering at all
+     */
+     public function count_all()
+     {
+        $sql = 'SELECT COUNT(*) AS c
+                FROM `' . $this->_table . '`
+                ' . $this->join_sql() . ' 
+                WHERE 1=1
+                ' . $this->filter_sql() . '
+                ' . $this->sch_sql();
+        
+        $row = $this->db->query($sql)->row_array();
+        return $row['c'];
+     }
+    
+    
+    
+    
+    /**
      * Insert a new record and automatically complete the school ID value
      *
      * @param array $data       Array of columns => values
