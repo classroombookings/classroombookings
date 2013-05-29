@@ -2,6 +2,8 @@
 
 $config['first_link'] = '&lt;&lt;';
 $config['last_link'] = '&gt;&gt;';
+$config['prev_link'] = '&larr; Prev';
+$config['next_link'] = 'Next &rarr;';
 $config['first_tag_close']	= '';
 $config['last_tag_open'] = '';
 $config['last_tag_close'] = '';

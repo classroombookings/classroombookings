@@ -205,7 +205,7 @@ div hr { height: 1px; }
 		text-align: left;
 		width: 100%;
 		margin-bottom: 20px;
-		border: 0px solid #ccc;
+		border: 0;
 	}
 	
 	.list th,
@@ -411,6 +411,44 @@ div hr { height: 1px; }
 		
 		.button.green { background-color: #76ac3d; color: #fff; }
 		.button.green:hover { background-color: #84b451; color: #fff; }
+
+
+
+
+
+/* $PAGINATION
+========== */
+
+	.pagination-wrapper {
+		border-top: 1px solid #ddd;
+		padding-top: 20px;
+		text-align: center;
+	}
+
+		.pagination-wrapper strong,
+		.pagination-wrapper a {
+			display: inline-block;
+			border: 1px solid #ccc;
+			padding: 4px 6px;
+			text-align: center;
+			line-height: 16px;
+			height: 16px;
+			font-size: 13px;
+			font-weight: normal;
+			text-decoration: none;
+			color: #0070ba;
+			margin: 0 2px;
+		}
+		
+		.pagination-wrapper a:hover {
+			background: #0070ba;
+			border-color: #0070ba;
+			color: #fff;
+		}
+		
+		.pagination-wrapper strong {
+			color: #ff6400;
+		}
 
 
 
