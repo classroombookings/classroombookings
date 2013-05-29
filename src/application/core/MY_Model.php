@@ -574,7 +574,7 @@ class School_model extends MY_Model {
 		if ($this->_join === NULL)
 		{
 			// Add the school ID to this insert
-			$data[$this->_sch_key] = $this->_sch_id;
+			$data[$this->_sch_key] = (int) $this->_s_id;
 		}
         
         // Delegate responsibility to parent
@@ -592,16 +592,21 @@ class School_model extends MY_Model {
      */
     public function delete($id = 0)
     {
-        $sql = 'DELETE `' . $this->_table . '` FROM `' . $this->_table . '`
-                ' . $this->join_sql() . '
-                WHERE `' . $this->_primary . '` = ?
-				' . $this->sch_sql();
-                
-        if ( ! $this->join_sql())
+        if ($this->join_sql())
         {
-            $sql .= ' LIMIT 1';
+			$sql = 'DELETE `' . $this->_table . '` FROM `' . $this->_table . '`
+				' . $this->join_sql() . '
+				WHERE `' . $this->_primary . '` = ?
+				' . $this->sch_sql();
         }
-        
+		else
+		{
+			$sql = 'DELETE FROM `' . $this->_table . '`
+				WHERE `' . $this->_primary . '` = ?
+				' . $this->sch_sql() . '
+				LIMIT 1';
+		}
+		
         return $this->db->query($sql, array($id));
     }
     
