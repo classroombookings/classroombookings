@@ -27,6 +27,7 @@ class MY_Controller extends CI_Controller
 		parent::__construct();
 		
 		$this->load->driver('auth');
+		$this->load->driver('event');
 		
 		if ( ! isset($this->data['nav_current']))
 		{
@@ -73,6 +74,8 @@ class MY_Controller extends CI_Controller
 		
 		// Do routine maintenance for active users
 		$this->_manage_active_users();
+		
+		$this->load->library('logger');
 	}
 	
 	
