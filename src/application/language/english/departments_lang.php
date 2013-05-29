@@ -64,4 +64,15 @@ $lang = array(
 	'departments_members_plural' =>
 	'members',
 	
+	// Event descriptions
+	
+	'departments_event_department_added' => 
+	'Added new department [d_name].',
+	
+	'departments_event_department_updated' =>
+	'Updated department [d_name] (ID [d_id]).',
+	
+	'departments_event_department_deleted' =>
+	'Deleted department [d_name] (ID [d_id]).',
+	
 );

@@ -124,6 +124,7 @@ class Departments extends Configure_Controller
 					$d_id = $this->departments_model->update($d_id, $department_data);
 					$success = sprintf(lang('departments_update_success'), $department_data['d_name']);
 					$error = sprintf(lang('departments_update_error'), $department_data['d_name']);
+					$event = 'department_update';
 				}
 				else
 				{
@@ -131,6 +132,7 @@ class Departments extends Configure_Controller
 					$d_id = $this->departments_model->insert($department_data);
 					$success = sprintf(lang('departments_insert_success'), $department_data['d_name']);
 					$error = sprintf(lang('departments_insert_error'), $department_data['d_name']);
+					$event = 'department_insert';
 				}
 				
 				if ($d_id)
@@ -139,6 +141,11 @@ class Departments extends Configure_Controller
 					
 					// Set LDAP groups membership
 					$this->departments_model->set_ldap_groups($d_id, $this->input->post('ldap_groups'));
+					
+					Events::trigger($event, array(
+						'd_id' => $d_id,
+						'department' => $department_data,
+					));
 					
 					$this->flash->set('success', $success, TRUE);
 					redirect($this->session->get_return_uri('d', 'departments'));
@@ -176,9 +183,16 @@ class Departments extends Configure_Controller
 			redirect('departments');
 		}
 		
+		$department = $this->departments_model->get($id);
+		
 		if ($this->departments_model->delete($id))
 		{
 			$this->flash->set('success', lang('departments_delete_success'), TRUE);
+			
+			Events::trigger('department_delete', array(
+				'd_id' => $id,
+				'department' => $department,
+			));
 		}
 		else
 		{
