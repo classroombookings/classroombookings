@@ -46,9 +46,9 @@ class Groups_model extends School_model
 				WHERE 1 = 1
 				' . $this->sch_sql() . '
 				' . $this->filter_sql() . '
+				GROUP BY g_id
 				' . $this->order_sql() . '
-				' . $this->limit_sql() . '
-				GROUP BY g_id';
+				' . $this->limit_sql();
 		
 		return $this->db->query($sql)->result_array();
 	}
@@ -118,7 +118,7 @@ class Groups_model extends School_model
 	 * Sets a group's LDAP group assignments
 	 *
 	 * @param int $g_id		ID of group to update LDAP group assignments for
-	 * @param array $lg_ids		1D array of LDAP group IDs to set for user
+	 * @param array $lg_ids		1D array of LDAP group IDs to set for group
 	 * @return bool
 	 */
 	public function set_ldap_groups($g_id = 0, $lg_ids = array())
