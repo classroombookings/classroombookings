@@ -172,6 +172,7 @@ class Users extends Configure_Controller
 					$u_id = $this->users_model->update($u_id, $user_data);
 					$success = lang('users_update_success');
 					$error = lang('users_update_error');
+					$event = 'user_update';
 				}
 				else
 				{
@@ -179,6 +180,7 @@ class Users extends Configure_Controller
 					$u_id = $this->users_model->insert($user_data);
 					$success = lang('users_insert_success');
 					$error = lang('users_insert_error');
+					$event = 'user_insert';
 				}
 				
 				if ($u_id)
@@ -187,6 +189,11 @@ class Users extends Configure_Controller
 					
 					// Set department membership
 					$this->users_model->set_user_departments($u_id, $this->input->post('departments'));
+					
+					Events::trigger($event, array(
+						'u_id' => $u_id,
+						'user' => $user_data,
+					));
 					
 					$this->flash->set('success', $success, TRUE);
 					redirect('users');
@@ -222,9 +229,16 @@ class Users extends Configure_Controller
 			redirect('users/index');
 		}
 		
+		$user = $this->users_model->get($id);
+		
 		if ($this->users_model->delete($id))
 		{
 			$this->flash->set('success', lang('users_delete_success'), TRUE);
+			
+			Events::trigger('user_delete', array(
+				'u_id' => $id,
+				'user' => $user,
+			));
 		}
 		else
 		{
@@ -458,6 +472,8 @@ class Users extends Configure_Controller
 			
 			// Do the import!
 			$result = $this->users_model->import($users, $this->data['import']['existing']);
+			
+			Events::trigger('users_import', array('result' => $result));
 			
 			// Update session data
 			$this->data['import']['result'] = $result;

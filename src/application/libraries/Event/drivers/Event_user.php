@@ -16,7 +16,7 @@
  * Class of functions to handle Group events
  */
 
-class Event_group extends CI_Driver {
+class Event_user extends CI_Driver {
 	
 	
 	/**
@@ -24,9 +24,10 @@ class Event_group extends CI_Driver {
 	 */
 	public function init()
 	{
-		Events::register('group_insert', array($this, 'group_insert'));
-		Events::register('group_update', array($this, 'group_update'));
-		Events::register('group_delete', array($this, 'group_delete'));
+		Events::register('user_insert', array($this, 'user_insert'));
+		Events::register('user_update', array($this, 'user_update'));
+		Events::register('user_delete', array($this, 'user_delete'));
+		Events::register('users_import', array($this, 'users_import'));
 	}
 	
 	
@@ -35,21 +36,36 @@ class Event_group extends CI_Driver {
 	// ========================================================================
 	
 	
-	public function group_insert($data = array())
+	public function user_insert($data = array())
 	{
-		$this->CI->logger->add('groups/group_insert', $data);
+		// Hashed password should not get logged
+		unset($data['user']['u_password']);
+		
+		$this->CI->logger->add('users/user_insert', $data);
 	}
 	
 	
-	public function group_update($data = array())
+	public function user_update($data = array())
 	{
-		$this->CI->logger->add('groups/group_update', $data);
+		// Hashed password should not get logged
+		unset($data['user']['u_password']);
+		
+		$this->CI->logger->add('users/user_update', $data);
 	}
 	
 	
-	public function group_delete($data = array())
+	public function user_delete($data = array())
 	{
-		$this->CI->logger->add('groups/group_delete', $data);
+		// Hashed password should not get logged
+		unset($data['user']['u_password']);
+		
+		$this->CI->logger->add('users/user_delete', $data);
+	}
+	
+	
+	public function users_import($data = array())
+	{
+		$this->CI->logger->add('users/users_import', $data);
 	}
 	
 	

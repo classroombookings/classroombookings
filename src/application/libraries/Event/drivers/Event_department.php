@@ -24,7 +24,6 @@ class Event_department extends CI_Driver {
 	 */
 	public function init()
 	{
-		// Department getting added
 		Events::register('department_insert', array($this, 'department_insert'));
 		Events::register('department_update', array($this, 'department_update'));
 		Events::register('department_delete', array($this, 'department_delete'));
@@ -38,19 +37,19 @@ class Event_department extends CI_Driver {
 	
 	public function department_insert($data = array())
 	{
-		$this->CI->logger->add('departments/department_added', $data);
+		$this->CI->logger->add('departments/department_insert', $data);
 	}
 	
 	
 	public function department_update($data = array())
 	{
-		$this->CI->logger->add('departments/department_updated', $data);
+		$this->CI->logger->add('departments/department_update', $data);
 	}
 	
 	
 	public function department_delete($data = array())
 	{
-		$this->CI->logger->add('departments/department_deleted', $data);
+		$this->CI->logger->add('departments/department_delete', $data);
 	}
 	
 	

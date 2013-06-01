@@ -52,13 +52,13 @@ $lang = array(
 	
 	// Event descriptions
 	
-	'groups_event_group_added' => 
+	'groups_event_group_insert' => 
 	'Added new group [g_name].',
 	
-	'groups_event_group_updated' =>
+	'groups_event_group_update' =>
 	'Updated group [g_name] (ID [g_id]).',
 	
-	'groups_event_group_deleted' =>
+	'groups_event_group_delete' =>
 	'Deleted group [g_name] (ID [g_id]).',
 	
 );

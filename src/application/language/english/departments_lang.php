@@ -66,13 +66,13 @@ $lang = array(
 	
 	// Event descriptions
 	
-	'departments_event_department_added' => 
+	'departments_event_department_insert' => 
 	'Added new department [d_name].',
 	
-	'departments_event_department_updated' =>
+	'departments_event_department_update' =>
 	'Updated department [d_name] (ID [d_id]).',
 	
-	'departments_event_department_deleted' =>
+	'departments_event_department_delete' =>
 	'Deleted department [d_name] (ID [d_id]).',
 	
 );

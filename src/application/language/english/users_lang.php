@@ -161,4 +161,18 @@ $lang = array(
 	'users_import_action_failed' =>
 	'Failed',
 	
+	// Event descriptions
+	
+	'users_event_user_insert' => 
+	'Added new user [u_username].',
+	
+	'users_event_user_update' =>
+	'Updated user [u_username] (ID [u_id]).',
+	
+	'users_event_user_delete' =>
+	'Deleted user [u_username] (ID [u_id]).',
+	
+	'users_event_users_import' =>
+	'Imported users via CSV.',
+	
 );
