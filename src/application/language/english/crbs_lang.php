@@ -180,6 +180,17 @@ $lang = array(
 	'auth_preauth_no_create' =>
 	'Your account does not exist and it cannot be created automatically.',
 	
+	// Auth events
+	
+	'auth_event_user_login_local' =>
+	'Logged in via local authentication.',
+	
+	'auth_event_user_login_ldap' =>
+	'Logged in via LDAP authentication.',
+	
+	'auth_event_user_login_preauth' =>
+	'Logged in via pre-authentication.',
+	
 	
 	
 	

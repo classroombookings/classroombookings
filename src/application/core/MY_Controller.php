@@ -43,6 +43,7 @@ class MY_Controller extends CI_Controller
 		// Load the options model to retrieve the school options
 		$this->load->model('options_model');
 		
+		
 		// Get options for school and store using CI config 
 		$school_options = $this->options_model->get_all();
 		$this->config->set_item('options', $school_options);

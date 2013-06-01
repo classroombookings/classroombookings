@@ -388,6 +388,81 @@ class Users_model extends School_model
 	
 	
 	
+	// --------- LDAP ---------- //
+	
+	
+	
+	
+	/**
+	 * Update a user's CRBS department and group membership based on the LDAP groups that they are a member of.
+	 *
+	 * @param int $u_id		ID of user to update membership for
+	 * @param array $group_names		Nice names of groups (matching lg_name field in ldap_groups table)
+	 * @return bool
+	 */ 
+	public function update_ldap_membership($u_id = 0, $group_names = array())
+	{
+		if (empty($group_names)) return FALSE;
+		
+		foreach ($group_names as &$name)
+		{
+			$name = $this->db->escape($name);
+		}
+		
+		// String for SQL query
+		$group_names_str = implode(',', $group_names);
+		
+		
+		// Update department membership
+		
+		$sql = 'INSERT IGNORE INTO
+					u2d (u2d_u_id, u2d_d_id)
+				SELECT
+					?, d2lg_d_id
+				FROM
+					ldap_groups
+				LEFT JOIN
+					d2lg
+					ON lg_id = d2lg_lg_id
+				WHERE
+					lg_name IN (' . $group_names_str . ')
+				AND
+					d2lg_d_id IS NOT NULL
+				GROUP BY
+					lg_id';
+		
+		$this->db->query($sql, array($u_id));
+		
+		
+		// Update group membership
+		
+		$sql = 'SELECT
+					g2lg_g_id AS g_id
+				FROM
+					ldap_groups
+				LEFT JOIN
+					g2lg
+					ON lg_id = g2lg_lg_id
+				WHERE
+					lg_name IN (' . $group_names_str . ')
+				AND
+					g2lg_g_id IS NOT NULL
+				GROUP BY
+					lg_id
+				LIMIT 1';
+		
+		$row = $this->db->query($sql)->row_array();
+		if ( ! empty($row['g_id']))
+		{
+			$this->update($u_id, array('u_g_id' => $row['g_id']));
+		}
+		
+		return TRUE;
+	}
+	
+	
+	
+	
 }
 
 /* End of file: ./application/models/users_model.php */

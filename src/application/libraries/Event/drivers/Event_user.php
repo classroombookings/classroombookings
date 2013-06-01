@@ -25,6 +25,7 @@ class Event_user extends CI_Driver {
 	public function init()
 	{
 		Events::register('user_insert', array($this, 'user_insert'));
+		Events::register('user_insert_ldap', array($this, 'user_insert_ldap'));
 		Events::register('user_update', array($this, 'user_update'));
 		Events::register('user_delete', array($this, 'user_delete'));
 		Events::register('users_import', array($this, 'users_import'));
@@ -45,12 +46,25 @@ class Event_user extends CI_Driver {
 	}
 	
 	
+	/**
+	 * User automatically created via LDAP auth success
+	 */
+	public function user_insert_ldap($data = array())
+	{
+		$this->CI->logger->add('users/user_insert_ldap', $data, $data['u_id']);
+	}
+	
+	
 	public function user_update($data = array())
 	{
 		// Hashed password should not get logged
 		unset($data['user']['u_password']);
 		
 		$this->CI->logger->add('users/user_update', $data);
+		
+		// Update the permission cache table
+		$this->CI->load->model('permissions_model');
+		$this->CI->permissions_model->set_cache($data['u_id']);
 	}
 	
 	

@@ -39,6 +39,7 @@ class Auth extends CI_Driver_Library
 		// Load helpers/models required by the library
 		$this->CI->load->helper('cookie');
 		$this->CI->load->library('user_agent');
+		$this->CI->lang->load('users');
 	}
 	
 	
@@ -246,11 +247,17 @@ class Auth extends CI_Driver_Library
 			
 			if ($auth_response === TRUE)
 			{
+				
 				log_message('debug', "Auth: login($username): LDAP response successful.");
 				
 				// Potentially, a new user could have been created here. Get latest info
 				$user = $this->CI->users_model->get_by_username($username);
 				$session = $this->create_session($user['u_id']);
+				
+				Events::trigger('user_login', array(
+					'driver' => 'ldap',
+					'user' => $user,
+				));
 				
 				if ($session)
 				{
@@ -290,6 +297,11 @@ class Auth extends CI_Driver_Library
 			if ($auth_response === TRUE)
 			{
 				$session = $this->create_session($user['u_id']);
+				
+				Events::trigger('user_login', array(
+					'driver' => 'local',
+					'user' => $user,
+				));
 				
 				if ($session)
 				{
@@ -350,6 +362,8 @@ class Auth extends CI_Driver_Library
 				'u_enabled' => 1,
 				'u_g_id' => option('auth_preauth_g_id'),
 			));
+			
+			$user = $this->CI->users_model->get($u_id);
 		}
 		else
 		{
@@ -360,6 +374,11 @@ class Auth extends CI_Driver_Library
 		// Got a user now. Give them a session.
 		
 		$session = $this->create_session($u_id);
+		
+		Events::trigger('user_login', array(
+			'driver' => 'preauth',
+			'user' => $user,
+		));
 				
 		if ($session)
 		{
@@ -452,183 +471,6 @@ class Auth extends CI_Driver_Library
 		$this->CI->session->sess_destroy();
 		
 		return ( ! $this->CI->session->userdata('u_id'));
-	}
-	
-	
-	
-	
-	
-	/**
-	 * LDAP authenticate function
-	 *
-	 * Checks the configured LDAP server for valid supplied credentiales.
-	 * Optionally will update local DB with LDAP display/email info.
-	 * This should not be called for users who authenticate locally.
-	 *
-	 * @param	string	username
-	 * @param	string	password
-	 * @param	bool	updateinfo		Update the local DB with info from LDAP or not
-	 * @return	mixed	local user_id on success, FALSE on failure
-	 */
-	/*
-	function auth_ldap($username, $password){
-		
-		if(!function_exists('ldap_bind')){
-			$this->lasterr = 'It appears that the PHP LDAP module is not installed - cannot continue.';
-			return FALSE;
-		}
-		
-		// Retrieve auth settings
-		$auth = $this->_CI->settings->get('auth.');
-		
-		// See if the user exists at all
-		$userexists = $this->userexists($username);
-		
-		// Set values
-		$ldaphost = $auth->ldaphost;
-		$ldapport = $auth->ldapport;
-		$ldapbase = $auth->ldapbase;
-		$ldapfilter = str_replace("%u", $username, $auth->ldapfilter);
-		$ldaploginupdate = ($auth->ldaploginupdate == 1) ? TRUE : FALSE;
-		$ldapusername = 'cn=' . $username;
-		
-		// Attempt connection to server
-		$connect = ldap_connect($ldaphost, $ldapport);
-		if(!$connect){
-			$this->lasterr = sprintf('Failed to connect to LDAP server %s on port %d.', $ldaphost, $ldapport);
-			return FALSE;
-		}
-		
-		// Now go through the DNs and see if we can bind as the user in them
-		$dns = explode(";", $ldapbase);
-		$found = FALSE;
-		foreach($dns as $dn){
-			if($found == FALSE){
-				$thisdn = trim($dn);
-				$bind = @ldap_bind($connect, "$ldapusername,$thisdn", $password);
-				if($bind){ 
-					$correctdn = $thisdn;
-					$found = TRUE;
-				}
-			}
-		}
-		
-		// Check if user in a DN has been found
-		if($found == FALSE){
-			// Password could be wrong.
-			$this->lasterr = 'LDAP authentication failure. Check details and try again.';
-			return FALSE;
-		}
-		
-		// search for details
-		$search = ldap_search($connect, $correctdn, $ldapfilter);
-		if(!$search){
-			// LDAP query filter is probably incorrect.
-			$this->lasterr = "LDAP authentication failure. Query filter did not return any results.";
-			return FALSE;
-		}
-		
-		// Get info
-		$info = ldap_get_entries($connect, $search); 
-		$user['username'] = $username;
-		$user['displayname'] = $info[0]['displayname'][0];
-		$user['email'] = $info[0]['mail'][0];
-		$user['memberof'] = $info[0]['memberof'];
-		$user['group_ids'] = array();
-		
-		// Succeeded with all info
-		
-		// If user already exists and we don't want to update at login, complete the auth now.
-		if($userexists == TRUE && $ldaploginupdate == FALSE){
-			return TRUE;
-		}
-		
-		
-		//
-		//	... otherwise, add if they dont exist; and update if they do.
-		//	... either way, we need to fetch some data. Do that now...
-		//
-		
-		// Get group mappings
-		unset($info[0]['memberof']['count']);
-		// Mapping of ldapgroupnames => localgroupid
-		$groupmap = $this->_CI->security->ldap_groupname_to_group();
-		// Make new array to hold the group names that the user belongs to
-		$groups = array();		
-		
-		// iterate the groups they are member of to find potential local group
-		foreach($info[0]['memberof'] as $group){
-			// We only need the CN= part
-			$grouparray = explode(',', $group);
-			$group = str_replace('CN=', '', $grouparray[0]);
-			if(array_key_exists($group, $groupmap)){
-				// Put possible group IDs into an array
-				array_push($user['group_ids'], $groupmap[$group]);
-			}
-			// Stick this group into the group array
-			array_push($groups, $group);
-		}
-		
-		// Remove any duplicates (not sure this actually has a purpose as they should all be unique anyway)
-		$user['group_ids'] = array_unique($user['group_ids']);	#, SORT_NUMERIC);
-		
-		// LDAP-TO-LOCAL: Find departments (using the previously-populated array)
-		$user['department_ids'] = $this->_CI->security->ldap_groupnames_to_departments($groups);
-		
-		// Now the data array that has all correct info for sending to the DB
-		
-		// Set group ID of user (to the ldap mapping if unique, otherwise the default)
-		$data['group_id'] = (count($user['group_ids']) == 1) ? $user['group_ids'][0] : $auth->ldapgroup_id;
-		// Find departments we should assign the user to
-		$data['departments'] = $user['department_ids'];		
-		// Now the array of info for the user adding function
-		$data['username'] = $user['username'];
-		$data['displayname'] = (isset($user['displayname']) OR $user['displayname'] != '') ? $user['displayname'] : $user['username'];
-		$data['email'] = $user['email'];
-		$data['ldap'] = 1;
-		$data['password'] = NULL;
-		
-		
-		//
-		//	At this point, we have authenticated and we need to know if we should update
-		//	user details or add them as a new user.
-		//
-		
-		if($userexists == TRUE){
-			
-			// Already in
-			
-			$sql = 'SELECT user_id FROM users WHERE username = ? LIMIT 1';
-			$query = $this->_CI->db->query($sql, array($username));
-			$row = $query->row();
-			$user_id = $row->user_id;
-			
-			// We should only get here if loginupdate is true anyway, but here goes...
-			if($ldaploginupdate == TRUE){
-				$edit = $this->_CI->security->edit_user($user_id, $data);
-				if($edit == FALSE){
-					$this->lasterr = $this->_CI->security->lasterr;
-					return FALSE;
-				}
-			} else {
-				$this->lasterr = 'Expected ldaploginupdate to be TRUE but got FALSE instead';
-				return FALSE;
-			}
-			
-		} elseif($userexists == FALSE){
-			
-			// Add
-			$data['enabled'] = 1;
-			$add = $this->_CI->security->add_user($data);
-			if($add == FALSE){
-				$this->lasterr = $this->_CI->security->lasterr;
-				return FALSE;
-			}
-			
-		}
-		
-		return TRUE;
-		
 	}
 	
 	

@@ -166,6 +166,9 @@ $lang = array(
 	'users_event_user_insert' => 
 	'Added new user [u_username].',
 	
+	'users_event_user_insert_ldap' =>
+	'[u_username] created automatically after successul LDAP authentication.',
+	
 	'users_event_user_update' =>
 	'Updated user [u_username] (ID [u_id]).',
 	
