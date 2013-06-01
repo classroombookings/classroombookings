@@ -67,6 +67,7 @@ class Logger
 			'l_ua' => $this->CI->agent->agent_string(),
 			'l_browser' => $this->CI->agent->browser() . ' ' . $this->CI->agent->version(),
 			'l_ip' => $this->CI->input->ip_address(),
+			'l_data' => json_encode($data),
 		);
 		
 		return $this->CI->log_model->insert($log_data);
