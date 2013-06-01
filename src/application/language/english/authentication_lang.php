@@ -162,4 +162,18 @@ $lang = array(
 		'authentication_preauth_save_error' =>
 		'Failed to update the pre-authentication defaults.',
 	
+	// Event descriptions
+	
+	'settings_event_authentication_update' =>
+	'Updated authentication settings.',
+	
+	'settings_event_ldap_update' =>
+	'Updated LDAP settings.',
+	
+	'settings_event_ldap_groups_update' =>
+	'Updated LDAP groups.',
+	
+	'settings_event_preauth_update' =>
+	'Updated pre-authentication settings.',
+	
 );

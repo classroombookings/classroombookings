@@ -64,6 +64,9 @@ class Configure extends MY_Controller
 				if ($this->options_model->set($options))
 				{
 					$this->flash->set('success', 'Settings have been updated successfully.', TRUE);
+					
+					Events::trigger('settings_general_update', array('options' => $options));
+					
 					redirect(current_url());
 				}
 				else

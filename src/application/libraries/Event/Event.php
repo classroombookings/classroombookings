@@ -15,7 +15,12 @@
 class Event extends CI_Driver_Library
 {
 	
-	public $valid_drivers = array('event_department', 'event_group', 'event_user');
+	public $valid_drivers = array(
+		'event_department',
+		'event_group',
+		'event_user',
+		'event_settings',
+	);
 	
 	public $CI;
 	

@@ -13,7 +13,7 @@
  */
 
 /**
- * Class of functions to handle Group events
+ * Class of functions to handle User events
  */
 
 class Event_user extends CI_Driver {

@@ -44,4 +44,9 @@ $lang = array(
 	'save_settings' =>
 	'Save settings',
 	
+	// Event descriptions
+	
+	'settings_event_general_update' =>
+	'Updated general settings.',
+	
 );

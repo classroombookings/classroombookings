@@ -92,6 +92,9 @@ class Authentication extends Configure_Controller
 				if ($this->options_model->set($options))
 				{
 					$this->flash->set('success', lang('authentication_save_success'), TRUE);
+					
+					Events::trigger('settings_authentication_update', array('options' => $options));
+					
 					redirect('authentication');
 				}
 				else
@@ -140,6 +143,9 @@ class Authentication extends Configure_Controller
 				if ($this->options_model->set($options))
 				{
 					$this->flash->set('success', lang('authentication_ldap_save_success'), TRUE);
+					
+					Events::trigger('settings_ldap_update', array('options' => $options));
+					
 					redirect('authentication/ldap');
 				}
 				else
@@ -203,6 +209,9 @@ class Authentication extends Configure_Controller
 				if ($result)
 				{
 					$this->flash->set('success', $flash_success, TRUE);
+					
+					Events::trigger('settings_ldap_groups_update', array('options' => $options));
+					
 					redirect(current_url());
 				}
 				else
@@ -239,6 +248,9 @@ class Authentication extends Configure_Controller
 			if ($this->options_model->set($options))
 			{
 				$this->flash->set('success', lang('authentication_preauth_new_key_success'), TRUE);
+				
+				Events::trigger('settings_preauth_update', array('options' => $options));
+				
 				redirect('authentication/preauth');
 			}
 			else
@@ -263,6 +275,9 @@ class Authentication extends Configure_Controller
 				if ($this->options_model->set($options))
 				{
 					$this->flash->set('success', lang('authentication_preauth_save_success'), TRUE);
+					
+					Events::trigger('settings_preauth_update', array('options' => $options));
+					
 					redirect('authentication/preauth');
 				}
 				else
