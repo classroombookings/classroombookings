@@ -13,10 +13,10 @@
  */
 
 /**
- * Class of functions to handle Department events
+ * Class of functions to handle Group events
  */
 
-class Event_departments extends CI_Driver {
+class Event_group extends CI_Driver {
 	
 	
 	/**
@@ -25,9 +25,9 @@ class Event_departments extends CI_Driver {
 	public function init()
 	{
 		// Department getting added
-		Events::register('department_insert', array($this, 'department_insert'));
-		Events::register('department_update', array($this, 'department_update'));
-		Events::register('department_delete', array($this, 'department_delete'));
+		Events::register('group_insert', array($this, 'group_insert'));
+		Events::register('group_update', array($this, 'group_update'));
+		Events::register('group_delete', array($this, 'group_delete'));
 	}
 	
 	
@@ -36,21 +36,21 @@ class Event_departments extends CI_Driver {
 	// ========================================================================
 	
 	
-	public function department_insert($data = array())
+	public function group_insert($data = array())
 	{
-		$this->CI->logger->add('departments/department_added', $data);
+		$this->CI->logger->add('groups/group_added', $data);
 	}
 	
 	
-	public function department_update($data = array())
+	public function group_update($data = array())
 	{
-		$this->CI->logger->add('departments/department_updated', $data);
+		$this->CI->logger->add('groups/group_updated', $data);
 	}
 	
 	
-	public function department_delete($data = array())
+	public function group_delete($data = array())
 	{
-		$this->CI->logger->add('departments/department_deleted', $data);
+		$this->CI->logger->add('groups/group_deleted', $data);
 	}
 	
 	
@@ -58,4 +58,4 @@ class Event_departments extends CI_Driver {
 	
 }
 
-/* End of file: ./application/libaries/Event/drivers/Event_departments.php */
+/* End of file: ./application/libaries/Event/drivers/Event_groups.php */

@@ -50,4 +50,15 @@ $lang = array(
 	'groups_update_error' =>
 	'An error occurred when updating the group.',
 	
+	// Event descriptions
+	
+	'groups_event_group_added' => 
+	'Added new group [g_name].',
+	
+	'groups_event_group_updated' =>
+	'Updated group [g_name] (ID [g_id]).',
+	
+	'groups_event_group_deleted' =>
+	'Deleted group [g_name] (ID [g_id]).',
+	
 );

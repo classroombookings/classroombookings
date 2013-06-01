@@ -125,6 +125,7 @@ class Groups extends Configure_Controller
 					$g_id = $this->groups_model->update($g_id, $group_data);
 					$success = lang('groups_update_success');
 					$error = lang('groups_update_error');
+					$event = 'group_update';
 				}
 				else
 				{
@@ -132,6 +133,7 @@ class Groups extends Configure_Controller
 					$g_id = $this->groups_model->insert($group_data);
 					$success = lang('groups_insert_success');
 					$error = lang('groups_insert_error');
+					$event = 'group_insert';
 				}
 				
 				if ($g_id)
@@ -140,6 +142,11 @@ class Groups extends Configure_Controller
 					
 					// Set LDAP groups membership
 					$this->groups_model->set_ldap_groups($g_id, $this->input->post('ldap_groups'));
+					
+					Events::trigger($event, array(
+						'g_id' => $g_id,
+						'group' => $group_data,
+					));
 					
 					$this->flash->set('success', $success, TRUE);
 					redirect('groups');
@@ -175,9 +182,16 @@ class Groups extends Configure_Controller
 			redirect('groups/index');
 		}
 		
+		$group = $this->groups_model->get($id);
+		
 		if ($this->groups_model->delete($id))
 		{
 			$this->flash->set('success', lang('groups_delete_success'), TRUE);
+			
+			Events::trigger('group_delete', array(
+				'g_id' => $id,
+				'group' => $group,
+			));
 		}
 		else
 		{
