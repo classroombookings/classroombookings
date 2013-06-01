@@ -72,6 +72,7 @@ class Users extends Configure_Controller
 			'total_rows' => $this->users_model->count_all(),
 			'per_page' => $filter['pp'],
 			'uri_segment' => 3,
+			'suffix' => '?' . @http_build_query($filter),
 		);
 		$this->pagination->initialize($config);
 		
