@@ -26,7 +26,7 @@ $config['nav'] = array(
 		'class' => 'reports',
 	),
 	
-	'events' => array(
+	'event_log' => array(
 		'label' => lang('event_log'),
 		'permission' => 'crbs.eventlog.view',
 		'class' => 'event-log',

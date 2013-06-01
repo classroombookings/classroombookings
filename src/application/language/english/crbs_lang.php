@@ -107,6 +107,9 @@ $lang = array(
 	'logged_in_as' =>
 	'Logged in as',
 	
+	'view' =>
+	'View',
+	
 	
 	
 	

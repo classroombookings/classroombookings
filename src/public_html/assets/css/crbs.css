@@ -17,6 +17,13 @@
 	a { color: #0070ba; text-decoration: none; }
 	a:hover { color: #55B10A; }
 	
+	hr {
+		height: 1px;
+		background: #aaa;
+		border: 0;
+		margin: 20px 0;
+	}
+	
 
 
 
@@ -239,6 +246,42 @@
 		margin-bottom: 6px;
 		cursor: help;
 	}
+
+
+
+
+
+/* $EVENTLOG
+========== */
+
+
+	/* definition list */
+
+	.event-info {
+		display: block;
+		margin: 0;
+		padding: 0;
+	}
+		.event-info dt {
+			color: #666;
+			margin: 0 0 5px 0;
+			padding: 0;
+		}
+		
+		.event-info dd {
+			margin: 0;
+			padding: 0;
+			color: #000;
+			font-weight: bold;
+			margin-bottom: 20px;
+			line-height: 1.4;
+		}
+		
+		.event-info pre code {
+			font-weight: normal;
+			color: #000;
+		}
+
 
 
 /* Misc

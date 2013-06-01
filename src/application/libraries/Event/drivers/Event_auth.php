@@ -35,6 +35,7 @@ class Event_auth extends CI_Driver {
 	
 	public function user_login($data = array())
 	{
+		unset($data['user']['u_password']);
 		$this->CI->logger->add('auth/user_login_' . $data['driver'], $data);
 	}
 	
