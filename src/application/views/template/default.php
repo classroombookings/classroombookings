@@ -19,8 +19,9 @@
 <script>
 var CRBS = {}, Q = [];
 CRBS.base_url = "<?php echo config_item('base_url') ?>";
-CRBS.site_url = "<?php echo site_url() ?>/";
+CRBS.site_url = "<?php echo site_url() ?>";
 CRBS.tt_view = "<?php echo config_item('timetable_view') ?>";
+CRBS.js_list = <?php echo json_encode($this->layout->get_js_list(), JSON_UNESCAPED_SLASHES + JSON_PRETTY_PRINT) ?>;
 </script>
 
 </head>
@@ -161,17 +162,22 @@ CRBS.tt_view = "<?php echo config_item('timetable_view') ?>";
 	
 	<div id="delete_dialog" class="hidden"></div>
 	
-	
-<?php echo $this->layout->get_js() ?>
 
-
-<script>
-if (typeof(window['Q']) !== "undefined") {
-	for (var i = 0, len = Q.length; i < len; i++) {
-		Q[i]();
-	}
-}
-</script>
+	<script src="js/libraries/LAB.min.js"></script>
+	<script>
+	$LAB.setGlobalDefaults({
+		AlwaysPreserveOrder: true,
+		BasePath: CRBS.base_url + "assets/"
+	})
+	.script(CRBS.js_list)
+	.wait(function() {
+		if (typeof(window['Q']) !== "undefined") {
+			for (var i = 0, len = Q.length; i < len; i++) {
+				Q[i]();
+			}
+		}
+	}); 
+	</script>
 
 
 </body>
