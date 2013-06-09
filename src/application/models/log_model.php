@@ -37,6 +37,15 @@ class Log_model extends School_Model
 	
 	
 	
+	public function insert($data = array())
+	{
+		$data['l_s_id'] = $this->_s_id;
+		return parent::insert($data);
+	}
+	
+	
+	
+	
 	/**
 	 * Get list of areas where events have been made for
 	 *

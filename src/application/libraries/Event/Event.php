@@ -21,6 +21,7 @@ class Event extends CI_Driver_Library
 		'event_user',
 		'event_settings',
 		'event_auth',
+		'event_role',
 	);
 	
 	public $CI;
