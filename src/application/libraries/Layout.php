@@ -173,6 +173,14 @@ class Layout
 	
 	
 	
+	public function get_js_list()
+	{
+		return $this->_js;
+	}
+	
+	
+	
+	
 	public function clear_js()
 	{
 		$this->_js = array();
