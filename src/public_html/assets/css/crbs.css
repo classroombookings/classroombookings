@@ -4,6 +4,7 @@
  * crbs.css: styles for various aspects of the layout and per-page CSS.
  */
 
+	html { font-family: tahoma, verdana, arial, sans-serif; }
 
 	.sub-heading {
 		color: #ff6400;
@@ -246,6 +247,78 @@
 		margin-bottom: 6px;
 		cursor: help;
 	}
+
+
+
+
+.roles td {
+	position: relative;
+}
+
+.roles .assign-item {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	margin: 0;
+}
+
+.role-assigned {
+	list-style: square;
+	list-style-position: inside;
+	margin: 20px 0 0 0;
+	padding: 0;
+}
+
+	.role-assigned li {
+		padding: 0;
+		margin: 0 0 5px 0;
+		color: #0070ba;
+	}
+	
+	.role-assigned li a {
+	}
+	
+	.role-members {
+		background: #f6f6f6;
+		padding: 10px;
+		box-sizing: border-box;
+		-moz-box-sizing: border-box;
+	}
+
+	.role-row {
+		padding-bottom: 10px;
+		border-bottom: 1px solid #ddd;
+		margin-bottom: 10px;
+	}
+
+	.role-entity-name {
+		color: #000;
+	}
+
+	.role-entity-type {
+		color: #aaa;
+		font-size: 90%;
+		margin: 0 5px;
+	}
+
+	.role-entity-remove {
+		font-size: 90%;
+		font-weight: bold;
+	}
+
+	.role-entity-remove a { padding: 2px; }
+	.role-entity-remove a:hover { background: #0070ba; color: #fff; }
+
+
+
+.autocomplete {
+	width: 400px;
+}
+
+.autocomplete-suggestions { border: 1px solid #999; background: #FFF; cursor: default; overflow: auto; }
+.autocomplete-suggestion { padding: 2px 5px; white-space: nowrap; overflow: hidden; }
+.autocomplete-selected { background: #F0F0F0; }
+.autocomplete-suggestions strong { font-weight: normal; color: #0070ba; }
 
 
 

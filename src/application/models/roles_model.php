@@ -13,6 +13,8 @@ class Roles_model extends School_Model
 {
 
 	protected $_table = 'roles';		// DB table
+	protected $_primary = 'r_id';
+	
 	protected $_sch_key = 'r_s_id';		// Foreign key for school
 	
 	public $error;
@@ -35,10 +37,29 @@ class Roles_model extends School_Model
 	{
 		$sql = 'SELECT *
 				FROM roles
+				WHERE 1 = 1
 				' . $this->sch_sql() . '
 				ORDER BY r_weight ASC, r_name ASC';
 		
 		return $this->db->query($sql)->result_array();
+	}
+	
+	
+	
+	
+	/**
+	 * Get all roles with what is assigned to them
+	 */
+	public function get_all_with_assigned()
+	{
+		$result = $this->get_all();
+		
+		foreach ($result as &$row)
+		{
+			$row['assigned'] = $this->get_role_assignments($row['r_id']);
+		}
+		
+		return $result;
 	}
 	
 	
@@ -95,7 +116,7 @@ class Roles_model extends School_Model
 	{
 		$table = NULL;
 		
-		switch ($entity_type)
+		switch ($e_type)
 		{
 			case 'U': $table = 'r2u'; break;
 			case 'G': $table = 'r2g'; break;
@@ -127,7 +148,7 @@ class Roles_model extends School_Model
 		$table = NULL;
 		$key = NULL;
 		
-		switch ($entity_type)
+		switch ($e_type)
 		{
 			case 'U':
 				$table = 'r2u';
@@ -168,7 +189,7 @@ class Roles_model extends School_Model
 	{
 		$where = NULL;
 		
-		if ($r_id !== 0 && is_numeric($role_id))
+		if ($r_id !== 0 && is_numeric($r_id))
 		{
 			$where = 'WHERE r2e.r_id = ' . (int) $r_id;
 		}
@@ -179,9 +200,9 @@ class Roles_model extends School_Model
 					r2e.e_type,
 					roles.r_weight,
 					CASE
-						WHEN d.d_name IS NOT NULL THEN d.name
-						WHEN g.g_name IS NOT NULL THEN g.name
-						WHEN u.u_username IS NOT NULL THEN u_display
+						WHEN d.d_name IS NOT NULL THEN d_name
+						WHEN g.g_name IS NOT NULL THEN g_name
+						WHEN u.u_username IS NOT NULL THEN u_username
 					END AS name
 				FROM
 					v_r2e AS r2e
@@ -195,7 +216,7 @@ class Roles_model extends School_Model
 					AND r2e.e_type = 'G'
 				LEFT JOIN
 					users u
-					ON r2e.e_id = u.user_id
+					ON r2e.e_id = u.u_id
 					AND r2e.e_type = 'U'
 				LEFT JOIN
 					roles
@@ -204,7 +225,7 @@ class Roles_model extends School_Model
 				AND
 					roles.r_s_id = " . (int) $this->_s_id . "
 				ORDER BY
-					roles.weight ASC, entity_type DESC";
+					roles.r_weight ASC, e_type DESC";
 		
 		$query = $this->db->query($sql);
 		
@@ -214,10 +235,11 @@ class Roles_model extends School_Model
 			$result = $query->result_array();
 			foreach ($result as $row)
 			{
-				$roles[$row['r_id']][] = $row;
+				$roles[$row['r_id']]['all'][] = $row;
+				$roles[$row['r_id']][$row['e_type']][] = $row;
 			}
 			
-			return ($role_id === 0) ? $roles : $roles[$r_id];
+			return ($r_id === 0) ? $roles : $roles[$r_id];
 		}
 		
 		return FALSE;
@@ -317,6 +339,135 @@ class Roles_model extends School_Model
 		}
 		
 		return FALSE;
+	}
+	
+	
+	
+	
+	public function get_members($r_id = 0)
+	{
+		$r_id = $this->db->escape($r_id);
+		$s_id = (int) $this->_s_id;
+		
+		$sql = "SELECT
+					u_id,
+					u_username
+				FROM
+					r2u
+				LEFT JOIN
+					users
+					ON r2u_u_id = u_id
+				LEFT JOIN
+					groups
+					ON u_g_id = g_id
+				WHERE
+					r2u_r_id = $r_id
+				AND
+					g_s_id = $s_id
+				
+				UNION
+				
+				SELECT
+					u_id,
+					u_username
+				FROM
+					r2d
+				LEFT JOIN
+					u2d
+					ON r2d_d_id = u2d_d_id
+				LEFT JOIN
+					users
+					ON u2d_u_id = u_id
+				LEFT JOIN
+					departments
+					ON r2d_d_id = d_id
+				WHERE
+					r2d_r_id = $r_id
+				AND
+					d_s_id = $s_id
+				AND
+					u_id IS NOT NULL
+				
+				UNION
+				
+				SELECT
+					u_id,
+					u_username
+				FROM
+					r2g
+				LEFT JOIN
+					groups g
+					ON r2g_g_id = g_id
+				LEFT JOIN
+					users
+					ON g_id = u_g_id
+				WHERE
+					r2g_r_id = $r_id
+				AND
+					g_s_id = $s_id
+				";
+		
+		return $this->db->query($sql)->result_array();
+	}
+	
+	
+	
+	
+	// =======================================================================
+	// AJAX search for entities
+	// =======================================================================
+	
+	
+	
+	
+	public function entity_search($query = '')
+	{
+		$query = '%' . $this->db->escape_like_str($query) . '%';
+		$s_id = $this->_s_id;
+		
+		$sql = "SELECT
+					'U' AS e_type,
+					u_id AS e_id,
+					u_username AS e_name
+				FROM
+					users
+				LEFT JOIN
+					groups
+					ON g_id = u_g_id
+				WHERE
+					(u_username LIKE '$query' OR u_display LIKE '$query')
+				AND
+					g_s_id = $s_id
+				
+				UNION
+				
+				SELECT
+					'D' AS e_type,
+					d_id AS e_id,
+					d_name AS e_name
+				FROM
+					departments
+				WHERE
+					d_name LIKE '$query'
+				AND
+					d_s_id = $s_id
+				
+				UNION
+				
+				SELECT
+					'G' AS entity_type,
+					g_id AS e_id,
+					g_name AS e_name
+				FROM
+					groups g
+				WHERE
+					g_name LIKE '$query'
+				AND
+					g_s_id = $s_id
+				
+				";
+		
+		return $this->db->query($sql)->result_array();
 	}
 	
 	

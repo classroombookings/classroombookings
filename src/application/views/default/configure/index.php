@@ -61,7 +61,7 @@
 			
 			<?php if ($this->auth->check('permissions.view')): ?>
 			<li>
-				<?php echo anchor('permissions', lang('configure_permissions'), 'class="i configure-permissions"') ?>
+				<?php echo anchor('roles', lang('configure_permissions'), 'class="i configure-permissions"') ?>
 				<p><?php echo lang('configure_permissions_description') ?></p>
 			</li>
 			<?php endif; ?>
