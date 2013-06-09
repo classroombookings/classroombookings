@@ -26,8 +26,6 @@ class MY_Controller extends CI_Controller
 	{
 		parent::__construct();
 		
-		$this->load->driver('auth');
-		$this->load->driver('event');
 		
 		if ( ! isset($this->data['nav_current']))
 		{
@@ -43,10 +41,12 @@ class MY_Controller extends CI_Controller
 		// Load the options model to retrieve the school options
 		$this->load->model('options_model');
 		
-		
 		// Get options for school and store using CI config 
 		$school_options = $this->options_model->get_all();
 		$this->config->set_item('options', $school_options);
+		
+		$this->load->driver('auth');
+		$this->load->driver('event');
 		
 		// Load all other models necessary for running core app
 		$this->load->model(array('permissions_model', 'roles_model', 'weeks_model', 'users_model'));

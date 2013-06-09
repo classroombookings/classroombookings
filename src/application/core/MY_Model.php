@@ -300,14 +300,29 @@ class MY_Model extends CI_Model
     public function update($id, $data, $where_extra = '')
     {
         $where = ' `' . $this->_primary . '` = ' . $this->db->escape($id) . ' ';
-        
+            
         if ($where_extra != '')
         {
             $where .= ' AND ' . $where_extra;
         }
         
-        $update = $this->db->query($this->db->update_string($this->_table, $data, $where));
-        return ($update) ? $id : $update;
+        if ($this->_join)
+        {
+            /**
+             * If there's a join with another table (to satisfy school ID requirements),
+             * then the update has to be constructed a bit differently to ensure the
+             * correct keys are included and values match
+             */ 
+            $where .= ' AND ' . $this->_join[1];
+            $tables = '`' . $this->_table . '` AS a, `' . $this->_join[0] . '` AS b';
+            $update = $this->db->query($this->db->update_string($tables, $data, $where));
+            return ($update) ? $id : $update;
+        }
+        else
+        {
+            $update = $this->db->query($this->db->update_string($this->_table, $data, $where));
+            return ($update) ? $id : $update;
+        }
     }
     
     
@@ -571,14 +586,29 @@ class School_model extends MY_Model {
      */ 
     public function insert($data = array())
     {
-		if ($this->_join === NULL)
-		{
-			// Add the school ID to this insert
-			$data[$this->_sch_key] = (int) $this->_s_id;
-		}
+        // Add the school ID to this insert
+        if ( ! $this->join_sql())
+        {
+            $data[$this->_sch_key] = (int) $this->_s_id;
+        }
         
         // Delegate responsibility to parent
         return parent::insert($data);
+    }
+    
+    
+    
+    
+    public function update($id = 0, $data = array(), $where_extra = '')
+    {
+        $where = ' `' . $this->_sch_key . '` = ' . (int) $this->_s_id;
+        
+        if ($where_extra !== '')
+        {
+            $where .= ' AND ' . $where_extra;
+        }
+        
+        return parent::update($id, $data, $where);
     }
 
 
