@@ -140,8 +140,12 @@ class Bookings_model extends Model{
 			$date_ymd = date("Y-m-d", $date);
 		}
 		
+		list($y, $m, $d) = explode('-', $date_ymd);
+
 		// Today's weekday number
 		$day_num = date('w', $date);
+		$day_num = ($day_num == 0 ? 7 : $day_num);
+
 
 		// Get info on the current week  
   	$this_week = $this->WeekObj($date, $school_id);
