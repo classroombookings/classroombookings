@@ -139,8 +139,6 @@ class Bookings_model extends Model{
 		} else {
 			$date_ymd = date("Y-m-d", $date);
 		}
-		
-		list($y, $m, $d) = explode('-', $date_ymd);
 
 		// Today's weekday number
 		$day_num = date('w', $date);
