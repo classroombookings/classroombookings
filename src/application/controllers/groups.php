@@ -76,8 +76,6 @@ class Groups extends Configure_Controller
 		$this->data['filter'] = $filter;
 		$this->data['groups'] = $this->groups_model->get_all();
 		
-		$this->layout->set_js('views/groups/index');
-		
 		$this->layout->set_title(lang('configure_groups'));
 		$this->data['subnav_active'] = 'groups';
 	}
