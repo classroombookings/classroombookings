@@ -1,3 +1,39 @@
+var alerts = (function($) {
+	
+	
+	var timer = null;
+	
+	
+	var hide_now = function() {
+		window.clearTimeout(timer);
+		$(".alert.success").remove();
+	}
+	
+	
+	var hide_soon = function() {
+		if ($(".alert.success").length > 0) {
+			timer = window.setTimeout('$(".alert.success").fadeOut("slow");', 5000);
+		}
+	}
+	
+	
+	var add = function(type, text) {
+		hide_now();
+		$("<div>").addClass("hidden alert " + type).text(text).appendTo(".flash-container").fadeIn();
+		if (type === "success") hide_soon();
+	}
+	
+	
+	return {
+		error: function(text) { return add("error", text); },
+		success: function(text) { return add("success", text); },
+		hide_soon: hide_soon
+	}
+	
+	
+})(jQuery);
+
+
 Q.push(function() {
 	
 	// Ensure all POST requests have the CSRF token
@@ -78,11 +114,7 @@ Q.push(function() {
 		$(this).blur();
 	});
 	
-	
-	// Hide success alerts after a short period of time
-	if ($(".alert.success")) {
-		window.setTimeout('$(".alert.success").fadeOut("slow");', 5000);
-	}
+	alerts.hide_soon();
 	
 	
 });
