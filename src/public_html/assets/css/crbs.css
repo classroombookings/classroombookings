@@ -250,9 +250,46 @@
 
 
 
+.role-list {
+	padding: 0;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
 
-.roles td {
-	position: relative;
+.role-list li {
+	list-style: none;
+}
+
+.role-list .handle {
+	vertical-align: middle;
+	margin-right: 5px;
+}
+
+.role-list .heading {
+	line-height: 16px;
+}
+
+li.sortable-placeholder {
+	border: 1px dashed #aaa;
+	background: none;
+	height: 100px;
+	overflow: visible;
+	float: none;
+	display: block;
+	margin-bottom: 20px;
+}
+
+.handles .handle {
+	cursor: move;
+}
+
+.sortable-placeholder {
+	border: 1px solid #ccc;
+	background: #eee;
 }
 
 .roles .assign-item {
@@ -285,7 +322,7 @@
 		-moz-box-sizing: border-box;
 	}
 
-	.role-row {
+	.row.role-row {
 		padding-bottom: 10px;
 		border-bottom: 1px solid #ddd;
 		margin-bottom: 10px;

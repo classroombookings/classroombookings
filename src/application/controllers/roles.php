@@ -61,7 +61,30 @@ class Roles extends Configure_Controller
 		$this->data['subnav_active'] = 'roles';
 		
 		$this->layout->set_js('jquery.autocomplete.min', 'js/plugins/');
+		$this->layout->set_js('jquery.sortable.min', 'js/plugins/');
 		$this->layout->set_js('views/roles/index');
+	}
+	
+	
+	
+	
+	public function set_order()
+	{
+		$order = $this->input->post('order');
+		
+		if ($this->roles_model->set_order($order))
+		{
+			$this->json = array('status' => 'success');
+		}
+		else
+		{
+			$this->json = array(
+				'status' => 'error',
+				'reason' => 'Unable to re-order.',
+			);
+		}
+		
+		return;
 	}
 	
 	

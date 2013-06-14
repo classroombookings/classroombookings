@@ -1,44 +1,50 @@
+<ul class="role-list sortable handles grid_9">
+
 <?php foreach ($roles as $role): ?>
 
-	<div class="grid_12 role-row">
+	<li class="role-row row" data-r_id="<?php echo $role['r_id'] ?>">
 		
-		<div class="row">
+		<div class="grid_3 role-title">
+			<h6 class="heading remove-bottom"><img src="img/ico/arrow_ns.png" class="handle"><?php echo $role['r_name'] ?></h6>
+		</div>
 		
-			<div class="grid_3 role-title">
-				<h6 class="heading remove-bottom"><?php echo $role['r_name'] ?></h6>
-			</div>
+		<div class="grid_6 role-members">
 			
-			<div class="grid_9 role-members">
-				
-				<input type="text" placeholder="Search for a user, group or department..." class="autocomplete" data-r_id="<?php echo $role['r_id'] ?>">
-				
-				<ul class="role-assigned" data-r_id="<?php echo $role['r_id'] ?>">
-					<?php
-					if ( ! empty($role['assigned']['all']))
+			<input type="text" placeholder="Search for a user, group or department..." class="autocomplete" data-r_id="<?php echo $role['r_id'] ?>">
+			
+			<ul class="role-assigned" data-r_id="<?php echo $role['r_id'] ?>">
+				<?php
+				if ( ! empty($role['assigned']['all']))
+				{
+					foreach ($role['assigned']['all'] as $entity)
 					{
-						foreach ($role['assigned']['all'] as $entity)
-						{
-							echo '<li data-e_type="' . $entity['e_type'] . '" data-e_id="' . $entity['e_id'] . '">';
-							echo '<span class="role-entity-name">' . $entity['name'] . '</span> ';
-							echo '<span class="role-entity-type">' . lang('roles_entity_type_' . $entity['e_type']) . '</span> ';
-							echo '<span class="role-entity-remove">' . anchor('#', '&times;') . '</span> ';
-							echo '</li>';
-						}
+						echo '<li data-e_type="' . $entity['e_type'] . '" data-e_id="' . $entity['e_id'] . '">';
+						echo '<span class="role-entity-name">' . $entity['name'] . '</span> ';
+						echo '<span class="role-entity-type">' . lang('roles_entity_type_' . $entity['e_type']) . '</span> ';
+						echo '<span class="role-entity-remove">' . anchor('#', '&times;') . '</span> ';
+						echo '</li>';
 					}
-					?>
-				</ul>
-				
-				<div class="clear"></div>
-				
-			</div>
+				}
+				?>
+			</ul>
 			
 			<div class="clear"></div>
 			
 		</div>
 		
-	</div>
+	</li>
 
 <?php endforeach; ?>
+
+</ul>
+
+<div class="grid_3">
+<div class="hint">
+	<h6>Roles</h6>
+	<p>Each user's permissions are added to them through the roles they are assigned to.</p>
+	<p>Other settings attached to roles are set explicity for that role only. Roles higher up in the list over-ride ones further down.</p> 
+</div>
+</div>
 
 
 	

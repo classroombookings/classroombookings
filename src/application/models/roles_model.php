@@ -106,6 +106,31 @@ class Roles_model extends School_Model
 	
 	
 	/**
+	 * Re-order the roles.
+	 *
+	 * @param array $order		Array of r_id => r_weight
+	 * @return bool
+	 */
+	public function set_order($order = array())
+	{
+		$errors = 0;
+		
+		foreach ($order as $r_id => $r_weight)
+		{
+			$sql = 'UPDATE roles SET r_weight = ? WHERE r_id = ? AND r_s_id = ? LIMIT 1';
+			if ( ! $this->db->query($sql, array($r_weight, $r_id, $this->_s_id)))
+			{
+				$errors++;
+			}
+		}
+		
+		return $errors === 0;
+	}
+	
+	
+	
+	
+	/**
 	 * Assign an existing role to a user, group or department
 	 *
 	 * @param int $r_id		ID of role to assign

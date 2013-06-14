@@ -18,10 +18,11 @@ var role_entity_mgr = (function($) {
 			e.preventDefault();
 			
 			// Get needed info
-			var data = $(this).parents("li").data();
-			data["r_id"] = $(this).parents("ul").data("r_id");
+			var data = $(this).closest("li").data();
+			console.log(data);
+			data["r_id"] = $(this).closest("ul").data("r_id");
 			
-			remove_item(data, $(this).parents("li"));
+			remove_item(data, $(this).closest("li"));
 		});
 		
 	}
@@ -52,6 +53,7 @@ var role_entity_mgr = (function($) {
 					
 					// Clear input box
 					$input.val("");
+					alerts.success(data.e_name + " has been assigned.");
 				} else {
 					alert("Error: " + res.reason);
 				}
@@ -73,6 +75,7 @@ var role_entity_mgr = (function($) {
 			data: data,
 			success: function(r) {
 				$li.remove();
+				alerts.success("The role has been unassigned.");
 			},
 			error: function(r) {
 				alert("An error occurred.");
@@ -90,3 +93,31 @@ var role_entity_mgr = (function($) {
 })(jQuery);
 
 Q.push(role_entity_mgr.init);
+
+Q.push(function() {
+	
+	$(".sortable").sortable({
+		handle: ".handle"
+	}).bind("sortupdate", function() {
+		var $roles = $(".role-list > .role-row");
+		var order = {};
+		var i = 0;
+		$roles.each(function(e) {
+			order[$(this).data("r_id")] = i;
+			i++;
+		});
+		
+		
+		$.ajax({
+			url: CRBS.site_url + "roles/set_order",
+			type: "post",
+			data: {
+				order: order,
+			},
+			success: function() {
+				alerts.success("New role order has been saved.");
+			}
+		});
+	});
+	
+});
