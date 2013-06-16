@@ -160,7 +160,7 @@ CRBS.js_list = <?php echo json_encode($this->layout->get_js_list(), JSON_UNESCAP
 	</script>
 	
 	
-	<div id="delete_dialog" class="hidden"></div>
+	<div id="delete_dialog" style="display: none"></div>
 	
 
 	<script src="js/libraries/LAB.min.js"></script>
