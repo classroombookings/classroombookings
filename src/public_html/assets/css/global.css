@@ -123,6 +123,22 @@ div hr { height: 1px; }
 		margin: 0 0 5px 0;
 	}
 	
+	label.check {
+		display: block;
+		padding-left: 15px;
+		text-indent: -15px;
+	}
+	label.check > input {
+		width: 13px;
+		height: 13px;
+		padding: 0;
+		margin: 0 5px 0 0;
+		vertical-align: bottom;
+		position: relative;
+		top: -1px;
+		*overflow: hidden;
+	}
+	
 	
 	.hint {
 		margin-bottom: 10px;
@@ -255,6 +271,12 @@ div hr { height: 1px; }
 		width: 100%;
 		margin-bottom: 20px;
 		border: 1px solid #ddd;
+	}
+	
+	.grid.darker,
+	.grid.darker td,
+	.grid.darker th {
+		border-color: #aaa;
 	}
 		
 		.grid th,

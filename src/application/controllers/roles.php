@@ -19,6 +19,7 @@ class Roles extends Configure_Controller
 		$this->lang->load('configure');
 		$this->lang->load('authentication');
 		$this->lang->load('roles');
+		$this->lang->load('permissions');
 		
 		$this->load->model(array('departments_model', 'groups_model', 'users_model', 'permissions_model', 'roles_model'));
 		$this->load->helper('role');
@@ -402,12 +403,27 @@ class Roles extends Configure_Controller
 	 * Permissions page (for all roles or just one)
 	 */
 	public function permissions($r_id = 0)
-	{
-		$this->layout->add_breadcrumb(lang('roles_permissions'), 'roles/permissions');
+	{		
+		$this->auth->restrict('permissions.view');
+		
+		$this->data['available_perms'] = $this->permissions_model->get_available_permissions('sections');
+		$this->data['roles'] = $this->roles_model->get_all();
+		
+		// Get permissions set for each role
+		$role_permissions = array();
+		foreach ($this->data['roles'] as $role)
+		{
+			$role_permissions[$role['r_id']] = $this->permissions_model->for_role($role['r_id']);
+		}
+		
+		$this->data['role_permissions'] = $role_permissions;
 		
 		$this->layout->set_title(lang('roles_permissions'));
-		$this->load->library('form');
 		$this->data['subnav_active'] = 'roles/permissions';
+		
+		$this->layout->add_breadcrumb(lang('roles_permissions'), 'roles/permissions');
+		//$this->layout->set_js('views/roles/index');
+		
 	}
 	
 	

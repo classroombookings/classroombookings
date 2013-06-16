@@ -348,6 +348,25 @@ li.sortable-placeholder {
 
 
 
+
+/* $PERMISSIONS
+========== */
+
+	.check.checked { background-color: #DDEACE; }
+	.check.unchecked { background-color: #EACBC5; }
+	
+	.grid.permissions,
+	.grid.permissions td,
+	.grid.permissions th { border: 1px solid #fff; }
+	
+	.grid.permissions .permission-name { background: #eee; }
+	
+	.grid.permissions .role-name { width: 100px; }
+	
+	.grid.permissions td.check label.check { margin: 0; }
+
+
+
 .autocomplete {
 	width: 400px;
 }

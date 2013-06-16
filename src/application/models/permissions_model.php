@@ -41,8 +41,8 @@ class Permissions_model extends MY_Model
 		
 		foreach ($result as $row)
 		{
-			$_section[$row['p_section']][$p['p_id']] = $p['p_name'];
-			$_id[$p['p_id']] = $p['p_name'];
+			$_section[$row['p_section']][$row['p_id']] = $row['p_name'];
+			$_id[$row['p_id']] = $row['p_name'];
 		}
 		
 		return ($format === 'id') ? $_id : $_section;
@@ -116,9 +116,7 @@ class Permissions_model extends MY_Model
 				WHERE
 					p2r_r_id IN (' . $r_id . ')
 				AND
-					r_s_id = ' . config_item('s_id') . '
-				ORDER BY
-					r_weight DESC';
+					r_s_id = ' . config_item('s_id') . '';
 		
 		$query = $this->db->query($sql);
 		
