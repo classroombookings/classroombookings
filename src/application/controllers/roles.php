@@ -30,12 +30,17 @@ class Roles extends Configure_Controller
 			array(
 				'uri' => 'roles',
 				'text' => lang('roles_roles'),
-				'test' => $this->auth->check('permissions.view'),
+				'test' => $this->auth->check('permissions.view'),		// @TODO
+			),
+			array(
+				'uri' => 'roles/set',
+				'text' => lang('roles_add_new'),
+				'test' => $this->auth->check('permissions.view'),		// @TODO
 			),
 			array(
 				'uri' => 'roles/permissions',
 				'text' => lang('roles_permissions'),
-				'test' => $this->auth->check('permissions.view'),
+				'test' => $this->auth->check('permissions.view'),		// @TODO
 			),
 		);
 	}
@@ -50,6 +55,9 @@ class Roles extends Configure_Controller
 	
 	
 	
+	/**
+	 * Roles index page
+	 */
 	public function index()
 	{
 		$this->auth->restrict('permissions.view');
@@ -68,6 +76,132 @@ class Roles extends Configure_Controller
 	
 	
 	
+	/**
+	 * Add or update a role
+	 */
+	public function set($r_id = 0)
+	{
+		if ($r_id)
+		{
+			// Updating role $d_id
+			$this->auth->restrict('permissions.view');		// @TODO
+			$this->data['role'] = $this->roles_model->get($r_id);
+			$title = lang('roles_edit');
+			$this->layout->add_breadcrumb(lang('roles_edit'), 'roles/set/' . $r_id);
+		}
+		else
+		{
+			// Adding new role
+			$this->auth->restrict('permissions.view');		// @TODO
+			$this->data['role'] = array();
+			$title = lang('roles_add_new');
+			$this->layout->add_breadcrumb(lang('roles_add_new'), 'roles/set');
+			$this->data['subnav_active'] = 'roles/set';
+		}
+		
+		if ($this->input->post())
+		{
+			$this->form_validation->set_rules(array(
+				array('field' => 'r_name', 'label' => lang('roles_role_name'), 'rules' => 'required|max_length[32]|trim'),
+			));
+			
+			
+			if ($this->form_validation->run())
+			{
+				$role_data = array(
+					'r_name' => $this->input->post('r_name'),
+				);
+				
+				if ($r_id)
+				{
+					// Update
+					$r_id = $this->roles_model->update($r_id, $role_data);
+					$success = sprintf(lang('roles_update_success'), $role_data['r_name']);
+					$error = sprintf(lang('roles_update_error'), $role_data['r_name']);
+					$event = 'role_update';
+				}
+				else
+				{
+					// Insert
+					$r_id = $this->roles_model->insert($role_data);
+					$success = sprintf(lang('roles_insert_success'), $role_data['r_name']);
+					$error = sprintf(lang('roles_insert_error'), $role_data['r_name']);
+					$event = 'role_insert';
+				}
+				
+				if ($r_id)
+				{
+					// Success
+					
+					Events::trigger($event, array(
+						'r_id' => $r_id,
+						'role' => $role_data,
+					));
+					
+					$this->flash->set('success', $success, TRUE);
+					redirect($this->session->get_return_uri('r', 'roles'));
+				}
+				else
+				{
+					$this->flash->set('error', $error);
+				}
+				
+			}  // end validation->run()
+			
+		}  // end POST check
+		
+		$this->load->library('form');
+	}
+	
+	
+	
+	
+	/**
+	 * Delete a role
+	 */
+	function delete()
+	{
+		$this->auth->restrict('permissions.view');		// @TODO
+		
+		$id = $this->input->post('id');
+		
+		if ( ! $id)
+		{
+			redirect('roles');
+		}
+		
+		$role = $this->roles_model->get($id);
+		
+		if ($this->roles_model->delete($id))
+		{
+			$this->flash->set('success', lang('roles_delete_success'), TRUE);
+			
+			Events::trigger('role_delete', array(
+				'r_id' => $id,
+				'role' => $role,
+			));
+		}
+		else
+		{
+			$this->flash->set('error', lang('roles_delete_error'), TRUE);
+		}
+		
+		redirect($this->input->post('redirect'));
+	}
+	
+	
+	
+	
+	// ========================================================================
+	// AJAX functions for entity search and assign/unassign operations
+	// ========================================================================
+	
+	
+	
+	
+	/**
+	 * AJAX function: handle update of role order
+	 */
 	public function set_order()
 	{
 		$order = $this->input->post('order');
@@ -90,24 +224,9 @@ class Roles extends Configure_Controller
 	
 	
 	
-	public function permissions()
-	{
-		$this->layout->add_breadcrumb(lang('roles_permissions'), 'roles/permissions');
-		
-		$this->layout->set_title(lang('roles_permissions'));
-		$this->load->library('form');
-		$this->data['subnav_active'] = 'roles/permissions';
-	}
-	
-	
-	
-	
-	// ========================================================================
-	// Entities
-	// ========================================================================
-	
-	
-	
+	/**
+	 * Find an entity to assign a role to
+	 */
 	public function entity_search()
 	{
 		$q = $this->input->get('query');
@@ -135,6 +254,9 @@ class Roles extends Configure_Controller
 	
 	
 	
+	/**
+	 * AJAX function: assign a role to an entity
+	 */
 	public function assign()
 	{
 		if ($this->input->post())
@@ -200,6 +322,9 @@ class Roles extends Configure_Controller
 	
 	
 	
+	/**
+	 * AJAX function: unassign a role from an entity
+	 */
 	public function unassign()
 	{
 		if ($this->input->post())
@@ -261,6 +386,28 @@ class Roles extends Configure_Controller
 		}
 		
 		return;
+	}
+	
+	
+	
+	
+	// =======================================================================
+	// Permissions
+	// =======================================================================
+	
+	
+	
+	
+	/**
+	 * Permissions page (for all roles or just one)
+	 */
+	public function permissions($r_id = 0)
+	{
+		$this->layout->add_breadcrumb(lang('roles_permissions'), 'roles/permissions');
+		
+		$this->layout->set_title(lang('roles_permissions'));
+		$this->load->library('form');
+		$this->data['subnav_active'] = 'roles/permissions';
 	}
 	
 	

@@ -90,16 +90,23 @@ class Roles_model extends School_Model
 	 */
 	function get_weight($which = 'max')
 	{
-		$sql['max'] = 'SELECT MAX(r_weight) AS r_weight FROM roles WHERE 1 = 1 ' . $this->sch_sql();
-		$sql['min'] = 'SELECT MIN(r_weight) AS r_weight FROM roles WHERE 1 = 1 ' . $this->sch_sql();
+		$sql = 'SELECT
+					MIN(r_weight) AS `min`,
+					MAX(r_weight) AS `max`
+				FROM
+					roles
+				WHERE
+					1 = 1
+				' . $this->sch_sql();
 		
-		if ( ! array_key_exists($which, $sql))
+		$row = $this->db->query($sql)->row_array();
+		
+		if ( ! array_key_exists($which, $row))
 		{
 			return FALSE;
 		}
 		
-		$row = $this->db->query($sql[$which])->row_array();
-		return (int) $row->r_weight;
+		return (int) $row[$which];
 	}
 	
 	

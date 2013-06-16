@@ -5,10 +5,13 @@
 	<li class="role-row row" data-r_id="<?php echo $role['r_id'] ?>">
 		
 		<div class="grid_3 role-title">
-			<h6 class="heading remove-bottom"><img src="img/ico/arrow_ns.png" class="handle"><?php echo $role['r_name'] ?></h6>
+			<h6 class="heading half-bottom">
+				<img src="img/ico/arrow_ns.png" class="handle">
+				<?php echo anchor('roles/set/' . $role['r_id'], $role['r_name']) ?>
+			</h6>
 		</div>
 		
-		<div class="grid_6 role-members">
+		<div class="grid_5 role-members">
 			
 			<input type="text" placeholder="Search for a user, group or department..." class="autocomplete" data-r_id="<?php echo $role['r_id'] ?>">
 			
@@ -31,6 +34,8 @@
 			<div class="clear"></div>
 			
 		</div>
+		
+		<div class="grid_1"><?php echo role_delete($role) ?></div>
 		
 	</li>
 
