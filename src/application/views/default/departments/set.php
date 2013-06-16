@@ -115,7 +115,7 @@ $this->form->add_button(form_button(array(
 )));
 
 
-echo form_open(current_url(), array('id' => 'group_set_form'));
+echo form_open(current_url(), array('id' => 'department_set_form'));
 echo $this->form->render();
 echo '</form>';
 ?>
