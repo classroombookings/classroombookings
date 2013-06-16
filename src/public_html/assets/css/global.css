@@ -561,4 +561,4 @@ div hr { height: 1px; }
 	.text-left { text-align: left !important; }
 	.text-right { text-align: right !important; }
 	
-	.hidden { display: none; }
+	.hidden { display: none !important; }

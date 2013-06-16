@@ -1,6 +1,6 @@
 <?php $this->load->view('parts/filter-toggle') ?>
 
-<div class="grid_9 filterable content">
+<div class="grid_12 filterable content">
 
 	<?php if ($events): ?>
 
@@ -54,6 +54,6 @@
 </div>
 
 
-<div class="grid_3 filterable filter">
+<div class="grid_3 filterable filter hidden">
 <?php $this->load->view('default/event_log/index/filter') ?>
 </div>

@@ -95,11 +95,11 @@ Q.push(function() {
 		if (new_state) {
 			// Show filter
 			$(".filterable.content").removeClass("grid_12").addClass("grid_9");
-			$(".filterable.filter").show().find("input:first").focus();
+			$(".filterable.filter").removeClass("hidden").find("input:first").focus();
 		} else {
 			// Hide filter
 			$(".filterable.content").removeClass("grid_9").addClass("grid_12");
-			$(".filterable.filter").hide();
+			$(".filterable.filter").addClass("hidden");
 		}
 	});
 	$(".toggle-filter").trigger("click");
