@@ -36,7 +36,7 @@
 			<tr class="permission-row">
 				
 				<td class="permission-name section-<?php echo $section_name ?>">
-					<?php echo $p_name ?>
+					<?php echo lang($p_name) ?>
 				</td>
 				
 				<?php foreach ($roles as $role): ?>
