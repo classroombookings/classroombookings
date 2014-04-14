@@ -53,7 +53,7 @@ $t = 1;
 <fieldset><legend accesskey="L" tabindex="<?php echo $t; $t++; ?>">School Logo</legend>
 
 
-Please use this section to upload a school logo. Thumbnails will be created of large images. 
+Please use this section to upload a school logo. Thumbnails will be created of large images.
 
 
 <p>
@@ -101,7 +101,7 @@ Please use this section to upload a school logo. Thumbnails will be created of l
   <label for="logo_delete">Delete logo?</label>
   <?php
 	#$photo = @field($this->validation->name, $room->name);
-	echo form_checkbox( array( 
+	echo form_checkbox( array(
 		'name' => 'logo_delete',
 		'id' => 'logo_delete',
 		'value' => 'true',
@@ -141,7 +141,7 @@ Please use this section to upload a school logo. Thumbnails will be created of l
 <p>
 	<label for="bia">Booking in advance</label>
   <?php
-	$bia = @field($this->validation->bia, $info->bia);
+	$bia = (int) @field($this->validation->bia, $info->bia);
 	echo form_input(array(
 		'name' => 'bia',
 		'id' => 'bia',
