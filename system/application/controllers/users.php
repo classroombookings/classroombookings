@@ -7,15 +7,15 @@ class Users extends Controller {
 
   function Users(){
     parent::Controller();
-    
+
 		// Load language
   	$this->lang->load('crbs', 'english');
-    
+
 		// Get school id
     $this->school_id = $this->session->userdata('school_id');
-    
+
     $this->output->enable_profiler($this->session->userdata('profiler'));
-    
+
     // Check user is logged in & is admin
     if( !$this->userauth->loggedin() ){
     	$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True) );
@@ -31,16 +31,16 @@ class Users extends Controller {
     $this->load->model('users_model', 'M_users');
     $this->load->helper('iconsel');
   }
-  
-  
-  
-  
-  
+
+
+
+
+
   function index($start_at = NULL){
   	if($start_at == NULL){ $start_at = $this->uri->segment(3); }
-  	
+
   	$this->load->library('pagination');
-  	
+
 		// Init pagination
 		$pages['base_url'] = site_url('users/index');
 		$pages['total_rows'] = $this->crud->Count('users');
@@ -54,55 +54,55 @@ class Users extends Controller {
 		$pages['next_link'] = '<img src="webroot/images/ui/resultset_next.gif" width="16" height"16" alt="Next" title="Next" align="top" />';
 		$pages['prev_link'] = '<img src="webroot/images/ui/resultset_previous.gif" width="16" height"16" alt="Previous" title="Previous" align="top" />';
 		$this->pagination->initialize($pages);
-		
+
 		$body['pagelinks'] = $this->pagination->create_links();
 		// Get list of rooms from database
 		$body['users'] = $this->crud->Get('users', NULL, NULL, $this->school_id, 'authlevel asc, enabled asc, username asc', $pages['per_page'], $start_at );
 		#$body['users'] = $this->M_users->Get();	//$this->session->userdata('school_id'));
-		
+
 		// Set main layout
 		$layout['title'] = 'Manage Users';
 		$layout['showtitle'] = $layout['title'];
 		$layout['body'] = $this->load->view('users/users_index', $body, True);
 		$this->load->view('layout', $layout);
   }
-  
-  
-  
-  
-  
+
+
+
+
+
   /* function index(){
   	$body['users'] = $this->M_users->Get();	//$this->session->userdata('school_id'));
-  	
+
 		$layout['title'] = 'Manage Users';
 		$layout['showtitle'] = $layout['title'];
 		$layout['body'] = $this->load->view('users/users_index', $body, True);
 		$this->load->view('layout', $layout);
   } */
-  
-  
-  
-  
-  
+
+
+
+
+
 	function add(){
 		$body['departments'] = $this->crud->Get('departments');
 		// Load view
 		$layout['title'] = 'Add User';
 		$layout['showtitle'] = $layout['title'];
-		
+
 		$cols[0]['content'] = $this->load->view('users/users_add', $body, True);
 		$cols[0]['width'] = '70%';
 		$cols[1]['content'] = $this->load->view('users/users_add_side', $body, True);
 		$cols[1]['width'] = '30%';
-		
+
 		$layout['body'] = $this->load->view('columns', $cols, True);
 		$this->load->view('layout', $layout);
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	function edit($id = NULL){
 		if($id == NULL){ $id = $this->uri->segment(3); }
 		$body['user'] = $this->M_users->Get($id);
@@ -112,30 +112,30 @@ class Users extends Controller {
 		// Load view
 		$layout['title'] = 'Edit User';
 		$layout['showtitle'] = $layout['title'];
-		
+
 		$cols[0]['content'] = $this->load->view('users/users_add', $body, True);
 		$cols[0]['width'] = '70%';
 		$cols[1]['content'] = $this->load->view('users/users_add_side', $body, True);
 		$cols[1]['width'] = '30%';
-		
+
 		$layout['body'] = $this->load->view('columns', $cols, True);
 		$this->load->view( 'layout', $layout);
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * Save
 	 */
 	function save(){
-		#print_r($_POST); 
-	 
+		#print_r($_POST);
+
 	 	// Get ID from form
 		$user_id = $this->input->post('user_id');
-		
-		// Load validation		
+
+		// Load validation
 		#$this->load->library('validation');
 
 		// Validation rules
@@ -145,7 +145,7 @@ class Users extends Controller {
 		$vrules['password2']			= 'max_length[64]|min_length[1]|matches[password1]';
 		$vrules['authlevel']			= 'required';
 		$vrules['bquota']					= 'numeric|max_length[3]';
-		$vrules['email']          = 'required|max_length[255]|valid_email';
+		$vrules['email']          = 'max_length[255]|valid_email';
 		$vrules['firstname']			= 'max_length[20]';
 		$vrules['lastname']				= 'max_length[20]';
 		$vrules['displayname']		= 'max_length[20]';
@@ -170,20 +170,20 @@ class Users extends Controller {
 
 		// Set the error delims to a nice styled red hint under the fields
 		$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
-		
+
     if ($this->validation->run() == FALSE){
-    
+
       // Validation failed
 			if($user_id != "X"){
 				$this->edit($user_id);
 			} else {
 				$this->add();
 			}
-			
+
 		} else {
-		
+
 			// Validation succeeded!
-			
+
 			$data['username'] 				= $this->input->post('username');
 			$data['authlevel'] 				= $this->input->post('authlevel');
 			$data['enabled'] 					= ($this->input->post('enabled') == '1') ? 1 : 0;
@@ -221,26 +221,26 @@ class Users extends Controller {
 					}
 				}
 			}
-			
+
 			// Go back to index
 			$this->session->set_flashdata('saved', $flashmsg);
 			redirect('users', 'redirect');
-		
+
 		}
-		
+
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * Controller function to delete a user
 	 */
 	function delete(){
 	  // Get ID from URL
 		$user_id = $this->uri->segment(3);
-		
+
 		// Check if a form has been submitted; if not - show it to ask user confirmation
 		if( $this->input->post('id') ){
 			// Form has been submitted (so the POST value exists)
@@ -272,52 +272,52 @@ class Users extends Controller {
 			}
 		}
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	function import(){
 		$layout['title'] = 'Import Users';
 		$layout['showtitle'] = $layout['title'];
 		$layout['body'] = $this->load->view('users/import/stage1', NULL, True);
 		$this->load->view('layout', $layout);
 	}
-	
-	
+
+
 	function import2(){
 		// Load upload library
 		$this->load->library('upload');
 
 		// Load file helper library
 		$this->load->helper('file');
-		
+
 		// Upload config
-		$upload['upload_path'] 			= 'temp'; 
+		$upload['upload_path'] 			= 'temp';
 		$upload['allowed_types']		= 'csv';
 		$upload['max_size']					= '1024';
 		$upload['encrypt_name']			= true;
 		$this->upload->initialize($upload);
-		
+
 		// Get default values
 		$password = $this->input->post('password');
 		$authlevel = $this->input->post('authlevel');
-		
+
 		// Do upload of CSV
 		if(!$this->upload->do_upload()){
-		
+
 			// Upload failed
 			$error = $this->upload->display_errors('<div class="msgbox error">','</div>');
-			
+
 		} else {
-		
+
 			// Upload OK
 			$csv = $this->upload->data();
 			$file = $csv['full_path'];
 			$users = array();
 			$user = 0;
 			$handle = fopen($csv['full_path'], 'r');
-			
+
 			// Parse CSV file
 			while(($csvdata = fgetcsv($handle, filesize($csv['full_path']), ',')) !== FALSE){
 				// Get columns
@@ -326,7 +326,7 @@ class Users extends Controller {
 				$users[$user]['lastname'] = $csvdata[2];
 				$users[$user]['email'] = $csvdata[3];
 				$users[$user]['password'] = (isset($csvdata[4])) ? $csvdata[4] : $password;
-				
+
 				// Data array to send to database
 				$data['username'] 				= $users[$user]['username'];
 				$data['authlevel'] 				= $authlevel;
@@ -338,8 +338,8 @@ class Users extends Controller {
 				$data['department_id']		= NULL;
 				$data['ext']							= NULL;
 				$data['password']					= sha1($users[$user]['password']);
-				
-				// Run checks before finally submitting to database.				
+
+				// Run checks before finally submitting to database.
 				if(!$data['username']){
 					$users[$user]['_status'] = 'Failed (No username)';
 				} else {
@@ -359,39 +359,39 @@ class Users extends Controller {
 						}
 					}
 				}
-				
+
 				unset($data);
 				$user++;
-				
+
 			}
-			
+
 			// All done, delete file
 			@unlink($csv['full_path']);
-			
+
 		}
-		
-		
+
+
 		// Check what we need to do - if $error then the file upload failed.
 		if(isset($error)){
 			// The file upload failed
 			$body['result'] = $error;
 			$layout['showtitle'] = 'CSV Upload Failed';
-		} else { 	
+		} else {
 			// Put user data into array
 			$body['result'] = $users;
 			$layout['showtitle'] = 'User Import Results';
 		}
-		
-		
+
+
 		// Load view
 		$layout['title'] = 'Imported Users';
 		$layout['body'] = $this->load->view('users/import/stage2', $body, True);
 		$this->load->view('layout', $layout);
-		
+
 	}
-	
-	
-	
+
+
+
 	function _userexists($username){
 		$sql = "SELECT user_id FROM users WHERE username='$username' LIMIT 1";
 		$query = $this->db->query($sql);
@@ -401,40 +401,40 @@ class Users extends Controller {
 			return false;
 		}
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/*function import(){
 		// Load upload library
 		$this->load->library('upload');
 
 		// Load file helper library
 		$this->load->helper('file');
-		
+
 		// Upload config
-		$upload['upload_path'] 			= 'temp'; 
+		$upload['upload_path'] 			= 'temp';
 		$upload['allowed_types']		= 'csv';
 		$upload['max_size']					= '1024';
 		$upload['encrypt_name']			= true;
 		$this->upload->initialize($upload);
-		
+
 		#echo var_export($_POST, true);
 		#$stage = $this->uri->segment(3,1);
 
-		// Set the number of stages in this wizard		
+		// Set the number of stages in this wizard
 		$stage_config['first'] = 1;
 		$stage_config['last'] = 3;
 
 		// Get stage number from post var. If first time, load first stage
 		$stage = ($this->input->post('stage')) ? $this->input->post('stage') : 1;
-		
+
 		$continue = true;
-	
+
 		switch($this->input->post('stage')){
 			case 1:
-				
+
 				// Uploading CSV file
 				#echo "Processing CSV file";
 				if(!$this->upload->do_upload()){
@@ -455,7 +455,7 @@ class Users extends Controller {
 					$_POST['csvdata'] = serialize($rows);
 					$continue = true;
 				}
-				
+
 			break;
 		}
 
@@ -464,14 +464,14 @@ class Users extends Controller {
 			if($this->input->post('submit') == '   < Back   '){ $stage--; unset($_POST); }
 			if($this->input->post('submit') == '   Next >   '){ $stage++; }
 		}
-		
+
 		// Layout
 		$layout['title'] = 'Import Users - Stage '.$stage;
 		$layout['showtitle'] = $layout['title'];
-		
+
 		// Put the stage number into the post array (which is then passed to the form creation helper to make hidden inputs)
 		$_POST['stage'] = $stage;
-		
+
 		// Load view!
 		$body['stage'] = $stage;
 		$body['post'] = $_POST;
