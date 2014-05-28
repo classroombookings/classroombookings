@@ -10,7 +10,7 @@ class Rooms extends Controller {
 
 		// Load language
   	$this->lang->load('crbs', 'english');
-    
+
 		// Get school id
     $this->school_id = $this->session->userdata('school_id');
 
@@ -40,26 +40,26 @@ class Rooms extends Controller {
 		$this->load->script('resize');
     #$this->load->scaffolding('rooms');
   }
-  
-  
-  
-  
+
+
+
+
   function info(){
   	#$this->output->enable_profiler(true);
-  	$this->output->cache(60*24*7);
+  	//$this->output->cache(60*24*7);
   	$school_id = $this->uri->segment(3);
   	$room_id = $this->uri->segment(4);
-		
+
 		$room['users'] = $this->M_users->Get(NULL, $this->school_id, array('user_id', 'username', 'displayname'), 'lastname asc, username asc' );
-		
+
 		$room['fields'] = $this->M_rooms->GetFields(NULL, $school_id);
-		$room['fieldvalues'] = $this->M_rooms->GetFieldValues($room_id);		
+		$room['fieldvalues'] = $this->M_rooms->GetFieldValues($room_id);
 		$room['room'] = $this->M_rooms->Get($room_id, $school_id);
-		
+
 		#$room = $this->M_rooms->GetInfo($room_id, $school_id);
 		#$room['fields'] = $this->M_rooms->GetFields(NULL, $this->school_id);
 		#$room['fieldvalues'] = $this->M_rooms->GetFieldValues($room_id);
-		
+
 		$layout['body'] = $this->load->view('rooms/room_info', $room, True);
 		$layout['title'] = $room['room']->name;
 		#print_r($room);
@@ -95,20 +95,20 @@ class Rooms extends Controller {
 		// Load view
 		$layout['title'] = 'Add Room';
 		$layout['showtitle'] = $layout['title'];
-		
+
 		$cols[0]['content'] = $this->load->view('rooms/rooms_add', $body, True);
 		$cols[0]['width'] = '70%';
 		$cols[1]['content'] = $this->load->view('rooms/rooms_add_side', $body, True);
 		$cols[1]['width'] = '30%';
-		
+
 		$layout['body'] = $this->load->view('columns', $cols, True);	#$this->load->view('rooms/rooms_add', $body, True);
 		$this->load->view('layout', $layout);
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * Controller function to handle an edit
 	 */
@@ -116,51 +116,51 @@ class Rooms extends Controller {
 		if($id == NULL){ $id = $this->uri->segment(3); }
 		$body['users'] = $this->M_users->Get(NULL, NULL, array('user_id', 'username', 'displayname'), 'lastname asc, username asc' );
 		$body['fields'] = $this->M_rooms->GetFields($this->session->userdata('schoolcode'));
-		$body['fieldvalues'] = $this->M_rooms->GetFieldValues($id);		
+		$body['fieldvalues'] = $this->M_rooms->GetFieldValues($id);
 		$body['room'] = $this->M_rooms->Get($id, $this->school_id);
 		#print_r($body);
 		// Load view
 		$layout['title'] = 'Edit Room';
 		$layout['showtitle'] = $layout['title'];
-		
+
 		$cols[0]['content'] = $this->load->view('rooms/rooms_add', $body, True);
 		$cols[0]['width'] = '70%';
 		$cols[1]['content'] = $this->load->view('rooms/rooms_add_side', $body, True);
 		$cols[1]['width'] = '30%';
-		
+
 		$layout['body'] = $this->load->view('columns', $cols, True);	#$this->load->view('rooms/rooms_add', $body, True);
 		$this->load->view( 'layout', $layout);
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * Save
 	 */
 	 function save(){
-	 
+
 	 	// Get ID from form
 		$room_id = $this->input->post('room_id');
-		
+
 		// Load image manipulation library
 		$this->load->library('image_lib');
-		
+
 		// Load upload library
 		$this->load->library('upload');
 
 		// Load file helper library
 		$this->load->helper('file');
-		
+
 		// Upload config
-		$upload['upload_path'] 			= './webroot/images/roomphotos/temp'; 
+		$upload['upload_path'] 			= './webroot/images/roomphotos/temp';
 		$upload['allowed_types']		= 'jpg|jpeg';
 		$upload['max_size']					= '4096';
 		$upload['max_width']				= '3000';
 		$upload['max_height']				= '3000';
 		$this->upload->initialize($upload);
-		
+
 		// Validation rules
 		$vrules['room_id']		= 'required';
 		$vrules['name']				= 'required|min_length[2]|max_length[20]';
@@ -184,18 +184,18 @@ class Rooms extends Controller {
 
 		// Set the error delims to a nice styled red hint under the fields
 		$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
-		
+
     if ($this->validation->run() == FALSE){
-    
+
       // Validation failed
 			if($room_id != "X"){
 				return $this->edit($room_id);
 			} else {
 				return $this->add();
 			}
-			
+
 		} else {
-		
+
 			log_message('debug', 'CRBS: Validation succeeded');
 
 			if( !$this->upload->do_upload() ){
@@ -206,7 +206,7 @@ class Rooms extends Controller {
 					echo $error;
 					if( $room_id != "X"){
 						return $this->edit($room_id);
-						
+
 					} else {
 						return $this->add();
 					}
@@ -219,14 +219,14 @@ class Rooms extends Controller {
 
 				// new filename is <md5(rawname sessionid)>.<extension>
 				$newfile = md5($photo['raw_name'].$this->session->userdata('session_id')) . $photo['file_ext'];
-				
+
 				$thumbs['image_library']		= 'GD2';
 				$thumbs['source_image']			= $photo['full_path'];
 				$thumbs['create_thumb']			= false;
 				$thumbs['maintain_ratio']		= true;
 				$thumbs['master_dim']				= 'auto';
 				$this->image_lib->initialize($thumbs);
-				
+
 				$errcount = 0;
 
 				$thumbs['new_image']				= 'webroot/images/roomphotos/640/'.$newfile;
@@ -246,19 +246,19 @@ class Rooms extends Controller {
 				$thumbs['height']						= 120;
 				$this->image_lib->initialize($thumbs);
 				if( !$this->image_lib->resize() ){ $errcount++; }
-				
+
 				log_message('debug', 'CRBS: Full path to uploaded photo: '.$photo['full_path']);
 				log_message('debug', 'CRBS: Resize room photo image error count: '.$errcount);
-				
+
 				if( $errcount == 0 ){
 					unlink($photo['full_path']);
 				}
 
-				// Done				
+				// Done
 				$upload = true;
 				//print_r($photo);
 			}
-		  
+
 		  // Validation succeeded!
 			/*$data = array	(
 											'rooms.name'				=> $this->input->post('name'),
@@ -280,12 +280,12 @@ class Rooms extends Controller {
 			if( $upload == true ){
 				$data['rooms.photo'] = $newfile;
 			}
-			
+
 			// If user clicked the 'delete photo' button on an edit, delete photo
 			if( $this->input->post('photo_delete') != NULL && $room_id != 'X'){
 				$this->M_rooms->delete_photo($room_id);
 			}
-			
+
 			$fields = $this->M_rooms->GetFields($this->session->userdata('schoolcode'));
 			foreach($fields as $field){
 				$fieldvalues[$field->field_id] = $this->input->post('f'.$field->field_id);
@@ -324,7 +324,7 @@ class Rooms extends Controller {
 	function delete(){
 	  // Get ID from URL
 		$id = $this->uri->segment(3);
-		
+
 		// Check if a form has been submitted; if not - show it to ask user confirmation
 		if( $this->input->post('id') ){
 			// Form has been submitted (so the POST value exists)
@@ -347,19 +347,19 @@ class Rooms extends Controller {
 			$this->load->view('layout', $layout);
 		}
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * FIELDS
-	 */	 	
-	
-	
-	
-	
-	
+	 */
+
+
+
+
+
 	function fields_index(){
 		$body['options_list'] = $this->M_rooms->options;
 		// Get list of rooms from database
@@ -370,22 +370,22 @@ class Rooms extends Controller {
 		$layout['body'] = $this->load->view('rooms/fields/rooms_fields_index', $body, True);
 		$this->load->view('layout', $layout);
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	function fields_add(){
 		$body['options_list'] = $this->M_rooms->options;
 		// Load view
 		$layout['title'] = 'Add Field';
 		$layout['showtitle'] = $layout['title'];
-		
+
 		$cols[0]['content'] = $this->load->view('rooms/fields/rooms_fields_add', $body, True);
 		$cols[0]['width'] = '70%';
 		$cols[1]['content'] = '';	//$this->load->view('rooms/rooms_add_side', $body, True);
 		$cols[1]['width'] = '30%';
-		
+
 		$layout['body'] = $this->load->view('columns', $cols, True);	#$this->load->view('rooms/rooms_add', $body, True);
 		$this->load->view('layout', $layout);
 	}
@@ -405,26 +405,26 @@ class Rooms extends Controller {
 		// Load view
 		$layout['title'] = 'Edit Field';
 		$layout['showtitle'] = $layout['title'];
-		
+
 		$cols[0]['content'] = $this->load->view('rooms/fields/rooms_fields_add', $body, True);
 		$cols[0]['width'] = '70%';
 		$cols[1]['content'] = '';	//$this->load->view('rooms/rooms_add_side', $body, True);
 		$cols[1]['width'] = '30%';
-		
+
 		$layout['body'] = $this->load->view('columns', $cols, True);	#$this->load->view('rooms/rooms_add', $body, True);
 		$this->load->view( 'layout', $layout);
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	 function fields_save(){
-	 
+
 	 	// Get ID from form
 		$field_id = $this->input->post('field_id');
-		
-		// Load validation		
+
+		// Load validation
 		#$this->load->library('validation');
 
 		// Validation rules
@@ -437,21 +437,21 @@ class Rooms extends Controller {
 		$vfields['name']				= 'Field name';
 		$vfields['items']				= 'Items';
 		$this->validation->set_fields($vfields);
-		
+
 		// Set the error delims to a nice styled red hint under the fields
 		$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
-		
+
     if ($this->validation->run() == FALSE){
-    
+
       // Validation failed
 			if($field_id != "X"){
 				$this->fields_edit($field_id);
 			} else {
 				$this->fields_add();
 			}
-			
+
 		} else {
-		
+
 		  // Validation succeeded!
 			$data['name']				= $this->input->post('name');
 			$data['type']				= $this->input->post('type');
@@ -471,13 +471,13 @@ class Rooms extends Controller {
 			// Go back to index
 			redirect('rooms/fields', 'redirect');
 		}
-		
+
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * Controller function to delete a room
 	 */
@@ -505,11 +505,11 @@ class Rooms extends Controller {
 			$layout['body'] = $this->load->view('partials/deleteconfirm', $body, TRUE);
 			$this->load->view('layout', $layout);
 		}
-	}	
-	
-	
-	
-	
-	
+	}
+
+
+
+
+
 }
 ?>
