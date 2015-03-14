@@ -52,7 +52,7 @@ class Bookings_model extends Model{
 
 
 
-  function BookingCell($data, $key, $rooms, $users, $room_id, $url){
+  function BookingCell($data, $key, $rooms, $users, $room_id, $url, $booking_date_ymd = '', $holidays = array()){
 
 		// Check if there is a booking
   	if(isset($data[$key])){
@@ -108,7 +108,14 @@ class Bookings_model extends Model{
 				$cell['body'] .= '<a onclick="if(!confirm(\''.$cancel_msg.'\')){return false;}" href="'.$cancel_url.'" title="Cancel this booking"><img src="webroot/images/ui/delete.gif" width="16" height="16" alt="Cancel" title="Cancel this booking" hspace="8" /></a>';
 			}
 
-		} else {
+		}
+		elseif (isset($holidays[$booking_date_ymd]))
+		{
+			$cell['class'] = 'holiday';
+			$cell['body'] = $holidays[$booking_date_ymd][0]->name;
+		}
+		else
+		{
 
 			// No bookings
 			$book_url = site_url('bookings/book/'.$url);
@@ -117,7 +124,6 @@ class Bookings_model extends Model{
 			if($this->userauth->CheckAuthLevel(ADMINISTRATOR, $this->authlevel)){
 				$cell['body'] .= '<input type="checkbox" name="recurring[]" value="'.$url.'" />';
 			}
-
 
 		}
   	#$cell['width'] =
@@ -262,17 +268,59 @@ class Bookings_model extends Model{
 			$err = true;
 		}
 
-
 		// See if our selected date is in a holiday
-		$query_str = "SELECT * "
-								."FROM holidays "
-								."WHERE date_start <= '$date_ymd' "
-								."AND date_end >= '$date_ymd' "
-								."LIMIT 1";
-		$query = $this->db->query($query_str);
-		if($query->num_rows() == 1){
+		if ($display === 'day')
+		{
+			// If we are day at a time, it is easy!
+			// = get me any holidays where this day is anywhere in it
+			$sql = "SELECT *
+					FROM holidays
+					WHERE date_start <= '{$date_ymd}'
+					AND date_end >= '$date_ymd' ";
+		}
+		else
+		{
+			// If we are room/week at a time, little bit more complex
+			$week_start = date('Y-m-d', strtotime($this_week->date));
+			$week_end = date('Y-m-d', strtotime('+' . count($school['days_list']) . ' days', strtotime($this_week->date)));
+
+			$sql = "SELECT *
+					FROM holidays
+					WHERE
+					/* Starts before this week, ends this week */
+					(date_start <= '$week_start' AND date_end <= '$week_end')
+					/* Starts this week, ends this week */
+					OR (date_start >= '$week_start' AND date_end <= '$week_end')
+					/* Starts this week, ends after this week */
+					OR (date_start >= '$week_start' AND date_end >= '$week_end')
+					";
+		}
+
+
+		$query = $this->db->query($sql);
+		$holidays = $query->result();
+
+		// Organise our holidays by date
+		$holiday_dates = array();
+		$holiday_interval = new DateInterval('P1D');
+
+		foreach ($holidays as $holiday)
+		{
+			// Get all dates between date_start & date_end
+			$start_dt = new DateTime($holiday->date_start);
+			$end_dt = new DateTime($holiday->date_end);
+			$end_dt->modify('+1 day');
+			$range = new DatePeriod($start_dt, $holiday_interval, $end_dt);
+			foreach ($range as $date)
+			{
+				$holiday_ymd = $date->format('Y-m-d');
+				$holiday_dates[ $holiday_ymd ][] = $holiday;
+			}
+		}
+
+		if ($display === 'day' && $query->num_rows() > 0) {
 			// The date selected IS in a holiday - give them a nice message saying so.
-			$holiday = $query->row();
+			$holiday = current($holidays);
 			$msg = sprintf(
 				'The date you selected is during a holiday priod (%s, %s - %s).',
 				$holiday->name,
@@ -296,10 +344,10 @@ class Bookings_model extends Model{
 				case 'forward':
 				default:
 					$uri['date'] = $next_date;
-					$html .= '<p><strong><a href="'.site_url('bookings/index/date/'.$next_date.'/direction/forward').'">Click here to go to the week immediately after the holiday.</a></strong></p>';
+					$html .= '<p><strong><a href="'.site_url('bookings/index/date/'.$next_date.'/direction/forward').'">Click here to view immediately after the holiday.</a></strong></p>';
 				break;
 				case 'back':
-					$html .= '<p><strong><a href="'.site_url('bookings/index/date/'.$prev_date.'/direction/back').'">Click here to go to the week immediately before the holiday.</a></strong></p>';
+					$html .= '<p><strong><a href="'.site_url('bookings/index/date/'.$prev_date.'/direction/back').'">Click here to view immediately before the holiday.</a></strong></p>';
 				break;
 			}
 			#return $html;
@@ -474,7 +522,7 @@ class Bookings_model extends Model{
 								$school['days_bitmask']->reverse_mask($period->days);
 								if($school['days_bitmask']->bit_isset($day_num)){
 									// Bookable
-									$html .= $this->BookingCell($bookings, $period->period_id, $rooms, $users, $room_id, $url);
+									$html .= $this->BookingCell($bookings, $period->period_id, $rooms, $users, $room_id, $url, $booking_date_ymd, $holiday_dates);
 								} else {
 									// Period not bookable on this day, do not show or allow any bookings
 									$html .= '<td align="center">&nbsp;</td>';
@@ -552,7 +600,7 @@ class Bookings_model extends Model{
 								$school['days_bitmask']->reverse_mask($period->days);
 								if($school['days_bitmask']->bit_isset($day_num)){
 									// Bookable
-									$html .= $this->BookingCell($bookings, $day_num, $rooms, $users, $room_id, $url);
+									$html .= $this->BookingCell($bookings, $day_num, $rooms, $users, $room_id, $url, $booking_date_ymd, $holiday_dates);
 								} else {
 									// Period not bookable on this day, do not show or allow any bookings
 									$html .= '<td align="center">&nbsp;</td>';
@@ -632,7 +680,7 @@ class Bookings_model extends Model{
 								$school['days_bitmask']->reverse_mask($period->days);
 								if($school['days_bitmask']->bit_isset($day_num)){
 									// Bookable
-									$html .= $this->BookingCell($bookings, $period->period_id, $rooms, $users, $room->room_id, $url);
+									$html .= $this->BookingCell($bookings, $period->period_id, $rooms, $users, $room->room_id, $url, $date_ymd, $holiday_dates);
 								} else {
 									// Period not bookable on this day, do not show or allow any bookings
 									$html .= '<td align="center">&nbsp;</td>';
@@ -690,7 +738,7 @@ class Bookings_model extends Model{
 								$school['days_bitmask']->reverse_mask($period->days);
 								if($school['days_bitmask']->bit_isset($day_num)){
 									// Bookable
-									$html .= $this->BookingCell($bookings, $room->room_id, $rooms, $users, $room->room_id, $url);
+									$html .= $this->BookingCell($bookings, $room->room_id, $rooms, $users, $room->room_id, $url, $date_ymd, $holiday_dates);
 								} else {
 									// Period not bookable on this day, do not show or allow any bookings
 									$html .= '<td align="center">&nbsp;</td>';

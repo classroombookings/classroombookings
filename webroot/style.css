@@ -1,7 +1,7 @@
 /*
 
   Colours
-  
+
     #ffa500   Light orange (h1, h2)
     #ff6400   Dark orange (title, border)
     #0080c0   Dark blue (title)
@@ -88,10 +88,10 @@ img{ border:0; }
 }
 
 .noticebox{
-  background-color:#FFFFBF; 
-  border:1px solid #808080; 
-  padding:5px; 
-  text-align:center; 
+  background-color:#FFFFBF;
+  border:1px solid #808080;
+  padding:5px;
+  text-align:center;
 }
 .noticebox h1{
   border-bottom:1px solid #808080;
@@ -142,9 +142,9 @@ A:visited:hover{
 }
 
 .ad_box{
-  width:142px; 
+  width:142px;
   height:342px;
-  padding-top:5px; 
+  padding-top:5px;
   padding-left:19px;
   padding-right:19px;
   background-image:url(images/side_banner.gif);
@@ -295,7 +295,7 @@ div.column div.c{ margin:0; }
 div.column div#c1{margin-right:10px;}
 div.column div#c2{margin-left:10px;}
 
-/* Forms */ 
+/* Forms */
 input,select,textarea,file{
 	font-family:Tahoma,verdana,arial,sans-serif;
   padding:0px;
@@ -395,7 +395,7 @@ margin-left: 3px;
 }
 
 .cssform div.formfield{margin-left:150px;}
-	
+
 
 .cssform p.error span, span.error{ background:#FBE6F2; color:#000; padding:2px; line-height:150%;}
 .cssform p.error span{ font-size:105%; }
@@ -459,6 +459,7 @@ table.bookings td{ font-size:90%;font-family:tahoma,verdana,sans-serif; }
 table.bookings td.free{ background:#fff;border:1px solid #ccc; /*#D3E6CF;  /*#C7F2BC;*/ color:#000; }   /* Free period */
 table.bookings td.static{ background:#E68A73; color:#fff; border:1px solid #E68A73; }   /* Timetabled lesson */
 table.bookings td.staff{ background:#3082BF; color:#fff; border:1px solid #3082BF; }    /* Booked by staff */
+table.bookings td.holiday{ background:#f6f6f6; color:#333; border:1px solid #ccc; }    /* Holiday */
 
 table.bookings td.free a{ color:#00f;text-decoration:none; display:block;}
 table.bookings td.free a:hover{ color:#f00;text-decoration:none; }
