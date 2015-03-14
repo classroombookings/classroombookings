@@ -286,11 +286,13 @@ class Rooms extends Controller {
 				$this->M_rooms->delete_photo($room_id);
 			}
 
+			$fieldvalues = array();
 			$fields = $this->M_rooms->GetFields($this->session->userdata('schoolcode'));
+			$fields = (is_array($fields) ? $fields : array());
 			foreach($fields as $field){
 				$fieldvalues[$field->field_id] = $this->input->post('f'.$field->field_id);
 			}
-			#print_r($fieldvalues);
+
 
 			// Now see if we are editing or adding
 			if($room_id == 'X'){
