@@ -276,7 +276,7 @@ class Bookings_model extends Model{
 			$sql = "SELECT *
 					FROM holidays
 					WHERE date_start <= '{$date_ymd}'
-					AND date_end >= '$date_ymd' ";
+					AND date_end >= '{$date_ymd}' ";
 		}
 		else
 		{
@@ -318,9 +318,9 @@ class Bookings_model extends Model{
 			}
 		}
 
-		if ($display === 'day' && $query->num_rows() > 0) {
+		if ($display === 'day' && isset($holiday_dates[$date_ymd])) {
 			// The date selected IS in a holiday - give them a nice message saying so.
-			$holiday = current($holidays);
+			$holiday = $holiday_dates[ $date_ymd ][0];
 			$msg = sprintf(
 				'The date you selected is during a holiday priod (%s, %s - %s).',
 				$holiday->name,
@@ -338,6 +338,10 @@ class Bookings_model extends Model{
 			} elseif ($display === 'room') {
 				$next_date = date("Y-m-d", strtotime("+1 week", strtotime($holiday->date_end)));
 				$prev_date = date("Y-m-d", strtotime("-1 week", strtotime($holiday->date_start)));
+			}
+
+			if ( ! isset($uri['direction'])) {
+				$uri['direction'] = 'forward';
 			}
 
 			switch($uri['direction']){
