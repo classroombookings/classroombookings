@@ -264,7 +264,6 @@ class Bookings extends Controller {
 
 				}
 			}
-
 		}
 
 
@@ -328,12 +327,20 @@ class Bookings extends Controller {
 	function cancel(){
 		$uri = $this->session->userdata('uri');
 		$booking_id = $this->uri->segment(3);
-		if($this->M_bookings->Cancel($this->school_id, $booking_id)){
-			$msg = $this->load->view('msgbox/info', 'The booking has been <strong>cancelled</strong>.', True);
-		} else {
-			$msg = $this->load->view('msgbox/error', 'An error occured cancelling the booking.', True);
+		
+		$booking = $this->M_bookings->Get($booking_id);
+		
+		// Check that the booking was made by the user in session
+		if($this->userauth->CheckAuthLevel(ADMINISTRATOR, $this->authlevel) 
+		|| $this->session->userdata('user_id') == $booking->user_id){
+			if($this->M_bookings->Cancel($this->school_id, $booking_id)){
+				$msg = $this->load->view('msgbox/info', 'The booking has been <strong>cancelled</strong>.', True);
+			} else {
+				$msg = $this->load->view('msgbox/error', 'An error occured cancelling the booking.', True);
+			}
+			$this->session->set_flashdata('saved', $msg);
 		}
-		$this->session->set_flashdata('saved', $msg);
+		
 		if($uri == NULL){ $uri = 'bookings'; }
 		redirect($uri, 'redirect');
 	}
@@ -438,26 +445,9 @@ class Bookings extends Controller {
 
 			#print '<pre>Going to database: '.var_export($data,true).'</pre>';
 
-
-			// Now see if we are editing or adding
-			if($booking_id == 'X'){
-				// No ID, adding new record
-				#echo 'adding';
-				if(!$this->M_bookings->Add($data)){
-					$flashmsg = $this->load->view('msgbox/error', sprintf($this->lang->line('dberror'), 'adding', 'booking'), True);
-				} else {
-					$flashmsg = $this->load->view('msgbox/info', 'The booking has been made.', True);
-				}
-			} else {
-				// We have an ID, updating existing record
-				#echo 'editing';
-				if(!$this->M_bookings->Edit($booking_id, $data)){
-					$flashmsg = $this->load->view('msgbox/error', sprintf($this->lang->line('dberror'), 'editing', 'booking'), True);
-				} else {
-					$flashmsg = $this->load->view('msgbox/info', 'The booking has been updated.', True);
-				}
-			} // End of booking_id=X
-
+			if($this->_check_unique_booking($data)){
+				$this->_persist_booking($booking_id, $data);
+			}
 			#echo $flashmsg;
 
 			// Go back to index
@@ -468,12 +458,34 @@ class Bookings extends Controller {
 			$uri = ($uri) ? $uri : 'bookings';
 			redirect($uri, 'location');
 			#echo anchor($uri, 'OK');
-
 		}
 
 	}
 
-
+	function _persist_booking($booking_id, $data){
+		$flashmsg=null;
+		
+		// Now see if we are editing or adding
+		if($booking_id == 'X'){
+			// No ID, adding new record
+			#echo 'adding';
+			if(!$this->M_bookings->Add($data)){
+				$flashmsg = $this->load->view('msgbox/error', sprintf($this->lang->line('dberror'), 'adding', 'booking'), True);
+			} else {
+				$flashmsg = $this->load->view('msgbox/info', 'The booking has been made.', True);
+			}
+		} else {
+			// We have an ID, updating existing record
+			#echo 'editing';
+			if(!$this->M_bookings->Edit($booking_id, $data)){
+				$flashmsg = $this->load->view('msgbox/error', sprintf($this->lang->line('dberror'), 'editing', 'booking'), True);
+			} else {
+				$flashmsg = $this->load->view('msgbox/info', 'The booking has been updated.', True);
+			}
+		} // End of booking_id=X
+		
+		return $flashmsg;
+	}
 
 
 	function callback__is_valid_date($date){
@@ -507,7 +519,11 @@ class Bookings extends Controller {
 		}
 	}
 
-
+	function _check_unique_booking($data){
+		if(!array_key_exists('school_id',$data)){ $data['school_id']=null; }
+		$bookings=$this->M_bookings->GetByDateAndPeriodAndRoom($data['school_id'], $data['date'], $data['period_id'], $data['room_id']);
+		return count($bookings) == 0;	
+	}
 
 
 

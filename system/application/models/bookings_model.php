@@ -26,8 +26,30 @@ class Bookings_model extends Model{
   	#print_r($result);
   	return $result;
   }
+  
+  function GetByDateAndPeriodAndRoom($school_id = NULL, $date = NULL, $period_id, $room_id){
+  	if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
+  	if($date == NULL){ $date = date("Y-m-d"); }
+  	$day_num = date('w', strtotime($date));
+  	$query_str = "SELECT * FROM bookings WHERE school_id='$school_id' AND (date='$date' OR day_num=$day_num) AND period_id='$period_id' AND room_id='$room_id'";
 
+  	$query = $this->db->query($query_str);
+  	$result = $query->result_array();
 
+  	return $result;
+  }
+  
+  function Get($booking_id){
+	$this->CI->db->from('bookings');
+	$this->CI->db->where('booking_id', $booking_id);
+	
+	$query = $this->CI->db->get();
+	if($query->num_rows() == 1){
+		return $query->row();
+	} else {
+		return false;
+	}
+  }
 
 
 
