@@ -76,8 +76,8 @@ class Profile extends Controller {
   
   
   function save(){
-	 	// Get ID from form
-		$user_id = $this->input->post('user_id');
+	 	// Get User ID from session
+		$user_id = $this->session->userdata('user_id');
 		
 		// Validation rules
 		$vrules['user_id']				= 'required';
