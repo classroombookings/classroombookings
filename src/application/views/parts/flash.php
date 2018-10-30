@@ -1,1 +1,0 @@
-<div class="alert <?php echo $type ?>"><?php echo $text ?></div>

@@ -1,1 +1,0 @@
-<p class="bg-yellow">Once you have created a field, you cannot change its type.</p>
