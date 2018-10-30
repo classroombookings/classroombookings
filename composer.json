@@ -1,0 +1,15 @@
+{
+    "name": "craigrodway/classroombookings",
+    "description": "Classroombookings",
+    "type": "project",
+    "require": {
+        "codeigniter/framework": "^3"
+    },
+    "license": "AGPLv3",
+    "authors": [
+        {
+            "name": "Craig A Rodway",
+            "email": "craig.rodway@gmail.com"
+        }
+    ]
+}
