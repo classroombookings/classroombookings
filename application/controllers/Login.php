@@ -10,7 +10,7 @@ class Login extends CI_Controller
 	{
 		parent::__construct();
 		$this->loggedin = False;
-		$this->load->model('School_model');
+		$this->load->model('school_model');
 	}
 
 
@@ -51,7 +51,7 @@ class Login extends CI_Controller
 
 		$this->load->library('form_validation');
 		$this->form_validation->set_rules('username', 'Username', 'required');
-		$this->form_validation->set_rules('username', 'Password', 'required');
+		$this->form_validation->set_rules('password', 'Password', 'required');
 
 		// Run validation
 		if ($this->form_validation->run() == FALSE) {
@@ -67,10 +67,10 @@ class Login extends CI_Controller
 		// Now see if we can login
 		if ($this->userauth->trylogin($username, $password)) {
 			// Success! Redirect to control panel
-			redirect('controlpanel', 'location');
+			redirect('controlpanel');
 		} else {
-			$this->session->set_flashdata('auth', $this->load->view('msgbox/error', 'Incorrect username and/or password.', True));
-			redirect('login');
+			$this->session->set_flashdata('auth', msgbox('error', 'Incorrect username and/or password.'));
+			return $this->index();
 		}
 	}
 

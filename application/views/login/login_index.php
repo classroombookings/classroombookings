@@ -1,5 +1,7 @@
 <?php echo $this->session->flashdata('auth') ?>
 
+<?= validation_errors() ?>
+
 <?php
 echo form_open('login/submit', array('id'=>'login','class'=>'cssform'), array('page' => $this->uri->uri_string()) );
 ?>

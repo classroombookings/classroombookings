@@ -44,3 +44,12 @@ function tab_index($reset = NULL)
 
 	return $_tab_index;
 }
+
+
+
+
+function msgbox($type = 'error', $content = '')
+{
+	$html = "<p class='msgbox {$type}'>{$content}</p>";
+	return $html;
+}

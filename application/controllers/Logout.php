@@ -1,20 +1,22 @@
 <?php
-class Logout extends CI_Controller {
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 
-	public function __construct(){
+class Logout extends CI_Controller
+{
+
+
+	public function __construct()
+	{
 		parent::__construct();
 	}
 
 
-	function index(){
+	function index()
+	{
 		$this->userauth->logout();
-		#$layout['title'] = 'Logout';
-		#$layout['body'] = '<h2>Logged out</h2>You have successfully logged out of Classroom Bookings.' . anchor('site/home','Home');
-		#$this->load->view('layout', $layout);
-		redirect('login', 'location');
+		redirect('/');
 	}
 
 
 }
-?>

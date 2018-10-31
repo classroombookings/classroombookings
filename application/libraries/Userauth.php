@@ -45,10 +45,7 @@ class Userauth{
 	 */
 	function logout(){
 		log_message('debug','Userauth: Logout: '.$this->object->session->userdata('username'));
-		$sessdata = array('username'=>'', 'loggedin'=>'false', 'schoolcode'=>'');
-		$this->object->session->set_userdata($sessdata);
-		$this->object->session->destroy();
-		#redirect('user/login','location');
+		$this->object->session->sess_destroy();
 	}
 
 
