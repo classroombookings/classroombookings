@@ -1,5 +1,6 @@
 <?php
-class Bookings_model extends CI_Model{
+class Bookings_model extends CI_Model
+{
 
 
 	var $table_headings = '';
@@ -8,7 +9,6 @@ class Bookings_model extends CI_Model{
 
 	public function __construct(){
 		parent::__construct();
-		$this->CI =& get_instance();
 	}
 
 
@@ -261,7 +261,7 @@ class Bookings_model extends CI_Model{
 			break;
 		}
 		$week_bar['week_name'] = $this_week->name;
-		$html .= $this->CI->load->view('bookings/week_bar', $week_bar, True);
+		$html .= $this->load->view('bookings/week_bar', $week_bar, True);
 	} else {
 		$html .= $this->load->view('msgbox/error', 'A configuration error prevented the timetable from loading: <strong>no week configured</strong>.<br /><br />Please contact your administrator.', True);
 			#return $html;
@@ -958,8 +958,7 @@ class Bookings_model extends CI_Model{
 
 
 
-	function TotalNum($user_id, $school_id = NULL){
-		if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
+	function TotalNum($user_id){
 
 		$today = date("Y-m-d");
 
@@ -971,8 +970,7 @@ class Bookings_model extends CI_Model{
 		// All bookings by user, for this academic year, up to and including today
 		$query_str = "SELECT * FROM bookings "
 		."JOIN academicyears ON bookings.date >= academicyears.date_start "
-		."WHERE user_id='$user_id' "
-		."AND academicyears.school_id='$school_id' ";
+		."WHERE user_id='$user_id' ";
 		$query = $this->db->query($query_str);
 		$total['yeartodate'] = $query->num_rows();
 

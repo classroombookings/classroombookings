@@ -1,8 +1,10 @@
 <?php
 echo $this->session->flashdata('saved');
 
-$icondata[0] = array('profile/edit', 'Edit my details', 'user_edit.gif' );
-$this->load->view('partials/iconbar', $icondata);
+echo iconbar(array(
+	array('profile/edit', 'Edit my details', 'user_edit.gif'),
+));
+
 ?>
 
 <?php if($myroom){ ?>

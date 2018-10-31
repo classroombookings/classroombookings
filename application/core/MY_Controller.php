@@ -33,7 +33,7 @@ class MY_Controller extends CI_Controller
 	{
 		// Check loggedin status
 		if ( ! $this->userauth->loggedin()) {
-			$this->session->set_flashdata('login', msgbox('error', 'Please log in to access this page.'));
+			$this->session->set_flashdata('login', msgbox('error', $this->lang->line('crbs_auth_mustbeloggedin')));
 			redirect('login');
 		} else {
 			$this->loggedin = TRUE;
