@@ -6,7 +6,7 @@ if($this->loggedin){
 	$menu[1]['text'] = '<img src="webroot/images/ui/link_controlpanel.gif" hspace="4" align="top" alt=" " />Control Panel';
 	$menu[1]['href'] = site_url('controlpanel');
 	$menu[1]['title'] = 'Tasks';
-	
+
 	#$menu[2]['text'] = '<img src="webroot/images/ui/link_help.gif" hspace="4" align="top" alt=" " />Help';
 	#$menu[2]['href'] = site_url('help'.ereg_replace('help(/)', '', $this->uri->uri_string()));
 	#$menu[2]['title'] = 'Get help on this page';
@@ -35,7 +35,7 @@ if($this->loggedin){
 	$js_cpicker = array('weeks', 'school');
 	if(in_array($this->uri->segment(1), $js_cpicker)){
 		echo "\n".'<link rel="stylesheet" type="text/css" media="screen" href="webroot/cpicker/js_color_picker_v2.css" />';
-		echo "\n".'<script type="text/javascript" src="webroot/cpicker/color_functions.js"></script>';		
+		echo "\n".'<script type="text/javascript" src="webroot/cpicker/color_functions.js"></script>';
 		echo "\n".'<script type="text/javascript" src="webroot/cpicker/js_color_picker_v2.js"></script>';
 	}
 	$js_datepicker = array('holidays', 'weeks', 'bookings');
@@ -57,9 +57,9 @@ if($this->loggedin){
 </head>
 <body <?php echo $body_attr ?>>
 	<div class="outer">
-	
+
 		<div class="header">
-		
+
 			<div class="nav-box">
 				<?php if(!$this->loggedin){ echo '<br /><br />'; } ?>
 				<?php
@@ -73,12 +73,12 @@ if($this->loggedin){
 				}
 				?><br />
 				<?php if($this->loggedin){ ?>
-				<p class="normal">Logged in as <?php echo (strlen($this->session->userdata('displayname')) > 1) ? $this->session->userdata('displayname') : $this->session->userdata('username'); ?></p>
+					<p class="normal">Logged in as <?php echo (strlen($this->session->userdata('displayname')) > 1) ? $this->session->userdata('displayname') : $this->session->userdata('username'); ?></p>
 				<?php } ?>
 			</div>
-			
+
 			<br />
-			
+
 			<span class="title">
 				<?php
 				if($this->session->userdata('schoolname')){
@@ -89,22 +89,22 @@ if($this->loggedin){
 				}
 				?>
 			</span>
-		
+
 		</div>
-		
+
 		<?php if(isset($midsection)){ ?>
-		<div class="mid-section" align="center">
-			<h1 style="font-weight:normal"><?php echo $midsection ?></h1>
-		</div>
+			<div class="mid-section" align="center">
+				<h1 style="font-weight:normal"><?php echo $midsection ?></h1>
+			</div>
 		<?php } ?>
-		
+
 		<div class="content_area">
 			<?php if(isset($showtitle)){ echo '<h2>'.$showtitle.'</h2>'; } ?>
 			<?php echo $body ?>
 		</div>
-		
+
 		<div class="footer">
-		<br />
+			<br />
 
 			<div id="footer">
 				<?php
@@ -114,10 +114,10 @@ if($this->loggedin){
 				} }
 				?>
 				<br /><br /><span style="font-size:90%;color:#678;">&copy; Copyright 2006 Craig Rodway.<br />This page was loaded in <?php echo $this->benchmark->elapsed_time() ?> seconds.</span><br />
-			<br />
+				<br />
 			</div>
 		</div>
 	</div>
-<div id="tipDiv" style="position:absolute; visibility:hidden; z-index:100"></div>
+	<div id="tipDiv" style="position:absolute; visibility:hidden; z-index:100"></div>
 </body>
 </html>
