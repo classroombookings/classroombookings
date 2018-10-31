@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 
-class Login extends CI_Controller
+class Login extends MY_Controller
 {
 
 

@@ -1,7 +1,5 @@
 <?php
 echo $this->session->flashdata('saved');
-#if( $this->userauth->CheckAuthLevel( TEACHER ) ){ echo 'teacher'; }
-#if( $this->userauth->CheckAuthLevel( ADMINISTRATOR ) ){ echo 'admin'; }
 
 
 // Menu for all users
@@ -113,7 +111,7 @@ function dotable($array){
 		echo '<td width="33%">';
 		echo '<h5 style="margin:14px 0px">';
 		echo '<a href="'.$link['href'].'">';
-		echo '<img src="webroot/images/ui/'.$link['icon'].'" alt="'.$link['text'].'" hspace="4" align="top" width="16" height="16" />';
+		echo '<img src="' . base_url('assets/images/ui/'.$link['icon']) . '" alt="'.$link['text'].'" hspace="4" align="top" width="16" height="16" />';
 		echo $link['text'];
 		echo '</a>';
 		echo '</h5>';
