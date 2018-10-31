@@ -32,15 +32,15 @@ class Users_model extends CI_Model
   	$ci_users_fields = implode( ',', $columns );
 		//echo $ci_users_fields;
 
-		$this->CI->db->select($ci_users_fields);	//.',schools.school_id,schools.code AS schoolcode');
-		$this->CI->db->from('users');
-		$this->CI->db->where('users.school_id', $school_id);
+		$this->db->select($ci_users_fields);	//.',schools.school_id,schools.code AS schoolcode');
+		$this->db->from('users');
+		$this->db->where('users.school_id', $school_id);
 		#$this->db->join('schools', 'schools.school_id = users.school_id');
 		//$this->db->join('users', 'users.user_id = rooms.user_id');
 		if( $user_id != NULL ){
-			$this->CI->db->where('users.user_id', $user_id);
-			$this->CI->db->limit('1');
-			$query = $this->CI->db->get();
+			$this->db->where('users.user_id', $user_id);
+			$this->db->limit('1');
+			$query = $this->db->get();
 			if($query->num_rows() == 1){
 				return $query->row();
 			} else {
@@ -48,8 +48,8 @@ class Users_model extends CI_Model
 			}
 		} else {
 			#$this->db->where('schools.code', $schoolcode);
-			$this->CI->db->order_by($sort);
-			$query = $this->CI->db->get();
+			$this->db->order_by($sort);
+			$query = $this->db->get();
 			if($query->num_rows() > 0){
 				return $query->result();
 			} else {
@@ -63,6 +63,3 @@ class Users_model extends CI_Model
 
 
 }
-
-
-?>

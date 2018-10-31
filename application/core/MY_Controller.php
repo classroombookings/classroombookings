@@ -22,6 +22,15 @@ class MY_Controller extends CI_Controller
 	public $authlevel = FALSE;
 
 
+	/**
+	 * Global data for view
+	 *
+	 * @var array
+	 *
+	 */
+	public $data = array();
+
+
 	public function __construct()
 	{
 		parent::__construct();
@@ -39,6 +48,12 @@ class MY_Controller extends CI_Controller
 			$this->loggedin = TRUE;
 			$this->authlevel = $this->userauth->GetAuthLevel($this->session->userdata('user_id'));
 		}
+	}
+
+
+	public function render($view_name = 'layout')
+	{
+		$this->load->view($view_name, $this->data);
 	}
 
 

@@ -46,9 +46,14 @@ if($this->loggedin){
 					}
 				}
 				?><br />
-				<?php if($this->loggedin){ ?>
-					<p class="normal">Logged in as <?php echo (strlen($this->session->userdata('displayname')) > 1) ? $this->session->userdata('displayname') : $this->session->userdata('username'); ?></p>
-				<?php } ?>
+				<?php
+				if ($this->loggedin) {
+					$displayname = isset($_SESSION['displayname']) ? $_SESSION['displayname'] : NULL;
+					$username = isset($_SESSION['username']) ? $_SESSION['username'] : NULL;
+					$output = html_escape(strlen($displayname) > 1 ? $displayname : $username);
+					echo "<p class='normal'>Logged in as {$output}</p>";
+				}
+				?>
 			</div>
 
 			<br />
@@ -56,10 +61,13 @@ if($this->loggedin){
 			<span class="title">
 				<?php
 				if($this->session->userdata('schoolname')){
-					echo '<a href="'.$this->session->userdata('schoolurl').'">'.$this->session->userdata('schoolname').'</a>';
+					echo anchor('/', html_escape($this->session->userdata('schoolname')));
 				} else {
-					echo '<a href="'.$this->config->item('base_url').'" title="ClassroomBookings" style="font-weight:normal;color:#0081C2;letter-spacing:-2px">classroom<span style="color:#ff6400;font-weight:bold">bookings</span></a>';
-					echo '<sup style="font-weight:bold;color:#555;letter-spacing:-1px;font-size:12pt">BETA</sup>';
+					$attrs = "title='Classroombookings' style='font-weight:normal;color:#0081C2;letter-spacing:-2px'";
+					$output = "classroom";
+					$output .= "<span style='color:#ff6400;font-weight:bold'>bookings</span>";
+					echo anchor('/', $output, $attrs);
+					echo "<sup style='font-weight:bold;color:#555;letter-spacing:-1px;font-size:12pt'>BETA</sup>";
 				}
 				?>
 			</span>

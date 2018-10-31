@@ -24,109 +24,95 @@ class Profile extends MY_Controller
 	{
 		// Get User ID from session
 		$user_id = $this->session->userdata('user_id');
+
 		// Get bookings for a room if this user owns one
-		$body['myroom'] = $this->bookings_model->ByRoomOwner($user_id);
+		$this->data['myroom'] = $this->bookings_model->ByRoomOwner($user_id);
 		// Get all bookings made by this user (only staff ones)
-		$body['mybookings'] = $this->bookings_model->ByUser($user_id);
+		$this->data['mybookings'] = $this->bookings_model->ByUser($user_id);
 		// Get totals
-		$body['total'] = $this->bookings_model->TotalNum($user_id);
+		$this->data['total'] = $this->bookings_model->TotalNum($user_id);
 
-		$layout['title'] = 'My Profile';
-		$layout['showtitle'] = $layout['title'];
-		$layout['body'] = $this->load->view('profile/profile_index', $body, True);
-		$this->load->view('layout', $layout);
+		$this->data['title'] = 'My Profile';
+		$this->data['showtitle'] = $this->data['title'];
+		$this->data['body'] = $this->load->view('profile/profile_index', $this->data, TRUE);
+
+		return $this->render();
 	}
 
 
-	function edit(){
-	// Get User ID from session
+	function edit()
+	{
+		// Get User ID from session
 		$user_id = $this->session->userdata('user_id');
-	// Get bookings for a room if this user owns one
-		$body['user'] = $this->M_users->Get($user_id);
 
-		$cols[0]['content'] = $this->load->view('profile/profile_edit', $body, True);
-		$cols[0]['width'] = '70%';
-		$cols[1]['content'] = $this->load->view('profile/profile_edit_side', $body, True);
-		$cols[1]['width'] = '30%';
+		$this->data['user'] = $this->users_model->Get($user_id);
 
-		$layout['title'] = 'Edit my details';
-		$layout['showtitle'] = $layout['title'];
-		$layout['body'] = $this->load->view('columns', $cols, True);
-		$this->load->view('layout', $layout);
+		$columns = array(
+			'c1' => array(
+				'width' => '70%',
+				'content' => $this->load->view('profile/profile_edit', $this->data, TRUE),
+			),
+			'c2' => array(
+				'width' => '30%',
+				'content' => $this->load->view('profile/profile_edit_side', $this->data, TRUE),
+			),
+		);
+
+		$this->data['title'] = 'Edit my details';
+		$this->data['showtitle'] = $this->data['title'];
+		$this->data['body'] = $this->load->view('columns', $columns, TRUE);
+
+		return $this->render();
 	}
 
 
+	function save()
+	{
+		// Get User ID from session
+		$user_id = $this->session->userdata('user_id');
 
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('password1', 'Password', 'min_length[6]');
+		$this->form_validation->set_rules('password2', 'Password (confirm)', 'min_length[6]|matches[password1]');
+		$this->form_validation->set_rules('email', 'Email address', 'max_length[255]|valid_email');
+		$this->form_validation->set_rules('firstname', 'First name', 'max_length[20]');
+		$this->form_validation->set_rules('lastname', 'Last name', 'max_length[20]');
+		$this->form_validation->set_rules('displayname', 'Display name', 'max_length[20]');
+		$this->form_validation->set_rules('extension', 'Extension', 'max_length[10]');
 
-
-	function save(){
-		// Get ID from form
-		$user_id = $this->input->post('user_id');
-
-		// Validation rules
-		$vrules['user_id']				= 'required';
-		$vrules['password1']			= 'max_length[20]|min_length[6]';
-		$vrules['password2']			= 'max_length[20]|min_length[6]|matches[password1]';
-		$vrules['email']          = 'required|max_length[255]|valid_email';
-		$vrules['firstname']			= 'max_length[20]';
-		$vrules['lastname']				= 'max_length[20]';
-		$vrules['displayname']		= 'max_length[20]';
-		$vrules['extension']			= 'max_length[10]';
-		$this->validation->set_rules($vrules);
-
-		// Name the validation fields if an error occurs
-		$vfields['user_id']					= 'User ID';
-		$vfields['password1']				= 'Password';
-		$vfields['password2']				= 'Password confirmation';
-		$vfields['email']						= 'Email address';
-		$vfields['firstname']				= 'First name';
-		$vfields['lastname']				= 'Last name';
-		$vfields['displayname']			= 'Display name';
-		$vfields['ext']							= 'Extension';
-		$this->validation->set_fields($vfields);
-
-		// Set the error delims to a nice styled red hint under the fields
-		$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
-
-		if ($this->validation->run() == FALSE){
-
-	  // Validation failed
-			return $this->edit($user_id);
-
-		} else {
-
-			// Validation passed!
-			$data['email']						= $this->input->post('email');
-			$data['firstname']				= $this->input->post('firstname');
-			$data['lastname']					= $this->input->post('lastname');
-			$data['displayname']			= $this->input->post('displayname');
-			$data['ext']							= $this->input->post('ext');
-			// Only update password if one was supplied
-			if($this->input->post('password1') && $this->input->post('password2')){
-				$data['password'] 			= sha1($this->input->post('password1'));
-			}
-
-			// Update session variable with displayname
-			$this->session->set_userdata('displayname', $data['displayname']);
-
-			// Now call database to update user and load appropriate message for return value
-			if(!$this->crud->Edit('users', 'user_id', $user_id, $data)){
-				$flashmsg = $this->load->view('msgbox/error', 'A database error occured while updating your details.', True);
-			} else {
-				$flashmsg = $this->load->view('msgbox/info', 'Your details have been successfully updated.', True);
-			}
-
-			// Go back to index
-			$this->session->set_flashdata('saved', $flashmsg);
-			redirect('profile', 'redirect');
-
+		if ($this->form_validation->run() == FALSE) {
+	  		// Validation failed
+			return $this->edit();
 		}
 
+		// Validation passed!
+		$data = array(
+			'email' => $this->input->post('email'),
+			'firstname' => $this->input->post('firstname'),
+			'lastname' => $this->input->post('lastname'),
+			'displayname' =>$this->input->post('displayname'),
+			'ext' => $this->input->post('ext'),
+		);
+
+		// Only update password if one was supplied
+		if ($this->input->post('password1') && $this->input->post('password2')) {
+			$data['password'] = sha1($this->input->post('password1'));
+		}
+
+		// Update session variable with displayname
+		$this->session->set_userdata('displayname', $data['displayname']);
+
+		// Now call database to update user and load appropriate message for return value
+		if ( ! $this->crud_model->Edit('users', 'user_id', $user_id, $data)) {
+			$flashmsg = msgbox('error', 'A database error occured while updating your details.');
+		} else {
+			$flashmsg = msgbox('info', 'Your details have been successfully updated.');
+		}
+
+		// Go back to index
+		$this->session->set_flashdata('saved', $flashmsg);
+		redirect('profile');
 	}
-
-
-
 
 
 }
-?>
