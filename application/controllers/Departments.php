@@ -1,24 +1,24 @@
 <?php
-class Departments extends Controller {
+class Departments extends CI_Controller {
 
 
 
 
 
-  function Departments(){
-	parent::Controller();
+	public function __construct(){
+		parent::__construct();
 
 		// Load language
-	$this->lang->load('crbs', 'english');
+		$this->lang->load('crbs', 'english');
 
 		// Get school id
-	$this->school_id = $this->session->userdata('school_id');
+		$this->school_id = $this->session->userdata('school_id');
 
-	$this->output->enable_profiler($this->session->userdata('profiler'));
+		$this->output->enable_profiler($this->session->userdata('profiler'));
 
 	// Check user is logged in & is admin
-	if(!$this->userauth->loggedin()){
-		$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True));
+		if(!$this->userauth->loggedin()){
+			$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True));
 			redirect('site/home', 'location');
 		} else {
 			$this->loggedin = True;
@@ -31,19 +31,19 @@ class Departments extends Controller {
 		// Load models etc
 		$this->load->library('pagination');
 		$this->load->model('crud_model', 'crud');
-	$this->load->model('school_model', 'M_school');
+		$this->load->model('school_model', 'M_school');
 	#$this->load->model('departments_model', 'M_departments');
 	// Load the icon selector helper
-	$this->load->helper('iconsel');
+		$this->load->helper('iconsel');
 	#$this->load->scaffolding('rooms');
-  }
+	}
 
 
 
 
-  function index($start_at = NULL){
-	log_message('debug', 'Departments/index');
-	if($start_at == NULL){ $start_at = $this->uri->segment(3); }
+	function index($start_at = NULL){
+		log_message('debug', 'Departments/index');
+		if($start_at == NULL){ $start_at = $this->uri->segment(3); }
 		// Init pagination
 		$pages['base_url'] = site_url('departments/index');
 		$pages['total_rows'] = $this->crud->Count('departments');
@@ -65,7 +65,7 @@ class Departments extends Controller {
 		$layout['showtitle'] = $layout['title'];
 		$layout['body'] = $this->load->view('departments/departments_index', $body, True);
 		$this->load->view('layout', $layout);
-  }
+	}
 
 
 
@@ -126,7 +126,7 @@ class Departments extends Controller {
 		// Set the error delims to a nice styled red hint under the fields
 		$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
 
-	if ($this->validation->run() == FALSE){
+		if ($this->validation->run() == FALSE){
 
 		// Validation failed
 			if($department_id != "X"){
@@ -135,7 +135,7 @@ class Departments extends Controller {
 				return $this->add();
 			}
 
-	} else {
+		} else {
 
 			// Validation succeeded!
 			// Create array for database fields & data

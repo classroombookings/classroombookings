@@ -1,24 +1,24 @@
 <?php
-class Users extends Controller {
+class Users extends CI_Controller {
 
 
 
 
 
-  function Users(){
-    parent::Controller();
+	public function __construct(){
+		parent::__construct();
 
 		// Load language
-  	$this->lang->load('crbs', 'english');
+		$this->lang->load('crbs', 'english');
 
 		// Get school id
-    $this->school_id = $this->session->userdata('school_id');
+		$this->school_id = $this->session->userdata('school_id');
 
-    $this->output->enable_profiler($this->session->userdata('profiler'));
+		$this->output->enable_profiler($this->session->userdata('profiler'));
 
-    // Check user is logged in & is admin
-    if( !$this->userauth->loggedin() ){
-    	$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True) );
+	// Check user is logged in & is admin
+		if( !$this->userauth->loggedin() ){
+			$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True) );
 			redirect('site/home', 'location');
 		} else {
 			$this->loggedin = True;
@@ -28,18 +28,18 @@ class Users extends Controller {
 			}
 		}
 		$this->load->model('crud_model', 'crud');
-    $this->load->model('users_model', 'M_users');
-    $this->load->helper('iconsel');
-  }
+		$this->load->model('users_model', 'M_users');
+		$this->load->helper('iconsel');
+	}
 
 
 
 
 
-  function index($start_at = NULL){
-  	if($start_at == NULL){ $start_at = $this->uri->segment(3); }
+	function index($start_at = NULL){
+		if($start_at == NULL){ $start_at = $this->uri->segment(3); }
 
-  	$this->load->library('pagination');
+		$this->load->library('pagination');
 
 		// Init pagination
 		$pages['base_url'] = site_url('users/index');
@@ -65,20 +65,20 @@ class Users extends Controller {
 		$layout['showtitle'] = $layout['title'];
 		$layout['body'] = $this->load->view('users/users_index', $body, True);
 		$this->load->view('layout', $layout);
-  }
+	}
 
 
 
 
 
   /* function index(){
-  	$body['users'] = $this->M_users->Get();	//$this->session->userdata('school_id'));
+	$body['users'] = $this->M_users->Get();	//$this->session->userdata('school_id'));
 
 		$layout['title'] = 'Manage Users';
 		$layout['showtitle'] = $layout['title'];
 		$layout['body'] = $this->load->view('users/users_index', $body, True);
 		$this->load->view('layout', $layout);
-  } */
+	} */
 
 
 
@@ -132,7 +132,7 @@ class Users extends Controller {
 	function save(){
 		#print_r($_POST);
 
-	 	// Get ID from form
+		// Get ID from form
 		$user_id = $this->input->post('user_id');
 
 		// Load validation
@@ -171,9 +171,9 @@ class Users extends Controller {
 		// Set the error delims to a nice styled red hint under the fields
 		$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
 
-    if ($this->validation->run() == FALSE){
+		if ($this->validation->run() == FALSE){
 
-      // Validation failed
+	  // Validation failed
 			if($user_id != "X"){
 				$this->edit($user_id);
 			} else {

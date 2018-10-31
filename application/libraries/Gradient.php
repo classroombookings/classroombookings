@@ -83,7 +83,7 @@ class Gradient{
 
 
 	// Constructor. Creates, fills and returns an image
-	function Gradient(){	//$w,$h,$d,$s,$e,$step=0) {
+	public function __construct(){	//$w,$h,$d,$s,$e,$step=0) {
 
 		$this->width = 100;
 		$this->height = 100;

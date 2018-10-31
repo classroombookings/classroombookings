@@ -1,28 +1,28 @@
 <?php
-class School extends Controller {
+class School extends CI_Controller {
 
 
 
 
 
-  function School(){
-    parent::Controller();
+	public function __construct(){
+		parent::__construct();
 
-    // Check to see if it's installed
-    $this->installed();
+	// Check to see if it's installed
+		$this->installed();
 
 		// Load language
-  	$this->lang->load('crbs', 'english');
+		$this->lang->load('crbs', 'english');
 
 		// Get school id
-    $this->school_id = $this->session->userdata('school_id');
+		$this->school_id = $this->session->userdata('school_id');
 
-    $this->output->enable_profiler($this->session->userdata('profiler'));
+		$this->output->enable_profiler($this->session->userdata('profiler'));
 
-    // Check loggedin status
-    if(!$this->userauth->loggedin()){
-    	$this->session->set_flashdata('login', $this->load->view('msgbox/error', 'Please log in to access this page.', True) );
-    	$this->loggedin = False;
+	// Check loggedin status
+		if(!$this->userauth->loggedin()){
+			$this->session->set_flashdata('login', $this->load->view('msgbox/error', 'Please log in to access this page.', True) );
+			$this->loggedin = False;
 			redirect('login', 'location');
 		} else {
 			$this->loggedin = True;
@@ -57,7 +57,7 @@ class School extends Controller {
    * This function simply returns the home() function
    */
   function index(){
-    return $this->manage();
+  	return $this->manage();
   }
 
 
@@ -67,9 +67,9 @@ class School extends Controller {
   /**
    * Page: home
    */
-	function manage(){
-		$layout['showtitle'] = 'Tasks';
-		$layout['title'] = 'Manage your school ('.$this->session->userdata('schoolname').')';
+  function manage(){
+  	$layout['showtitle'] = 'Tasks';
+  	$layout['title'] = 'Manage your school ('.$this->session->userdata('schoolname').')';
 
 		// Columns view
 	  /* $cols[0]['content'] = $this->load->view('school/manage/school_manage_index_1', NULL, True);
@@ -86,9 +86,9 @@ class School extends Controller {
 	  	$layout['body'] .= $this->load->view('msgbox/warning', '<strong>Security notice:</strong> Please remove install.php from the controllers directory or <a href="school/delete_install">click here</a> to delete it now.', True);
 	  }
 
-		$layout['body'] .= $this->session->flashdata('auth');
-		$layout['body'] .= $this->load->view('school/manage/school_manage_index', NULL, True);
-		$this->load->view('layout', $layout);
+	  $layout['body'] .= $this->session->flashdata('auth');
+	  $layout['body'] .= $this->load->view('school/manage/school_manage_index', NULL, True);
+	  $this->load->view('layout', $layout);
 	}
 
 
@@ -96,8 +96,8 @@ class School extends Controller {
 
 
 	function details(){
-    if( !$this->userauth->loggedin() ){
-    	$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True) );
+		if( !$this->userauth->loggedin() ){
+			$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True) );
 			redirect('site/home', 'location');
 		} else {
 			if(!$this->userauth->CheckAuthLevel(ADMINISTRATOR)){
@@ -122,150 +122,150 @@ class School extends Controller {
 		// Parse data input from view and carry out appropriate action.
 
 		// Load image manipulation library
-		$this->load->library('image_lib');
+  	$this->load->library('image_lib');
 
 		// Load upload library
-		$this->load->library('upload');
+  	$this->load->library('upload');
 
 		// Upload config
-		$upload['upload_path'] 			= './webroot/images/schoollogo/temp';
-		$upload['allowed_types']		= 'jpg|jpeg|png|gif';
-		$upload['max_size']					= '2048';
-		$upload['max_width']				= '1600';
-		$upload['max_height']				= '1200';
-		$this->upload->initialize($upload);
+  	$upload['upload_path'] 			= './webroot/images/schoollogo/temp';
+  	$upload['allowed_types']		= 'jpg|jpeg|png|gif';
+  	$upload['max_size']					= '2048';
+  	$upload['max_width']				= '1600';
+  	$upload['max_height']				= '1200';
+  	$this->upload->initialize($upload);
 
 		// Validation rules
-		$vrules['schoolname']			= 'required|max_length[255]';
-		$vrules['website']	  		= 'prep_url|max_length[255]';
-		$vrules['colour']					= 'max_length[7]|callback__is_valid_colour';
-		$vrules['userfile']				= 'max_length[255]';
-		$vrules['d_columns']				= 'callback__valid_columns';
-		$vrules['bia']						= 'max_length[3]|numeric';
+  	$vrules['schoolname']			= 'required|max_length[255]';
+  	$vrules['website']	  		= 'prep_url|max_length[255]';
+  	$vrules['colour']					= 'max_length[7]|callback__is_valid_colour';
+  	$vrules['userfile']				= 'max_length[255]';
+  	$vrules['d_columns']				= 'callback__valid_columns';
+  	$vrules['bia']						= 'max_length[3]|numeric';
 		#$vrules['bquota']					= 'max_length[3]|numeric';
-		$this->validation->set_rules($vrules);
+  	$this->validation->set_rules($vrules);
 
 		// Pretty it up a bit for error validation message
-		$vfields['schoolname']		= 'School name';
-		$vfields['website']	  		= 'Website address';
-		$vfields['colour']				= 'Header colour';
-		$vfields['userfile']			= 'Logo';
-		$vfields['bia']						= 'Booking in advance';
+  	$vfields['schoolname']		= 'School name';
+  	$vfields['website']	  		= 'Website address';
+  	$vfields['colour']				= 'Header colour';
+  	$vfields['userfile']			= 'Logo';
+  	$vfields['bia']						= 'Booking in advance';
 		#$vfields['bquota']				= 'Booking Quota';
-		$vfields['displaytype']		= 'Display type';
-		$vfields['d_columns']				= 'Booking columns';
+  	$vfields['displaytype']		= 'Display type';
+  	$vfields['d_columns']				= 'Booking columns';
 		#$vfields['recurring']			= 'Recurring option';
 		#$vfields['holidays']			= 'Holiday bookings';
-		$this->validation->set_fields($vfields);
+  	$this->validation->set_fields($vfields);
 
 		// Set the error delims to a nice styled red box
 		#$this->validation->set_error_delimiters('<p class="msgbox error">', '</p>');
-		$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
+  	$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
 
 
 		#print_r($_POST);
 
 
-    if ($this->validation->run() == FALSE){
+  	if ($this->validation->run() == FALSE){
 
-      // Validation failed
-			$this->details();
+	  // Validation failed
+  		$this->details();
 
-		} else {
+  	} else {
 
-			if( !$this->upload->do_upload() ){
+  		if( !$this->upload->do_upload() ){
 				// Not uploaded
-				$error = $this->upload->display_errors('','');
-				if( $error != 'You did not select a file to upload' ){
-					$this->session->set_flashdata('image_error', $error);
-					$image_error = $error;
+  			$error = $this->upload->display_errors('','');
+  			if( $error != 'You did not select a file to upload' ){
+  				$this->session->set_flashdata('image_error', $error);
+  				$image_error = $error;
 					#echo $error;
-					return $this->details();
-				}
-				$upload = false;
+  				return $this->details();
+  			}
+  			$upload = false;
 
-			} else {
+  		} else {
 
 				// File uploaded
-				$logo = $this->upload->data();
+  			$logo = $this->upload->data();
 
 				// new filename is <md5(rawname sessionid)>.<extension>
-				$newfile = md5($logo['raw_name'].$this->session->userdata('session_id')) . $logo['file_ext'];
+  			$newfile = md5($logo['raw_name'].$this->session->userdata('session_id')) . $logo['file_ext'];
 
-				$thumbs['image_library']		= 'GD2';
-				$thumbs['source_image']			= $logo['full_path'];
-				$thumbs['create_thumb']			= false;
-				$thumbs['maintain_ratio']		= true;
-				$thumbs['master_dim']				= 'auto';
-				$this->image_lib->initialize($thumbs);
+  			$thumbs['image_library']		= 'GD2';
+  			$thumbs['source_image']			= $logo['full_path'];
+  			$thumbs['create_thumb']			= false;
+  			$thumbs['maintain_ratio']		= true;
+  			$thumbs['master_dim']				= 'auto';
+  			$this->image_lib->initialize($thumbs);
 
-				$thumbs['new_image']				= 'webroot/images/schoollogo/300/'.$newfile;
-				$thumbs['width']						= 300;
-				$this->image_lib->initialize($thumbs);
-				$this->image_lib->resize();
+  			$thumbs['new_image']				= 'webroot/images/schoollogo/300/'.$newfile;
+  			$thumbs['width']						= 300;
+  			$this->image_lib->initialize($thumbs);
+  			$this->image_lib->resize();
 
-				$thumbs['new_image']				= 'webroot/images/schoollogo/200/'.$newfile;
-				$thumbs['width']						= 200;
-				$this->image_lib->initialize($thumbs);
-				$this->image_lib->resize();
+  			$thumbs['new_image']				= 'webroot/images/schoollogo/200/'.$newfile;
+  			$thumbs['width']						= 200;
+  			$this->image_lib->initialize($thumbs);
+  			$this->image_lib->resize();
 
-				$thumbs['new_image']				= 'webroot/images/schoollogo/100/'.$newfile;
-				$thumbs['width']						= 100;
-				$this->image_lib->initialize($thumbs);
-				$this->image_lib->resize();
+  			$thumbs['new_image']				= 'webroot/images/schoollogo/100/'.$newfile;
+  			$thumbs['width']						= 100;
+  			$this->image_lib->initialize($thumbs);
+  			$this->image_lib->resize();
 
-				@unlink($logo['full_path']);
+  			@unlink($logo['full_path']);
 
 				// Move file & rename it
 				#@unlink('webroot/images/roomphotos/'.$newfile);
 				#$ren = rename($photo['full_path'], 'webroot/images/roomphotos/'.$newfile);
 
 				// Done
-				$upload = true;
+  			$upload = true;
 				#print_r($photo);
-			}
+  		}
 
 			// Database info
-			$data['name'] 				= $this->input->post('schoolname');
-			$data['website']			= $this->input->post('website');
-			$data['colour'] 			= $this->_makecol($this->input->post('colour'));
-			$data['bia']					= (int) $this->input->post('bia');
+  		$data['name'] 				= $this->input->post('schoolname');
+  		$data['website']			= $this->input->post('website');
+  		$data['colour'] 			= $this->_makecol($this->input->post('colour'));
+  		$data['bia']					= (int) $this->input->post('bia');
 			#$data['bquota']				= $this->input->post('bquota');
 			#$data['recurring']		= ($this->input->post('recurring') == 1) ? 1 : 0;
 			#$data['holidays']		= ($this->input->post('holidays') == 1) ? 1 : 0;
-			$data['displaytype']	= $this->input->post('displaytype');
-			$data['d_columns']			= $this->input->post('d_columns');
+  		$data['displaytype']	= $this->input->post('displaytype');
+  		$data['d_columns']			= $this->input->post('d_columns');
 
 			// Set no logo first, then if the upload succeeded then we set that
 			#$data['logo']				= '';
-			if($upload == true){
-				$data['logo'] = $newfile;
-			}
+  		if($upload == true){
+  			$data['logo'] = $newfile;
+  		}
 
 			// If user clicked the 'delete logo' button on an edit, delete logo
-			if( $this->input->post('logo_delete') != NULL ){
-				$this->M_school->delete_logo($this->school_id);
-			}
+  		if( $this->input->post('logo_delete') != NULL ){
+  			$this->M_school->delete_logo($this->school_id);
+  		}
 
 			// If colour is empty then set the default so Gradient still works
-			if(!$data['colour']){ $data['colour'] = '468ED8'; }
+  		if(!$data['colour']){ $data['colour'] = '468ED8'; }
 
 			// Generate gradient
-			$file = 'webroot/images/bg/'.$this->school_id.'.png';
-			$gradient['width'] = 1;
-			$gradient['height'] = 80;
-			$gradient['type'] = 'vertical';
-			$gradient['start_colour'] = '#'.$data['colour'];
-			$gradient['end_colour'] = '#ffffff';
-			$this->gradient->Generate($gradient, $file);
+  		$file = 'webroot/images/bg/'.$this->school_id.'.png';
+  		$gradient['width'] = 1;
+  		$gradient['height'] = 80;
+  		$gradient['type'] = 'vertical';
+  		$gradient['start_colour'] = '#'.$data['colour'];
+  		$gradient['end_colour'] = '#ffffff';
+  		$this->gradient->Generate($gradient, $file);
 
 			#$this->M_school->delete_logo($this->session->userdata('schoolcode'));
-			$this->M_school->edit('school_id', $this->session->userdata('school_id'), $data);
+  		$this->M_school->edit('school_id', $this->session->userdata('school_id'), $data);
 
-		  $this->session->set_flashdata('saved', $this->load->view('msgbox/info', 'School Details have been updated.', True) );
+  		$this->session->set_flashdata('saved', $this->load->view('msgbox/info', 'School Details have been updated.', True) );
 		  #$this->load->view('layout', $layout);
 			$this->session->close();	//
-		  redirect('controlpanel', 'location');
+			redirect('controlpanel', 'location');
 
 		}
 
@@ -355,24 +355,24 @@ class School extends Controller {
 		$displaytype = $this->input->post('displaytype');
 		switch($displaytype){
 			case 'day':
-				if(in_array($cols, $valid['day'])){
-					$ret = true;
-				} else {
-					$ret = false;
-				}
+			if(in_array($cols, $valid['day'])){
+				$ret = true;
+			} else {
+				$ret = false;
+			}
 			break;
 			case 'room':
-				if(in_array($cols, $valid['room'])){
-					$ret = true;
-				} else {
-					$ret = false;
-				}
+			if(in_array($cols, $valid['room'])){
+				$ret = true;
+			} else {
+				$ret = false;
+			}
 			break;
 		}
-	if($ret == false){
-		$this->validation->set_message('_valid_columns', 'The column you selected is incompatible with the display type.');
-	}
- 	return $ret;
+		if($ret == false){
+			$this->validation->set_message('_valid_columns', 'The column you selected is incompatible with the display type.');
+		}
+		return $ret;
 	}
 
 

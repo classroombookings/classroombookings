@@ -1,5 +1,5 @@
 <?php
-class Periods extends Controller {
+class Periods extends CI_Controller {
 
 
 	/**
@@ -12,20 +12,20 @@ class Periods extends Controller {
 
 
 
-  function Periods(){
-		parent::Controller();
+	public function __construct(){
+		parent::__construct();
 
 		// Load language
-  	$this->lang->load('crbs', 'english');
+		$this->lang->load('crbs', 'english');
 
 		// Get school id
-    $this->school_id = $this->session->userdata('school_id');
+		$this->school_id = $this->session->userdata('school_id');
 
-    $this->output->enable_profiler($this->session->userdata('profiler'));
+		$this->output->enable_profiler($this->session->userdata('profiler'));
 
-    // Check user is logged in & is admin
-    if( !$this->userauth->loggedin() ){
-    	$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True) );
+	// Check user is logged in & is admin
+		if( !$this->userauth->loggedin() ){
+			$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True) );
 			redirect('site/home', 'location');
 		} else {
 			$this->loggedin = True;
@@ -38,7 +38,7 @@ class Periods extends Controller {
 		$this->load->script('bitmask');
 		$this->load->model('crud_model', 'crud');
 		$this->load->model('periods_model', 'M_periods');
-    $this->load->model('school_model', 'M_school');
+		$this->load->model('school_model', 'M_school');
 
 	}
 
@@ -114,7 +114,7 @@ class Periods extends Controller {
 
 
 	function save(){
-	 	// Get ID from form
+		// Get ID from form
 		$period_id = $this->input->post('period_id');
 
 		#print_r($_POST);
@@ -141,16 +141,16 @@ class Periods extends Controller {
 		// Set the error delims to a nice styled red hint under the fields
 		$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
 
-    if ($this->validation->run() == FALSE){
+		if ($this->validation->run() == FALSE){
 
-    	// Validation failed
+		// Validation failed
 			if($period_id != "X"){
 				return $this->edit($period_id);
 			} else {
 				return $this->add();
 			}
 
-    } else {
+		} else {
 
 			// Validation succeeded!
 

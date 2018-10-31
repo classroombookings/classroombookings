@@ -1,14 +1,14 @@
 <?php
-class Users_model extends Model{
+class Users_model extends CI_Model{
 
 
 
 
 
-	function Users_model(){
-		parent::Model();
+	public function __construct(){
+		parent::__construct();
 		$this->CI =& get_instance();
-  }
+	}
 
 
 
@@ -21,14 +21,14 @@ class Users_model extends Model{
    * @param		int				$columns			Columns to select
    */
   function Get($user_id = NULL, $school_id = NULL, $columns = array('*'), $sort = 'authlevel asc, enabled asc, username asc' ){
-	if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
-		$i=0;
+  	if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
+  	$i=0;
 		// Put the array of columns into a string
-		foreach( $columns as $column ){
-			$columns[$i] = 'users.'.$column;
-			$i++;
-		}
-		$ci_users_fields = implode( ',', $columns );
+  	foreach( $columns as $column ){
+  		$columns[$i] = 'users.'.$column;
+  		$i++;
+  	}
+  	$ci_users_fields = implode( ',', $columns );
 		//echo $ci_users_fields;
 
 		$this->CI->db->select($ci_users_fields);	//.',schools.school_id,schools.code AS schoolcode');
@@ -55,7 +55,7 @@ class Users_model extends Model{
 				return false;
 			}
 		}
-  }
+	}
 
 
 

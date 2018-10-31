@@ -1,26 +1,26 @@
 <?php
-class Rooms_model extends Model{
+class Rooms_model extends CI_Model{
 
 
 
 
 
-	function Rooms_model(){
-		parent::Model();
+	public function __construct(){
+		parent::__construct();
 		$options['CHECKBOX']	= 'Checkbox';
 		$options['SELECT']		= 'Drop-down list';
 		$options['TEXT']			= 'Text field';
 		$this->options = $options;
 		#$this->CI =& get_instance();
-  }
+	}
 
 
 
 
-  function Test(){
-	$query = $this->db->get('rooms');
-	return var_export($query->row(), true);
-  }
+	function Test(){
+		$query = $this->db->get('rooms');
+		return var_export($query->row(), true);
+	}
 
 
 
@@ -35,61 +35,61 @@ class Rooms_model extends Model{
 											.'schools.code AS schoolcode'
 											#.'x' */
 
-		$this->db->select(
-											 'rooms.*,'
-											.'users.user_id,'
-											.'users.username,'
-											.'users.displayname'
+											$this->db->select(
+												'rooms.*,'
+												.'users.user_id,'
+												.'users.username,'
+												.'users.displayname'
 											);
-		$this->db->from('rooms');
+											$this->db->from('rooms');
 		#$this->db->join('schools', 'schools.school_id = rooms.school_id');
-		$this->db->join('users', 'users.user_id = rooms.user_id', 'left');
-		$this->db->where('rooms.school_id', $school_id);
+											$this->db->join('users', 'users.user_id = rooms.user_id', 'left');
+											$this->db->where('rooms.school_id', $school_id);
 
-		if( $room_id != NULL ){
+											if( $room_id != NULL ){
 			// Getting one specific room
-			$this->db->where('room_id', $room_id);
-			$this->db->limit('1');
-			$query = $this->db->get();
-			if( $query->num_rows() == 1 ){
+												$this->db->where('room_id', $room_id);
+												$this->db->limit('1');
+												$query = $this->db->get();
+												if( $query->num_rows() == 1 ){
 				// One row, match!
-				return $query->row();
-			} else {
+													return $query->row();
+												} else {
 				// None
-				return false;
-			}
-		} else {
+													return false;
+												}
+											} else {
 			// Getting all
-			$this->db->order_by('name asc');
-			$query = $this->db->get();
-			if( $query->num_rows() > 0 ){
+												$this->db->order_by('name asc');
+												$query = $this->db->get();
+												if( $query->num_rows() > 0 ){
 				// Got some rooms, return result
-				return $query->result();
-			} else {
+													return $query->result();
+												} else {
 				// No rooms!
-				return false;
-			}
-		}
+													return false;
+												}
+											}
 
-	}
+										}
 
 
 
 	/*
 		Gets all information on the room - joins all the fields as well
 	*/
-	function GetInfo($room_id, $school_id = NULL ){
-		if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
+		function GetInfo($room_id, $school_id = NULL ){
+			if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
 
-		$this->db->select(
-											 'rooms.*,'
+			$this->db->select(
+				'rooms.*,'
 											/*.'roomfields.*,'
 											.'roomoptions.*,'
 											.'roomvalues.*,'*/
 											.'users.user_id,'
 											.'users.username,'
 											.'users.displayname'
-											);
+										);
 		$this->db->from('rooms');	//,roomfields,roomoptions,roomvalues');
 		$this->db->join('users', 'users.user_id = rooms.user_id', 'left');
 		$this->db->where('rooms.school_id', $school_id);
@@ -136,8 +136,8 @@ class Rooms_model extends Model{
 	function GetByUser($user_id, $school_id = NULL ){
 		if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
 		$query_str = "SELECT room_id,name FROM rooms "
-								."WHERE school_id=$school_id AND user_id=$user_id "
-								."ORDER BY name LIMIT 1";
+		."WHERE school_id=$school_id AND user_id=$user_id "
+		."ORDER BY name LIMIT 1";
 		$query = $this->db->query($query_str);
 		if($query->num_rows() == 1){
 			return $query->row();
@@ -186,8 +186,8 @@ class Rooms_model extends Model{
 		$path = 0;
 		$cache_path = ($path == '') ? BASEPATH.'cache/' : $path;
 		$uri = $this->config->item('base_url')
-					.$this->config->item('index_page')
-					."/rooms/info/$school_id/$room_id";
+		.$this->config->item('index_page')
+		."/rooms/info/$school_id/$room_id";
 		$cache_path .= md5($uri);
 		if(file_exists($cache_path)){
 			return @unlink($cache_path);
@@ -208,8 +208,8 @@ class Rooms_model extends Model{
 	 */
 	function delete($id){
 		$this->delete_photo($id);
-	$this->db->where('room_id', $id);
-	$this->db->delete('rooms');
+		$this->db->where('room_id', $id);
+		$this->db->delete('rooms');
 	}
 
 
@@ -240,14 +240,14 @@ class Rooms_model extends Model{
 	function GetFields($field_id = NULL, $school_id = NULL){
 		if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
 		$this->db->select(
-											 '*'
+			'*'
 											#.'roomoptions.*,'
 											#.'roomoptions.option_id,'
 											#.'roomoptions.value,'
 											#.'x.,'
 											#.'school.school_id,'
 											#.'school.code AS schoolcode'
-											);
+		);
 		$this->db->from('roomfields');
 		#$this->db->join('roomoptions', 'roomfields.field_id = roomoptions.field_id', 'left outer');
 		#$this->db->join('schools', 'schools.school_id = roomfields.school_id');
@@ -363,10 +363,10 @@ class Rooms_model extends Model{
 	 *
 	 */
 	function field_delete($id){
-	$this->db->where('field_id', $id);
-	$this->db->delete('roomfields');
-	$this->db->where('field_id', $id);
-	$this->db->delete('roomvalues');
+		$this->db->where('field_id', $id);
+		$this->db->delete('roomfields');
+		$this->db->where('field_id', $id);
+		$this->db->delete('roomvalues');
 	}
 
 

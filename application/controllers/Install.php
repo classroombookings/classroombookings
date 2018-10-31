@@ -1,43 +1,43 @@
 <?php
-class Install extends Controller {
+class Install extends CI_Controller {
 
 
 
 
 
-  function Install(){
-    parent::Controller();
-    $this->loggedin = False;
-    $this->load->model('crud_model', 'crud');
-    $this->load->model('school_model', 'M_school');
-    $this->load->helper('file');
-  }
+	public function __construct(){
+		parent::__construct();
+		$this->loggedin = False;
+		$this->load->model('crud_model', 'crud');
+		$this->load->model('school_model', 'M_school');
+		$this->load->helper('file');
+	}
 
 
 
 
 
-  function index(){
-  	// Read database info from file
-  	include('system/application/config/database.php');
-  	$content0['db']['hostname'] = $db['default']['hostname'];
-  	$content0['db']['username'] = $db['default']['username'];
-  	$content0['db']['database'] = $db['default']['database'];
-  	$content0['db']['password'] = str_repeat('*', strlen($db['default']['password']));
-  	unset($db);
+	function index(){
+	// Read database info from file
+		include('system/application/config/database.php');
+		$content0['db']['hostname'] = $db['default']['hostname'];
+		$content0['db']['username'] = $db['default']['username'];
+		$content0['db']['database'] = $db['default']['database'];
+		$content0['db']['password'] = str_repeat('*', strlen($db['default']['password']));
+		unset($db);
 
 	  // Initialise columns view
-	  $content[0]['content'] = $this->load->view('install/install_index', $content0, True);
-	  $content[0]['width'] = '72%';
-	  $content[1]['content'] = $this->load->view('install/install_index_side', NULL, True);
-	  $content[1]['width'] = '28%';
+		$content[0]['content'] = $this->load->view('install/install_index', $content0, True);
+		$content[0]['width'] = '72%';
+		$content[1]['content'] = $this->load->view('install/install_index_side', NULL, True);
+		$content[1]['width'] = '28%';
 
 	  // Load view
-	  $layout['title'] = 'Install classroombookings';
-	  $layout['showtitle'] = $layout['title'];
-	  $layout['body'] = $this->load->view('columns', $content, True );
-    $this->load->view('layout', $layout);
-  }
+		$layout['title'] = 'Install classroombookings';
+		$layout['showtitle'] = $layout['title'];
+		$layout['body'] = $this->load->view('columns', $content, True );
+		$this->load->view('layout', $layout);
+	}
 
 
 
@@ -52,57 +52,57 @@ class Install extends Controller {
 		#$mfrid = $this->input->post('mfrid');
 
 		// Validation rules
-		$vrules['schoolname']			= "required|max_length[255]";
-		$vrules['website']	  		= "prep_url|max_length[255]";
-		$vrules['username']   		= "required|max_length[20]|min_length[4]";
-		$vrules['password1']			= "required|max_length[20]|min_length[6]";
-		$vrules['password2']			= "required|max_length[20]|min_length[6]|matches[password1]";
-		$this->validation->set_rules($vrules);
+  	$vrules['schoolname']			= "required|max_length[255]";
+  	$vrules['website']	  		= "prep_url|max_length[255]";
+  	$vrules['username']   		= "required|max_length[20]|min_length[4]";
+  	$vrules['password1']			= "required|max_length[20]|min_length[6]";
+  	$vrules['password2']			= "required|max_length[20]|min_length[6]|matches[password1]";
+  	$this->validation->set_rules($vrules);
 
 		// Pretty it up a bit for error validation message
-		$vfields['schoolname']		= 'School name';
-		$vfields['website']	  		= 'Website address';
-		$vfields['username']			= 'Username';
-		$vfields['password1']			= 'Password';
-		$vfields['password2']			= 'Password confirmation';
-		$this->validation->set_fields($vfields);
+  	$vfields['schoolname']		= 'School name';
+  	$vfields['website']	  		= 'Website address';
+  	$vfields['username']			= 'Username';
+  	$vfields['password1']			= 'Password';
+  	$vfields['password2']			= 'Password confirmation';
+  	$this->validation->set_fields($vfields);
 
 		// Set the error delims to a nice styled red box
-		$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
+  	$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
 
 
-    if ($this->validation->run() == FALSE){
+  	if ($this->validation->run() == FALSE){
 
-      // Validation failed
-			return $this->index();
+	  // Validation failed
+  		return $this->index();
 
-		} else {
+  	} else {
 
 		  // Validation succeeded!
 
 		  // Create database tables first
-			$tables = $this->_create_tables();
-			if($tables == FALSE){
-				$body['db'] = $this->load->view('msgbox/error', 'An error occured creating the database tables.', True);
-			} else {
-				$body['db'] = $this->load->view('msgbox/info', 'Database tables were created successfully.', True);
-			}
+  		$tables = $this->_create_tables();
+  		if($tables == FALSE){
+  			$body['db'] = $this->load->view('msgbox/error', 'An error occured creating the database tables.', True);
+  		} else {
+  			$body['db'] = $this->load->view('msgbox/info', 'Database tables were created successfully.', True);
+  		}
 
 
 		  // Create school
-			$school_data['name'] = $this->input->post('schoolname');
-			$school_data['website'] = $this->input->post('website');
-			$school_id = $this->M_school->add($school_data);
+  		$school_data['name'] = $this->input->post('schoolname');
+  		$school_data['website'] = $this->input->post('website');
+  		$school_id = $this->M_school->add($school_data);
 
 
 			// Create user
-			$user_data['school_id']		= $school_id;
-			$user_data['username'] 		= $this->input->post('username');
-			$user_data['password']		= sha1($this->input->post('password1'));
-			$user_data['authlevel']		= 1;
-			$user_data['enabled']			= 1;
-			$user_data['email']				= $this->input->post('email');
-			$this->crud->Add('users', 'user_id', $user_data);
+  		$user_data['school_id']		= $school_id;
+  		$user_data['username'] 		= $this->input->post('username');
+  		$user_data['password']		= sha1($this->input->post('password1'));
+  		$user_data['authlevel']		= 1;
+  		$user_data['enabled']			= 1;
+  		$user_data['email']				= $this->input->post('email');
+  		$this->crud->Add('users', 'user_id', $user_data);
 
 
 			/* if( !$this->crud->Add('ci_users', 'user_id', $user_data) ){
@@ -116,10 +116,10 @@ class Install extends Controller {
 			$body['user'] = $user_data;
 			$body['school'] = $school_data;
 
-		  $layout['title'] = 'Congratulations!';
-		  $layout['showtitle'] = $layout['title'];
-		  $layout['body'] = $this->load->view('install/finished', $body, True);
-		  $this->load->view('layout', $layout);
+			$layout['title'] = 'Congratulations!';
+			$layout['showtitle'] = $layout['title'];
+			$layout['body'] = $this->load->view('install/finished', $body, True);
+			$this->load->view('layout', $layout);
 		}
 
 	}
@@ -160,10 +160,10 @@ class Install extends Controller {
 		} else {
 			$body = $this->load->view('msgbox/error', 'Your account could not be validated. Please <a href="'.site_url('contact').'">contact us</a>.', True);
 		}
-	  $layout['title'] = 'Congratulations!';
-	  $layout['showtitle'] = $layout['title'];
+		$layout['title'] = 'Congratulations!';
+		$layout['showtitle'] = $layout['title'];
 		$layout['body'] = $body;
-	  $this->load->view('layout', $layout);
+		$this->load->view('layout', $layout);
 	}
 
 

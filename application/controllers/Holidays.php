@@ -1,24 +1,24 @@
 <?php
-class Holidays extends Controller {
+class Holidays extends CI_Controller {
 
 
 
 
 
-  function Holidays(){
-    parent::Controller();
+	public function __construct(){
+		parent::__construct();
 
 		// Load language
-  	$this->lang->load('crbs', 'english');
+		$this->lang->load('crbs', 'english');
 
 		// Get school id
-    $this->school_id = $this->session->userdata('school_id');
+		$this->school_id = $this->session->userdata('school_id');
 
-    $this->output->enable_profiler($this->session->userdata('profiler'));
+		$this->output->enable_profiler($this->session->userdata('profiler'));
 
 		// Check user is logged in & is admin
-    if(!$this->userauth->loggedin()){
-    	$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True) );
+		if(!$this->userauth->loggedin()){
+			$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True) );
 			redirect('site/home', 'location');
 		} else {
 			$this->loggedin = True;
@@ -31,28 +31,28 @@ class Holidays extends Controller {
 		#$this->load->helper('date');
 		// Load required models
 		$this->load->model('crud_model', 'crud');
-    $this->load->model('weeks_model', 'M_weeks');
-    $this->load->model('holidays_model', 'M_holidays');
+		$this->load->model('weeks_model', 'M_weeks');
+		$this->load->model('holidays_model', 'M_holidays');
 		// Load calendar, we may need it
 		/* $this->load->library('calendar');
 		$cal_config['start_day']		= 'monday';
 		$cal_config['month_type']		= 'long';
 		$cal_config['day_type']			= 'short';
 		$this->calendar->initialize($cal_config); */
-  }
+	}
 
 
 
 
 
 	function index(){
-  	$body['holidays'] = $this->M_holidays->Get(NULL, $this->school_id);	//$this->session->userdata('schoolcode'));
+	$body['holidays'] = $this->M_holidays->Get(NULL, $this->school_id);	//$this->session->userdata('schoolcode'));
 
-		$layout['title'] = 'School Holidays';
-		$layout['showtitle'] = $layout['title'];
-		$layout['body'] = $this->load->view('holidays/holidays_index', $body, True);
-		$this->load->view('layout', $layout);
-	}
+	$layout['title'] = 'School Holidays';
+	$layout['showtitle'] = $layout['title'];
+	$layout['body'] = $this->load->view('holidays/holidays_index', $body, True);
+	$this->load->view('layout', $layout);
+}
 
 
 
@@ -104,7 +104,7 @@ class Holidays extends Controller {
 
 
 	function save(){
-	 	// Get ID from form
+		// Get ID from form
 		$holiday_id = $this->input->post('holiday_id');
 
 		#print_r($_POST);
@@ -126,16 +126,16 @@ class Holidays extends Controller {
 		// Set the error delims to a nice styled red hint under the fields
 		$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
 
-    if ($this->validation->run() == FALSE){
+		if ($this->validation->run() == FALSE){
 
-    	// Validation failed
+		// Validation failed
 			if($holiday_id != "X"){
 				return $this->edit($holiday_id);
 			} else {
 				return $this->add();
 			}
 
-    } else {
+		} else {
 
 			// Validation succeeded!
 			$date_format = "Y-m-d";

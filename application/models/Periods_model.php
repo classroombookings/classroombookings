@@ -1,12 +1,12 @@
 <?php
-class Periods_model extends Model{
+class Periods_model extends CI_Model{
 
 
 
 
 
-	function Periods_model(){
-		parent::Model();
+	public function __construct(){
+		parent::__construct();
 
 		$this->CI =& get_instance();
 
@@ -21,7 +21,7 @@ class Periods_model extends Model{
 		$this->days_bitmask = new bitmask;
 		$this->days_bitmask->assoc_keys = $this->days;
 
-  }
+	}
 
 
 
@@ -117,7 +117,7 @@ class Periods_model extends Model{
 		return $this->CI->crud->Delete('periods', 'period_id', $id);
 	/* $this->db->where('period_id', $id);
 	$this->db->delete('periods'); */
-	}
+}
 
 
 

@@ -1,23 +1,23 @@
 <?php
-class Profile extends Controller {
+class Profile extends CI_Controller {
 
 
 
 
 
-  function Profile(){
-    parent::Controller();
+	public function __construct(){
+		parent::__construct();
 		// Load language
-  	$this->lang->load('crbs', 'english');
+		$this->lang->load('crbs', 'english');
 
 		// Get school id
-    $this->school_id = $this->session->userdata('school_id');
+		$this->school_id = $this->session->userdata('school_id');
 
-    $this->output->enable_profiler($this->session->userdata('profiler'));
+		$this->output->enable_profiler($this->session->userdata('profiler'));
 
-    // Check user is logged in & is admin
-    if(!$this->userauth->loggedin()){
-    	$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True) );
+	// Check user is logged in & is admin
+		if(!$this->userauth->loggedin()){
+			$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True) );
 			redirect('site/home', 'location');
 		} else {
 			$this->loggedin = True;
@@ -28,37 +28,37 @@ class Profile extends Controller {
 		$this->load->model('crud_model', 'crud');
 		$this->load->model('bookings_model', 'M_bookings');
 		$this->load->model('users_model', 'M_users');
-  }
+	}
 
 
 
 
 
-  function index(){
-  	// Get User ID from session
-  	$user_id = $this->session->userdata('user_id');
-  	// Get bookings for a room if this user owns one
-  	$body['myroom'] = $this->M_bookings->ByRoomOwner($user_id);
-  	// Get all bookings made by this user (only staff ones)
-  	$body['mybookings'] = $this->M_bookings->ByUser($user_id);
-  	// Get totals
-  	$body['total'] = $this->M_bookings->TotalNum($user_id, $this->school_id);
+	function index(){
+	// Get User ID from session
+		$user_id = $this->session->userdata('user_id');
+	// Get bookings for a room if this user owns one
+		$body['myroom'] = $this->M_bookings->ByRoomOwner($user_id);
+	// Get all bookings made by this user (only staff ones)
+		$body['mybookings'] = $this->M_bookings->ByUser($user_id);
+	// Get totals
+		$body['total'] = $this->M_bookings->TotalNum($user_id, $this->school_id);
 
 		$layout['title'] = 'My Profile';
 		$layout['showtitle'] = $layout['title'];
 		$layout['body'] = $this->load->view('profile/profile_index', $body, True);
 		$this->load->view('layout', $layout);
-  }
+	}
 
 
 
 
 
-  function edit(){
-  	// Get User ID from session
-  	$user_id = $this->session->userdata('user_id');
-  	// Get bookings for a room if this user owns one
-  	$body['user'] = $this->M_users->Get($user_id);
+	function edit(){
+	// Get User ID from session
+		$user_id = $this->session->userdata('user_id');
+	// Get bookings for a room if this user owns one
+		$body['user'] = $this->M_users->Get($user_id);
 
 		$cols[0]['content'] = $this->load->view('profile/profile_edit', $body, True);
 		$cols[0]['width'] = '70%';
@@ -69,14 +69,14 @@ class Profile extends Controller {
 		$layout['showtitle'] = $layout['title'];
 		$layout['body'] = $this->load->view('columns', $cols, True);
 		$this->load->view('layout', $layout);
-  }
+	}
 
 
 
 
 
-  function save(){
-	 	// Get ID from form
+	function save(){
+		// Get ID from form
 		$user_id = $this->input->post('user_id');
 
 		// Validation rules
@@ -104,9 +104,9 @@ class Profile extends Controller {
 		// Set the error delims to a nice styled red hint under the fields
 		$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
 
-    if ($this->validation->run() == FALSE){
+		if ($this->validation->run() == FALSE){
 
-      // Validation failed
+	  // Validation failed
 			return $this->edit($user_id);
 
 		} else {
@@ -138,7 +138,7 @@ class Profile extends Controller {
 
 		}
 
-  }
+	}
 
 
 

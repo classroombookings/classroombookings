@@ -1,15 +1,15 @@
 <?php
-class Holidays_model extends Model{
+class Holidays_model extends CI_Model{
 
 
 
 
 
-	function Holidays_model(){
-		parent::Model();
+	public function __construct(){
+		parent::__construct();
 		/*$this->CI =& get_instance();
 		$this->CI->load->Model('crud_model', 'crud', True);*/
-  }
+	}
 
 
 
@@ -62,8 +62,8 @@ class Holidays_model extends Model{
 
 
 
-  function Add($data){
-	return $this->crud->Add('holidays', 'holiday_id', $data);
+	function Add($data){
+		return $this->crud->Add('holidays', 'holiday_id', $data);
 		/* // Run query to insert blank row
 		$this->db->insert('holidays', array('holiday_id' => NULL) );
 		// Get id of inserted record
@@ -71,14 +71,14 @@ class Holidays_model extends Model{
 		// Now call the edit function to update the actual data for this new row now we have the ID
 		$this->edit($holiday_id, $data);
 		return $holiday_id; */
-  }
+	}
 
 
 
 
 
-  function Edit($holiday_id, $data){
-	return $this->crud->Edit('holidays', 'holiday_id', $holiday_id, $data, $this->school_id);
+	function Edit($holiday_id, $data){
+		return $this->crud->Edit('holidays', 'holiday_id', $holiday_id, $data, $this->school_id);
 		/* $this->db->where('holiday_id', $holiday_id);
 		$this->db->set('school_id', $this->session->userdata('school_id'));
 		$result = $this->db->update('holidays', $data);
@@ -88,7 +88,7 @@ class Holidays_model extends Model{
 		} else {
 			return false;
 		} */
-  }
+	}
 
 
 
@@ -101,9 +101,9 @@ class Holidays_model extends Model{
 	 *
 	 */
 	function delete($id){
-	$this->db->where('holiday_id', $id);
-	$this->db->where('school_id', $this->session->userdata('school_id'));
-	$this->db->delete('holidays');
+		$this->db->where('holiday_id', $id);
+		$this->db->where('school_id', $this->session->userdata('school_id'));
+		$this->db->delete('holidays');
 	}
 
 

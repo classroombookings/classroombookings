@@ -1,14 +1,14 @@
 <?php
-class Weeks_model extends Model{
+class Weeks_model extends CI_Model{
 
 
 
 
 
-	function Weeks_model(){
-		parent::Model();
+	public function __construct(){
+		parent::__construct();
 		$this->CI =& get_instance();
-  }
+	}
 
 
 
@@ -43,8 +43,8 @@ class Weeks_model extends Model{
 
 
 
-  function Add($data){
-	return $this->CI->crud->Add('weeks', 'week_id', $data);
+	function Add($data){
+		return $this->CI->crud->Add('weeks', 'week_id', $data);
 		/*// Run query to insert blank row
 		$this->db->insert('weeks', array('week_id' => NULL) );
 		// Get id of inserted record
@@ -52,14 +52,14 @@ class Weeks_model extends Model{
 		// Now call the edit function to update the actual data for this new row now we have the ID
 		$this->edit($week_id, $data);
 		return $week_id;*/
-  }
+	}
 
 
 
 
 
-  function Edit($week_id, $data, $school_id = NULL){
-	return $this->CI->crud->Edit('weeks', 'week_id', $week_id, $data);
+	function Edit($week_id, $data, $school_id = NULL){
+		return $this->CI->crud->Edit('weeks', 'week_id', $week_id, $data);
 	/*if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
 		$this->db->where('week_id', $week_id);
 		$this->db->set('school_id', $school_id);
@@ -70,15 +70,15 @@ class Weeks_model extends Model{
 		} else {
 			return false;
 		}*/
-  }
+	}
 
 
 
 
 
-  function GetAcademicYear($school_id = NULL){
-	if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
-	$query_get = $this->db->getwhere('academicyears', array('school_id' => $school_id), 1);
+	function GetAcademicYear($school_id = NULL){
+		if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
+		$query_get = $this->db->getwhere('academicyears', array('school_id' => $school_id), 1);
 		if($query_get->num_rows() == 1){
 			// Got it!
 			return $query_get->row();
@@ -86,15 +86,15 @@ class Weeks_model extends Model{
 			// No results
 			return false;
 		}
-  }
+	}
 
 
 
 
 
-  function SaveAcademicYear($data, $school_id = NULL){
-	if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
-	$query_get = $this->db->getwhere('academicyears', array('school_id' => $school_id), 1);
+	function SaveAcademicYear($data, $school_id = NULL){
+		if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
+		$query_get = $this->db->getwhere('academicyears', array('school_id' => $school_id), 1);
 		if($query_get->num_rows() == 1){
 			// Row already in, updating record
 			$this->db->where('school_id', $this->session->userdata('school_id'));
@@ -156,32 +156,32 @@ class Weeks_model extends Model{
 		for($i=0; $i<=$day_count; $i++){
 			if($i==0 && date("l", $newtime) != "Monday"){
 				// We're starting in the middle of a week.... show 1 earlier week than the code that follows
-			for($s=0; $s<=5; $s++){
+				for($s=0; $s<=5; $s++){
 			#for($s=1; $s<=6; $s++){
-				$newtime = $ad_date_start - ($s*60*60*24);
-				if(date("l", $newtime) == "Monday"){
-					$end_of_week = $newtime + (6*60*60*24);
+					$newtime = $ad_date_start - ($s*60*60*24);
+					if(date("l", $newtime) == "Monday"){
+						$end_of_week = $newtime + (6*60*60*24);
 					#echo date($date_format, $newtime)."<br/><br/>";	// through ".date("F jS, Y",$end_of_week)." is a week.<br />";
 					// Put date into array
-					$dates[$i]['date'] = date($date_format, $newtime);
+						$dates[$i]['date'] = date($date_format, $newtime);
 					// Check to see if this date currently belongs to another week
-					$dates[$i]['week_id'] = $this->WeekExists($dates[$i]['date']);
+						$dates[$i]['week_id'] = $this->WeekExists($dates[$i]['date']);
 					// Check to see if this date is in a holiday
+						$dates[$i]['holiday'] = $this->WeekInHoliday($dates[$i]['date'], $holidays);
+					}
+				}
+			} else {
+				$newtime = $ad_date_start + ($i*60*60*24);
+				if(date("l",$newtime) == "Monday"){
+				//Beginning of a week... show it
+					$end_of_week = $newtime+(6*60*60*24);
+				#echo date("d.m.Y",$newtime)."<br/><br/>";	// through ".date("F jS, Y",$end_of_week)." is a week.<br /><br />";
+					$dates[$i]['date'] = date($date_format, $newtime);
+				// Check to see if this date currently belongs to another week
+					$dates[$i]['week_id'] = $this->WeekExists($dates[$i]['date']);
+				// Check to see if this date is in a holiday
 					$dates[$i]['holiday'] = $this->WeekInHoliday($dates[$i]['date'], $holidays);
 				}
-			}
-		  } else {
-			$newtime = $ad_date_start + ($i*60*60*24);
-			if(date("l",$newtime) == "Monday"){
-				//Beginning of a week... show it
-				$end_of_week = $newtime+(6*60*60*24);
-				#echo date("d.m.Y",$newtime)."<br/><br/>";	// through ".date("F jS, Y",$end_of_week)." is a week.<br /><br />";
-				$dates[$i]['date'] = date($date_format, $newtime);
-				// Check to see if this date currently belongs to another week
-				$dates[$i]['week_id'] = $this->WeekExists($dates[$i]['date']);
-				// Check to see if this date is in a holiday
-				$dates[$i]['holiday'] = $this->WeekInHoliday($dates[$i]['date'], $holidays);
-			}
 			}
 		}
 		return $dates;
@@ -295,11 +295,11 @@ class Weeks_model extends Model{
 	 * @return		int		Week_ID on true, otherwise false
 	 */
 	function WeekExists($date, $school_id = NULL){
-	if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
+		if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
 		$this->db->where('date', $date);
 		$this->db->where('school_id', $school_id);
 		$this->db->limit('1');
-	$query_get = $this->db->get('weekdates');
+		$query_get = $this->db->get('weekdates');
 		if($query_get->num_rows() == 1){
 			// Got it!
 			$row = $query_get->row();

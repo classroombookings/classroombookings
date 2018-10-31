@@ -1,24 +1,24 @@
 <?php
-class Weeks extends Controller {
+class Weeks extends CI_Controller {
 
 
 
 
 
-  function Weeks(){
-    parent::Controller();
+	public function __construct(){
+		parent::__construct();
 
 		// Load language
-  	$this->lang->load('crbs', 'english');
+		$this->lang->load('crbs', 'english');
 
 		// Get school id
-    $this->school_id = $this->session->userdata('school_id');
+		$this->school_id = $this->session->userdata('school_id');
 
-    $this->output->enable_profiler($this->session->userdata('profiler'));
+		$this->output->enable_profiler($this->session->userdata('profiler'));
 
-    // Check user is logged in & is admin
-    if(!$this->userauth->loggedin()){
-    	$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True) );
+	// Check user is logged in & is admin
+		if(!$this->userauth->loggedin()){
+			$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True) );
 			redirect('site/home', 'redirect');
 		} else {
 			$this->loggedin = True;
@@ -30,10 +30,10 @@ class Weeks extends Controller {
 		// Load models
 		$this->load->model('crud_model', 'crud');
 		$this->load->model('holidays_model', 'M_holidays');
-    $this->load->model('weeks_model', 'M_weeks');
-    $this->load->helper('iconsel');
+		$this->load->model('weeks_model', 'M_weeks');
+		$this->load->helper('iconsel');
 
-    // Load calendar
+	// Load calendar
 		/* $this->load->library('calendar');
 		$cal_config['start_day']		= 'monday';
 		$cal_config['month_type']		= 'long';
@@ -41,31 +41,31 @@ class Weeks extends Controller {
 		$this->calendar->initialize($cal_config); */
 
 		$this->WeeksCount = 0;
-  }
+	}
 
 
 
 
 
-  function index(){
-  	$view['weeks'] = $this->M_weeks->Get(NULL, $this->school_id);	//$this->session->userdata('schoolcode'));
-  	$view['cal'] = NULL;
-  	$view['academicyear'] = $this->M_weeks->GetAcademicYear();
+	function index(){
+	$view['weeks'] = $this->M_weeks->Get(NULL, $this->school_id);	//$this->session->userdata('schoolcode'));
+	$view['cal'] = NULL;
+	$view['academicyear'] = $this->M_weeks->GetAcademicYear();
 
-  	if(!$view['academicyear']){
-  		$body = $this->load->view('msgbox/warning', 'Please configure your academic year first.', True);
-  	} else {
-  		$body = '';
-  	}
+	if(!$view['academicyear']){
+		$body = $this->load->view('msgbox/warning', 'Please configure your academic year first.', True);
+	} else {
+		$body = '';
+	}
 
-  	$body .= $this->load->view('weeks/weeks_index', $view, True);
-  	#$body .= $this->load->view('weeks/weeks_index_academicyear', $view, True);
+	$body .= $this->load->view('weeks/weeks_index', $view, True);
+	#$body .= $this->load->view('weeks/weeks_index_academicyear', $view, True);
 
-		$layout['title'] = 'Timetable Week Cycle';
-		$layout['showtitle'] = $layout['title'];
-		$layout['body'] = $body;
-		$this->load->view('layout', $layout);
-  }
+	$layout['title'] = 'Timetable Week Cycle';
+	$layout['showtitle'] = $layout['title'];
+	$layout['body'] = $body;
+	$this->load->view('layout', $layout);
+}
 
 
 
@@ -139,7 +139,7 @@ class Weeks extends Controller {
 
 
 	function save(){
-	 	// Get ID from form
+		// Get ID from form
 		$week_id = $this->input->post('week_id');
 
 		#print_r($_POST);
@@ -162,16 +162,16 @@ class Weeks extends Controller {
 		// Set the error delims to a nice styled red hint under the fields
 		$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
 
-    if ($this->validation->run() == FALSE){
+		if ($this->validation->run() == FALSE){
 
-    	// Validation failed
+		// Validation failed
 			if($week_id != "X"){
 				$this->edit($week_id);
 			} else {
 				$this->add();
 			}
 
-    } else {
+		} else {
 
 			// Validation succeeded!
 			$data = array();
@@ -258,105 +258,105 @@ class Weeks extends Controller {
 
 
 
-	function academicyear(){
-  	$body['academicyear'] = $this->M_weeks->GetAcademicYear();
+	 function academicyear(){
+	 	$body['academicyear'] = $this->M_weeks->GetAcademicYear();
 
-  	if(!$body['academicyear']){
-		$body['academicyear'] = new Stdclass();
-			$body['academicyear']->date_start = date("Y-m-d");
-			$body['academicyear']->date_end = date("Y-m-d", strtotime("+1 Year", strtotime(date("Y-m-d"))));
-		}
+	 	if(!$body['academicyear']){
+	 		$body['academicyear'] = new Stdclass();
+	 		$body['academicyear']->date_start = date("Y-m-d");
+	 		$body['academicyear']->date_end = date("Y-m-d", strtotime("+1 Year", strtotime(date("Y-m-d"))));
+	 	}
 
-		$layout['title'] = 'Academic Year';
-		$layout['showtitle'] = $layout['title'];
-		$layout['body'] = $this->load->view('weeks/weeks_academicyear', $body, True);
-		$this->load->view('layout', $layout);
-	}
-
-
+	 	$layout['title'] = 'Academic Year';
+	 	$layout['showtitle'] = $layout['title'];
+	 	$layout['body'] = $this->load->view('weeks/weeks_academicyear', $body, True);
+	 	$this->load->view('layout', $layout);
+	 }
 
 
 
-	function saveacademicyear(){
+
+
+	 function saveacademicyear(){
 		#print_r($_POST);
 
 		// Validation rules
-		$vrules['date_start']			= 'required|min_length[8]|max_length[10]';
-		$vrules['date_end']				= 'required|min_length[8]|max_length[10]';
-		$this->validation->set_rules($vrules);
+	 	$vrules['date_start']			= 'required|min_length[8]|max_length[10]';
+	 	$vrules['date_end']				= 'required|min_length[8]|max_length[10]';
+	 	$this->validation->set_rules($vrules);
 
 		// Pretty it up a bit for error validation message
-		$vfields['date_start']		= 'Start date';
-		$vfields['date_end']			= 'End Date';
-		$this->validation->set_fields($vfields);
+	 	$vfields['date_start']		= 'Start date';
+	 	$vfields['date_end']			= 'End Date';
+	 	$this->validation->set_fields($vfields);
 
 		// Set the error delims to a nice styled red hint under the fields
-		$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
+	 	$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
 
-    if ($this->validation->run() == FALSE){
+	 	if ($this->validation->run() == FALSE){
 
-			return $this->academicyear();
+	 		return $this->academicyear();
 
-    } else {
+	 	} else {
 
 			// Validation succeeded!
-			$date_format = "Y-m-d";
+	 		$date_format = "Y-m-d";
 
-			$start_date = explode('/', $this->input->post('date_start'));
-			$end_date = explode('/', $this->input->post('date_end'));
+	 		$start_date = explode('/', $this->input->post('date_start'));
+	 		$end_date = explode('/', $this->input->post('date_end'));
 
-			$data = array();
-			$data['date_start']		=	sprintf("%s-%s-%s", $start_date[2], $start_date[1], $start_date[0]);
-			$data['date_end']			= sprintf("%s-%s-%s", $end_date[2], $end_date[1], $end_date[0]);
+	 		$data = array();
+	 		$data['date_start']		=	sprintf("%s-%s-%s", $start_date[2], $start_date[1], $start_date[0]);
+	 		$data['date_end']			= sprintf("%s-%s-%s", $end_date[2], $end_date[1], $end_date[0]);
 
-			$this->M_weeks->SaveAcademicYear($data);
-			$this->session->set_flashdata('saved', $this->load->view('msgbox/info', 'The Academic Year dates have been updated.', True) );
+	 		$this->M_weeks->SaveAcademicYear($data);
+	 		$this->session->set_flashdata('saved', $this->load->view('msgbox/info', 'The Academic Year dates have been updated.', True) );
 
-		}
+	 	}
 
 			// Go back to index
-			redirect('weeks/academicyear', 'redirect');
+	 	redirect('weeks/academicyear', 'redirect');
 
-	}
-
-
+	 }
 
 
 
-	function _is_valid_colour($colour){
-		$hex = array('0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F');
+
+
+	 function _is_valid_colour($colour){
+	 	$hex = array('0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F');
 		#print_r($hex);
 		// Remove the hash
-		$colour = strtoupper(str_replace('#', '', $colour));
+	 	$colour = strtoupper(str_replace('#', '', $colour));
 		// Make sure we do have 6 digits
-		if(strlen($colour) == 6){
-			$ret = true;
-			for($i=0;$i<strlen($colour);$i++){
+	 	if(strlen($colour) == 6){
+	 		$ret = true;
+	 		for($i=0;$i<strlen($colour);$i++){
 				#echo $colour{$i};
-				if(!in_array($colour{$i}, $hex)){
-					$this->validation->set_message('_is_valid_colour', $this->lang->line('colour_invalid'));
-					return false;
-					$ret = false;
-				}
-			}
-		} else {
-			$this->validation->set_message('_is_valid_colour', $this->lang->line('colour_invalid'));
-			$ret = false;
-		}
-		return $ret;
+	 			if(!in_array($colour{$i}, $hex)){
+	 				$this->validation->set_message('_is_valid_colour', $this->lang->line('colour_invalid'));
+	 				return false;
+	 				$ret = false;
+	 			}
+	 		}
+	 	} else {
+	 		$this->validation->set_message('_is_valid_colour', $this->lang->line('colour_invalid'));
+	 		$ret = false;
+	 	}
+	 	return $ret;
+	 }
+
+
+
+
+
+	 function _makecol($colour){
+	 	return strtoupper(str_replace('#', '', $colour));
+	 }
+
+
+
+
+
 	}
-
-
-
-
-
-	function _makecol($colour){
-		return strtoupper(str_replace('#', '', $colour));
-	}
-
-
-
-
-
-}
-?>
+	?>

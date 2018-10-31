@@ -1,14 +1,14 @@
 <?php
-class School_model extends Model{
+class School_model extends CI_Model{
 
 
 
 
 
-	function School_model(){
-		parent::Model();
+	public function __construct(){
+		parent::__construct();
 		$this->load->library('gradient');
-  }
+	}
 
 
 
@@ -21,28 +21,28 @@ class School_model extends Model{
 	 * @return array	DB fields with school information
 	 *
 	 */
-	function GetInfoByCode($schoolcode){
-		$query_str = "SELECT * FROM school WHERE code='$schoolcode' LIMIT 1";
-		$query = $this->db->query($query_str);
-		if($query->num_rows() == 1){
-			return $query->row();
-		} else {
-			return false;
-		}
-	}
+  function GetInfoByCode($schoolcode){
+  	$query_str = "SELECT * FROM school WHERE code='$schoolcode' LIMIT 1";
+  	$query = $this->db->query($query_str);
+  	if($query->num_rows() == 1){
+  		return $query->row();
+  	} else {
+  		return false;
+  	}
+  }
 
 
 
 
-	Function GetInfo(){
-		$query_str = "SELECT * FROM school LIMIT 1";
-		$query = $this->db->query($query_str);
-		if($query->num_rows() ==1){
-			return $query->row();
-		} else {
-			return false;
-		}
-	}
+  Function GetInfo(){
+  	$query_str = "SELECT * FROM school LIMIT 1";
+  	$query = $this->db->query($query_str);
+  	if($query->num_rows() ==1){
+  		return $query->row();
+  	} else {
+  		return false;
+  	}
+  }
 
 
 
@@ -51,14 +51,14 @@ class School_model extends Model{
   /**
    * ADD SCHOOL
    */
-	function add($data){
+  function add($data){
 		// Run query to insert blank row
-		$this->db->insert('school', array('school_id' => 0) );
+  	$this->db->insert('school', array('school_id' => 0) );
 		// Get id of inserted record
-		$school_id = $this->db->insert_id();
+  	$school_id = $this->db->insert_id();
 		// Now call the edit function to update the actual data for this new row now we have the ID
-		return $this->edit( 'school_id', $school_id, $data );
-	}
+  	return $this->edit( 'school_id', $school_id, $data );
+  }
 
 
 
@@ -100,25 +100,25 @@ class School_model extends Model{
 		case '0': return 0; break;
 	}
 		#if( $this->schoolcode_restricted($schoolcode) ){ $ret = 3; }
-	}*/
+}*/
 
 
 
 
 
-  function schoolcode_restricted($schoolcode){
+function schoolcode_restricted($schoolcode){
 	if( in_array( $schoolcode, $this->restricted_codes ) ){
 		return true;
 	} else {
 		return false;
 	}
-  }
+}
 
 
 
 
 
-  function GetSchoolName($schoolcode){
+function GetSchoolName($schoolcode){
 	$query_str = "SELECT name FROM schools WHERE code='$schoolcode' LIMIT 1";
 	$query = $this->db->query($query_str);
 	if($query->num_rows() == 1){
@@ -127,14 +127,14 @@ class School_model extends Model{
 	} else {
 		return false;
 	}
-  }
+}
 
 
 
 
 
-	function delete_logo($school_id = NULL){
-		if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
+function delete_logo($school_id = NULL){
+	if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
 		$row = $this->GetInfo();	//ByCode($schoolcode);
 		$logo = $row->logo;
 		@unlink('webroot/images/schoollogo/300/'.$logo);

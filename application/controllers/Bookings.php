@@ -1,15 +1,15 @@
 <?php
-class Bookings extends Controller {
+class Bookings extends CI_Controller {
 
 
 
 
 
-  function Bookings(){
-	parent::Controller();
+	public function __construct(){
+		parent::__construct();
 
 	// Load language
-	$this->lang->load('crbs', 'english');
+		$this->lang->load('crbs', 'english');
 
 		// Set school ID
 		$this->school_id = $this->session->userdata('school_id');
@@ -17,8 +17,8 @@ class Bookings extends Controller {
 		$this->output->enable_profiler(false);
 
 	// Check user is logged in
-	if(!$this->userauth->loggedin()){
-		$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True) );
+		if(!$this->userauth->loggedin()){
+			$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True) );
 			redirect('site/home', 'location');
 		} else {
 			$this->loggedin = True;
@@ -51,18 +51,18 @@ class Bookings extends Controller {
 		$school['users']					= $this->M_users->Get();
 		$school['days_list'] 			= $this->M_periods->days;
 		$school['days_bitmask']		= $this->M_periods->days_bitmask;
-	$this->school = $school;
-  }
+		$this->school = $school;
+	}
 
 
 
 
 
-  function index(){
+	function index(){
 
-	$uri = $this->uri->uri_to_assoc(3);
+		$uri = $this->uri->uri_to_assoc(3);
 
-	$this->session->set_userdata('uri', $this->uri->uri_string());
+		$this->session->set_userdata('uri', $this->uri->uri_string());
 
 		if( ! isset($uri['date']) ){
 			$uri['date'] = date("Y-m-d");
@@ -118,7 +118,7 @@ class Bookings extends Controller {
 		$layout['body'] .= $body['html'];
 		$this->load->view('layout', $layout);
 		#print_r($_SESSION);
-  }
+	}
 
 
 
@@ -128,62 +128,62 @@ class Bookings extends Controller {
    */
   function load(){
 
-	$style = $this->M_bookings->BookingStyle($this->school_id);
+  	$style = $this->M_bookings->BookingStyle($this->school_id);
 
 	#$chosen_date = $this->input->post('chosen_date');
 
 		// Validation rules
-		$vrules['chosen_date']		= 'max_length[10]|callback__is_valid_date';
-		$vrules['room_id']				= 'numeric';
-		$this->validation->set_rules($vrules);
-		$vfields['chosen_date']		= 'Date';
-		$vfields['room_id']				= 'Room';
-		$vfields['direction']			= 'Direction';
-		$this->validation->set_fields($vfields);
+  	$vrules['chosen_date']		= 'max_length[10]|callback__is_valid_date';
+  	$vrules['room_id']				= 'numeric';
+  	$this->validation->set_rules($vrules);
+  	$vfields['chosen_date']		= 'Date';
+  	$vfields['room_id']				= 'Room';
+  	$vfields['direction']			= 'Direction';
+  	$this->validation->set_fields($vfields);
 
 		// Set the error delims to a nice styled red hint under the fields
-		$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
+  	$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
 
-	if ($this->validation->run() == FALSE){
+  	if ($this->validation->run() == FALSE){
 
-			show_error('validation failed');
+  		show_error('validation failed');
 
-	} else {
+  	} else {
 
-		switch($style['display']){
-			case 'day':
+  		switch($style['display']){
+  			case 'day':
 				// Display type is one day at a time - all rooms/periods
-				if($this->input->post('chosen_date')){
-						$datearr = explode('/', $this->input->post('chosen_date'));
-						if(count($datearr) == 3){
-							$chosen_date = sprintf("%s-%s-%s", $datearr[2], $datearr[1], $datearr[0]);
-							$url = sprintf('bookings/index/date/%s/direction/%s', $chosen_date, $this->input->post('direction'));
+  			if($this->input->post('chosen_date')){
+  				$datearr = explode('/', $this->input->post('chosen_date'));
+  				if(count($datearr) == 3){
+  					$chosen_date = sprintf("%s-%s-%s", $datearr[2], $datearr[1], $datearr[0]);
+  					$url = sprintf('bookings/index/date/%s/direction/%s', $chosen_date, $this->input->post('direction'));
 							#$this->session->set_flashdata('uri', $url);
-							redirect($url, 'redirect');
-						} else {
-							show_error('invalid date');
-						}
-					} else {
-						show_error('no date chosen');
-					}
-				break;
-				case 'room':
-					if($this->input->post('room_id')){
-						$url = sprintf(
-							'bookings/index/date/%s/room/%s/direction/%s',
-							$this->input->post('chosen_date'),
-							$this->input->post('room_id'),
-							$this->input->post('direction')
-						);
+  					redirect($url, 'redirect');
+  				} else {
+  					show_error('invalid date');
+  				}
+  			} else {
+  				show_error('no date chosen');
+  			}
+  			break;
+  			case 'room':
+  			if($this->input->post('room_id')){
+  				$url = sprintf(
+  					'bookings/index/date/%s/room/%s/direction/%s',
+  					$this->input->post('chosen_date'),
+  					$this->input->post('room_id'),
+  					$this->input->post('direction')
+  				);
 						#$this->session->set_flashdata('uri', $url);
-						redirect($url, 'redirect');
-					} else {
-						show_error('no day selected');
-					}
-				break;
+  				redirect($url, 'redirect');
+  			} else {
+  				show_error('no day selected');
+  			}
+  			break;
 			} // End switch
 
-	}
+		}
 	}
 
 
@@ -397,7 +397,7 @@ class Bookings extends Controller {
 		// Set the error delims to a nice styled red hint under the fields
 		$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
 
-	if ($this->validation->run() == FALSE){
+		if ($this->validation->run() == FALSE){
 
 	  // Validation failed
 			if($booking_id != "X"){

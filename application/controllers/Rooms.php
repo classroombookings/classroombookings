@@ -1,25 +1,25 @@
 <?php
-class Rooms extends Controller {
+class Rooms extends CI_Controller {
 
 
 
 
 
-  function Rooms(){
-    parent::Controller();
+	public function __construct(){
+		parent::__construct();
 
 		// Load language
-  	$this->lang->load('crbs', 'english');
+		$this->lang->load('crbs', 'english');
 
 		// Get school id
-    $this->school_id = $this->session->userdata('school_id');
+		$this->school_id = $this->session->userdata('school_id');
 
-    $this->output->enable_profiler($this->session->userdata('profiler'));
+		$this->output->enable_profiler($this->session->userdata('profiler'));
 
-    // Check user is logged in & is admin
-    if($this->uri->segment(2) != 'info'){
-	    if(!$this->userauth->loggedin()){
-	    	$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True) );
+	// Check user is logged in & is admin
+		if($this->uri->segment(2) != 'info'){
+			if(!$this->userauth->loggedin()){
+				$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True) );
 				redirect('site/home', 'location');
 			} else {
 				$this->loggedin = True;
@@ -31,24 +31,24 @@ class Rooms extends Controller {
 		}
 		// Load models
 		$this->load->model('crud_model', 'crud');
-    $this->load->model('school_model', 'M_school');
-    $this->load->model('rooms_model', 'M_rooms');
-    $this->load->model('users_model', 'M_users');
-    // Load the icon selector helper
-    $this->load->helper('iconsel');
-    // Load the image resizer script
+		$this->load->model('school_model', 'M_school');
+		$this->load->model('rooms_model', 'M_rooms');
+		$this->load->model('users_model', 'M_users');
+	// Load the icon selector helper
+		$this->load->helper('iconsel');
+	// Load the image resizer script
 		$this->load->script('resize');
-    #$this->load->scaffolding('rooms');
-  }
+	#$this->load->scaffolding('rooms');
+	}
 
 
 
 
-  function info(){
-  	#$this->output->enable_profiler(true);
-  	//$this->output->cache(60*24*7);
-  	$school_id = $this->uri->segment(3);
-  	$room_id = $this->uri->segment(4);
+	function info(){
+	#$this->output->enable_profiler(true);
+	//$this->output->cache(60*24*7);
+		$school_id = $this->uri->segment(3);
+		$room_id = $this->uri->segment(4);
 
 		$room['users'] = $this->M_users->Get(NULL, $this->school_id, array('user_id', 'username', 'displayname'), 'lastname asc, username asc' );
 
@@ -139,9 +139,9 @@ class Rooms extends Controller {
 	/**
 	 * Save
 	 */
-	 function save(){
+	function save(){
 
-	 	// Get ID from form
+		// Get ID from form
 		$room_id = $this->input->post('room_id');
 
 		// Load image manipulation library
@@ -185,9 +185,9 @@ class Rooms extends Controller {
 		// Set the error delims to a nice styled red hint under the fields
 		$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
 
-    if ($this->validation->run() == FALSE){
+		if ($this->validation->run() == FALSE){
 
-      // Validation failed
+	  // Validation failed
 			if($room_id != "X"){
 				return $this->edit($room_id);
 			} else {
@@ -269,52 +269,52 @@ class Rooms extends Controller {
 											#'rooms.foobar'=>'foo',
 										);*/
 
-			$data = array();
-			$data['rooms.name'] = $this->input->post('name');
-			$data['rooms.location'] = $this->input->post('location');
-			$data['rooms.icon'] = $this->input->post('icon');
-			$data['rooms.notes'] = $this->input->post('notes');
-			$data['rooms.user_id'] = $this->input->post('user_id');
-			$data['rooms.bookable'] = ($this->input->post('bookable')) ? 1 : 0;
+										$data = array();
+										$data['rooms.name'] = $this->input->post('name');
+										$data['rooms.location'] = $this->input->post('location');
+										$data['rooms.icon'] = $this->input->post('icon');
+										$data['rooms.notes'] = $this->input->post('notes');
+										$data['rooms.user_id'] = $this->input->post('user_id');
+										$data['rooms.bookable'] = ($this->input->post('bookable')) ? 1 : 0;
 
-			if( $upload == true ){
-				$data['rooms.photo'] = $newfile;
-			}
+										if( $upload == true ){
+											$data['rooms.photo'] = $newfile;
+										}
 
 			// If user clicked the 'delete photo' button on an edit, delete photo
-			if( $this->input->post('photo_delete') != NULL && $room_id != 'X'){
-				$this->M_rooms->delete_photo($room_id);
-			}
+										if( $this->input->post('photo_delete') != NULL && $room_id != 'X'){
+											$this->M_rooms->delete_photo($room_id);
+										}
 
-			$fieldvalues = array();
-			$fields = $this->M_rooms->GetFields($this->session->userdata('schoolcode'));
-			$fields = (is_array($fields) ? $fields : array());
-			foreach($fields as $field){
-				$fieldvalues[$field->field_id] = $this->input->post('f'.$field->field_id);
-			}
+										$fieldvalues = array();
+										$fields = $this->M_rooms->GetFields($this->session->userdata('schoolcode'));
+										$fields = (is_array($fields) ? $fields : array());
+										foreach($fields as $field){
+											$fieldvalues[$field->field_id] = $this->input->post('f'.$field->field_id);
+										}
 
 
 			// Now see if we are editing or adding
-			if($room_id == 'X'){
+										if($room_id == 'X'){
 				// No ID, adding new record
-				$room_id = $this->M_rooms->add($data);
-				$this->M_rooms->save_field_values($room_id, $fieldvalues);
-				$this->session->set_flashdata('saved', $this->load->view('msgbox/info', $data['rooms.name'] . ' has been added.', True) );
-			} else {
+											$room_id = $this->M_rooms->add($data);
+											$this->M_rooms->save_field_values($room_id, $fieldvalues);
+											$this->session->set_flashdata('saved', $this->load->view('msgbox/info', $data['rooms.name'] . ' has been added.', True) );
+										} else {
 				// We have an ID, updating existing record
 				// Now we delete the CURRENT photo on the database before we do an update on the ID (and thus possibly changing the photo)
-				if( $upload == true ){$this->M_rooms->delete_photo($room_id); }
+											if( $upload == true ){$this->M_rooms->delete_photo($room_id); }
 				// Update row with new details
-				$this->M_rooms->edit($room_id, $data);
-				$this->M_rooms->save_field_values($room_id, $fieldvalues);
-				$this->session->set_flashdata('saved', $this->load->view('msgbox/info', $data['rooms.name'] . ' has been modified.', True) );
-			}
+											$this->M_rooms->edit($room_id, $data);
+											$this->M_rooms->save_field_values($room_id, $fieldvalues);
+											$this->session->set_flashdata('saved', $this->load->view('msgbox/info', $data['rooms.name'] . ' has been modified.', True) );
+										}
 			// Go back to index
-			redirect('rooms', 'redirect');
+										redirect('rooms', 'redirect');
 
-		}
+									}
 
-	}
+								}
 
 
 
@@ -421,9 +421,9 @@ class Rooms extends Controller {
 
 
 
-	 function fields_save(){
+	function fields_save(){
 
-	 	// Get ID from form
+		// Get ID from form
 		$field_id = $this->input->post('field_id');
 
 		// Load validation
@@ -443,9 +443,9 @@ class Rooms extends Controller {
 		// Set the error delims to a nice styled red hint under the fields
 		$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
 
-    if ($this->validation->run() == FALSE){
+		if ($this->validation->run() == FALSE){
 
-      // Validation failed
+	  // Validation failed
 			if($field_id != "X"){
 				$this->fields_edit($field_id);
 			} else {
