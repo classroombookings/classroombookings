@@ -1,9 +1,7 @@
 <?php
 
-$mobile = $this->agent->is_mobile();
-
 if($this->loggedin){
-	$menu[1]['text'] = '<img src="webroot/images/ui/link_controlpanel.gif" hspace="4" align="top" alt=" " />Control Panel';
+	$menu[1]['text'] = img('assets/images/ui/link_controlpanel.gif', FALSE, 'hspace="4" align="top" alt=" "') . 'Control Panel';
 	$menu[1]['href'] = site_url('controlpanel');
 	$menu[1]['title'] = 'Tasks';
 
@@ -12,50 +10,26 @@ if($this->loggedin){
 	#$menu[2]['title'] = 'Get help on this page';
 
 	if($this->userauth->CheckAuthLevel(ADMINISTRATOR)){ $icon = 'user_administrator.gif'; } else { $icon = 'user_teacher.gif'; }
-	$menu[3]['text'] = '<img src="webroot/images/ui/logout.gif" hspace="4" align="top" alt=" " />Logout';
+	$menu[3]['text'] = img('assets/images/ui/logout.gif', FALSE, 'hspace="4" align="top" alt=" "') . 'Logout';
 	$menu[3]['href'] = site_url('logout');
 	$menu[3]['title'] = 'Close your current classroombookings session';
 }
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-	<title>classroombookings | <?php echo strtolower($title) ?></title>
-	<base href="<?php echo $this->config->config['base_url'] ?>" />
-	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-	<meta name="keywords" content="classroom, booking, room, school, education, schedule, timetable, room booking software" />
-	<meta name="description" content="ClassroomBookings; the new classroom booking website for schools." />
-	<meta name="author" content="Craig Rodway" />
-	<link rel="stylesheet" type="text/css" media="screen" href="webroot/style.css" />
-	<link rel="stylesheet" type="text/css" media="print" href="webroot/print.css" />
-	<link rel="stylesheet" type="text/css" media="screen" href="webroot/sorttable.css" />
-	<script type="text/javascript" src="webroot/js/prototype.lite.js"></script>
-	<script type="text/javascript" src="webroot/js/util.js"></script>
-	<script type="text/javascript" src="webroot/js/sorttable.js"></script><?php
-	$js_cpicker = array('weeks', 'school');
-	if(in_array($this->uri->segment(1), $js_cpicker)){
-		echo "\n".'<link rel="stylesheet" type="text/css" media="screen" href="webroot/cpicker/js_color_picker_v2.css" />';
-		echo "\n".'<script type="text/javascript" src="webroot/cpicker/color_functions.js"></script>';
-		echo "\n".'<script type="text/javascript" src="webroot/cpicker/js_color_picker_v2.js"></script>';
-	}
-	$js_datepicker = array('holidays', 'weeks', 'bookings');
-	if(in_array($this->uri->segment(1), $js_datepicker)){
-		echo "\n".'<link rel="stylesheet" type="text/css" media="screen" href="webroot/datepicker.css" />';
-		echo "\n".'<script type="text/javascript" src="webroot/js/datepicker.js"></script>';
-	}
-	$js_imagepreview = array('rooms','bookings');
-	if(in_array($this->uri->segment(1), $js_imagepreview)){
-		echo "\n".'<script type="text/javascript" src="webroot/js/imagepreview.js"></script>';
-	}
-	if(!$mobile){
-		$bg = (isset($this->school_id)) ? $this->school_id : 'global';
-		$body_attr = 'style="background-image:url(\'webroot/images/bg/'.$bg.'.png\')"';
-	} else {
-		$body_attr = '';
-	}
-	?>
+
+<!DOCTYPE html>
+<html>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="author" content="Craig A Rodway">
+	<title><?= html_escape($title) ?> | Classroombookings</title>
+	<link rel="stylesheet" type="text/css" media="screen" href="<?= base_url('assets/style.css') ?>">
+	<link rel="stylesheet" type="text/css" media="print" href="<?= base_url('assets/print.css') ?>">
+	<link rel="stylesheet" type="text/css" media="screen" href="<?= base_url('assets/sorttable.css') ?>">
+	<link rel="stylesheet" type="text/css" media="screen" href="<?= base_url('assets/cpicker/js_color_picker_v2.css') ?>">
+	<link rel="stylesheet" type="text/css" media="screen" href="<?= base_url('assets/datepicker.css') ?>">
 </head>
-<body <?php echo $body_attr ?>>
+<body style="background-image:url('<?= base_url('assets/images/bg/global.png') ?>')">
 	<div class="outer">
 
 		<div class="header">
@@ -84,7 +58,7 @@ if($this->loggedin){
 				if($this->session->userdata('schoolname')){
 					echo '<a href="'.$this->session->userdata('schoolurl').'">'.$this->session->userdata('schoolname').'</a>';
 				} else {
-					echo '<a href="'.$this->config->item('base_url').'" title="Classroom Bookings" style="font-weight:normal;color:#0081C2;letter-spacing:-2px">classroom<span style="color:#ff6400;font-weight:bold">bookings</span></a>';
+					echo '<a href="'.$this->config->item('base_url').'" title="ClassroomBookings" style="font-weight:normal;color:#0081C2;letter-spacing:-2px">classroom<span style="color:#ff6400;font-weight:bold">bookings</span></a>';
 					echo '<sup style="font-weight:bold;color:#555;letter-spacing:-1px;font-size:12pt">BETA</sup>';
 				}
 				?>
@@ -113,11 +87,31 @@ if($this->loggedin){
 					echo '<img src="webroot/images/blank.png" width="16" height="10" alt=" " />'."\n";
 				} }
 				?>
-				<br /><br /><span style="font-size:90%;color:#678;">&copy; Copyright 2006 Craig Rodway.<br />This page was loaded in <?php echo $this->benchmark->elapsed_time() ?> seconds.</span><br />
+				<br /><br /><span style="font-size:90%;color:#678;"><a href="https://www.classroombookings.com/" target="_blank">Classroombookings</a> version <?= VERSION ?>. &copy; <?= date('Y') ?> Craig A Rodway.<br />This page was loaded in <?php echo $this->benchmark->elapsed_time() ?> seconds.</span><br />
 				<br />
 			</div>
 		</div>
 	</div>
+
 	<div id="tipDiv" style="position:absolute; visibility:hidden; z-index:100"></div>
+
+	<?php
+	$scripts = array();
+	$scripts[] = base_url('assets/js/prototype.lite.js');
+	$scripts[] = base_url('assets/js/util.js');
+	$scripts[] = base_url('assets/js/sorttable.js');
+	$scripts[] = base_url('assets/cpicker/color_functions.js');
+	$scripts[] = base_url('assets/cpicker/js_color_picker_v2.js');
+	$scripts[] = base_url('assets/js/datepicker.js');
+	$scripts[] = base_url('assets/js/imagepreview.js');
+
+	foreach ($scripts as $script)
+	{
+		echo "<script type='text/javascript' src='{$script}'></script>\n";
+	}
+
+	?>
+
+
 </body>
 </html>

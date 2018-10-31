@@ -1,52 +1,49 @@
 <?php echo $this->session->flashdata('auth') ?>
 
 <?php
-$t = 1;
 echo form_open('login/submit', array('id'=>'login','class'=>'cssform'), array('page' => $this->uri->uri_string()) );
 ?>
 
 
-<fieldset style="width:336px;"><legend accesskey="L" tabindex="<?php echo $t; ?>">Login</legend>
+<fieldset style="width:336px;"><legend accesskey="L" tabindex="<?php echo tab_index() ?>">Login</legend>
+
 	<p>
 	  <label for="username" class="required">Username</label>
 	  <?php
-		$username = @field($this->validation->username);
+		$value = set_value('username');
 		echo form_input(array(
 			'name' => 'username',
 			'id' => 'username',
 			'size' => '20',
 			'maxlength' => '20',
-			'tabindex' => $t,
-			'value' => $username,
+			'tabindex' => tab_index(),
+			'value' => $value,
 		));
-		$t++;
 		?>
 	</p>
-	<?php echo @field($this->validation->username_error); ?>
 
 
 	<p>
 	  <label for="password" class="required">Password</label>
 	  <?php
-		$password = @field($this->validation->password);
 		echo form_password(array(
 			'name' => 'password',
 			'id' => 'password',
 			'size' => '20',
-			'tabindex' => $t,
+			'tabindex' => tab_index(),
 			'maxlength' => '20',
 		));
-		$t++;
 		?>
 	</p>
-	<?php echo @field($this->validation->password_error); ?>
+
 </fieldset>
 
 
-
 <?php
-$submit['submit'] = array('Login', $t);
-$submit['cancel'] = array('Cancel', $t+1, '');
-$this->load->view('partials/submit', $submit);
+
+$this->load->view('partials/submit', array(
+	'submit' => array('Login', tab_index()),
+	'cancel' => array('Cancel', tab_index(), ''),
+));
+
 echo form_close();
-?>

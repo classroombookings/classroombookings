@@ -102,6 +102,7 @@ $autoload['helper'] = array(
 	'cookie',
 	'directory',
 	'text',
+	'html',
 );
 
 /*

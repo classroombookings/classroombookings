@@ -1,4 +1,15 @@
 <?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+
+function field($validation, $database = NULL, $last = ''){
+	$value = (isset($validation)) ? $validation : ( (isset($database)) ? $database : $last);
+	return $value;
+}
+
+
+
+
 function iconbar( $data ){
 	$items = count($data);
 	$html = '<p class="iconbar">';
@@ -15,4 +26,21 @@ function iconbar( $data ){
 	$html .= '</p>';
 	return $html;
 }
-?>
+
+
+
+function tab_index($reset = NULL)
+{
+	static $_tab_index;
+
+	if ( ! strlen($_tab_index) || $_tab_index === 0)
+	{
+		$_tab_index = 0;
+	}
+	else
+	{
+		$_tab_index++;
+	}
+
+	return $_tab_index;
+}
