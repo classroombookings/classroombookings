@@ -6,19 +6,19 @@ class Departments extends Controller {
 
 
   function Departments(){
-    parent::Controller();
-    
-		// Load language
-  	$this->lang->load('crbs', 'english');
-    
-		// Get school id
-    $this->school_id = $this->session->userdata('school_id');
+	parent::Controller();
 
-    $this->output->enable_profiler($this->session->userdata('profiler'));
-    
-    // Check user is logged in & is admin
-    if(!$this->userauth->loggedin()){
-    	$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True));
+		// Load language
+	$this->lang->load('crbs', 'english');
+
+		// Get school id
+	$this->school_id = $this->session->userdata('school_id');
+
+	$this->output->enable_profiler($this->session->userdata('profiler'));
+
+	// Check user is logged in & is admin
+	if(!$this->userauth->loggedin()){
+		$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True));
 			redirect('site/home', 'location');
 		} else {
 			$this->loggedin = True;
@@ -27,23 +27,23 @@ class Departments extends Controller {
 				redirect('controlpanel', 'location');
 			}
 		}
-		
+
 		// Load models etc
 		$this->load->library('pagination');
 		$this->load->model('crud_model', 'crud');
-    $this->load->model('school_model', 'M_school');
-    #$this->load->model('departments_model', 'M_departments');
-    // Load the icon selector helper
-    $this->load->helper('iconsel');
-    #$this->load->scaffolding('rooms');
+	$this->load->model('school_model', 'M_school');
+	#$this->load->model('departments_model', 'M_departments');
+	// Load the icon selector helper
+	$this->load->helper('iconsel');
+	#$this->load->scaffolding('rooms');
   }
-  
-  
-  
-  
+
+
+
+
   function index($start_at = NULL){
-  	log_message('debug', 'Departments/index');
-  	if($start_at == NULL){ $start_at = $this->uri->segment(3); }
+	log_message('debug', 'Departments/index');
+	if($start_at == NULL){ $start_at = $this->uri->segment(3); }
 		// Init pagination
 		$pages['base_url'] = site_url('departments/index');
 		$pages['total_rows'] = $this->crud->Count('departments');
@@ -66,11 +66,11 @@ class Departments extends Controller {
 		$layout['body'] = $this->load->view('departments/departments_index', $body, True);
 		$this->load->view('layout', $layout);
   }
-  
-  
-  
-  
-  
+
+
+
+
+
 	/**
 	 * Controller function to handle the Add page
 	 */
@@ -81,11 +81,11 @@ class Departments extends Controller {
 		$layout['body'] = $this->load->view('departments/departments_add', NULL, True);
 		$this->load->view('layout', $layout);
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * Controller function to handle the Edit page
 	 */
@@ -95,20 +95,20 @@ class Departments extends Controller {
 		$body['department'] = $this->crud->Get('departments', 'department_id', $department_id, $this->school_id);
 		$layout['title'] = 'Edit Department';
 		$layout['showtitle'] = $layout['title'];
-		
+
 		$layout['body'] = $this->load->view('departments/departments_add', $body, True);	#$this->load->view('rooms/rooms_add', $body, True);
 		$this->load->view('layout', $layout);
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	function save(){
 		#print_r($_POST);
-	 	// Get ID from form
+		// Get ID from form
 		$department_id = $this->input->post('department_id');
-		
+
 		// Validation rules
 		$vrules['department_id']		= 'required';
 		$vrules['name']							= 'required|min_length[1]|max_length[50]';
@@ -125,25 +125,25 @@ class Departments extends Controller {
 
 		// Set the error delims to a nice styled red hint under the fields
 		$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
-		
-    if ($this->validation->run() == FALSE){
-    
-    	// Validation failed
+
+	if ($this->validation->run() == FALSE){
+
+		// Validation failed
 			if($department_id != "X"){
 				return $this->edit($department_id);
 			} else {
 				return $this->add();
 			}
-    
-    } else {
-    
+
+	} else {
+
 			// Validation succeeded!
 			// Create array for database fields & data
 			$data = array();
 			$data['name']						= $this->input->post('name');
 			$data['description']		=	$this->input->post('description');
 			$data['icon']						= $this->input->post('icon');
-			
+
 			// Now see if we are editing or adding
 			if($department_id == 'X'){
 				// No ID, adding new record
@@ -160,28 +160,28 @@ class Departments extends Controller {
 				} else {
 					$flashmsg = $this->load->view('msgbox/info', 'Department named <strong>'.$data['name'].'</strong> has been modified.', True);
 				}
-				
+
 			}
-			
+
 			// Go back to index
 			$this->session->set_flashdata('saved', $flashmsg);
 			redirect('departments', 'redirect');
-    
+
 		}
-	
+
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * Controller function to delete a department
 	 */
 	function delete(){
 	  // Get ID from URL
 		$department_id = $this->uri->segment(3);
-		
+
 		// Check if a form has been submitted; if not - show it to ask user confirmation
 		if( $this->input->post('id') ){
 			// Form has been submitted (so the POST value exists)

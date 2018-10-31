@@ -13,28 +13,28 @@ class Rooms_model extends Model{
 		$this->options = $options;
 		#$this->CI =& get_instance();
   }
-  
-  
-  
-  
+
+
+
+
   function Test(){
-  	$query = $this->db->get('rooms');
-  	return var_export($query->row(), true);
+	$query = $this->db->get('rooms');
+	return var_export($query->row(), true);
   }
-  
-  
-  
+
+
+
 	/**
 	 * Retrieve all rooms
-	 * 
+	 *
 	 * @return				array				All items in table
-	 */	 	 	 	
+	 */
 	function Get($room_id = NULL, $school_id = NULL){
 		if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
 													/* .'schools.school_id,'
 											.'schools.code AS schoolcode'
 											#.'x' */
-		
+
 		$this->db->select(
 											 'rooms.*,'
 											.'users.user_id,'
@@ -45,7 +45,7 @@ class Rooms_model extends Model{
 		#$this->db->join('schools', 'schools.school_id = rooms.school_id');
 		$this->db->join('users', 'users.user_id = rooms.user_id', 'left');
 		$this->db->where('rooms.school_id', $school_id);
-		
+
 		if( $room_id != NULL ){
 			// Getting one specific room
 			$this->db->where('room_id', $room_id);
@@ -72,15 +72,15 @@ class Rooms_model extends Model{
 		}
 
 	}
-	
-	
-	
+
+
+
 	/*
 		Gets all information on the room - joins all the fields as well
 	*/
 	function GetInfo($room_id, $school_id = NULL ){
 		if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
-		
+
 		$this->db->select(
 											 'rooms.*,'
 											/*.'roomfields.*,'
@@ -94,14 +94,14 @@ class Rooms_model extends Model{
 		$this->db->join('users', 'users.user_id = rooms.user_id', 'left');
 		$this->db->where('rooms.school_id', $school_id);
 		$this->db->where('rooms.room_id', $room_id);
-	
+
 		$query = $this->db->get();
-		
+
 		$data['room'] = $query->row();
-		
+
 		$this->db->select('roomfields.*, roomoptions.*, roomvalues.*');
 		$this->db->from('roomvalues');
-		
+
 		$this->db->join('roomoptions', 'roomoptions.field_id = roomvalues.field_id', 'left');
 		$this->db->join('roomfields', 'roomfields.field_id = roomvalues.field_id');
 		#$this->db->join('roomvalues', 'roomvalues.value = roomoptions.option_id');
@@ -109,30 +109,30 @@ class Rooms_model extends Model{
 		#$this->db->where('roomoptions.option_id=roomvalues.value');
 		$this->db->where('roomvalues.room_id', $room_id);
 		$this->db->where('roomfields.school_id', $school_id);
-		
+
 		$query = $this->db->get();
-		
+
 		$data['fields'] = $query->result();
 		#$data['fields'] = $this->db->last_query();
 
-		
+
 				#$this->db->join('roomfields', 'roomfields.school_id = rooms.school_id');
 		#$this->db->join('roomvalues', 'roomvalues.room_id = rooms.room_id');
 		#$this->db->join('roomoptions', 'roomoptions.field_id = roomvalues.field_id');
-		
+
 		return $data;
-	} 
-	
-	
-	
-	
+	}
+
+
+
+
 	/**
 	 * Gets room ID and name of one room owned by the given user id
-	 * 
+	 *
 	 * @param	int	$school_id	School ID
 	 * @param	int	$user_id	ID of user to lookup
-	 * @return	mixed	object if result, false on no results	 	 	 	 
-	 */	 	
+	 * @return	mixed	object if result, false on no results
+	 */
 	function GetByUser($user_id, $school_id = NULL ){
 		if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
 		$query_str = "SELECT room_id,name FROM rooms "
@@ -145,10 +145,10 @@ class Rooms_model extends Model{
 			return false;
 		}
 	}
-	
-	
-	
-	
+
+
+
+
 	function add($data){
 		// Run query to insert blank row
 		$this->db->insert('rooms', array('room_id' => NULL) );
@@ -158,11 +158,11 @@ class Rooms_model extends Model{
 		$this->edit($room_id, $data);
 		return $room_id;
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	function edit($room_id, $data){
 		$this->db->where('room_id', $room_id);
 		$this->db->set('school_id', $this->school_id);
@@ -176,11 +176,11 @@ class Rooms_model extends Model{
 			return false;
 		}
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	function clear_room_cache($room_id, $school_id = NULL){
 		if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
 		$path = 0;
@@ -208,17 +208,17 @@ class Rooms_model extends Model{
 	 */
 	function delete($id){
 		$this->delete_photo($id);
-    $this->db->where('room_id', $id);
-    $this->db->delete('rooms');
+	$this->db->where('room_id', $id);
+	$this->db->delete('rooms');
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * Deletes a photo
-	 */	 	
+	 */
 	function delete_photo($room_id){
 		$row = $this->Get($room_id, NULL);
 		$photo = $row->photo;
@@ -227,16 +227,16 @@ class Rooms_model extends Model{
 		@unlink('webroot/images/roomphotos/320/'.$photo);
 		@unlink('webroot/images/roomphotos/640/'.$photo);
 		$this->db->where('room_id', $room_id);
-		$this->db->update('rooms', array('photo' => '')); 
+		$this->db->update('rooms', array('photo' => ''));
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * Get room fields
-	 */	 	
+	 */
 	function GetFields($field_id = NULL, $school_id = NULL){
 		if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
 		$this->db->select(
@@ -255,7 +255,7 @@ class Rooms_model extends Model{
 		#$this->db->where('schools.code', $schoolcode);
 		#$this->db->where('roomfields.type', 'SELECT');
 
-		
+
 		if( $field_id != NULL ){
 			// Getting one specific field
 			$this->db->where('roomfields.field_id', $field_id);
@@ -276,17 +276,17 @@ class Rooms_model extends Model{
 			$this->db->order_by('roomfields.type asc, roomfields.name asc');
 			$query = $this->db->get();
 			if( $query->num_rows() > 0 ){
-				
+
 				// Got some rooms, return result
-				$result = $query->result();	
-				
+				$result = $query->result();
+
 				foreach( $result as $item ){
 					if($item->type == 'SELECT'){
 						$item->options = $this->GetOptions($item->field_id);
 						#print_r($item);
 					}
 				}
-				
+
 				return $result;
 			} else {
 				// No rooms!
@@ -308,38 +308,38 @@ class Rooms_model extends Model{
 		$this->field_edit($field_id, $data);
 		return $field_id;
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	function field_edit($field_id, $data){
 		// We don't add the options column to the roomfields table, so get it then remove it from the array that gets added
 		$options = $data['options'];
 		unset($data['options']);
-		
+
 		$this->db->where('field_id', $field_id);
 		$this->db->set('school_id', $this->session->userdata('school_id'));
 		$result = $this->db->update('roomfields', $data);
 
 		// Delete row options of the field
 		//		We don't yet know if the type is a SELECT, but we delete
-		//		them first anyway incase they changed it 
+		//		them first anyway incase they changed it
 		//		from a SELECT to something else. The new options get inserted next.
 		$this->delete_field_options($field_id);
-		
+
 		if( $data['type'] == 'SELECT' ){
-			
+
 			// Explode at newline into array
 			$arr_options = explode("\n", $options);
-			
+
 			// Loop through options and insert a new row for each one
 			foreach($arr_options as $key => $value){
 				$arr_option['field_id'] = $field_id;
 				$arr_option['value'] = addslashes($value);
 				$this->db->insert('roomoptions', $arr_option);
 			}
-			
+
 		}
 		// Return bool on success
 		if( $result ){
@@ -348,14 +348,14 @@ class Rooms_model extends Model{
 			return false;
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
 	/**
 	 * Deletes a field with the given ID
 	 *
@@ -363,19 +363,19 @@ class Rooms_model extends Model{
 	 *
 	 */
 	function field_delete($id){
-    $this->db->where('field_id', $id);
-    $this->db->delete('roomfields');
-    $this->db->where('field_id', $id);
-    $this->db->delete('roomvalues');
+	$this->db->where('field_id', $id);
+	$this->db->delete('roomfields');
+	$this->db->where('field_id', $id);
+	$this->db->delete('roomvalues');
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * Get options for a field
-	 */	 	
+	 */
 	function GetOptions($field_id){
 		$this->db->select('*');
 		$this->db->from('roomoptions');
@@ -389,23 +389,23 @@ class Rooms_model extends Model{
 			return false;
 		}
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * Delete all options for a given field
-	 */	 	
+	 */
 	function delete_field_options($field_id){
 		$this->db->where('field_id', $field_id);
 		$this->db->delete('roomoptions');
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	function save_field_values($room_id, $data){
 		$this->db->where('room_id', $room_id);
 		$this->db->delete('roomvalues');
@@ -416,11 +416,11 @@ class Rooms_model extends Model{
 			$this->db->insert('roomvalues', $values);
 		}
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	function GetFieldValues($room_id){
 		$this->db->select('field_id, value');
 		$this->db->from('roomvalues');
@@ -437,10 +437,10 @@ class Rooms_model extends Model{
 			return false;
 		}
 	}
-	
-	
-	
-	
+
+
+
+
 
 }
 ?>

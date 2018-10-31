@@ -34,8 +34,8 @@
 #$image = new gd_gradient_fill(400,200,'ellipse','#f00','#000',0);
 
 class Gradient{
-	
-	
+
+
 	var $width;
 	var $height;
 	var $type;
@@ -44,19 +44,19 @@ class Gradient{
 	var $step;
 	var $outfile;
 	var $image;
-	
-	
-	
-	
-	
+
+
+
+
+
 	function setWidth($width){
 		$this->width = $width;
 	}
-	
+
 	function setHeight($height){
 		$this->height = $height;
 	}
-	
+
 	function setType($type){
 		$allowed = array('vertical', 'horizontal', 'rectangle', 'square', 'ellipse', 'ellipse2', 'circle', 'circle2', 'diamond');
 		if(in_array($dir, $allowed)){
@@ -65,26 +65,26 @@ class Gradient{
 			$this->type = 'vertical';
 		}
 	}
-	
+
 	function setStartColour($col){
 		$this->start_colour = $col;
 	}
-	
+
 	function setEndColour($col){
 		$this->end_colour = $col;
 	}
-	
+
 	function setStep($step){
 		$this->setp = intval(abs($step));
 	}
 
-	
-	
-	
-	
+
+
+
+
 	// Constructor. Creates, fills and returns an image
 	function Gradient(){	//$w,$h,$d,$s,$e,$step=0) {
-		
+
 		$this->width = 100;
 		$this->height = 100;
 		$this->type = 'vertical';
@@ -100,22 +100,22 @@ class Gradient{
 		} else {
 			die('Unable to create an image');
 		}*/
-		
+
 		// Fill it
 		#$this->fill($this->image,$this->direction,$this->startcolor,$this->endcolor);
-        
-		// Show it        
+
+		// Show it
 		#$this->display($this->image);
-        
+
 		// Return it
 		#return $this->image;
 	}
-	
-	
-	
-	
+
+
+
+
 	function Generate($data = NULL, $outfile = NULL){
-	
+
 		// Update variables if first parameter is array containing the details
 		if(is_array($data)){
 			if(isset($data['width'])){ $this->width = $data['width']; }
@@ -125,7 +125,7 @@ class Gradient{
 			if(isset($data['end_colour'])){ $this->end_colour = $data['end_colour']; }
 			if(isset($data['step'])){ $this->step = intval(abs($data['step'])); }
 		}
-		
+
 		// Attempt to create a blank image in true colors, or a new palette based image if this fails
 		if(function_exists('imagecreatetruecolor')){
 			$this->image = imagecreatetruecolor($this->width, $this->height);
@@ -134,23 +134,23 @@ class Gradient{
 		} else {
 			die('Unable to create an image');
 		}
-		
+
 		// Create image
 		$this->fill($this->image, $this->type, $this->start_colour, $this->end_colour);
-		
+
 		if($outfile != NULL){
 			imagepng($this->image, $outfile);
 		} else {
 			header('Content-type: image/png');
 			imagepng($this->image);
 		}
-		
+
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	// Displays the image with a portable function that works with any file type
 	// depending on your server software configuration
 	function display ($im) {
@@ -175,12 +175,12 @@ class Gradient{
 
 
 
-	
+
 	// The main function that draws the gradient
 	function fill($im, $type, $start, $end){
-		
+
 		switch($type){
-			
+
 			case 'horizontal':
 				$line_numbers = imagesx($im);
 				$line_width = imagesy($im);
@@ -194,7 +194,7 @@ class Gradient{
 				list($r1,$g1,$b1) = $this->hex2rgb($start);
 				list($r2,$g2,$b2) = $this->hex2rgb($end);
 			break;
-			
+
 			case 'ellipse':
 				$width = imagesx($im);
 				$height = imagesy($im);
@@ -207,7 +207,7 @@ class Gradient{
 				list($r2,$g2,$b2) = $this->hex2rgb($start);
 				imagefill($im, 0, 0, imagecolorallocate( $im, $r1, $g1, $b1 ));
 			break;
-			
+
 			case 'ellipse2':
 				$width = imagesx($im);
 				$height = imagesy($im);
@@ -219,7 +219,7 @@ class Gradient{
 				list($r1,$g1,$b1) = $this->hex2rgb($end);
 				list($r2,$g2,$b2) = $this->hex2rgb($start);
 			break;
-			
+
 			case 'circle':
 				$width = imagesx($im);
 				$height = imagesy($im);
@@ -230,7 +230,7 @@ class Gradient{
 				list($r1,$g1,$b1) = $this->hex2rgb($end);
 				list($r2,$g2,$b2) = $this->hex2rgb($start);
 			break;
-			
+
 			case 'circle2':
 				$width = imagesx($im);
 				$height = imagesy($im);
@@ -242,7 +242,7 @@ class Gradient{
 				list($r2,$g2,$b2) = $this->hex2rgb($start);
 				imagefill($im, 0, 0, imagecolorallocate( $im, $r1, $g1, $b1 ));
 			break;
-			
+
 			case 'square':
 			case 'rectangle':
 				$width = imagesx($im);
@@ -251,7 +251,7 @@ class Gradient{
 				list($r1,$g1,$b1) = $this->hex2rgb($end);
 				list($r2,$g2,$b2) = $this->hex2rgb($start);
 			break;
-			
+
 			case 'diamond':
 				list($r1,$g1,$b1) = $this->hex2rgb($end);
 				list($r2,$g2,$b2) = $this->hex2rgb($start);
@@ -265,7 +265,7 @@ class Gradient{
 		}
 
 		for ($i=0; $i < $line_numbers; $i=$i+1+$this->step){
-			
+
 			$old_r = NULL;
 			$old_g = NULL;
 			$old_b = NULL;
@@ -273,24 +273,24 @@ class Gradient{
 			if(isset($r)){ $old_r=$r; }
 			if(isset($g)){ $old_g=$g; }
 			if(isset($b)){ $old_b=$b; }
-			
+
 			// new values :
 			$r = ( $r2 - $r1 != 0 ) ? intval( $r1 + ( $r2 - $r1 ) * ( $i / $line_numbers ) ): $r1;
 			$g = ( $g2 - $g1 != 0 ) ? intval( $g1 + ( $g2 - $g1 ) * ( $i / $line_numbers ) ): $g1;
 			$b = ( $b2 - $b1 != 0 ) ? intval( $b1 + ( $b2 - $b1 ) * ( $i / $line_numbers ) ): $b1;
-			
+
 			// if new values are really new ones, allocate a new color, otherwise reuse previous color.
 			// There's a "feature" in imagecolorallocate that makes this function
 			// always returns '-1' after 255 colors have been allocated in an image that was created with
 			// imagecreate (everything works fine with imagecreatetruecolor)
-			if ( "$old_r,$old_g,$old_b" != "$r,$g,$b") 
+			if ( "$old_r,$old_g,$old_b" != "$r,$g,$b")
 				$fill = imagecolorallocate( $im, $r, $g, $b );
 
 			switch($type){
 				case 'vertical':
 					imagefilledrectangle($im, 0, $i, $line_width, $i+$this->step, $fill);
 				break;
-				
+
 				case 'horizontal':
 					imagefilledrectangle( $im, $i, 0, $i+$this->step, $line_width, $fill );
 				break;
@@ -301,12 +301,12 @@ class Gradient{
 				case 'circle2':
 					imagefilledellipse ($im,$center_x, $center_y, ($line_numbers-$i)*$rh, ($line_numbers-$i)*$rw,$fill);
 				break;
-				
+
 				case 'square':
 				case 'rectangle':
 					imagefilledrectangle ($im,$i*$width/$height,$i*$height/$width,$width-($i*$width/$height), $height-($i*$height/$width),$fill);
 				break;
-				
+
 				case 'diamond':
 					imagefilledpolygon($im, array (
 						$width/2, $i*$rw-0.5*$height,
@@ -314,15 +314,15 @@ class Gradient{
 						$width/2,1.5*$height-$i*$rw,
 						1.5*$width-$i*$rh, $height/2 ), 4, $fill);
 				break;
-				default:    
+				default:
 			}
 		}
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	// #ff00ff -> array(255,0,255) or #f0f -> array(255,0,255)
 	function hex2rgb($color) {
 		$color = str_replace('#','',$color);
@@ -332,9 +332,9 @@ class Gradient{
 		$rgb[]=hexdec(str_repeat(substr($color,2*$s,$s),2/$s));
 		return $rgb;
 	}
-	
-	
-	
-	
+
+
+
+
 }
 ?>

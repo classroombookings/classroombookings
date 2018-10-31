@@ -1,14 +1,14 @@
 <?php
 class Help extends Controller {
-  
-  
-  
-  
+
+
+
+
   function Help(){
 		parent::Controller();
 		// Load language
   	$this->lang->load('crbs', 'english');
-    
+
 		// Get school id
     $this->school_id = $this->session->userdata('school_id');
 
@@ -20,10 +20,10 @@ class Help extends Controller {
 			$this->loggedin = True;
 		}
 	}
-	
-	
-	
-	
+
+
+
+
 	function index(){
 		$section = $this->uri->segment(2);
 		if( $section == 'help' ){

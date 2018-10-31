@@ -12,11 +12,11 @@ class Install extends Controller {
     $this->load->model('school_model', 'M_school');
     $this->load->helper('file');
   }
-  
-  
-  
-  
-  
+
+
+
+
+
   function index(){
   	// Read database info from file
   	include('system/application/config/database.php');
@@ -25,24 +25,24 @@ class Install extends Controller {
   	$content0['db']['database'] = $db['default']['database'];
   	$content0['db']['password'] = str_repeat('*', strlen($db['default']['password']));
   	unset($db);
-  	
+
 	  // Initialise columns view
 	  $content[0]['content'] = $this->load->view('install/install_index', $content0, True);
 	  $content[0]['width'] = '72%';
 	  $content[1]['content'] = $this->load->view('install/install_index_side', NULL, True);
 	  $content[1]['width'] = '28%';
-	  
+
 	  // Load view
 	  $layout['title'] = 'Install classroombookings';
 	  $layout['showtitle'] = $layout['title'];
 	  $layout['body'] = $this->load->view('columns', $content, True );
     $this->load->view('layout', $layout);
   }
-  
-  
-  
-  
-  
+
+
+
+
+
   /**
    * Controller function to handle a submitted form
    */
@@ -50,7 +50,7 @@ class Install extends Controller {
 		// Parse data input from view and carry out appropriate action.
 		// Get ID from form
 		#$mfrid = $this->input->post('mfrid');
-		
+
 		// Validation rules
 		$vrules['schoolname']			= "required|max_length[255]";
 		$vrules['website']	  		= "prep_url|max_length[255]";
@@ -69,17 +69,17 @@ class Install extends Controller {
 
 		// Set the error delims to a nice styled red box
 		$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
-		
-	
+
+
     if ($this->validation->run() == FALSE){
-    
+
       // Validation failed
 			return $this->index();
-			
+
 		} else {
-		  
+
 		  // Validation succeeded!
-		  
+
 		  // Create database tables first
 			$tables = $this->_create_tables();
 			if($tables == FALSE){
@@ -87,14 +87,14 @@ class Install extends Controller {
 			} else {
 				$body['db'] = $this->load->view('msgbox/info', 'Database tables were created successfully.', True);
 			}
-		  
-		  
+
+
 		  // Create school
 			$school_data['name'] = $this->input->post('schoolname');
 			$school_data['website'] = $this->input->post('website');
 			$school_id = $this->M_school->add($school_data);
-			
-			
+
+
 			// Create user
 			$user_data['school_id']		= $school_id;
 			$user_data['username'] 		= $this->input->post('username');
@@ -103,19 +103,19 @@ class Install extends Controller {
 			$user_data['enabled']			= 1;
 			$user_data['email']				= $this->input->post('email');
 			$this->crud->Add('users', 'user_id', $user_data);
-			
-			
+
+
 			/* if( !$this->crud->Add('ci_users', 'user_id', $user_data) ){
 				$flashmsg = $this->load->view('msgbox/error', 'A database error occured while adding the user. Please notify the administrator.', True);
 			} else {
 				$flashmsg = $this->load->view('msgbox/info', 'User <strong>'.$data['username'].'</strong> has been created.', True);
 			} */
 
-			
+
 			// Body info
 			$body['user'] = $user_data;
 			$body['school'] = $school_data;
-			
+
 		  $layout['title'] = 'Congratulations!';
 		  $layout['showtitle'] = $layout['title'];
 		  $layout['body'] = $this->load->view('install/finished', $body, True);
@@ -123,11 +123,11 @@ class Install extends Controller {
 		}
 
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	function _create_tables(){
 		$errcount = 0;
 		$file = read_file('classroombookings.sql');
@@ -145,15 +145,15 @@ class Install extends Controller {
 			return true;
 		}
 	}
-	
-	
 
-	
-	
+
+
+
+
 	function validate($valcode){
 		$retval = $this->_validate($valcode);
 		if($retval != False){
-			$code = 'login/'.$retval; 
+			$code = 'login/'.$retval;
 			$body = $this->load->view('msgbox/info', 'Your account has been successfully validated!', True);
 			$icondata[0] = array($code, 'Click here to login', 'user_go.png' );
 			$body .= $this->load->view('partials/iconbar', $icondata, True);
@@ -165,35 +165,35 @@ class Install extends Controller {
 		$layout['body'] = $body;
 	  $this->load->view('layout', $layout);
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	function _validate($valcode){
 		// See if we have validation code (also get school_id)
 		$query_str = "SELECT school_id,validate FROM ci_users WHERE validate='$valcode' LIMIT 1";
 		$query = $this->db->query($query_str);
 		// One row - validation code exists!
 		if($query->num_rows() == 1){
-			
+
 			// Now we get the school_id
 			$row = $query->row();
 			$school_id = $row->school_id;
-			
+
 			// Get the school code
 			$query_str = "SELECT code FROM schools WHERE school_id='$school_id' LIMIT 1";
 			$query = $this->db->query($query_str);
-			
+
 			if($query->num_rows() == 1){
 				// Got school code
 				$row = $query->row();
 				$school_code = $row->code;
-				
+
 				// Now update the ci_users table and enable the user
 				$query_str = "UPDATE ci_users SET enabled=1 WHERE validate='$valcode' LIMIT 1";
 				$query = $this->db->query($query_str);
-	
+
 				if($query){
 					// User updated OK
 					return $school_code;
@@ -207,10 +207,10 @@ class Install extends Controller {
 			return false;
 		}
 	}
-	
-	
-	
-	
+
+
+
+
 	function schoolcode_exists($schoolcode){
 		$lookup = $this->M_school->schoolcode_exists($schoolcode);
 		if( $lookup == 0 ){

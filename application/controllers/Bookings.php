@@ -6,19 +6,19 @@ class Bookings extends Controller {
 
 
   function Bookings(){
-    parent::Controller();
+	parent::Controller();
 
-    // Load language
-  	$this->lang->load('crbs', 'english');
+	// Load language
+	$this->lang->load('crbs', 'english');
 
 		// Set school ID
 		$this->school_id = $this->session->userdata('school_id');
 
 		$this->output->enable_profiler(false);
 
-    // Check user is logged in
-    if(!$this->userauth->loggedin()){
-    	$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True) );
+	// Check user is logged in
+	if(!$this->userauth->loggedin()){
+		$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True) );
 			redirect('site/home', 'location');
 		} else {
 			$this->loggedin = True;
@@ -41,17 +41,17 @@ class Bookings extends Controller {
 		#$this->load->library('table');
 
 		// Array containing all the data we need (everything but the kitchen sink)
-  	#$school['rooms']					= $this->M_rooms->Get(NULL, $this->school_id);
-  	#$school['periods']				= $this->M_periods->Get();
-  	#$school['weeks']					= $this->M_weeks->Get();
+	#$school['rooms']					= $this->M_rooms->Get(NULL, $this->school_id);
+	#$school['periods']				= $this->M_periods->Get();
+	#$school['weeks']					= $this->M_weeks->Get();
 		#$school['holidays']				= $this->M_holidays->Get();
-  	#$school['mondays']				= $this->M_weeks->GetMondays(NULL, $school['holidays']);
-  	#$school['weekdateids']		= $this->M_weeks->WeekDateIDs();
+	#$school['mondays']				= $this->M_weeks->GetMondays(NULL, $school['holidays']);
+	#$school['weekdateids']		= $this->M_weeks->WeekDateIDs();
 
 		$school['users']					= $this->M_users->Get();
 		$school['days_list'] 			= $this->M_periods->days;
 		$school['days_bitmask']		= $this->M_periods->days_bitmask;
-  	$this->school = $school;
+	$this->school = $school;
   }
 
 
@@ -60,9 +60,9 @@ class Bookings extends Controller {
 
   function index(){
 
-  	$uri = $this->uri->uri_to_assoc(3);
+	$uri = $this->uri->uri_to_assoc(3);
 
-  	$this->session->set_userdata('uri', $this->uri->uri_string());
+	$this->session->set_userdata('uri', $this->uri->uri_string());
 
 		if( ! isset($uri['date']) ){
 			$uri['date'] = date("Y-m-d");
@@ -128,9 +128,9 @@ class Bookings extends Controller {
    */
   function load(){
 
-  	$style = $this->M_bookings->BookingStyle($this->school_id);
+	$style = $this->M_bookings->BookingStyle($this->school_id);
 
-  	#$chosen_date = $this->input->post('chosen_date');
+	#$chosen_date = $this->input->post('chosen_date');
 
 		// Validation rules
 		$vrules['chosen_date']		= 'max_length[10]|callback__is_valid_date';
@@ -144,16 +144,16 @@ class Bookings extends Controller {
 		// Set the error delims to a nice styled red hint under the fields
 		$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
 
-    if ($this->validation->run() == FALSE){
+	if ($this->validation->run() == FALSE){
 
 			show_error('validation failed');
 
-    } else {
+	} else {
 
-    	switch($style['display']){
-    		case 'day':
-    			// Display type is one day at a time - all rooms/periods
-		    	if($this->input->post('chosen_date')){
+		switch($style['display']){
+			case 'day':
+				// Display type is one day at a time - all rooms/periods
+				if($this->input->post('chosen_date')){
 						$datearr = explode('/', $this->input->post('chosen_date'));
 						if(count($datearr) == 3){
 							$chosen_date = sprintf("%s-%s-%s", $datearr[2], $datearr[1], $datearr[0]);
@@ -183,7 +183,7 @@ class Bookings extends Controller {
 				break;
 			} // End switch
 
-    }
+	}
 	}
 
 
@@ -375,7 +375,7 @@ class Bookings extends Controller {
 
 	function save(){
 
-	 	// Get ID from form
+		// Get ID from form
 		$booking_id = $this->input->post('booking_id');
 
 		// Validation rules
@@ -397,9 +397,9 @@ class Bookings extends Controller {
 		// Set the error delims to a nice styled red hint under the fields
 		$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
 
-    if ($this->validation->run() == FALSE){
+	if ($this->validation->run() == FALSE){
 
-      // Validation failed
+	  // Validation failed
 			if($booking_id != "X"){
 				return $this->Edit($booking_id);
 			} else {

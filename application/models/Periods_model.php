@@ -7,9 +7,9 @@ class Periods_model extends Model{
 
 	function Periods_model(){
 		parent::Model();
-		
+
 		$this->CI =& get_instance();
-		
+
 		$this->days[1] = 'Monday';
 		$this->days[2] = 'Tuesday';
 		$this->days[3] = 'Wednesday';
@@ -17,16 +17,16 @@ class Periods_model extends Model{
 		$this->days[5] = 'Friday';
 		$this->days[6] = 'Saturday';
 		$this->days[7] = 'Sunday';
-		
+
 		$this->days_bitmask = new bitmask;
 		$this->days_bitmask->assoc_keys = $this->days;
 
   }
-  
-  
-  
-  
-  
+
+
+
+
+
 	function Get($period_id = NULL, $school_id = NULL){
 		if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
 		if($period_id == NULL){
@@ -44,7 +44,7 @@ class Periods_model extends Model{
 		$this->db->join('schools', 'schools.school_id = periods.school_id');
 		$this->db->where('schools.code', $schoolcode);
 		$this->db->orderby('days', 'asc');
-		
+
 		if( $period_id != NULL ){
 			// Getting one specific room
 			$this->db->where('period_id', $period_id);
@@ -52,7 +52,7 @@ class Periods_model extends Model{
 			$query = $this->db->get();
 			if( $query->num_rows() == 1 ){
 				// One row, match!
-				return $query->row();		
+				return $query->row();
 			} else {
 				// None
 				return false;
@@ -70,11 +70,11 @@ class Periods_model extends Model{
 			}
 		}*/
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	function Add($data){
 		return $this->CI->crud->Add('periods', 'period_id', $data);
 		/* // Run query to insert blank row
@@ -85,11 +85,11 @@ class Periods_model extends Model{
 		$this->edit($period_id, $data);
 		return $period_id; */
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	function Edit($period_id, $data){
 		return $this->CI->crud->Edit('periods', 'period_id', $period_id, $data);
 		/* $this->db->where('period_id', $period_id);
@@ -102,11 +102,11 @@ class Periods_model extends Model{
 			return false;
 		} */
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * Deletes a period with the given ID
 	 *
@@ -115,8 +115,8 @@ class Periods_model extends Model{
 	 */
 	function Delete($id){
 		return $this->CI->crud->Delete('periods', 'period_id', $id);
-    /* $this->db->where('period_id', $id);
-    $this->db->delete('periods'); */
+	/* $this->db->where('period_id', $id);
+	$this->db->delete('periods'); */
 	}
 
 

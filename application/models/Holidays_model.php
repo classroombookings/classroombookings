@@ -10,11 +10,11 @@ class Holidays_model extends Model{
 		/*$this->CI =& get_instance();
 		$this->CI->load->Model('crud_model', 'crud', True);*/
   }
-  
-  
-  
-  
-  
+
+
+
+
+
 	function Get($holiday_id = NULL, $school_id = NULL){
 		if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
 		if($holiday_id == NULL){
@@ -31,7 +31,7 @@ class Holidays_model extends Model{
 		$this->db->from('holidays');
 		$this->db->join('schools', 'schools.school_id = holidays.school_id');
 		$this->db->where('schools.code', $schoolcode);
-		
+
 		if($holiday_id != NULL){
 			// Getting one specific holiday
 			$this->db->where('holiday_id', $holiday_id);
@@ -39,7 +39,7 @@ class Holidays_model extends Model{
 			$query = $this->db->get();
 			if( $query->num_rows() == 1 ){
 				// One row, match!
-				return $query->row();		
+				return $query->row();
 			} else {
 				// None
 				return false;
@@ -57,13 +57,13 @@ class Holidays_model extends Model{
 			}
 		} */
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
   function Add($data){
-  	return $this->crud->Add('holidays', 'holiday_id', $data);
+	return $this->crud->Add('holidays', 'holiday_id', $data);
 		/* // Run query to insert blank row
 		$this->db->insert('holidays', array('holiday_id' => NULL) );
 		// Get id of inserted record
@@ -72,13 +72,13 @@ class Holidays_model extends Model{
 		$this->edit($holiday_id, $data);
 		return $holiday_id; */
   }
-  
-  
-  
-  
-  
+
+
+
+
+
   function Edit($holiday_id, $data){
-  	return $this->crud->Edit('holidays', 'holiday_id', $holiday_id, $data, $this->school_id);
+	return $this->crud->Edit('holidays', 'holiday_id', $holiday_id, $data, $this->school_id);
 		/* $this->db->where('holiday_id', $holiday_id);
 		$this->db->set('school_id', $this->session->userdata('school_id'));
 		$result = $this->db->update('holidays', $data);
@@ -89,11 +89,11 @@ class Holidays_model extends Model{
 			return false;
 		} */
   }
-  
-  
-  
-  
-  
+
+
+
+
+
 	/**
 	 * Deletes a week with the given ID
 	 *
@@ -101,14 +101,14 @@ class Holidays_model extends Model{
 	 *
 	 */
 	function delete($id){
-    $this->db->where('holiday_id', $id);
-    $this->db->where('school_id', $this->session->userdata('school_id'));
-    $this->db->delete('holidays');
+	$this->db->where('holiday_id', $id);
+	$this->db->where('school_id', $this->session->userdata('school_id'));
+	$this->db->delete('holidays');
 	}
-  
-  
-  
-  
-  
+
+
+
+
+
 }
 ?>

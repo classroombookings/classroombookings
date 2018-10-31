@@ -8,26 +8,26 @@ class Crud_model extends Model{
 	function Crud_model(){
 		parent::Model();
   }
-  
-  
-  
-  
-  
+
+
+
+
+
   /**
    * Get one or more departments
-   * 
+   *
    * @param		str		$table				Table to get info from
    * @param		int		$pk						Name of the Primary Key ID field
-   * @param		int		$pk_id				Value of the primary key field (if getting one row, NULL if all	 	    
+   * @param		int		$pk_id				Value of the primary key field (if getting one row, NULL if all
    * @param		int		$school_id		ID of the school. If NULL, it is obtained from session
    * @param		str		$orderby			SQL 'order by' string
-  */	 	 	 	   
+  */
 	function Get($table, $pk = NULL, $pk_id = NULL, $school_id = NULL, $orderby = 'name asc', $per_page = NULL, $start_at = NULL){
 		if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
 		$this->db->select('*');
 		$this->db->from($table);
 		$this->db->where('school_id', $school_id);
-		
+
 		if($pk_id != NULL){
 			// Getting only ONE row
 			$this->db->where($pk, $pk_id);
@@ -35,7 +35,7 @@ class Crud_model extends Model{
 			$query = $this->db->get();
 			if( $query->num_rows() == 1 ){
 				// One row, match!
-				return $query->row();		
+				return $query->row();
 			} else {
 				// None
 				return false;
@@ -60,11 +60,11 @@ class Crud_model extends Model{
 			}
 		}
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
   function Add($table, $pk, $data){
 		// Run query to insert blank row
 		$this->db->insert($table, array($pk => NULL) );
@@ -73,13 +73,13 @@ class Crud_model extends Model{
 		// Now call the edit function to update the actual data for this new row now we have the ID
 		return $this->Edit($table, $pk, $pk_id, $data);
   }
-  
-  
-  
-  
-  
+
+
+
+
+
   function Edit($table, $pk, $pk_id, $data, $school_id = NULL){
-  	if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
+	if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
 		$this->db->where($pk, $pk_id);
 		$this->db->set('school_id', $this->session->userdata('school_id'));
 		$result = $this->db->update($table, $data);
@@ -90,30 +90,30 @@ class Crud_model extends Model{
 			return false;
 		}
   }
-  
-  
-  
-  
-  
+
+
+
+
+
   function Delete($table, $pk, $pk_id, $school_id = NULL){
-  	if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
-    $this->db->where($pk, $pk_id);
-    $this->db->where('school_id', $school_id);
-    $this->db->delete($table);
+	if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
+	$this->db->where($pk, $pk_id);
+	$this->db->where('school_id', $school_id);
+	$this->db->delete($table);
   }
-  
-  
-  
-  
+
+
+
+
   function Count($table, $school_id = NULL){
-  	if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
-  	$this->db->where('school_id', $school_id);
-  	return $this->db->count_all($table);
+	if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
+	$this->db->where('school_id', $school_id);
+	return $this->db->count_all($table);
   }
-	
-	
-	
-	
-	
+
+
+
+
+
 }
 ?>

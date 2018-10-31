@@ -9,28 +9,28 @@ class Users_model extends Model{
 		parent::Model();
 		$this->CI =& get_instance();
   }
-  
-  
-  
-  
+
+
+
+
   /**
    * Get assoc array of all users for schoolcode or single userid
-   * 
+   *
    * @param		string		$schoolcode		School code of user to look up
    * @param		int				$user_id			ID of username for single user lookup
-   * @param		int				$columns			Columns to select	 	 	    
+   * @param		int				$columns			Columns to select
    */
   function Get($user_id = NULL, $school_id = NULL, $columns = array('*'), $sort = 'authlevel asc, enabled asc, username asc' ){
-  	if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
- 		$i=0;
- 		// Put the array of columns into a string
- 		foreach( $columns as $column ){
- 			$columns[$i] = 'users.'.$column;
- 			$i++;
- 		}
- 		$ci_users_fields = implode( ',', $columns );
- 		//echo $ci_users_fields;
-  	
+	if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
+		$i=0;
+		// Put the array of columns into a string
+		foreach( $columns as $column ){
+			$columns[$i] = 'users.'.$column;
+			$i++;
+		}
+		$ci_users_fields = implode( ',', $columns );
+		//echo $ci_users_fields;
+
 		$this->CI->db->select($ci_users_fields);	//.',schools.school_id,schools.code AS schoolcode');
 		$this->CI->db->from('users');
 		$this->CI->db->where('users.school_id', $school_id);
@@ -56,12 +56,12 @@ class Users_model extends Model{
 			}
 		}
   }
-  
 
-  
-  
-  
+
+
+
+
 }
- 
-  
+
+
 ?>

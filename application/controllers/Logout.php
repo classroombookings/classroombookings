@@ -5,8 +5,8 @@ class Logout extends Controller {
   function Logout(){
 		parent::Controller();
 	}
-	
-	
+
+
 	function index(){
 		$this->userauth->logout();
 		#$layout['title'] = 'Logout';
@@ -14,7 +14,7 @@ class Logout extends Controller {
 		#$this->load->view('layout', $layout);
 		redirect('login', 'location');
 	}
-	
-	
+
+
 }
 ?>
