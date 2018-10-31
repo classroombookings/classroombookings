@@ -53,3 +53,11 @@ function msgbox($type = 'error', $content = '')
 	$html = "<p class='msgbox {$type}'>{$content}</p>";
 	return $html;
 }
+
+
+
+function icon($name, $attributes = array())
+{
+	$CI =& get_instance();
+	return $CI->feather->get($name, $attributes, FALSE);
+}

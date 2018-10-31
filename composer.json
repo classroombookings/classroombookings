@@ -3,7 +3,8 @@
     "description": "Classroombookings",
     "type": "project",
     "require": {
-        "codeigniter/framework": "^3"
+        "codeigniter/framework": "^3",
+        "pixelrobin/php-feather": "^1.0"
     },
     "license": "AGPLv3",
     "authors": [

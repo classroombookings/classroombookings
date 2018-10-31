@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "207fe10403e67707b54377b3f5d59408",
+    "content-hash": "1762b6934c91b6d1fa05c6deeb57abfe",
     "packages": [
         {
             "name": "codeigniter/framework",
@@ -38,6 +38,51 @@
             "description": "The CodeIgniter framework",
             "homepage": "https://codeigniter.com",
             "time": "2018-06-12T13:45:46+00:00"
+        },
+        {
+            "name": "pixelrobin/php-feather",
+            "version": "v1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Pixelrobin/php-feather.git",
+                "reference": "0f51e46d15d6d4c16bdb2b244d3aee00d24f57ca"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Pixelrobin/php-feather/zipball/0f51e46d15d6d4c16bdb2b244d3aee00d24f57ca",
+                "reference": "0f51e46d15d6d4c16bdb2b244d3aee00d24f57ca",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "7"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Feather\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Savchuk",
+                    "email": "pixelrobin@hotmail.com"
+                }
+            ],
+            "description": "PHP library for feather icons",
+            "keywords": [
+                "feather",
+                "icons",
+                "pixelrobin",
+                "svg"
+            ],
+            "time": "2018-10-31T04:45:42+00:00"
         }
     ],
     "packages-dev": [],
