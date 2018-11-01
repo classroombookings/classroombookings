@@ -5,10 +5,6 @@ if($this->loggedin){
 	$menu[1]['href'] = site_url('controlpanel');
 	$menu[1]['title'] = 'Tasks';
 
-	#$menu[2]['text'] = '<img src="webroot/images/ui/link_help.gif" hspace="4" align="top" alt=" " />Help';
-	#$menu[2]['href'] = site_url('help'.ereg_replace('help(/)', '', $this->uri->uri_string()));
-	#$menu[2]['title'] = 'Get help on this page';
-
 	if($this->userauth->CheckAuthLevel(ADMINISTRATOR)){ $icon = 'user_administrator.gif'; } else { $icon = 'user_teacher.gif'; }
 	$menu[3]['text'] = img('assets/images/ui/logout.gif', FALSE, 'hspace="4" align="top" alt=" "') . 'Logout';
 	$menu[3]['href'] = site_url('logout');
@@ -31,6 +27,7 @@ if($this->loggedin){
 	var h = document.getElementsByTagName("html")[0];
 	(h ? h.classList.add('js') : h.className += ' ' + 'js');
 	var Q = [];
+	var BASE_URL = "<?= base_url() ?>";
 	</script>
 </head>
 <body style="background-image:url('<?= base_url('assets/images/bg/global.png') ?>')">
@@ -45,7 +42,7 @@ if($this->loggedin){
 				if(isset($menu)){
 					foreach( $menu as $link ){
 						echo "\n".'<a href="'.$link['href'].'" title="'.$link['title'].'">'.$link['text'].'</a>'."\n";
-						if( $i < count($menu)-1 ){ echo '<img src="webroot/images/blank.png" width="16" alt=" " />'."\n\t\t"; }
+						if( $i < count($menu)-1 ){ echo img('assets/images/blank.png', FALSE, 'width="16" height="16"'); }
 						$i++;
 					}
 				}

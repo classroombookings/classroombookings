@@ -1,64 +1,37 @@
 <?php
-class Periods extends CI_Controller {
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Periods extends MY_Controller
+{
 
 
-	/**
-	 *
-	 * School Day controller
-	 *
-	 */
-
-
-
-
-
-	public function __construct(){
+	public function __construct()
+	{
 		parent::__construct();
 
-		// Load language
-		$this->lang->load('crbs', 'english');
+		$this->require_logged_in();
+		$this->require_auth_level(ADMINISTRATOR);
 
-		// Get school id
-		$this->school_id = $this->session->userdata('school_id');
-
-		$this->output->enable_profiler($this->session->userdata('profiler'));
-
-	// Check user is logged in & is admin
-		if( !$this->userauth->loggedin() ){
-			$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True) );
-			redirect('site/home', 'location');
-		} else {
-			$this->loggedin = True;
-			if(!$this->userauth->CheckAuthLevel(ADMINISTRATOR)){
-				$this->session->set_flashdata('auth', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeadmin'), True) );
-				redirect('controlpanel', 'location');
-			}
-		}
-		// Load models etc
-		$this->load->script('bitmask');
-		$this->load->model('crud_model', 'crud');
-		$this->load->model('periods_model', 'M_periods');
-		$this->load->model('school_model', 'M_school');
-
+		$this->load->model('crud_model');
+		$this->load->model('periods_model');
+		$this->load->model('school_model');
 	}
 
 
 
-
-
-	function index(){
+	function index()
+	{
 		// Get data from database
-		$body['periods'] = $this->M_periods->Get();	//$this->session->userdata('schoolcode'));
-		$body['days_list'] = $this->M_periods->days;
-		$body['days_bitmask'] = $this->M_periods->days_bitmask;
-		$layout['title'] = 'The School Day';
-		$layout['showtitle'] = $layout['title'];	// . ' ('.$section.')';
-		$layout['body'] = $this->load->view('periods/periods_index', $body, True);
-		$this->load->view('layout', $layout );
+		$this->data['periods'] = $this->periods_model->Get();	//$this->session->userdata('schoolcode'));
+		$this->data['days_list'] = $this->periods_model->days;
+		$this->data['days_bitmask'] = $this->periods_model->days_bitmask;
+
+		$this->data['title'] = 'The School Day';
+		$this->data['showtitle'] = $this->data['title'];	// . ' ('.$section.')';
+		$this->data['body'] = $this->load->view('periods/periods_index', $this->data, TRUE);
+
+		return $this->render();
 	}
-
-
-
 
 
 	/**

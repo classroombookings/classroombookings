@@ -1,14 +1,18 @@
 <?php
-class Periods_model extends CI_Model{
+
+require_once(APPPATH . 'third_party/bitmask.php');
+
+class Periods_model extends CI_Model
+{
 
 
+	public $days = array();
+	public $days_bitmask;
 
 
-
-	public function __construct(){
+	public function __construct()
+	{
 		parent::__construct();
-
-		$this->CI =& get_instance();
 
 		$this->days[1] = 'Monday';
 		$this->days[2] = 'Tuesday';
@@ -20,59 +24,18 @@ class Periods_model extends CI_Model{
 
 		$this->days_bitmask = new bitmask;
 		$this->days_bitmask->assoc_keys = $this->days;
-
 	}
 
 
 
-
-
-	function Get($period_id = NULL, $school_id = NULL){
-		if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
-		if($period_id == NULL){
-			return $this->CI->crud->Get('periods', NULL, NULL, NULL, 'days asc, time_start asc');
+	function Get($period_id = NULL)
+	{
+		if ($period_id == NULL) {
+			return $this->crud_model->Get('periods', NULL, NULL, NULL, 'days asc, time_start asc');
 		} else {
-			return $this->CI->crud->Get('periods', 'period_id', $period_id);
+			return $this->crud_model->Get('periods', 'period_id', $period_id);
 		}
-		/* $this->db->select(
-											 'periods.*,'
-											.'schools.school_id,'
-											.'schools.code AS schoolcode'
-											#.'x'
-											);
-		$this->db->from('periods');
-		$this->db->join('schools', 'schools.school_id = periods.school_id');
-		$this->db->where('schools.code', $schoolcode);
-		$this->db->orderby('days', 'asc');
-
-		if( $period_id != NULL ){
-			// Getting one specific room
-			$this->db->where('period_id', $period_id);
-			$this->db->limit('1');
-			$query = $this->db->get();
-			if( $query->num_rows() == 1 ){
-				// One row, match!
-				return $query->row();
-			} else {
-				// None
-				return false;
-			}
-		} else {
-			// Getting all
-			$this->db->order_by('time_start asc');
-			$query = $this->db->get();
-			if( $query->num_rows() > 0 ){
-				// Got some rooms, return result
-				return $query->result();
-			} else {
-				// No periods
-				return false;
-			}
-		}*/
 	}
-
-
-
 
 
 	function Add($data){

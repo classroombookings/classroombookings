@@ -1,8 +1,13 @@
-<?php echo $this->session->flashdata('saved') ?>
 <?php
-$icondata[0] = array('periods/add', 'Add Period', 'add.gif' );
-$this->load->view('partials/iconbar', $icondata);
+
+echo $this->session->flashdata('saved');
+
+echo iconbar(array(
+	array('periods/add', 'Add period', 'add.gif'),
+));
+
 ?>
+
 <table width="100%" cellpadding="2" cellspacing="2" border="0" class="sort-table" id="jsst-periods">
 	<col /><col /><col /><col />
 	<thead>
@@ -66,10 +71,14 @@ $this->load->view('partials/iconbar', $icondata);
 	?>
 	</tbody>
 </table>
-<?php $this->load->view('partials/iconbar', $icondata) ?>
+
 <?php
+
+echo iconbar(array(
+	array('periods/add', 'Add period', 'add.gif'),
+));
+
 $jsst['name'] = 'st1';
 $jsst['id'] = 'jsst-periods';
 $jsst['cols'] = array("None", "Name", "TimeStart", "TimeEnd", "Duration", "Days", "None");
 $this->load->view('partials/js-sorttable', $jsst);
-?>

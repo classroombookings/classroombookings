@@ -1,2 +1,6 @@
-<a href="<?php echo site_url( $edit ) ?>" title="Edit"><img src="webroot/images/ui/edit.gif" hspace="2" border="0" alt="Edit" /></a>
-<a href="<?php echo site_url( $delete ) ?>" title="Delete"><img src="webroot/images/ui/delete.gif" hspace="2" border="0" alt="Delete" /></a>
+<?php
+$img = img('assets/images/ui/edit.gif', FALSE, "hspace='2' border='0' alt='Edit'");
+echo anchor("{$edit}", $img, 'title="Edit"');
+
+$img = img('assets/images/ui/delete.gif', FALSE, "hspace='2' border='0' alt='Delete'");
+echo anchor("{$delete}", $img, 'title="Delete"');

@@ -35,12 +35,13 @@
 	background-repeat:no-repeat;
 	margin:0 2px;
 	/*display:none;*/
+	border: 0;
 }
 
 .sort-arrow.descending {
-	background-image:	url(bullet_arrow_down.png);
+	background-image:	url(./bullet_arrow_down.png);
 }
 
 .sort-arrow.ascending {
-	background-image:url(bullet_arrow_up.png);
+	background-image:url(./bullet_arrow_up.png);
 }
