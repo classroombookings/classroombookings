@@ -63,3 +63,29 @@ function icon($name, $attributes = array())
 	$CI =& get_instance();
 	return $CI->feather->get($name, $attributes, FALSE);
 }
+
+
+
+function colour_widget($params = array())
+{
+
+	$defaults = array(
+		'name' => '',
+		'tabindex' => '',
+		'value' => '',
+	);
+
+	$data = array_merge($defaults, $params);
+
+	$out = form_input(array(
+		'name' => $data['name'],
+		'id' => $data['name'],
+		'size' => '7',
+		'maxlength' => '7',
+		'tabindex' => $data['tabindex'],
+		'value' => $data['value'],
+	));
+
+	return $out;
+
+}

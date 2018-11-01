@@ -45,7 +45,6 @@ echo form_open('login/submit', array('id'=>'login','class'=>'cssform'), array('p
 
 $this->load->view('partials/submit', array(
 	'submit' => array('Login', tab_index()),
-	'cancel' => array('Cancel', tab_index(), ''),
 ));
 
 echo form_close();

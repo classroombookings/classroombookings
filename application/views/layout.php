@@ -26,8 +26,12 @@ if($this->loggedin){
 	<link rel="stylesheet" type="text/css" media="screen" href="<?= base_url('assets/style.css') ?>">
 	<link rel="stylesheet" type="text/css" media="print" href="<?= base_url('assets/print.css') ?>">
 	<link rel="stylesheet" type="text/css" media="screen" href="<?= base_url('assets/sorttable.css') ?>">
-	<link rel="stylesheet" type="text/css" media="screen" href="<?= base_url('assets/cpicker/js_color_picker_v2.css') ?>">
 	<link rel="stylesheet" type="text/css" media="screen" href="<?= base_url('assets/datepicker.css') ?>">
+	<script>
+	var h = document.getElementsByTagName("html")[0];
+	(h ? h.classList.add('js') : h.className += ' ' + 'js');
+	var Q = [];
+	</script>
 </head>
 <body style="background-image:url('<?= base_url('assets/images/bg/global.png') ?>')">
 	<div class="outer">
@@ -90,13 +94,21 @@ if($this->loggedin){
 
 			<div id="footer">
 				<?php
-				if(isset($menu)){ foreach( $menu as $link ){
-					echo "\n".'<a href="'.$link['href'].'" title="'.$link['title'].'">'.$link['text'].'</a>'."\n";
-					echo '<img src="webroot/images/blank.png" width="16" height="10" alt=" " />'."\n";
-				} }
+				if (isset($menu)) {
+					foreach( $menu as $link ) {
+						echo "\n".'<a href="'.$link['href'].'" title="'.$link['title'].'">'.$link['text'].'</a>'."\n";
+						echo img('assets/images/blank.png', FALSE, 'width="16" height="10" alt=" "');
+					}
+				}
 				?>
-				<br /><br /><span style="font-size:90%;color:#678;"><a href="https://www.classroombookings.com/" target="_blank">Classroombookings</a> version <?= VERSION ?>. &copy; <?= date('Y') ?> Craig A Rodway.<br />This page was loaded in <?php echo $this->benchmark->elapsed_time() ?> seconds.</span><br />
-				<br />
+				<br /><br />
+				<span style="font-size:90%;color:#678; line-height: 2">
+					<a href="https://www.classroombookings.com/" target="_blank">Classroombookings</a> version <?= VERSION ?>.
+					&copy; <?= date('Y') ?> Craig A Rodway.
+					<br />
+					Load time: <?php echo $this->benchmark->elapsed_time() ?> seconds.
+				</span>
+				<br /><br />
 			</div>
 		</div>
 	</div>
@@ -108,8 +120,6 @@ if($this->loggedin){
 	$scripts[] = base_url('assets/js/prototype.lite.js');
 	$scripts[] = base_url('assets/js/util.js');
 	$scripts[] = base_url('assets/js/sorttable.js');
-	$scripts[] = base_url('assets/cpicker/color_functions.js');
-	$scripts[] = base_url('assets/cpicker/js_color_picker_v2.js');
 	$scripts[] = base_url('assets/js/datepicker.js');
 	$scripts[] = base_url('assets/js/imagepreview.js');
 
@@ -120,6 +130,15 @@ if($this->loggedin){
 
 	?>
 
+	<script>
+	(function() {
+		if (typeof(window['Q']) !== "undefined") {
+			for (var i = 0, len = Q.length; i < len; i++) {
+				Q[i]();
+			}
+		}
+	})();
+	</script>
 
 </body>
 </html>

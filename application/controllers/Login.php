@@ -33,7 +33,7 @@ class Login extends MY_Controller
 		);
 
 		if ( ! empty($school_data->logo) && file_exists(FCPATH . $logo)) {
-			$columns['c2']['content'] = img($logo);
+			$columns['c2']['content'] = img($logo, FALSE, 'style="max-width:100%;height:auto;display:block"');
 		} else {
 			$columns['c2']['content'] = '';
 		}
