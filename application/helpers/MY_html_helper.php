@@ -50,8 +50,13 @@ function tab_index($reset = NULL)
 
 
 
-function msgbox($type = 'error', $content = '')
+function msgbox($type = 'error', $content = '', $escape = TRUE)
 {
+	if ($escape)
+	{
+		$content = html_escape($content);
+	}
+
 	$html = "<p class='msgbox {$type}'>{$content}</p>";
 	return $html;
 }

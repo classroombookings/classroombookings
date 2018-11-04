@@ -19,6 +19,7 @@ class Periods extends MY_Controller
 
 
 
+
 	function index()
 	{
 		// Get data from database
@@ -34,26 +35,36 @@ class Periods extends MY_Controller
 	}
 
 
+
+
 	/**
 	 * Controller function to handle the Add page
+	 *
 	 */
-	function add(){
+	function add()
+	{
 		// Load view
 
-		$content0['days_list'] = $this->M_periods->days;
-		$content0['days_bitmask'] = $this->M_periods->days_bitmask;
+		$this->data['days_list'] = $this->periods_model->days;
+		$this->data['days_bitmask'] = $this->periods_model->days_bitmask;
 
-		$cols[0]['content'] = $this->load->view('periods/periods_add', $content0, True);
-		$cols[0]['width'] = '70%';
-		$cols[1]['content'] = $this->load->view('periods/periods_add_side', NULL, True);
-		$cols[1]['width'] = '30%';
+		$columns = array(
+			'c1' => array(
+				'content' => $this->load->view('periods/periods_add', $this->data, TRUE),
+				'width' => '70%',
+			),
+			'c2' => array(
+				'content' => $this->load->view('periods/periods_add_side', $this->data, TRUE),
+				'width' => '30%',
+			),
+		);
 
-		$layout['title'] = 'Add Period';
-		$layout['showtitle'] = $layout['title'];
-		$layout['body'] = $this->load->view('columns', $cols, True);	#$this->load->view('rooms/rooms_add', $body, True);
-		$this->load->view('layout', $layout);
+		$this->data['title'] = 'Add Period';
+		$this->data['showtitle'] = $this->data['title'];
+		$this->data['body'] = $this->load->view('columns', $columns, TRUE);
+
+		return $this->render();
 	}
-
 
 
 
@@ -61,102 +72,81 @@ class Periods extends MY_Controller
 	/**
 	 * Controller function to handle an edit
 	 */
-	function edit($id = NULL){
-		if($id == NULL){ $id = $this->uri->segment(3); }
+	function edit($id = NULL)
+	{
 
-		$content0['period'] = $this->M_periods->Get($id);
+		$this->data['period'] = $this->periods_model->get($id);
+		if (empty($this->data['period']))
+		{
+			show_404();
+		}
 
-		// Load view
+		$this->data['days_list'] = $this->periods_model->days;
+		$this->data['days_bitmask'] = $this->periods_model->days_bitmask;
 
-		$content0['days_list'] = $this->M_periods->days;
-		$content0['days_bitmask'] = $this->M_periods->days_bitmask;
+		$columns = array(
+			'c1' => array(
+				'content' => $this->load->view('periods/periods_add', $this->data, TRUE),
+				'width' => '70%',
+			),
+			'c2' => array(
+				'content' => $this->load->view('periods/periods_add_side', $this->data, TRUE),
+				'width' => '30%',
+			),
+		);
 
-		$cols[0]['content'] = $this->load->view('periods/periods_add', $content0, True);
-		$cols[0]['width'] = '70%';
-		$cols[1]['content'] = $this->load->view('periods/periods_add_side', NULL, True);
-		$cols[1]['width'] = '30%';
-
-		$layout['title'] = 'Edit Period';
-		$layout['showtitle'] = $layout['title'];
-		$layout['body'] = $this->load->view('columns', $cols, True);	#$this->load->view('rooms/rooms_add', $body, True);
-		$this->load->view( 'layout', $layout);
+		$this->data['title'] = 'Edit Period';
+		$this->data['showtitle'] = $this->data['title'];
+		$this->data['body'] = $this->load->view('columns', $columns, TRUE);
+		return $this->render();
 	}
 
 
 
 
-
-	function save(){
+	function save()
+	{
 		// Get ID from form
 		$period_id = $this->input->post('period_id');
 
-		#print_r($_POST);
+		$this->load->library('form_validation');
 
-		// Load validation (dont need this any more as it's autoloaded)
-		#$this->load->library('validation');
+		$this->form_validation->set_rules('period_id', 'ID', 'integer');
+		$this->form_validation->set_rules('name', 'Name', 'required|min_length[1]|max_length[30]');
+		$this->form_validation->set_rules('time_start', 'Start time', 'required|min_length[4]|max_length[5]|callback__is_valid_time');
+		$this->form_validation->set_rules('time_end', 'End time', 'required|min_length[4]|max_length[5]|callback__is_valid_time|callback__is_after[time_start]');
+		$this->form_validation->set_rules('bookable', 'Bookable', 'required|integer');
 
-		// Validation rules
-		$vrules['period_id']		= 'required';
-		$vrules['name']					= 'required|min_length[1]|max_length[30]';
-		$vrules['time_start']		= 'required|min_length[4]|max_length[5]|callback__is_valid_time';
-		$vrules['time_end']			= 'required|min_length[4]|max_length[5]|callback__is_valid_time|callback__is_after[time_start]';
-		#$vrules['bookable']			= 'max_length[255]';
-		$this->validation->set_rules($vrules);
-
-		// Pretty it up a bit for error validation message
-		$vfields['period_id']			= 'Period ID';
-		$vfields['name']					= 'Name';
-		$vfields['time_start']		= 'Start time';
-		$vfields['time_end']			= 'End time';
-		$vfields['bookable']			= 'Can be booked';
-		$this->validation->set_fields($vfields);
-
-		// Set the error delims to a nice styled red hint under the fields
-		$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
-
-		if ($this->validation->run() == FALSE){
-
-		// Validation failed
-			if($period_id != "X"){
-				return $this->edit($period_id);
-			} else {
-				return $this->add();
-			}
-
-		} else {
-
-			// Validation succeeded!
-
-			// Compile bitmask of days
-			foreach( $this->input->post('days') as $day ){
-				$this->M_periods->days_bitmask->set_bit($day);
-			}
-
-			// Array of information to send to the database
-			$data = array();
-			$data['name']					= $this->input->post('name');
-			$data['time_start']		=	$this->_fix_time($this->input->post('time_start'));
-			$data['time_end']			= $this->_fix_time($this->input->post('time_end'));
-			$data['days']					= $this->M_periods->days_bitmask->forward_mask;
-			$data['bookable']			= ($this->input->post('bookable')) ? 1 : 0;
-
-			// Now see if we are editing or adding
-			if($period_id == 'X'){
-				// No ID, adding new record
-				$period_id = $this->M_periods->Add($data);
-				$this->session->set_flashdata('saved', $this->load->view('msgbox/info', $data['name'] . ' has been added.', True) );
-			} else {
-				// We have an ID, updating existing record
-				$this->M_periods->Edit($period_id, $data);
-				$this->session->set_flashdata('saved', $this->load->view('msgbox/info', $data['name'] . ' has been modified.', True) );
-			}
-
-			// Go back to index
-			redirect('periods', 'redirect');
-
+		if ($this->form_validation->run() == FALSE) {
+			return (empty($period_id) ? $this->add() : $this->edit($period_id));
 		}
-	}
 
+		// Compile bitmask of days
+		foreach ($this->input->post('days') as $day) {
+			$this->periods_model->days_bitmask->set_bit($day);
+		}
+
+		$period_data = array(
+			'name' => $this->input->post('name'),
+			'time_start' => $this->_fix_time($this->input->post('time_start')),
+			'time_end' => $this->_fix_time($this->input->post('time_end')),
+			'days' => $this->periods_model->days_bitmask->forward_mask,
+			'bookable' => $this->input->post('bookable'),
+		);
+
+		// Now see if we are editing or adding
+		if (empty($period_id)) {
+			// No ID, adding new record
+			$period_id = $this->periods_model->Add($period_data);
+			$this->session->set_flashdata('saved', msgbox('info', "{$period_data['name']} has been added."));
+		} else {
+			// We have an ID, updating existing record
+			$this->periods_model->Edit($period_id, $period_data);
+			$this->session->set_flashdata('saved', msgbox('info', "{$period_data['name']} has been modified."));
+		}
+
+		redirect('periods');
+	}
 
 
 
@@ -164,33 +154,32 @@ class Periods extends MY_Controller
 	/**
 	 * Controller function to delete a room
 	 */
-	function delete(){
-	  // Get ID from URL
-		$id = $this->uri->segment(3);
-
+	function delete($id = NULL)
+	{
 		// Check if a form has been submitted; if not - show it to ask user confirmation
-		if( $this->input->post('id') ){
+		if ($this->input->post('id')) {
 			// Form has been submitted (so the POST value exists)
 			// Call model function to delete manufacturer
-			$this->M_periods->Delete($this->input->post('id'));
-			$this->session->set_flashdata('saved', $this->load->view('msgbox/info', 'The period has been deleted.', True) );
-			// Redirect to rooms again
-			redirect('periods', 'redirect');
-		} else {
-			// Initialise page
-			$body['action'] = 'periods/delete';
-			$body['id'] = $id;
-			$body['cancel'] = 'periods';
-			$body['text'] = 'If you delete this period, any bookings for this period in <strong>all</strong> rooms will be <strong>permenantly deleted</strong>.';
-			// Load page
-			$row = $this->M_periods->Get($this->session->userdata('schoolcode'), $id);
-			$layout['title'] = 'Delete Period ('.$row->name.')';
-			$layout['showtitle'] = $layout['title'];
-			$layout['body'] = $this->load->view('partials/deleteconfirm', $body, TRUE);
-			$this->load->view('layout', $layout);
+			$this->periods_model->Delete($this->input->post('id'));
+			$this->session->set_flashdata('saved', msgbox('info', "The period has been deleted."));
+			return redirect('periods');
 		}
-	}
 
+		if (empty($id)){
+			show_error("No period ID provided.");
+		}
+
+		// Initialise page
+		$this->data['action'] = 'periods/delete';
+		$this->data['id'] = $id;
+		$this->data['cancel'] = 'periods';
+		$this->data['text'] = 'If you delete this period, any bookings for this period in <strong>all</strong> rooms will be <strong>permenantly deleted</strong>.';
+		$row = $this->periods_model->Get($id);
+		$this->data['title'] = 'Delete Period (' . html_escape($row->name) . ')';
+		$this->data['showtitle'] = $this->data['title'];
+		$this->data['body'] = $this->load->view('partials/deleteconfirm', $this->data, TRUE);
+		return $this->render();
+	}
 
 
 
@@ -204,19 +193,22 @@ class Periods extends MY_Controller
 	 * @return	bool on success
 	 *
 	 */
-	function _is_valid_time($time){
+	function _is_valid_time($time)
+	{
+		$times = array();
 		$times['am'] = strtotime('00:00');
 		$times['pm'] = strtotime('23:59');
 		$times['data'] = strtotime($time);
-		if( ($times['data'] >= $times['am'] && $times['data'] <= $times['pm']) || !isset($times['data']) ){
+
+		if ( ($times['data'] >= $times['am'] && $times['data'] <= $times['pm']) || !isset($times['data'])) {
 			$ret = true;
 		} else {
 			$this->validation->set_message('_is_valid_time', 'You entered an invalid time. It must be between 00:00 and 23:59.');
 			$ret = false;
 		}
+
 		return $ret;
 	}
-
 
 
 
@@ -254,13 +246,12 @@ class Periods extends MY_Controller
 	 * @param		string		$time		Time
 	 * @return		string		Formatted time
 	 */
-	function _fix_time($time){
+	function _fix_time($time)
+	{
 		return strftime('%H:%M', strtotime($time));
 	}
 
 
 
 
-
 }
-?>

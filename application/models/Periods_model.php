@@ -1,4 +1,5 @@
 <?php
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 require_once(APPPATH . 'third_party/bitmask.php');
 
@@ -28,44 +29,31 @@ class Periods_model extends CI_Model
 
 
 
+
 	function Get($period_id = NULL)
 	{
 		if ($period_id == NULL) {
-			return $this->crud_model->Get('periods', NULL, NULL, NULL, 'days asc, time_start asc');
+			return $this->crud_model->Get('periods', NULL, NULL, NULL, 'time_start asc');
 		} else {
 			return $this->crud_model->Get('periods', 'period_id', $period_id);
 		}
 	}
 
 
-	function Add($data){
-		return $this->CI->crud->Add('periods', 'period_id', $data);
-		/* // Run query to insert blank row
-		$this->db->insert('periods', array('period_id' => NULL) );
-		// Get id of inserted record
-		$period_id = $this->db->insert_id();
-		// Now call the edit function to update the actual data for this new row now we have the ID
-		$this->edit($period_id, $data);
-		return $period_id; */
+
+
+	function Add($data)
+	{
+		return $this->crud_model->Add('periods', 'period_id', $data);
 	}
 
 
 
 
-
-	function Edit($period_id, $data){
-		return $this->CI->crud->Edit('periods', 'period_id', $period_id, $data);
-		/* $this->db->where('period_id', $period_id);
-		$this->db->set('school_id', $this->session->userdata('school_id'));
-		$result = $this->db->update('periods', $data);
-		// Return bool on success
-		if( $result ){
-			return true;
-		} else {
-			return false;
-		} */
+	function Edit($period_id, $data)
+	{
+		return $this->crud_model->Edit('periods', 'period_id', $period_id, $data);
 	}
-
 
 
 
@@ -76,15 +64,12 @@ class Periods_model extends CI_Model
 	 * @param   int   $id   ID of period to delete
 	 *
 	 */
-	function Delete($id){
-		return $this->CI->crud->Delete('periods', 'period_id', $id);
-	/* $this->db->where('period_id', $id);
-	$this->db->delete('periods'); */
-}
-
+	function Delete($id)
+	{
+		return $this->crud_model->Delete('periods', 'period_id', $id);
+	}
 
 
 
 
 }
-?>
