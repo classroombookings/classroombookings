@@ -76,6 +76,7 @@ class Periods extends MY_Controller
 	{
 
 		$this->data['period'] = $this->periods_model->get($id);
+
 		if (empty($this->data['period']))
 		{
 			show_404();
