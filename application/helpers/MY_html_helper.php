@@ -23,6 +23,7 @@ function iconbar($items = array()) {
 		if ($i < $max) {
 			$html .= img("assets/images/sep.gif", FALSE, "alt='|' align='top' hspace='0' border='0' style='margin:0px 6px;'");
 		}
+		$i++;
 	}
 
 	$html .= "</p>";
