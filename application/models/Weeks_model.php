@@ -92,7 +92,6 @@ class Weeks_model extends CI_Model
 	 * Deletes a week with the given ID
 	 *
 	 * @param   int   $week_id   ID of week to delete
-	 * @param		int		$school_id		School ID
 	 *
 	 */
 	function Delete($week_id)
