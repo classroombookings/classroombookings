@@ -147,7 +147,7 @@ function refreshDatePicker(dateFieldName, year, month, day)
   // now, the days of the month
   do {
     dayNum = thisDay.getDate();
-    TD_onclick = " onclick=\"updateDateField('" + dateFieldName + "', '" + getDateString(thisDay) + "');document.forms[0].submit();\">";
+    TD_onclick = " onclick=\"updateDateField('" + dateFieldName + "', '" + getDateString(thisDay) + "')\">";
 
     if (dayNum == day)
       html += TD_selected + TD_onclick + DIV_selected + dayNum + xDIV + xTD;
