@@ -102,7 +102,7 @@ echo form_open('periods/save', array('class' => 'cssform', 'id' => 'schoolday_ad
 		<?php
 		$field = 'bookable';
 		echo form_hidden($field, '0');
-		echo form_checkbox( array(
+		echo form_checkbox(array(
 			'name' => 'bookable',
 			'id' => 'bookable',
 			'value' => '1',

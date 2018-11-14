@@ -103,6 +103,8 @@ $autoload['helper'] = array(
 	'directory',
 	'text',
 	'html',
+	'array',
+	'crbs',
 );
 
 /*
