@@ -26,7 +26,7 @@ class Weeks extends MY_Controller
 	function index()
 	{
 
-		$this->data['weeks'] = $this->weeks_model->Get(NULL);
+		$this->data['weeks'] = $this->weeks_model->Get();
 		$this->data['cal'] = NULL;
 		$this->data['academicyear'] = $this->weeks_model->GetAcademicYear();
 
@@ -171,19 +171,19 @@ class Weeks extends MY_Controller
 			$this->weeks_model->delete($this->input->post('id'));
 			$this->session->set_flashdata('saved', msgbox('info', $this->lang->line('crbs_action_deleted')));
 			redirect('weeks');
-		} else {
-			// Initialise page
-			$this->data['action'] = 'weeks/delete';
-			$this->data['id'] = $id;
-			$this->data['cancel'] = 'weeks';
-			$this->data['text'] = 'If you delete this week, <strong>all recurring bookings</strong> attached to this week will no longer be visible.';
-
-			$row = $this->weeks_model->Get($id);
-			$this->data['title'] = 'Delete Week (' . html_escape($row->name) . ')';
-			$this->data['showtitle'] = $this->data['title'];
-			$this->data['body'] = $this->load->view('partials/deleteconfirm', $this->data, TRUE);
-			return $this->render();
 		}
+		// Initialise page
+		$this->data['action'] = 'weeks/delete';
+		$this->data['id'] = $id;
+		$this->data['cancel'] = 'weeks';
+		$this->data['text'] = 'If you delete this week, <strong>all recurring bookings</strong> attached to this week will no longer be visible.';
+
+		$row = $this->weeks_model->Get($id);
+		$this->data['title'] = 'Delete Week (' . html_escape($row->name) . ')';
+		$this->data['showtitle'] = $this->data['title'];
+		$this->data['body'] = $this->load->view('partials/deleteconfirm', $this->data, TRUE);
+
+		return $this->render();
 	}
 
 

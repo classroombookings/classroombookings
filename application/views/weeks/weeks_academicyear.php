@@ -1,5 +1,12 @@
 <?php
 echo $this->session->flashdata('saved');
+
+$iconbar = iconbar(array(
+	array('weeks', 'Weeks', 'school_manage_weeks.gif'),
+));
+
+echo $iconbar;
+
 echo form_open('weeks/saveacademicyear', array('class' => 'cssform', 'id' => 'saveacademicyear') );
 ?>
 

@@ -23,10 +23,10 @@ class Crud_model extends CI_Model{
    * @param		str		$orderby			SQL 'order by' string
   */
   function Get($table, $pk = NULL, $pk_id = NULL, $school_id = NULL, $orderby = 'name asc', $per_page = NULL, $start_at = NULL){
-  	if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
+  	// if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
   	$this->db->select('*');
   	$this->db->from($table);
-  	$this->db->where('school_id', $school_id);
+  	// $this->db->where('school_id', $school_id);
 
   	if($pk_id != NULL){
 			// Getting only ONE row
@@ -79,9 +79,9 @@ class Crud_model extends CI_Model{
 
 
   function Edit($table, $pk, $pk_id, $data, $school_id = NULL){
-  	if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
+  	// if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
   	$this->db->where($pk, $pk_id);
-  	$this->db->set('school_id', $this->session->userdata('school_id'));
+  	// $this->db->set('school_id', $this->session->userdata('school_id'));
   	$result = $this->db->update($table, $data);
 		// Return bool on success
   	if( $result ){
@@ -96,9 +96,9 @@ class Crud_model extends CI_Model{
 
 
   function Delete($table, $pk, $pk_id, $school_id = NULL){
-  	if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
+  	// if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
   	$this->db->where($pk, $pk_id);
-  	$this->db->where('school_id', $school_id);
+  	// $this->db->where('school_id', $school_id);
   	$this->db->delete($table);
   }
 
@@ -106,8 +106,8 @@ class Crud_model extends CI_Model{
 
 
   function Count($table, $school_id = NULL){
-  	if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
-  	$this->db->where('school_id', $school_id);
+  	// if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
+  	// $this->db->where('school_id', $school_id);
   	return $this->db->count_all($table);
   }
 

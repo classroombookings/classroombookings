@@ -2,9 +2,11 @@
 
 echo $this->session->flashdata('saved');
 
-echo iconbar(array(
-	array('periods/add', 'Add period', 'add.gif'),
+$iconbar = iconbar(array(
+	array('periods/add', 'Add Period', 'add.gif'),
 ));
+
+echo $iconbar;
 
 ?>
 
@@ -74,9 +76,7 @@ echo iconbar(array(
 
 <?php
 
-echo iconbar(array(
-	array('periods/add', 'Add period', 'add.gif'),
-));
+echo $iconbar;
 
 $jsst['name'] = 'st1';
 $jsst['id'] = 'jsst-periods';
