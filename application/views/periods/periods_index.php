@@ -39,7 +39,7 @@ echo iconbar(array(
 		$dayofweek = date('N', $now);
 
 		if( ($now >= $time_start) && ($now < $time_end) && ($days_bitmask->bit_isset($dayofweek) ) ){
-			$now_img = '<img src="webroot/images/ui/school_manage_times.gif" width="16" height="16" alt="Now" />';
+			$now_img = img('assets/images/ui/school_manage_times.gif', 'width="16" height="16" alt="Now"');
 		} else {
 			$now_img = '';
 		}
