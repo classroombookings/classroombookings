@@ -1,8 +1,15 @@
-<?php echo $this->session->flashdata('saved') ?>
 <?php
-$icondata[0] = array('holidays/add', 'Add Holiday', 'add.gif' );
-$this->load->view('partials/iconbar', $icondata);
+
+echo $this->session->flashdata('saved');
+
+$iconbar = iconbar(array(
+	array('holidays/add', 'Add Holiday', 'add.gif'),
+));
+
+echo $iconbar;
+
 ?>
+
 <table width="100%" cellpadding="2" cellspacing="2" border="0" class="sort-table" id="jsst-holidays">
 	<col /><col /><col /><col />
 	<thead>
@@ -45,10 +52,12 @@ $this->load->view('partials/iconbar', $icondata);
 	?>
 	</tbody>
 </table>
-<?php $this->load->view( 'partials/iconbar', $icondata ); ?>
+
 <?php
+
+echo $iconbar;
+
 $jsst['name'] = 'st1';
 $jsst['id'] = 'jsst-holidays';
 $jsst['cols'] = array("Name", "StartDate", "EndDate", "None");
 $this->load->view('partials/js-sorttable', $jsst);
-?>
