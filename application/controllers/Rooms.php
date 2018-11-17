@@ -149,7 +149,8 @@ class Rooms extends MY_Controller
 	 */
 	function save()
 	{
-		// Get ID from form
+		$this->require_auth_level(ADMINISTRATOR);
+
 		$room_id = $this->input->post('room_id');
 
 		$this->load->library('form_validation');
@@ -327,7 +328,8 @@ class Rooms extends MY_Controller
 	 */
 	function delete($id = NULL)
 	{
-		// Check if a form has been submitted; if not - show it to ask user confirmation
+		$this->require_auth_level(ADMINISTRATOR);
+
 		if ($this->input->post('id')) {
 			$this->rooms_model->delete($this->input->post('id'));
 			$flashmsg = msgbox('info', $this->lang->line('crbs_action_deleted'));
@@ -362,6 +364,8 @@ class Rooms extends MY_Controller
 
 	function fields()
 	{
+		$this->require_auth_level(ADMINISTRATOR);
+
 		$this->data['options_list'] = $this->rooms_model->options;
 		$this->data['fields'] = $this->rooms_model->GetFields();
 		$this->data['title'] = 'Room Fields';
@@ -377,6 +381,8 @@ class Rooms extends MY_Controller
 
 	function add_field()
 	{
+		$this->require_auth_level(ADMINISTRATOR);
+
 		$this->data['options_list'] = $this->rooms_model->options;
 
 		$this->data['title'] = 'Add Field';
@@ -407,6 +413,8 @@ class Rooms extends MY_Controller
 	 */
 	function edit_field($id = NULL)
 	{
+		$this->require_auth_level(ADMINISTRATOR);
+
 		$this->data['field'] = $this->rooms_model->GetFields($id);
 		$this->data['options_list'] = $this->rooms_model->options;
 
@@ -434,6 +442,8 @@ class Rooms extends MY_Controller
 
 	function save_field()
 	{
+		$this->require_auth_level(ADMINISTRATOR);
+
 		// Get ID from form
 		$field_id = $this->input->post('field_id');
 
@@ -476,6 +486,8 @@ class Rooms extends MY_Controller
 	 */
 	function delete_field($id = NULL)
 	{
+		$this->require_auth_level(ADMINISTRATOR);
+
 		if ($this->input->post('id')) {
 			$this->rooms_model->field_delete($this->input->post('id'));
 			$flashmsg = msgbox('info', $this->lang->line('crbs_action_deleted'));
@@ -499,4 +511,3 @@ class Rooms extends MY_Controller
 
 
 }
-?>
