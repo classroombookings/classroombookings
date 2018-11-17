@@ -1,9 +1,16 @@
-<?php echo $this->session->flashdata('saved') ?>
 <?php
-$icondata[0] = array('rooms/fields/add', 'Add Field', 'add.gif' );
-$icondata[1] = array('rooms', 'Rooms', 'school_manage_rooms.gif' );
-$this->load->view('partials/iconbar', $icondata);
+
+echo $this->session->flashdata('saved');
+
+$iconbar = iconbar(array(
+	array('rooms/add_field', 'Add Field', 'add.gif'),
+	array('rooms', 'Rooms', 'school_manage_rooms.gif'),
+));
+
+echo $iconbar;
+
 ?>
+
 <table width="100%" cellpadding="2" cellspacing="2" border="0" class="sort-table" id="jsst-roomfields">
 	<col /><col /><col /><col />
 	<thead>
@@ -17,24 +24,25 @@ $this->load->view('partials/iconbar', $icondata);
 	<tbody>
 	<?php
 	$i=0;
-	if( $fields ){
-	foreach( $fields as $field ){ ?>
+	if ($fields) {
+	foreach ($fields as $field) { ?>
 	<tr class="tr<?php echo ($i & 1) ?>">
 		<td><?php echo $field->name ?></td>
 		<td><?php echo $options_list[$field->type] ?></td>
 		<td><?php
-		if(isset($field->options)){
-			$options_str = "";
-			foreach($field->options as $option){
-				$options_str .= $option->value . ", ";
+		if (isset($field->options) && is_array($field->options)) {
+			$values = array();
+			foreach ($field->options as $option) {
+				$label = trim($option->value);
+				if (empty($label)) continue;
+				$values[] = $label;
 			}
-			$options_str = substr($options_str, 0, strlen($options_str)-2);
-			echo $options_str;
+			echo implode(", ", $values);
 		}
 		?></td>
 		<td width="45" class="n"><?php
-			$actions['edit'] = 'rooms/fields/edit/'.$field->field_id;
-			$actions['delete'] = 'rooms/fields/delete/'.$field->field_id;
+			$actions['edit'] = 'rooms/edit_field/'.$field->field_id;
+			$actions['delete'] = 'rooms/delete_field/'.$field->field_id;
 			$this->load->view('partials/editdelete', $actions);
 			?>
 		</td>
@@ -46,10 +54,12 @@ $this->load->view('partials/iconbar', $icondata);
 	?>
 	</tbody>
 </table>
-<?php $this->load->view( 'partials/iconbar', $icondata ); ?>
+
 <?php
+
+echo $iconbar;
+
 $jsst['name'] = 'st1';
 $jsst['id'] = 'jsst-roomfields';
 $jsst['cols'] = array("Name", "Type", "Options", "None");
 $this->load->view('partials/js-sorttable', $jsst);
-?>

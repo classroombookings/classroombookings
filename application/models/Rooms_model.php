@@ -342,7 +342,7 @@ class Rooms_model extends CI_Model
 	{
 		$this->db->select('*');
 		$this->db->from('roomoptions');
-		$this->db->orderby('value asc');
+		$this->db->order_by('value asc');
 		$this->db->where('field_id', $field_id);
 
 		$query = $this->db->get();

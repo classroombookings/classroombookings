@@ -352,125 +352,118 @@ class Rooms extends MY_Controller
 
 
 	/**
-	 * FIELDS
+	 * Fields
+	 *
 	 */
 
 
 
 
 
-	function fields_index(){
-		$body['options_list'] = $this->M_rooms->options;
-		// Get list of rooms from database
-		$body['fields'] = $this->M_rooms->GetFields($this->session->userdata('schoolcode'));
-		// Set main layout
-		$layout['title'] = 'Room Fields';
-		$layout['showtitle'] = 'Define Room Fields';
-		$layout['body'] = $this->load->view('rooms/fields/rooms_fields_index', $body, True);
-		$this->load->view('layout', $layout);
+	function fields()
+	{
+		$this->data['options_list'] = $this->rooms_model->options;
+		$this->data['fields'] = $this->rooms_model->GetFields();
+		$this->data['title'] = 'Room Fields';
+		$this->data['showtitle'] = 'Custom Fields';
+		$this->data['body'] = $this->load->view('rooms/fields/index', $this->data, TRUE);
+
+		return $this->render();
 	}
 
 
 
 
 
-	function fields_add(){
-		$body['options_list'] = $this->M_rooms->options;
-		// Load view
-		$layout['title'] = 'Add Field';
-		$layout['showtitle'] = $layout['title'];
+	function add_field()
+	{
+		$this->data['options_list'] = $this->rooms_model->options;
 
-		$cols[0]['content'] = $this->load->view('rooms/fields/rooms_fields_add', $body, True);
-		$cols[0]['width'] = '70%';
-		$cols[1]['content'] = '';	//$this->load->view('rooms/rooms_add_side', $body, True);
-		$cols[1]['width'] = '30%';
+		$this->data['title'] = 'Add Field';
+		$this->data['showtitle'] = $this->data['title'];
 
-		$layout['body'] = $this->load->view('columns', $cols, True);	#$this->load->view('rooms/rooms_add', $body, True);
-		$this->load->view('layout', $layout);
+		$columns = array(
+			'c1' => array(
+				'content'=> $this->load->view('rooms/fields/add', $this->data, TRUE),
+				'width' => '70%',
+			),
+			'c2' => array(
+				'content' => '',
+				'width' => '30%',
+			),
+		);
+
+		$this->data['body'] = $this->load->view('columns', $columns, TRUE);
+
+		return $this->render();
 	}
-
 
 
 
 
 	/**
 	 * Controller function to handle an edit
+	 *
 	 */
-	function fields_edit($id = NULL){
-		if($id == NULL){ $id = $this->uri->segment(4); }
-		$body['field'] = $this->M_rooms->GetFields( $this->session->userdata('schoolcode'), $id );
-		$body['options_list'] = $this->M_rooms->options;
-		#print_r($body);
-		// Load view
-		$layout['title'] = 'Edit Field';
-		$layout['showtitle'] = $layout['title'];
+	function edit_field($id = NULL)
+	{
+		$this->data['field'] = $this->rooms_model->GetFields($id);
+		$this->data['options_list'] = $this->rooms_model->options;
 
-		$cols[0]['content'] = $this->load->view('rooms/fields/rooms_fields_add', $body, True);
-		$cols[0]['width'] = '70%';
-		$cols[1]['content'] = '';	//$this->load->view('rooms/rooms_add_side', $body, True);
-		$cols[1]['width'] = '30%';
+		$this->data['title'] = 'Edit Field';
+		$this->data['showtitle'] = $this->data['title'];
 
-		$layout['body'] = $this->load->view('columns', $cols, True);	#$this->load->view('rooms/rooms_add', $body, True);
-		$this->load->view( 'layout', $layout);
+		$columns = array(
+			'c1' => array(
+				'content'=> $this->load->view('rooms/fields/add', $this->data, TRUE),
+				'width' => '70%',
+			),
+			'c2' => array(
+				'content' => '',
+				'width' => '30%',
+			),
+		);
+
+		$this->data['body'] = $this->load->view('columns', $columns, TRUE);
+
+		return $this->render();
 	}
 
 
 
 
-
-	function fields_save(){
-
+	function save_field()
+	{
 		// Get ID from form
 		$field_id = $this->input->post('field_id');
 
-		// Load validation
-		#$this->load->library('validation');
+		$this->load->library('form_validation');
 
-		// Validation rules
-		$vrules['field_id']		= 'required';
-		$vrules['name']				= 'required|min_length[2]|max_length[64]';
-		$this->validation->set_rules($vrules);
+		$this->form_validation->set_rules('field_id', 'ID', 'integer');
+		$this->form_validation->set_rules('name', 'Name', 'required|min_length[1]|max_length[64]');
+		$this->form_validation->set_rules('options', 'Items', '');
 
-		// Pretty it up a bit for error validation message
-		$vfields['field_id']		= 'Field ID';
-		$vfields['name']				= 'Field name';
-		$vfields['items']				= 'Items';
-		$this->validation->set_fields($vfields);
-
-		// Set the error delims to a nice styled red hint under the fields
-		$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
-
-		if ($this->validation->run() == FALSE){
-
-	  // Validation failed
-			if($field_id != "X"){
-				$this->fields_edit($field_id);
-			} else {
-				$this->fields_add();
-			}
-
-		} else {
-
-		  // Validation succeeded!
-			$data['name']				= $this->input->post('name');
-			$data['type']				= $this->input->post('type');
-			$data['options']		= $this->input->post('options');
-
-			// Now see if we are editing or adding
-			if($field_id == 'X'){
-				// No ID, adding new record
-				$field_id = $this->M_rooms->field_add($data);
-				$this->session->set_flashdata('saved', $this->load->view('msgbox/info', 'The <strong>'.$data['name'].'</strong> field has been added.', True) );
-			} else {
-				// We have an ID, updating existing record
-				// Update row with new details
-				$this->M_rooms->field_edit($field_id, $data);
-				$this->session->set_flashdata('saved', $this->load->view('msgbox/info', 'The <strong>'.$data['name'].'</strong> field has been modified.', True) );
-			}
-			// Go back to index
-			redirect('rooms/fields', 'redirect');
+		if ($this->form_validation->run() == FALSE){
+			return (empty($field_id) ? $this->add_field() : $this->edit_field($field_id));
 		}
 
+		// Validation succeeded!
+		$field_data = array(
+			'name' => $this->input->post('name'),
+			'type' => $this->input->post('type'),
+			'options' => $this->input->post('options'),
+		);
+
+		if (empty($field_id)) {
+			$field_id = $this->rooms_model->field_add($field_data);
+			$flashmsg = msgbox('info', "The {$field_data['name']} field has been added.");
+		} else {
+			$this->rooms_model->field_edit($field_id, $field_data);
+			$flashmsg = msgbox('info', "The {$field_data['name']} field has been updated.");
+		}
+
+		$this->session->set_flashdata('saved', $flashmsg, TRUE);
+		redirect('rooms/fields');
 	}
 
 
@@ -478,32 +471,27 @@ class Rooms extends MY_Controller
 
 
 	/**
-	 * Controller function to delete a room
+	 * Delete a field
+	 *
 	 */
-	function fields_delete(){
-	  // Get ID from URL
-		$id = $this->uri->segment(4);
-		// Check if a form has been submitted; if not - show it to ask user confirmation
-		if( $this->input->post('id') ){
-			// Form has been submitted (so the POST value exists)
-			// Call model function to delete manufacturer
-			$this->M_rooms->field_delete($this->input->post('id'));
-			$this->session->set_flashdata('saved', $this->load->view('msgbox/info', 'The field has been deleted.', True) );
-			// Redirect to rooms again
-			redirect('rooms/fields', 'redirect');
-		} else {
-			// Initialise page
-			$body['action'] = 'rooms/fields/delete';
-			$body['id'] = $id;
-			$body['cancel'] = 'rooms/fields';
-			#$body['text'] = 'If you delete this field, <strong>all bookings</strong> for this room will be <strong>permanently deleted</strong> as well.';
-			// Load page
-			$row = $this->M_rooms->GetFields($id);
-			$layout['title'] = 'Delete Field ('.$row->name.')';
-			$layout['showtitle'] = $layout['title'];
-			$layout['body'] = $this->load->view('partials/deleteconfirm', $body, TRUE);
-			$this->load->view('layout', $layout);
+	function delete_field($id = NULL)
+	{
+		if ($this->input->post('id')) {
+			$this->rooms_model->field_delete($this->input->post('id'));
+			$flashmsg = msgbox('info', $this->lang->line('crbs_action_deleted'));
+			return redirect('rooms/fields');
 		}
+
+		$this->data['action'] = 'rooms/delete_field';
+		$this->data['id'] = $id;
+		$this->data['cancel'] = 'rooms/fields';
+
+		$row = $this->rooms_model->GetFields($id);
+		$this->data['title'] = 'Delete Field ('.html_escape($row->name).')';
+		$this->data['showtitle'] = $this->data['title'];
+		$this->data['body'] = $this->load->view('partials/deleteconfirm', $this->data, TRUE);
+
+		return $this->render();
 	}
 
 
