@@ -9,7 +9,7 @@ $iconbar = iconbar(array(
 
 echo $iconbar;
 
-$jscript = '';
+$jscript = 'var messages = [];';
 
 ?>
 
@@ -44,7 +44,7 @@ $jscript = '';
 			<?php
 			if ($room->photo != '' ) {
 				$photo_path = "uploads/{$room->photo}";
-				$jscript .= "messages[{$room->room_id}] = ['{$photo_path}', '{$room->name}');\n";
+				$jscript .= "messages[{$room->room_id}] = ['{$photo_path}', '{$room->name}'];\n";
 				if (file_exists(FCPATH . $photo_path)) {
 					$url = base_url($photo_path);
 					echo '<a href="'.$url.'" title="View Photo" onmouseover="doTooltip(event,'.$room->room_id.')" onmouseout="hideTip()">';
