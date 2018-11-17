@@ -1,65 +1,58 @@
 <?php
-if( !isset($department_id) ){
-	$department_id = @field($this->uri->segment(3, NULL), $this->validation->department_id, 'X');
+$department_id = NULL;
+if (isset($department) && is_object($department)) {
+	$department_id = set_value('department_id', $department->department_id);
 }
-$errorstr = $this->validation->error_string;
 
 echo form_open('departments/save', array('class' => 'cssform', 'id' => 'department_add'), array('department_id' => $department_id) );
 ?>
 
+<fieldset>
 
-<fieldset><legend accesskey="D" tabindex="1">Department Information</legend>
-<p>
-  <label for="name" class="required">Name</label>
-  <?php
-	$name = @field($this->validation->name, $department->name);
-	echo form_input(array(
-		'name' => 'name',
-		'id' => 'name',
-		'size' => '20',
-		'maxlength' => '50',
-		'tabindex' => '2',
-		'value' => $name,
-	));
-	?>
-</p>
-<?php echo @field($this->validation->name_error) ?>
+	<legend accesskey="D" tabindex="<?= tab_index() ?>">Department details</legend>
 
+	<p>
+		<label for="name" class="required">Name</label>
+		<?php
+		$field = 'name';
+		$value = set_value($field, isset($department) ? $department->name : '');
+		echo form_input(array(
+			'name' => $field,
+			'id' => $field,
+			'size' => '20',
+			'maxlength' => '50',
+			'tabindex' => tab_index(),
+			'value' => $value,
+		));
+		?>
+	</p>
+	<?php echo form_error($field); ?>
 
-<p>
-  <label for="description">Description</label>
-  <?php
-	$description = @field($this->validation->description, $department->description);
-	echo form_input(array(
-		'name' => 'description',
-		'id' => 'description',
-		'size' => '50',
-		'maxlength' => '255',
-		'tabindex' => '3',
-		'value' => $description,
-	));
-	?>
-</p>
-<?php echo @field($this->validation->description_error) ?>
-
-
-<p>
-  <label for="icon">Icon</label>
-  <div class="iconbox" style="width:auto;height:180px">
-  <?php
-	$icon = @field($this->validation->icon, $department->icon);
-	echo iconbox("icon", "standardicons", $icon, 'tabindex="4"');
-	?>
-	</div>
-<?php echo @field($this->validation->icon_error) ?>
-</p>
+	<p>
+		<label for="description">Description</label>
+		<?php
+		$field = 'description';
+		$value = set_value($field, isset($department) ? $department->description : '');
+		echo form_textarea(array(
+			'name' => $field,
+			'id' => $field,
+			'columns' => '50',
+			'rows' => '3',
+			'maxlength' => '255',
+			'tabindex' => tab_index(),
+			'value' => $value,
+		));
+		?>
+	</p>
+	<?php echo form_error($field); ?>
 
 </fieldset>
 
+<?php
 
+$this->load->view('partials/submit', array(
+	'submit' => array('Save', tab_index()),
+	'cancel' => array('Cancel', tab_index(), 'departments'),
+));
 
-<div class="submit" style="border-top:0px;">
-  <?php echo form_submit(array('value' => 'Save', 'tabindex' => '5')) ?> 
-	&nbsp;&nbsp; 
-	<?php echo anchor('departments', 'Cancel', array('tabindex' => '6')) ?>
-</div>
+echo form_close();

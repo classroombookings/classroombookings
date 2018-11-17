@@ -1,213 +1,176 @@
 <?php
-class Departments extends CI_Controller {
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Departments extends MY_Controller
+{
 
 
 
 
-
-	public function __construct(){
+	public function __construct()
+	{
 		parent::__construct();
 
-		// Load language
-		$this->lang->load('crbs', 'english');
+		$this->require_logged_in();
+		$this->require_auth_level(ADMINISTRATOR);
 
-		// Get school id
-		$this->school_id = $this->session->userdata('school_id');
+		$this->load->library('pagination');
+		$this->load->model('crud_model');
+		$this->load->model('school_model');
+		$this->load->model('departments_model');
+	}
 
-		$this->output->enable_profiler($this->session->userdata('profiler'));
 
-	// Check user is logged in & is admin
-		if(!$this->userauth->loggedin()){
-			$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True));
-			redirect('site/home', 'location');
-		} else {
-			$this->loggedin = True;
-			if(!$this->userauth->CheckAuthLevel(ADMINISTRATOR)){
-				$this->session->set_flashdata('auth', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeadmin'), True));
-				redirect('controlpanel', 'location');
-			}
+
+
+	function index($page = NULL)
+	{
+		$pagination_config = array(
+			'base_url' => site_url('departments/index'),
+			'total_rows' => $this->crud_model->Count('departments'),
+			'per_page' => 25,
+			'full_tag_open' => '<p class="pagination">',
+			'full_tag_close' => '</p>',
+		);
+
+		$this->pagination->initialize($pagination_config);
+
+		$this->data['pagelinks'] = $this->pagination->create_links();
+		// Get list of rooms from database
+		$this->data['departments'] = $this->departments_model->Get(NULL, $pagination_config['per_page'], $page);
+
+		$this->data['title'] = 'Departments';
+		$this->data['showtitle'] = $this->data['title'];
+		$this->data['body'] = $this->load->view('departments/departments_index', $this->data, TRUE);
+
+		return $this->render();
+	}
+
+
+
+
+
+	/**
+	 * Add a new department
+	 *
+	 */
+	function add()
+	{
+		// Load view
+		$this->data['title'] = 'Add Department';
+		$this->data['showtitle'] = $this->data['title'];
+		$this->data['body'] = $this->load->view('departments/departments_add', NULL, TRUE);
+
+		return $this->render();
+	}
+
+
+
+
+	/**
+	 * Edit a department
+	 *
+	 */
+	function edit($department_id = NULL)
+	{
+		$this->data['department'] = $this->departments_model->Get($department_id);
+
+		if (empty($this->data['department'])) {
+			show_404();
 		}
 
-		// Load models etc
-		$this->load->library('pagination');
-		$this->load->model('crud_model', 'crud');
-		$this->load->model('school_model', 'M_school');
-	#$this->load->model('departments_model', 'M_departments');
-	// Load the icon selector helper
-		$this->load->helper('iconsel');
-	#$this->load->scaffolding('rooms');
+		$this->data['title'] = 'Edit Department';
+		$this->data['showtitle'] = $this->data['title'];
+		$this->data['body'] = $this->load->view('departments/departments_add', $this->data, TRUE);
+
+		return $this->render();
 	}
-
-
-
-
-	function index($start_at = NULL){
-		log_message('debug', 'Departments/index');
-		if($start_at == NULL){ $start_at = $this->uri->segment(3); }
-		// Init pagination
-		$pages['base_url'] = site_url('departments/index');
-		$pages['total_rows'] = $this->crud->Count('departments');
-		$pages['per_page'] = '10';
-		$pages['full_tag_open'] = '<p style="text-align:center">';
-		$pages['full_tag_close'] = '</p>';
-		$pages['cur_tag_open'] = ' <b>';
-		$pages['cur_tag_close'] = '</b>';
-		$pages['first_link'] = '<img src="webroot/images/ui/resultset_first.png" width="16" height"16" alt="First" title="First" align="top" />';
-		$pages['last_link'] = '<img src="webroot/images/ui/resultset_last.png" width="16" height"16" alt="Last" title="Last" align="top" />';
-		$pages['next_link'] = '<img src="webroot/images/ui/resultset_next.png" width="16" height"16" alt="Next" title="Next" align="top" />';
-		$pages['prev_link'] = '<img src="webroot/images/ui/resultset_previous.png" width="16" height"16" alt="Previous" title="Previous" align="top" />';
-		$this->pagination->initialize($pages);
-		$body['pagelinks'] = $this->pagination->create_links();
-		// Get list of rooms from database
-		$body['departments'] = $this->crud->Get('departments', NULL, NULL, $this->school_id, 'name asc', $pages['per_page'], $start_at );
-		// Set main layout
-		$layout['title'] = 'Departments';
-		$layout['showtitle'] = $layout['title'];
-		$layout['body'] = $this->load->view('departments/departments_index', $body, True);
-		$this->load->view('layout', $layout);
-	}
-
 
 
 
 
 	/**
-	 * Controller function to handle the Add page
+	 * Save changes to add/edit a department
+	 *
 	 */
-	function add(){
-		// Load view
-		$layout['title'] = 'Add Department';
-		$layout['showtitle'] = $layout['title'];
-		$layout['body'] = $this->load->view('departments/departments_add', NULL, True);
-		$this->load->view('layout', $layout);
-	}
-
-
-
-
-
-	/**
-	 * Controller function to handle the Edit page
-	 */
-	function edit($department_id = NULL){
-		if($department_id == NULL){ $department_id = $this->uri->segment(3); }
-		// Load view
-		$body['department'] = $this->crud->Get('departments', 'department_id', $department_id, $this->school_id);
-		$layout['title'] = 'Edit Department';
-		$layout['showtitle'] = $layout['title'];
-
-		$layout['body'] = $this->load->view('departments/departments_add', $body, True);	#$this->load->view('rooms/rooms_add', $body, True);
-		$this->load->view('layout', $layout);
-	}
-
-
-
-
-
-	function save(){
-		#print_r($_POST);
-		// Get ID from form
+	function save()
+	{
 		$department_id = $this->input->post('department_id');
 
-		// Validation rules
-		$vrules['department_id']		= 'required';
-		$vrules['name']							= 'required|min_length[1]|max_length[50]';
-		$vrules['description']			= 'max_length[255]';
-		$vrules['icon']							= 'max_length[255]';
-		$this->validation->set_rules($vrules);
+		$this->load->library('form_validation');
 
-		// Pretty it up a bit for error validation message
-		$vfields['department_id']		= 'Department ID';
-		$vfields['name']						= 'Name';
-		$vfields['description']			= 'Description';
-		$vfields['icon']						= 'Icon';
-		$this->validation->set_fields($vfields);
+		$this->form_validation->set_rules('department_id', 'ID', 'integer');
+		$this->form_validation->set_rules('name', 'Name', 'required|min_length[1]|max_length[50]');
+		$this->form_validation->set_rules('description', 'Description', 'max_length[255]');
 
-		// Set the error delims to a nice styled red hint under the fields
-		$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
+		if ($this->form_validation->run() == FALSE) {
+			return (empty($department_id) ? $this->add() : $this->edit($department_id));
+		}
 
-		if ($this->validation->run() == FALSE){
+		$department_data = array(
+			'name' => $this->input->post('name'),
+			'description' => $this->input->post('description'),
+			'icon' => '',
+		);
 
-		// Validation failed
-			if($department_id != "X"){
-				return $this->edit($department_id);
+		if (empty($department_id)) {
+
+			$department_id = $this->departments_model->Add($department_data);
+
+			if ($department_id) {
+				$line = sprintf($this->lang->line('crbs_action_added'), $department_data['name']);
+				$flashmsg = msgbox('info', $line);
 			} else {
-				return $this->add();
+				$line = sprintf($this->lang->line('crbs_action_dberror'), 'adding');
+				$flashmsg = msgbox('error', $line);
 			}
 
 		} else {
 
-			// Validation succeeded!
-			// Create array for database fields & data
-			$data = array();
-			$data['name']						= $this->input->post('name');
-			$data['description']		=	$this->input->post('description');
-			$data['icon']						= $this->input->post('icon');
-
-			// Now see if we are editing or adding
-			if($department_id == 'X'){
-				// No ID, adding new record
-				#echo 'adding';
-				if( !$this->crud->Add('departments', 'department_id', $data) ){
-					$flashmsg = $this->load->view('msgbox/error', 'An error occured adding department <strong>'.$data['name'].'</strong>.', True);
-				} else {
-					$flashmsg = $this->load->view('msgbox/info', 'Department named <strong>'.$data['name'].'</strong> has been added.', True);
-				}
+			if ($this->departments_model->Edit($department_id, $department_data)) {
+				$line = sprintf($this->lang->line('crbs_action_saved'), $department_data['name']);
+				$flashmsg = msgbox('info', $line);
 			} else {
-				// We have an ID, updating existing record
-				if( !$this->crud->Edit('departments', 'department_id', $department_id, $data) ){
-					$flashmsg = $this->load->view('msgbox/error', 'A database error occured editing department <strong>'.$data['name'].'</strong>.', True);
-				} else {
-					$flashmsg = $this->load->view('msgbox/info', 'Department named <strong>'.$data['name'].'</strong> has been modified.', True);
-				}
-
+				$line = sprintf($this->lang->line('crbs_action_dberror'), 'editing');
+				$flashmsg = msgbox('error', $line);
 			}
-
-			// Go back to index
-			$this->session->set_flashdata('saved', $flashmsg);
-			redirect('departments', 'redirect');
 
 		}
 
+		$this->session->set_flashdata('saved', $flashmsg);
+		redirect('departments');
 	}
-
 
 
 
 
 	/**
-	 * Controller function to delete a department
+	 * Delete a department
+	 *
 	 */
-	function delete(){
-	  // Get ID from URL
-		$department_id = $this->uri->segment(3);
-
-		// Check if a form has been submitted; if not - show it to ask user confirmation
-		if( $this->input->post('id') ){
-			// Form has been submitted (so the POST value exists)
-			// Call model function to delete manufacturer
-			$this->crud->Delete('departments', 'department_id', $this->input->post('id'));
-			$this->session->set_flashdata('saved', $this->load->view('msgbox/info', 'The department has been deleted.', True) );
-			// Redirect
-			redirect('departments', 'redirect');
-		} else {
-			// Initialise page
-			$body['action'] = 'departments/delete';
-			$body['id'] = $department_id;
-			$body['cancel'] = 'departments';
-			$body['text'] = 'If you delete this department, you must re-assign any of its members to another department.';
-			// Load page
-			$row = $this->crud->Get('departments', 'department_id', $department_id);
-			$layout['title'] = 'Delete Department ('.$row->name.')';
-			$layout['showtitle'] = $layout['title'];
-			$layout['body'] = $this->load->view('partials/deleteconfirm', $body, True);
-			$this->load->view('layout', $layout);
+	function delete($id = NULL)
+	{
+		if ($this->input->post('id')) {
+			$this->departments_model->Delete($this->input->post('id'));
+			$flashmsg = msgbox('info', $this->lang->line('crbs_action_deleted'));
+			$this->session->set_flashdata('saved', $flashmsg);
+			redirect('departments');
 		}
-	}
 
+		$this->data['action'] = 'departments/delete';
+		$this->data['id'] = $id;
+		$this->data['cancel'] = 'departments';
+		$this->data['text'] = 'If you delete this department, you must re-assign any of its members to another department.';
+
+		$row = $this->departments_model->Get($id);
+		$this->data['title'] = 'Delete Department ('.html_escape($row->name).')';
+		$this->data['showtitle'] = $this->data['title'];
+		$this->data['body'] = $this->load->view('partials/deleteconfirm', $this->data, TRUE);
+
+		return $this->render();
+	}
 
 
 
 
 }
-?>

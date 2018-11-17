@@ -463,3 +463,15 @@ table.bookings td.holiday{ background:#f6f6f6; color:#333; border:1px solid #ccc
 
 table.bookings td.free a{ color:#00f;text-decoration:none; display:block;}
 table.bookings td.free a:hover{ color:#f00;text-decoration:none; }
+
+
+
+.pagination {
+	padding: 5px 0;
+}
+
+.pagination strong,
+.pagination a {
+	display: inline-block;
+	padding: 5px;
+}
