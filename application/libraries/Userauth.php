@@ -34,6 +34,7 @@ class Userauth{
 	public function __construct(){
 		$this->object =& get_instance();
 		$this->object->load->database();
+		$this->object->load->model('school_model');
 		log_message('debug','User Authentication Class Initialised via '.get_class($this->object));
 	}
 
@@ -70,21 +71,19 @@ class Userauth{
 							"WHERE username='$username' AND password='$password' LIMIT 1";*/
 			#$query = $this->object->db->query($sql);
 
-			$this->object->db->select(
-																 'users.user_id,'
-																.'users.username,'
-																.'users.password,'
-																.'users.authlevel,'
-																.'users.enabled,'
-																.'users.displayname,'
-																.'school.school_id,'
-																.'school.name AS schoolname,'
-																);
+			$this->object->db->select(array(
+				'user_id',
+				'username',
+				'password',
+				'authlevel',
+				'enabled',
+				'displayname',
+			));
+
 			$this->object->db->from('users');
-			$this->object->db->join('school', 'school.school_id = users.school_id');
-			$this->object->db->where('users.username', $username);
-			$this->object->db->where('users.password', $password);
-			$this->object->db->where('users.enabled', 1);
+			$this->object->db->where('username', $username);
+			$this->object->db->where('password', $password);
+			$this->object->db->where('enabled', 1);
 			$this->object->db->limit(1);
 			$query = $this->object->db->get();
 
@@ -96,7 +95,10 @@ class Userauth{
 			// Log message
 			log_message('debug', "Userauth: Query result: '$return'");
 
-			if($return == 1){
+			if ($return == 1) {
+
+				$school = $this->object->school_model->GetInfo();
+
 				// 1 row returned with matching user & pass = validated!
 
 				// Get row from query (fullname, email)
@@ -125,10 +127,10 @@ class Userauth{
 													'hash' => sha1('c0d31gn1t3r'.$timestamp.$username.$schoolcode.$this->getAuthLevel($schoolcode,$username)),
 													);*/
 				$sessdata['user_id'] = $row->user_id;
-				$sessdata['username'] = $username;
-				$sessdata['schoolname'] = $row->schoolname;
+				$sessdata['username'] = $row->username;
+				$sessdata['schoolname'] = $school->schoolname;
 				$sessdata['displayname'] = $row->displayname;
-				$sessdata['school_id'] = $row->school_id;
+				$sessdata['school_id'] = $school->school_id;
 				$sessdata['loggedin'] = 'true';
 				// Hash is <login_date><username><schoolcode><authlevel>
 				$str = 'c0d31gn1t3r'.$timestamp.$username.$this->GetAuthLevel($row->user_id);
@@ -609,17 +611,14 @@ class Userauth{
 		$session_username = $this->object->session->userdata('username');
 		$session_bool = $this->object->session->userdata('loggedin');
 		$session_schoolcode = $this->object->session->userdata('schoolcode');
-		$this->object->db->select(
-															'users.username,'
-															.'users.lastlogin,'
-															.'users.authlevel,'
-															.'school.school_id,'
-															/*.'school.code AS schoolcode,'*/
-															);
+		$this->object->db->select(array(
+			'username',
+			'lastlogin',
+			'authlevel',
+		));
+
 		$this->object->db->from('users');
-		$this->object->db->join('school', 'school.school_id = users.school_id');
-		// $this->object->db->where('schools.code', $session_schoolcode);
-		$this->object->db->where('users.username', $session_username);
+		$this->object->db->where('username', $session_username);
 		$this->object->db->limit(1);
 		$query = $this->object->db->get();
 		log_message('debug', 'loggedin() query: '.$this->object->db->last_query() );

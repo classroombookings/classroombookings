@@ -1,125 +1,107 @@
 <?php
-class Users extends CI_Controller {
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Users extends MY_Controller
+{
 
 
 
 
-
-	public function __construct(){
+	public function __construct()
+	{
 		parent::__construct();
 
-		// Load language
-		$this->lang->load('crbs', 'english');
+		$this->require_logged_in();
+		$this->require_auth_level(ADMINISTRATOR);
 
-		// Get school id
-		$this->school_id = $this->session->userdata('school_id');
-
-		$this->output->enable_profiler($this->session->userdata('profiler'));
-
-	// Check user is logged in & is admin
-		if( !$this->userauth->loggedin() ){
-			$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True) );
-			redirect('site/home', 'location');
-		} else {
-			$this->loggedin = True;
-			if( !$this->userauth->CheckAuthLevel( ADMINISTRATOR ) ){
-				$this->session->set_flashdata('auth', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeadmin'), True) );
-				redirect('controlpanel', 'location');
-			}
-		}
-		$this->load->model('crud_model', 'crud');
-		$this->load->model('users_model', 'M_users');
-		$this->load->helper('iconsel');
+		$this->load->model('crud_model');
+		$this->load->model('users_model');
+		$this->load->model('departments_model');
 	}
 
 
 
 
-
-	function index($start_at = NULL){
-		if($start_at == NULL){ $start_at = $this->uri->segment(3); }
+	function index($page = NULL)
+	{
+		$pagination_config = array(
+			'base_url' => site_url('users/index'),
+			'total_rows' => $this->crud_model->Count('users'),
+			'per_page' => 25,
+			'full_tag_open' => '<p class="pagination">',
+			'full_tag_close' => '</p>',
+		);
 
 		$this->load->library('pagination');
+		$this->pagination->initialize($pagination_config);
 
-		// Init pagination
-		$pages['base_url'] = site_url('users/index');
-		$pages['total_rows'] = $this->crud->Count('users');
-		$pages['per_page'] = '15';
-		$pages['full_tag_open'] = '<p style="text-align:center">';
-		$pages['full_tag_close'] = '</p>';
-		$pages['cur_tag_open'] = ' <b>';
-		$pages['cur_tag_close'] = '</b>';
-		$pages['first_link'] = '<img src="webroot/images/ui/resultset_first.gif" width="16" height"16" alt="First" title="First" align="top" />';
-		$pages['last_link'] = '<img src="webroot/images/ui/resultset_last.gif" width="16" height"16" alt="Last" title="Last" align="top" />';
-		$pages['next_link'] = '<img src="webroot/images/ui/resultset_next.gif" width="16" height"16" alt="Next" title="Next" align="top" />';
-		$pages['prev_link'] = '<img src="webroot/images/ui/resultset_previous.gif" width="16" height"16" alt="Previous" title="Previous" align="top" />';
-		$this->pagination->initialize($pages);
+		$this->data['pagelinks'] = $this->pagination->create_links();
+		$this->data['users'] = $this->users_model->Get(NULL, $pagination_config['per_page'], $page);
 
-		$body['pagelinks'] = $this->pagination->create_links();
-		// Get list of rooms from database
-		$body['users'] = $this->crud->Get('users', NULL, NULL, $this->school_id, 'authlevel asc, enabled asc, username asc', $pages['per_page'], $start_at );
-		#$body['users'] = $this->M_users->Get();	//$this->session->userdata('school_id'));
+		$this->data['title'] = 'Manage Users';
+		$this->data['showtitle'] = $this->data['title'];
+		$this->data['body'] = $this->load->view('users/users_index', $this->data, TRUE);
 
-		// Set main layout
-		$layout['title'] = 'Manage Users';
-		$layout['showtitle'] = $layout['title'];
-		$layout['body'] = $this->load->view('users/users_index', $body, True);
-		$this->load->view('layout', $layout);
+		return $this->render();
+	}
+
+
+
+
+	function add()
+	{
+		$this->data['departments'] = $this->departments_model->Get();
+
+		$this->data['title'] = 'Add User';
+		$this->data['showtitle'] = $this->data['title'];
+
+		$columns = array(
+			'c1' => array(
+				'content' => $this->load->view('users/users_add', $this->data, TRUE),
+				'width' => '70%',
+			),
+			'c2' => array(
+				'content' => $this->load->view('users/users_add_side', $this->data, TRUE),
+				'width' => '30%',
+			),
+		);
+
+		$this->data['body'] = $this->load->view('columns', $columns, TRUE);
+
+		return $this->render();
 	}
 
 
 
 
 
-  /* function index(){
-	$body['users'] = $this->M_users->Get();	//$this->session->userdata('school_id'));
+	function edit($id = NULL)
+	{
+		$this->data['user'] = $this->users_model->Get($id);
 
-		$layout['title'] = 'Manage Users';
-		$layout['showtitle'] = $layout['title'];
-		$layout['body'] = $this->load->view('users/users_index', $body, True);
-		$this->load->view('layout', $layout);
-	} */
+		if (empty($this->data['user'])) {
+			show_404();
+		}
 
+		$this->data['departments'] = $this->departments_model->Get();
 
+		$this->data['title'] = 'Edit User';
+		$this->data['showtitle'] = $this->data['title'];
 
+		$columns = array(
+			'c1' => array(
+				'content' => $this->load->view('users/users_add', $this->data, TRUE),
+				'width' => '70%',
+			),
+			'c2' => array(
+				'content' => $this->load->view('users/users_add_side', $this->data, TRUE),
+				'width' => '30%',
+			),
+		);
 
+		$this->data['body'] = $this->load->view('columns', $columns, TRUE);
 
-	function add(){
-		$body['departments'] = $this->crud->Get('departments');
-		// Load view
-		$layout['title'] = 'Add User';
-		$layout['showtitle'] = $layout['title'];
-
-		$cols[0]['content'] = $this->load->view('users/users_add', $body, True);
-		$cols[0]['width'] = '70%';
-		$cols[1]['content'] = $this->load->view('users/users_add_side', $body, True);
-		$cols[1]['width'] = '30%';
-
-		$layout['body'] = $this->load->view('columns', $cols, True);
-		$this->load->view('layout', $layout);
-	}
-
-
-
-
-
-	function edit($id = NULL){
-		if($id == NULL){ $id = $this->uri->segment(3); }
-		$body['user'] = $this->M_users->Get($id);
-		#print_r($body);
-		$body['departments'] = $this->crud->Get('departments');
-
-		// Load view
-		$layout['title'] = 'Edit User';
-		$layout['showtitle'] = $layout['title'];
-
-		$cols[0]['content'] = $this->load->view('users/users_add', $body, True);
-		$cols[0]['width'] = '70%';
-		$cols[1]['content'] = $this->load->view('users/users_add_side', $body, True);
-		$cols[1]['width'] = '30%';
-
-		$layout['body'] = $this->load->view('columns', $cols, True);
-		$this->load->view( 'layout', $layout);
+		return $this->render();
 	}
 
 
@@ -127,107 +109,83 @@ class Users extends CI_Controller {
 
 
 	/**
-	 * Save
+	 * Save user details
+	 *
 	 */
-	function save(){
-		#print_r($_POST);
-
-		// Get ID from form
+	function save()
+	{
 		$user_id = $this->input->post('user_id');
 
-		// Load validation
-		#$this->load->library('validation');
+		$this->load->library('form_validation');
 
-		// Validation rules
-		$vrules['user_id']				= 'required';
-		$vrules['username']   		= 'required|max_length[20]|min_length[1]';
-		$vrules['password1']			= 'max_length[64]|min_length[1]';
-		$vrules['password2']			= 'max_length[64]|min_length[1]|matches[password1]';
-		$vrules['authlevel']			= 'required';
-		$vrules['bquota']					= 'numeric|max_length[3]';
-		$vrules['email']          = 'max_length[255]|valid_email';
-		$vrules['firstname']			= 'max_length[20]';
-		$vrules['lastname']				= 'max_length[20]';
-		$vrules['displayname']		= 'max_length[20]';
-		$vrules['extension']			= 'max_length[10]';
-		$this->validation->set_rules($vrules);
+		$this->form_validation->set_rules('user_id', 'ID', 'integer');
+		$this->form_validation->set_rules('username', 'Username', 'required|max_length[20]');
+		$this->form_validation->set_rules('authlevel', 'Type', 'required|integer');
+		$this->form_validation->set_rules('enabled', 'Enabled', 'required|integer');
+		$this->form_validation->set_rules('email', 'Email address', 'valid_email|max_length[255]');
 
-		// Name the validation fields if an error occurs
-		$vfields['user_id']					= 'User ID';
-		$vfields['username']				= 'Username';
-		$vfields['password1']				= 'Password';
-		$vfields['password2']				= 'Password confirmation';
-		$vfields['authlevel']				= 'User type';
-		$vfields['enabled']					= 'Enabled';
-		$vfields['bquota']					= 'Booking quota';
-		$vfields['email']						= 'Email address';
-		$vfields['firstname']				= 'First name';
-		$vfields['lastname']				= 'Last name';
-		$vfields['displayname']			= 'Display name';
-		$vfields['department_id']		= 'Department';
-		$vfields['ext']							= 'Extension';
-		$this->validation->set_fields($vfields);
+		if (empty($user_id)) {
+			$this->form_validation->set_rules('password1', 'Password', 'trim|required');
+			$this->form_validation->set_rules('password2', 'Password (confirm)', 'trim|matches[password1]');
+		} else {
+			if ($this->input->post('password1')) {
+				$this->form_validation->set_rules('password1', 'Password', 'trim');
+				$this->form_validation->set_rules('password2', 'Password (confirm)', 'trim|matches[password1]');
+			}
+		}
 
-		// Set the error delims to a nice styled red hint under the fields
-		$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
+		$this->form_validation->set_rules('firstname', 'First name', 'max_length[20]');
+		$this->form_validation->set_rules('lastname', 'Last name', 'max_length[20]');
+		$this->form_validation->set_rules('displayname', 'Display name', 'max_length[20]');
+		$this->form_validation->set_rules('department_id', 'Department', 'integer');
+		$this->form_validation->set_rules('ext', 'Extension', 'max_length[10]');
 
-		if ($this->validation->run() == FALSE){
+		if ($this->form_validation->run() == FALSE) {
+			return (empty($user_id) ? $this->add() : $this->edit($user_id));
+		}
 
-	  // Validation failed
-			if($user_id != "X"){
-				$this->edit($user_id);
+		$user_data = array(
+			'username' => $this->input->post('username'),
+			'authlevel' => $this->input->post('authlevel'),
+			'enabled' => $this->input->post('enabled'),
+			'email' => $this->input->post('email'),
+			'firstname' => $this->input->post('firstname'),
+			'lastname' => $this->input->post('lastname'),
+			'displayname' => $this->input->post('displayname'),
+			'department_id' => $this->input->post('department_id'),
+			'ext' => $this->input->post('ext'),
+		);
+
+		if ($this->input->post('password1') && $this->input->post('password2')) {
+			$user_data['password'] = sha1($this->input->post('password1'));
+		}
+
+		if (empty($user_id)) {
+
+			$user_id = $this->users_model->Add($user_data);
+
+			if ($user_id) {
+				$line = sprintf($this->lang->line('crbs_action_added'), $user_data['username']);
+				$flashmsg = msgbox('info', $line);
 			} else {
-				$this->add();
+				$line = sprintf($this->lang->line('crbs_action_dberror'), 'adding');
+				$flashmsg = msgbox('error', $line);
 			}
 
 		} else {
 
-			// Validation succeeded!
-
-			$data['username'] 				= $this->input->post('username');
-			$data['authlevel'] 				= $this->input->post('authlevel');
-			$data['enabled'] 					= ($this->input->post('enabled') == '1') ? 1 : 0;
-			#$data['bquota']						= $this->input->post('bquota');
-			$data['email']						= $this->input->post('email');
-			$data['firstname']				= $this->input->post('firstname');
-			$data['lastname']					= $this->input->post('lastname');
-			$data['displayname']			= $this->input->post('displayname');
-			$data['department_id']		= $this->input->post('department_id');
-			$data['ext']							= $this->input->post('ext');
-			// Only update password if one was supplied
-			if($this->input->post('password1') && $this->input->post('password2')){
-				$data['password'] 			= sha1($this->input->post('password1'));
-			}
-
-			// Now see if we are editing or adding
-			if($user_id == 'X'){
-				// No ID, adding new record
-				if(!$this->crud->Add('users', 'user_id', $data)){
-					$flashmsg = $this->load->view('msgbox/error', 'A database error occured while adding the user.', True);
-				} else {
-					$flashmsg = $this->load->view('msgbox/info', 'User <strong>'.$data['username'].'</strong> has been created.', True);
-					if($data['enabled'] == 0){
-						$flashmsg .= $this->load->view('msgbox/warning', '<strong>'.$data['username'].'</strong> will not be able to log on until their account is enabled.', True);
-					}
-				}
+			if ($this->users_model->Edit($user_id, $user_data)) {
+				$line = sprintf($this->lang->line('crbs_action_saved'), $user_data['username']);
+				$flashmsg = msgbox('info', $line);
 			} else {
-				// We have an ID, updating existing record
-				if(!$this->crud->Edit('users', 'user_id', $user_id, $data)){
-					$flashmsg = $this->load->view('msgbox/error', 'A database error occured while editing the user.', True);
-				} else {
-					$flashmsg = $this->load->view('msgbox/info', 'User properties for <strong>'.$data['username'].'</strong> have been successfully changed.', True);
-					if($data['enabled'] == 0){
-						$flashmsg .= $this->load->view('msgbox/warning', '<strong>'.$data['username'].'</strong> will not be able to log on until their account is enabled.', True);
-					}
-				}
+				$line = sprintf($this->lang->line('crbs_action_dberror'), 'editing');
+				$flashmsg = msgbox('error', $line);
 			}
-
-			// Go back to index
-			$this->session->set_flashdata('saved', $flashmsg);
-			redirect('users', 'redirect');
 
 		}
 
+		$this->session->set_flashdata('saved', $flashmsg);
+		redirect('users');
 	}
 
 

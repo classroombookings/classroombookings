@@ -1,245 +1,227 @@
 <?php
-if( !isset($user_id) ){
-	$user_id = @field($this->uri->segment(3, NULL), $this->validation->user_id, 'X');
+$user_id = NULL;
+if (isset($user) && is_object($user)) {
+	$user_id = set_value('user_id', $user->user_id);
 }
-$errorstr = $this->validation->error_string;
 
-echo form_open('users/save', array('class' => 'cssform', 'id' => 'user_add'), array('user_id' => $user_id) );
+echo form_open_multipart('users/save', array('class' => 'cssform', 'id' => 'users_add'), array('user_id' => $user_id) );
+
 ?>
 
+<fieldset>
 
-<fieldset><legend accesskey="U" tabindex="1">User Information</legend>
+	<legend accesskey="U" tabindex="<?php echo tab_index() ?>">User Details</legend>
 
+	<p>
+		<label for="username" class="required">Username</label>
+		<?php
+		$field = 'username';
+		$value = set_value($field, isset($user) ? $user->username : '');
+		echo form_input(array(
+			'name' => $field,
+			'id' => $field,
+			'size' => '20',
+			'maxlength' => '20',
+			'tabindex' => tab_index(),
+			'value' => $value,
+		));
+		?>
+	</p>
+	<?php echo form_error($field); ?>
 
-<p>
-  <label for="username" class="required">Username</label>
-  <?php
-  $t = 2;
-	$username = @field($this->validation->username, $user->username);
-	echo form_input(array(
-		'name' => 'username',
-		'id' => 'username',
-		'size' => '20',
-		'maxlength' => '20',
-		'tabindex' => $t,
-		'value' => $username,
-	));
-	$t++;
-	?>
-</p>
-<?php echo @field($this->validation->username_error) ?>
+	<p>
+		<label for="authlevel" class="required">Type</label>
+		<?php
+		$field = 'authlevel';
+		$value = set_value($field, isset($user) ? $user->authlevel : '2');
+		$options = array('1' => 'Administrator', '2' => 'Teacher');
+		echo form_dropdown(
+			$field,
+			$options,
+			$value,
+			' id="authlevel" tabindex="'.tab_index().'"'
+		);
+		?>
+	</p>
+	<?php echo form_error($field); ?>
 
+	<p>
+		<label for="enabled">Enabled</label>
+		<?php
+		$field = 'enabled';
+		$value = isset($user) ? $user->enabled : '1';
+		$checked = set_checkbox($field, '1', $value == '1');
+		echo form_hidden($field, '0');
+		echo form_checkbox(array(
+			'name' => $field,
+			'id' => $field,
+			'value' => '1',
+			'tabindex' => tab_index(),
+			'checked' => $checked,
+		));
+		?>
+	</p>
 
-<p>
-  <label for="password1" class="required">Password</label>
-  <?php
-	#$password1 = @field($this->validation->email, $user->email);
-	echo form_password(array(
-		'name' => 'password1',
-		'id' => 'password1',
-		'size' => '20',
-		'maxlength' => '40',
-		'tabindex' => $t,
-		'value' => '',
-	));
-	$t++;
-	?>
-</p>
-<?php echo @field($this->validation->password1_error) ?>
-
-
-<p>
-  <label for="password2" class="required">Password (again)</label>
-  <?php
-	#$password1 = @field($this->validation->email, $user->email);
-	echo form_password(array(
-		'name' => 'password2',
-		'id' => 'password2',
-		'size' => '20',
-		'maxlength' => '40',
-		'tabindex' => $t,
-		'value' => '',
-	));
-	$t++;
-	?>
-</p>
-<?php echo @field($this->validation->password2_error) ?>
-
-
-<p>
-  <label for="authlevel" class="required">Type</label>
-  <?php
-	$authlevel = @field($this->validation->authlevel, $user->authlevel);
-	$data = array('1' => 'Administrator', '2' => 'Teacher');
-	echo form_dropdown(
-		'authlevel',
-		$data,
-		$authlevel,
-		' id="authlevel" tabindex="'.$t.'"'
-	);
-	$t++;
-	?>
-</p>
-<?php echo @field($this->validation->type_error) ?>
-
-
-<p>
-  <label for="enabled">Enabled</label>
-  <?php
-	$enabled = @field($this->validation->enabled, $user->enabled);
-	echo form_checkbox(array( 
-		'name' => 'enabled',
-		'id' => 'enabled',
-		'value' => '1',
-		'tabindex' => $t,
-		'checked' => $enabled,
-	));
-	$t++;
-	?>
-</p>
-
-
-<!--
-<p>
-	<label for="bquota">Booking quota</label>
-  <?php
-	/* $bquota = @field($this->validation->bquota, $user->bquota);
-	echo form_input(array(
-		'name' => 'bquota',
-		'id' => 'bquota',
-		'size' => '5',
-		'maxlength' => '3',
-		'tabindex' => $t,
-		'value' => $bquota,
-	));
-	$t+ */;
-	?>
-	<p class="hint">Number of bookings this user is allowed to make. Enter 0 for unlimited, or leave empty to follow the quota defined for the school.</p>
-</p> -->
-<?php # echo @field($this->validation->bquota_error) ?>
-
-
-<p>
-  <label for="email">Email address</label>
-  <?php
-	$email = @field($this->validation->email, $user->email);
-	echo form_input(array(
-		'name' => 'email',
-		'id' => 'email',
-		'size' => '35',
-		'maxlength' => '255',
-		'tabindex' => $t,
-		'value' => $email,
-	));
-	$t++;
-	?>
-</p>
-<?php echo @field($this->validation->email_error) ?>
-
+	<p>
+		<label for="email">Email address</label>
+		<?php
+		$field = 'email';
+		$value = set_value($field, isset($user) ? $user->email : '');
+		echo form_input(array(
+			'name' => $field,
+			'id' => $field,
+			'size' => '35',
+			'maxlength' => '255',
+			'tabindex' => tab_index(),
+			'value' => $value,
+		));
+		?>
+	</p>
+	<?php echo form_error($field); ?>
 
 </fieldset>
 
 
+<fieldset>
+
+	<legend accesskey="P" tabindex="<?php echo tab_index() ?>">Password</legend>
+
+	<?php if (isset($user)): ?>
+	<div>Change the user's password by entering it twice in these boxes.</div>
+	<?php endif; ?>
+
+	<p>
+		<label for="password1" class="required">Password</label>
+		<?php
+		$field = 'password1';
+		echo form_password(array(
+			'name' => $field,
+			'id' => $field,
+			'size' => '20',
+			'tabindex' => tab_index(),
+			'value' => '',
+		));
+		?>
+	</p>
+	<?php echo form_error($field); ?>
+
+	<p>
+		<label for="password2" class="required">Password (again)</label>
+		<?php
+		$field = 'password2';
+		echo form_password(array(
+			'name' => $field,
+			'id' => $field,
+			'size' => '20',
+			'tabindex' => tab_index(),
+			'value' => '',
+		));
+		?>
+	</p>
+	<?php echo form_error($field); ?>
+
+</fieldset>
 
 
 <fieldset>
 
+	<legend accesskey="P" tabindex="<?php echo tab_index() ?>">Personal Details</legend>
 
-<p>
-  <label for="firstname">First name</label>
-  <?php
-	$firstname = @field($this->validation->firstname, $user->firstname);
-	echo form_input(array(
-		'name' => 'firstname',
-		'id' => 'firstname',
-		'size' => '20',
-		'maxlength' => '20',
-		'tabindex' => $t,
-		'value' => $firstname,
-	));
-	$t++;
-	?>
-</p>
-<?php echo @field($this->validation->firstname_error) ?>
+	<p>
+		<label for="firstname">First name</label>
+		<?php
+		$field = 'firstname';
+		$value = set_value($field, isset($user) ? $user->firstname : '');
+		echo form_input(array(
+			'name' => $field,
+			'id' => $field,
+			'size' => '20',
+			'maxlength' => '20',
+			'tabindex' => tab_index(),
+			'value' => $value,
+		));
+		?>
+	</p>
+	<?php echo form_error($field); ?>
 
+	<p>
+		<label for="lastname">Last name</label>
+		<?php
+		$field = 'lastname';
+		$value = set_value($field, isset($user) ? $user->lastname : '');;
+		echo form_input(array(
+			'name' => $field,
+			'id' => $field,
+			'size' => '20',
+			'maxlength' => '20',
+			'tabindex' => tab_index(),
+			'value' => $value,
+		));
+		?>
+	</p>
+	<?php echo form_error($field); ?>
 
-<p>
-  <label for="lastname">Last name</label>
-  <?php
-	$lastname = @field($this->validation->lastname, $user->lastname);
-	echo form_input(array(
-		'name' => 'lastname',
-		'id' => 'lastname',
-		'size' => '20',
-		'maxlength' => '20',
-		'tabindex' => $t,
-		'value' => $lastname,
-	));
-	$t++;
-	?>
-</p>
-<?php echo @field($this->validation->lastname_error) ?>
+	<p>
+		<label for="displayname">Display name</label>
+		<?php
+		$field = 'displayname';
+		$value = set_value($field, isset($user) ? $user->displayname : '');
+		echo form_input(array(
+			'name' => $field,
+			'id' => $field,
+			'size' => '20',
+			'maxlength' => '20',
+			'tabindex' => tab_index(),
+			'value' => $value,
+		));
+		?>
+	</p>
+	<?php echo form_error($field); ?>
 
+	<p>
+		<label for="department">Department</label>
+		<?php
+		$options = array('' => '(None)');
+		if ($departments) {
+			foreach ($departments as $department) {
+				$options[$department->department_id] = $department->name;
+			}
+		}
+		$value = set_value($field, isset($user) ? $user->department_id : '');
+		echo form_dropdown(
+			'department_id',
+			$options,
+			$value,
+			'tabindex="'.tab_index().'"');
+		?>
+	</p>
+	<?php echo form_error($field); ?>
 
-<p>
-  <label for="displayname">Display name</label>
-  <?php
-	$displayname = @field($this->validation->displayname, $user->displayname);
-	echo form_input(array(
-		'name' => 'displayname',
-		'id' => 'displayname',
-		'size' => '20',
-		'maxlength' => '20',
-		'tabindex' => $t,
-		'value' => $displayname,
-	));
-	$t++;
-	?>
-</p>
-<?php echo @field($this->validation->displayname_error) ?>
-
-
-<p>
-	<label for="department">Department</label>
-  <?php
-	$departmentlist['0'] = '(None)';
-	if($departments){
-  	foreach($departments as $department){
-	  	$departmentlist[$department->department_id] = $department->name;		#@field($user->displayname, $user->username);
-  	}
-  }
-	$department_id = @field($this->validation->department_id, $user->department_id, '0');
-	echo form_dropdown('department_id', $departmentlist, $department_id, 'tabindex="'.$t.'"');
-	$t++;
-	?>
-</p>
-<?php echo @field($this->validation->department_id_error) ?>
-
-
-<p>
-  <label for="ext">Extension</label>
-  <?php
-	$ext = @field($this->validation->ext, $user->ext);
-	echo form_input(array(
-		'name' => 'ext',
-		'id' => 'ext',
-		'size' => '10',
-		'maxlength' => '10',
-		'tabindex' => $t,
-		'value' => $ext,
-	));
-	$t++;
-	?>
-</p>
-<?php echo @field($this->validation->ext_error) ?>
-
+	<p>
+		<label for="ext">Phone extension</label>
+		<?php
+		$field = 'ext';
+		$value = set_value($field, isset($user) ? $user->ext : '');
+		echo form_input(array(
+			'name' => $field,
+			'id' => $field,
+			'size' => '10',
+			'maxlength' => '10',
+			'tabindex' => tab_index(),
+			'value' => $value,
+		));
+		?>
+	</p>
+	<?php echo form_error($field); ?>
 
 </fieldset>
 
 
 <?php
-$submit['submit'] = array('Save', $t);
-$submit['cancel'] = array('Cancel', $t+1, 'users');
-$this->load->view('partials/submit', $submit);
+
+$this->load->view('partials/submit', array(
+	'submit' => array('Save', tab_index()),
+	'cancel' => array('Cancel', tab_index(), 'users'),
+));
+
 echo form_close();
-?>

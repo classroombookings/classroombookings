@@ -1,9 +1,16 @@
-<?php echo $this->session->flashdata('saved') ?>
 <?php
-$icondata[0] = array('users/add', 'Add User', 'add.gif' );
-$icondata[1] = array('users/import', 'Import Users', 'user_import.gif' );
-$this->load->view('partials/iconbar', $icondata);
+
+echo $this->session->flashdata('saved');
+
+$iconbar = iconbar(array(
+	array('users/add', 'Add User', 'add.gif'),
+	array('users/import', 'Import Users', 'user_import.gif'),
+));
+
+echo $iconbar;
+
 ?>
+
 <table width="100%" cellpadding="2" cellspacing="2" border="0" class="sort-table" id="jsst-users">
 	<col /><col /><col /><col />
 	<thead>
@@ -19,15 +26,15 @@ $this->load->view('partials/iconbar', $icondata);
 	<tbody>
 	<?php
 	$i=0;
-	if( $users ){
-	foreach( $users as $user ){ ?>
+	if ($users) {
+	foreach ($users as $user) { ?>
 	<tr class="tr<?php echo ($i & 1) ?>">
 		<?php
 		$img_type = ($this->userauth->CheckAuthLevel(ADMINISTRATOR, $user->authlevel)) ? 'user_administrator.gif' : 'user_teacher.gif';
 		$img_enabled = ($user->enabled == 1) ? 'enabled.gif' : 'no.gif';
 		?>
-		<td width="50" align="center"><img src="webroot/images/ui/<?php echo $img_type ?>" width="16" height="16"  alt="<?php echo $img_type ?>" /></td>
-		<td width="70" align="center"><img src="webroot/images/ui/<?php echo $img_enabled ?>" width="16" height="16"  alt="<?php echo $img_enabled ?>" /></td>
+		<td width="50" align="center"><img src="<?= base_url("assets/images/ui/{$img_type}") ?>" width="16" height="16"  alt="<?php echo $img_type ?>" /></td>
+		<td width="70" align="center"><img src="<?= base_url("assets/images/ui/{$img_enabled}") ?>" width="16" height="16"  alt="<?php echo $img_enabled ?>" /></td>
 		<td><?php echo $user->username ?></td>
 		<td><?php
 		if( $user->displayname == '' ){ $user->displayname = $user->username; }
@@ -36,7 +43,7 @@ $this->load->view('partials/iconbar', $icondata);
 		<td><?php
 		if($user->lastlogin == '0000-00-00 00:00:00'){
 			$lastlogin = 'Never';
-		} else { 
+		} else {
 			$lastlogin = date("d/m/Y, H:i", strtotime($user->lastlogin));
 		}
 		echo $lastlogin;
@@ -52,12 +59,13 @@ $this->load->view('partials/iconbar', $icondata);
 	</tbody>
 </table>
 
-<?php echo $pagelinks ?>
-
-<?php $this->load->view( 'partials/iconbar', $icondata ); ?>
 <?php
+
+echo $pagelinks;
+
+echo $iconbar;
+
 $jsst['name'] = 'st1';
 $jsst['id'] = 'jsst-users';
-$jsst['cols'] = array("Icon", "Name", "Location", "Teacher", "Notes", "Photo", "None");
+$jsst['cols'] = array("Type", "Enabled", "Username", "Display Name", "Last Login", "Actions");
 $this->load->view('partials/js-sorttable', $jsst);
-?>
