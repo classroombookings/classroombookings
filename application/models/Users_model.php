@@ -51,6 +51,13 @@ class Users_model extends CI_Model
 	function Delete($id)
 	{
 		$this->db->where('user_id', $id);
+		$this->db->delete('bookings');
+
+		$set = array('user_id' => 0);
+		$where = array('user_id' => $id);
+		$this->db->update('rooms', $set, $where);
+
+		$this->db->where('user_id', $id);
 		return $this->db->delete('users');
 	}
 

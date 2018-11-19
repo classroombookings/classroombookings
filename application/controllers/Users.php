@@ -195,40 +195,33 @@ class Users extends MY_Controller
 	/**
 	 * Controller function to delete a user
 	 */
-	function delete(){
-	  // Get ID from URL
-		$user_id = $this->uri->segment(3);
-
-		// Check if a form has been submitted; if not - show it to ask user confirmation
-		if( $this->input->post('id') ){
-			// Form has been submitted (so the POST value exists)
-			// Call model function to delete user
-			$ret = $this->crud->Delete('users', 'user_id', $this->input->post('id'));
-			if(!$ret){
-				$flashmsg = $this->load->view('msgbox/info', 'The user has been deleted.', True);
-			} else {
-				$flashmsg = $this->load->view('msgbox/error', 'A database error occured deleting the user.', True);
-			}
-			// Redirect
+	function delete($id = NULL)
+	{
+		if ($this->input->post('id')) {
+			$ret = $this->users_model->Delete($this->input->post('id'));
+			$flashmsg = msgbox('info', $this->lang->line('crbs_action_deleted'));
 			$this->session->set_flashdata('saved', $flashmsg);
-			redirect('users', 'redirect');
-		} else {
-			// Initialise page
-			$body['action'] = 'users/delete';
-			$body['id'] = $user_id;
-			$body['cancel'] = 'users';
-			$body['text'] = 'If you delete this user, all of their bookings and room owenership information will also be deleted.';
-			// Load page
-			$row = $this->crud->Get('users', 'user_id', $user_id);
-			if($row){
-				$layout['title'] = 'Delete User ('.$row->username.')';
-				$layout['showtitle'] = $layout['title'];
-				$layout['body'] = $this->load->view('partials/deleteconfirm', $body, True);
-				$this->load->view('layout', $layout);
-			} else {
-				$this->load->view('layout', array('title' => 'Sorry!', 'body' => 'Not your user to delete!') );
-			}
+			return redirect('users');
 		}
+
+		if ($id == $_SESSION['user_id']) {
+			$flashmsg = msgbox('error', "You cannot delete your own user account.");
+			$this->session->set_flashdata('saved', $flashmsg);
+			return redirect('users');
+		}
+
+		$this->data['action'] = 'users/delete';
+		$this->data['id'] = $id;
+		$this->data['cancel'] = 'users';
+		$this->data['text'] = 'If you delete this user, all of their past and future bookings will also be deleted, and their rooms will no longer be owned by them.';
+
+		$row = $this->users_model->Get($id);
+
+		$this->data['title'] = 'Delete User ('.html_escape($row->username).')';
+		$this->data['showtitle'] = $this->data['title'];
+		$this->data['body'] = $this->load->view('partials/deleteconfirm', $this->data, TRUE);
+
+		return $this->render();
 	}
 
 
