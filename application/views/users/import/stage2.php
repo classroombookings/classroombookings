@@ -1,28 +1,63 @@
 <?php
-if(is_array($result)){
 
-	// Users imported
-	echo '<table cellpadding="2" cellspacing="2" width="100%">';
-	echo '<tr class="heading"><td class="h">Username</td><td class="h">Password</td><td class="h">Status</td></tr>';
-	foreach($result as $user){
-		echo '<tr>';
-		echo '<td>' . $user['username'] . '</td>';
-		echo '<td>' . $user['password'] . '</td>';
-		$col = (stristr($user['_status'],'Success')) ? 'darkgreen' : 'darkred';
-		echo '<td style="font-weight:bold;color:'.$col.'">' . $user['_status'] . '</td>';
-		echo '</tr>';
+function import_status($key) {
+
+	$labels = array(
+		'username_empty' => 'Username empty',
+		'password_empty' => 'No password',
+		'username_exists' => 'User exists',
+		'success' => 'Success',
+		'db_error' => 'Error',
+	);
+
+	if (array_key_exists($key, $labels)) {
+		return $labels[$key];
 	}
-	echo '</table>';
-	
-} else {
 
-	// File upload failed
-	echo $result;
-	
+	return 'Unknown';
 }
 
-
-$icondata[0] = array('users', 'User list', 'school_manage_users.png' );
-$icondata[1] = array('users/import', 'Import more users', 'user_import.png' );
-$this->load->view('partials/iconbar', $icondata);
 ?>
+
+<?php if (is_array($result)): ?>
+
+<table cellpadding="2" cellspacing="2" width="100%">
+
+	<thead>
+		<tr class="heading">
+			<td class="h">Row</td>
+			<td class="h">Username</td>
+			<td class="h">Created</td>
+			<td class="h">Status</td>
+		</tr>
+	</thead>
+
+	<tbody>
+
+		<?php
+		foreach ($result as $row) {
+
+			$colour = ($row->status == 'success') ? 'darkgreen' : 'darkred';
+
+			echo '<tr>';
+			echo "<td>#{$row->line}</td>";
+			echo '<td>' . $row->user->username . '</td>';
+			echo '<td>' . ($row->status == 'success' ? 'Yes' : 'No') . '</td>';
+			echo "<td style='font-weight:bold;color:{$colour}'>" . import_status($row->status) . "</td>";
+			echo '</tr>';
+		}
+		?>
+	</tbody>
+
+</table>
+
+<?php endif; ?>
+
+<?php
+
+$iconbar = iconbar(array(
+	array('users', 'All Users', 'school_manage_users.gif'),
+	array('users/import', 'Import More Users', 'user_import.gif'),
+));
+
+echo $iconbar;

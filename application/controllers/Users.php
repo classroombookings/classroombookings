@@ -17,13 +17,24 @@ class Users extends MY_Controller
 		$this->load->model('crud_model');
 		$this->load->model('users_model');
 		$this->load->model('departments_model');
+		$this->load->helper('number');
+
+		$this->data['max_size_bytes'] = max_upload_file_size();
+		$this->data['max_size_human'] = byte_format(max_upload_file_size());
 	}
 
 
 
 
+	/**
+	 * User account listing
+	 *
+	 */
 	function index($page = NULL)
 	{
+		// Cleanup import-related files if necessary
+		$this->cleanup_import();
+
 		$pagination_config = array(
 			'base_url' => site_url('users/index'),
 			'total_rows' => $this->crud_model->Count('users'),
@@ -48,6 +59,10 @@ class Users extends MY_Controller
 
 
 
+	/**
+	 * Add a new user
+	 *
+	 */
 	function add()
 	{
 		$this->data['departments'] = $this->departments_model->Get();
@@ -74,7 +89,10 @@ class Users extends MY_Controller
 
 
 
-
+	/**
+	 * Edit user account
+	 *
+	 */
 	function edit($id = NULL)
 	{
 		$this->data['user'] = $this->users_model->Get($id);
@@ -193,7 +211,8 @@ class Users extends MY_Controller
 
 
 	/**
-	 * Controller function to delete a user
+	 * Delete a user
+	 *
 	 */
 	function delete($id = NULL)
 	{
@@ -227,126 +246,238 @@ class Users extends MY_Controller
 
 
 
+	/**
+	 * First page of import.
+	 * If GET, show the form. If POST, handle CSV upload + import.
+	 *
+	 */
+	public function import()
+	{
+		if ($this->input->post('action') == 'import') {
+			$this->process_import();
+		}
 
-	function import(){
-		$layout['title'] = 'Import Users';
-		$layout['showtitle'] = $layout['title'];
-		$layout['body'] = $this->load->view('users/import/stage1', NULL, True);
-		$this->load->view('layout', $layout);
+		$this->cleanup_import();
+
+		$this->data['title'] = 'Import Users';
+		$this->data['showtitle'] = $this->data['title'];
+		// $this->data['body'] = $this->load->view('users/import/stage1', NULL, TRUE);
+
+		$columns = array(
+			'c1' => array(
+				'content' => $this->load->view('users/import/stage1', $this->data, TRUE),
+				'width' => '50%',
+			),
+			'c2' => array(
+				'content' => $this->load->view('users/import/stage1_side', $this->data, TRUE),
+				'width' => '50%',
+			),
+		);
+
+		$this->data['body'] = $this->load->view('columns', $columns, TRUE);
+
+		return $this->render();
 	}
 
 
-	function import2(){
-		// Load upload library
-		$this->load->library('upload');
 
-		// Load file helper library
+
+	/**
+	 * Show the results of the import.
+	 *
+	 * The results are stored in a temporary file, the filename
+	 * of which is stored in the session.
+	 *
+	 */
+	public function import_results()
+	{
+		if ( ! array_key_exists('import_results', $_SESSION)) {
+			$flashmsg = msgbox('error', "No import data found.");
+			$this->session->set_flashdata('saved', $flashmsg);
+			return redirect('users/import');
+		}
+
+		$filename = $_SESSION['import_results'];
+		if ( ! is_file(FCPATH . "local/{$filename}")) {
+			$flashmsg = msgbox('error', "Import results file not found.");
+			$this->session->set_flashdata('saved', $flashmsg);
+			return redirect('users/import');
+		}
+
+		$raw = @file_get_contents(FCPATH . "local/{$filename}");
+		$result = json_decode($raw);
+
+		$this->data['result'] = $result;
+
+		$this->data['title'] = 'Imported Users';
+		$this->data['showtitle'] = $this->data['title'];
+		$this->data['body'] = $this->load->view('users/import/stage2', $this->data, TRUE);
+
+		return $this->render();
+	}
+
+
+
+
+	/**
+	 * When the CSV form is submitted, this is called to handle the file
+	 * and process the lines.
+	 *
+	 */
+	private function process_import()
+	{
+		$has_csv = (isset($_FILES['userfile'])
+		              && isset($_FILES['userfile']['name'])
+		              && ! empty($_FILES['userfile']['name']));
+
+		if ( ! $has_csv) {
+			$notice = msgbox('exclamation', "No CSV file uploaded");
+			$this->data['notice'] = $notice;
+			return FALSE;
+		}
+
 		$this->load->helper('file');
+		$this->load->helper('string');
 
-		// Upload config
-		$upload['upload_path'] 			= 'temp';
-		$upload['allowed_types']		= 'csv';
-		$upload['max_size']					= '1024';
-		$upload['encrypt_name']			= true;
-		$this->upload->initialize($upload);
+		$upload_config = array(
+			'upload_path' => FCPATH . 'local',
+			'allowed_types' => 'csv',
+			'max_size' => $this->data['max_size_bytes'],
+			'encrypt_name' => TRUE,
+		);
 
-		// Get default values
-		$password = $this->input->post('password');
-		$authlevel = $this->input->post('authlevel');
+		$this->load->library('upload', $upload_config);
 
-		// Do upload of CSV
-		if(!$this->upload->do_upload()){
+		// Default values supplied in form
+		$defaults = array(
+			'password' => $this->input->post('password'),
+			'authlevel' => $this->input->post('authlevel'),
+			'enabled' => $this->input->post('enabled'),
+		);
 
-			// Upload failed
-			$error = $this->upload->display_errors('<div class="msgbox error">','</div>');
+		if ( ! $this->upload->do_upload()) {
+			$error = $this->upload->display_errors('','');
+			$this->data['notice'] = msgbox('error', $error);
+			return FALSE;
+		}
 
-		} else {
+		$data = $this->upload->data();
 
-			// Upload OK
-			$csv = $this->upload->data();
-			$file = $csv['full_path'];
-			$users = array();
-			$user = 0;
-			$handle = fopen($csv['full_path'], 'r');
+		$file_path = $data['full_path'];
+		$results = array();
+		$handle = fopen($file_path, 'r');
+		$line = 0;
 
-			// Parse CSV file
-			while(($csvdata = fgetcsv($handle, filesize($csv['full_path']), ',')) !== FALSE){
-				// Get columns
-				$users[$user]['username'] = $csvdata[0];
-				$users[$user]['firstname'] = $csvdata[1];
-				$users[$user]['lastname'] = $csvdata[2];
-				$users[$user]['email'] = $csvdata[3];
-				$users[$user]['password'] = (isset($csvdata[4])) ? $csvdata[4] : $password;
+		// Parse CSV file
+		while (($row = fgetcsv($handle, filesize($file_path), ',')) !== FALSE) {
 
-				// Data array to send to database
-				$data['username'] 				= $users[$user]['username'];
-				$data['authlevel'] 				= $authlevel;
-				$data['enabled'] 					= 1;
-				$data['email']						= $users[$user]['email'];
-				$data['firstname']				= $users[$user]['firstname'];
-				$data['lastname']					= $users[$user]['lastname'];
-				$data['displayname']			= $data['firstname'] . ' ' . $data['lastname'];
-				$data['department_id']		= NULL;
-				$data['ext']							= NULL;
-				$data['password']					= sha1($users[$user]['password']);
-
-				// Run checks before finally submitting to database.
-				if(!$data['username']){
-					$users[$user]['_status'] = 'Failed (No username)';
-				} else {
-					if(!$users[$user]['password']){
-						$users[$user]['_status'] = 'Failed (No password)';
-					} else {
-						// Check if user already exists
-						if($this->_userexists($data['username']) == TRUE){
-							$users[$user]['_status'] = 'Failed (User already exists)';
-						} else {
-							// Add the user to database
-							if($this->crud->Add('users', 'user_id', $data) == TRUE){
-								$users[$user]['_status'] = 'Success';
-							} else {
-								$users[$user]['_status'] = 'Failed (Database error)';
-							}
-						}
-					}
-				}
-
-				unset($data);
-				$user++;
-
+			if ($row[0] == 'username') {
+				$line++;
+				continue;
 			}
 
-			// All done, delete file
-			@unlink($csv['full_path']);
+			$user = array(
+				'username' => trim($row[0]),
+				'firstname' => trim($row[1]),
+				'lastname' => trim($row[2]),
+				'email' => trim($row[3]),
+				'password' => trim($row[4]),
+				'authlevel' => $defaults['authlevel'],
+				'enabled' => $defaults['enabled'],
+				'department_id' => NULL,
+				'ext' => NULL,
+				'displayname' => trim("{$row[1]} {$row[2]}"),
+			);
+
+			if (empty($user['password'])) {
+				$user['password'] = $defaults['password'];
+			}
+
+			$status = $this->add_user($user);
+
+			$results[] = array(
+				'line' => $line,
+				'status' => $status,
+				'user' => $user,
+			);
+
+			$line++;
 
 		}
 
+		// Finish with CSV
+		fclose($handle);
+		@unlink($file_path);
 
-		// Check what we need to do - if $error then the file upload failed.
-		if(isset($error)){
-			// The file upload failed
-			$body['result'] = $error;
-			$layout['showtitle'] = 'CSV Upload Failed';
-		} else {
-			// Put user data into array
-			$body['result'] = $users;
-			$layout['showtitle'] = 'User Import Results';
-		}
+		// Write results to temp file
+		$data = json_encode($results);
+		$res_filename = ".".random_string('alnum', 25);
+		write_file(FCPATH . "local/{$res_filename}", $data);
 
+		// Reference the file in the session for the next page to retrieve.
+		$_SESSION['import_results'] = $res_filename;
 
-		// Load view
-		$layout['title'] = 'Imported Users';
-		$layout['body'] = $this->load->view('users/import/stage2', $body, True);
-		$this->load->view('layout', $layout);
-
+		return redirect('users/import_results');
 	}
 
 
 
-	function _userexists($username){
+
+	/**
+	 * Add a user row from the imported CSV file
+	 *
+	 * @return  string		Description of the status of adding the given user
+	 *
+	 */
+	private function add_user($data = array())
+	{
+		if (empty($data['username'])) {
+			return 'username_empty';
+		}
+
+		if (empty($data['password'])) {
+			return 'password_empty';
+		}
+
+		if ($this->_userexists($data['username'])) {
+			return 'username_exists';
+		}
+
+		$data['password'] = sha1($data['password']);
+
+		$res = $this->users_model->Add($data);
+
+		if ($res) {
+			return 'success';
+		} else {
+			return 'db_error';
+		}
+	}
+
+
+
+
+	/**
+	 * If there is a results file in the session, remove it, and unset the key.
+	 *
+	 */
+	private function cleanup_import()
+	{
+		if (array_key_exists('import_results', $_SESSION)) {
+			$file = $_SESSION['import_results'];
+			@unlink(FCPATH . "local/{$file}");
+			unset($_SESSION['import_results']);
+		}
+	}
+
+
+
+
+	private function _userexists($username)
+	{
 		$sql = "SELECT user_id FROM users WHERE username='$username' LIMIT 1";
 		$query = $this->db->query($sql);
-		if($query->num_rows() == 1){
+		if ($query->num_rows() == 1) {
 			return true;
 		} else {
 			return false;
@@ -356,85 +487,4 @@ class Users extends MY_Controller
 
 
 
-
-	/*function import(){
-		// Load upload library
-		$this->load->library('upload');
-
-		// Load file helper library
-		$this->load->helper('file');
-
-		// Upload config
-		$upload['upload_path'] 			= 'temp';
-		$upload['allowed_types']		= 'csv';
-		$upload['max_size']					= '1024';
-		$upload['encrypt_name']			= true;
-		$this->upload->initialize($upload);
-
-		#echo var_export($_POST, true);
-		#$stage = $this->uri->segment(3,1);
-
-		// Set the number of stages in this wizard
-		$stage_config['first'] = 1;
-		$stage_config['last'] = 3;
-
-		// Get stage number from post var. If first time, load first stage
-		$stage = ($this->input->post('stage')) ? $this->input->post('stage') : 1;
-
-		$continue = true;
-
-		switch($this->input->post('stage')){
-			case 1:
-
-				// Uploading CSV file
-				#echo "Processing CSV file";
-				if(!$this->upload->do_upload()){
-					$error = $this->upload->display_errors('<div class="msgbox error">','</div>');
-					echo $error;
-					$continue = false;
-				} else {
-					$csv = $this->upload->data();
-					#print_r($csv);
-					$rows = array();
-					$row = 1;
-					$handle = fopen($csv['full_path'], 'r');
-					while(($data = fgetcsv($handle, filesize($csv['full_path']), ',')) !== FALSE){
-						$rows[$row] = $data;
-						$row++;
-					}
-					$body['csvdata'] = $rows;
-					$_POST['csvdata'] = serialize($rows);
-					$continue = true;
-				}
-
-			break;
-		}
-
-		// Adjust the stage number according to which button was clicked
-		if($continue == true){
-			if($this->input->post('submit') == '   < Back   '){ $stage--; unset($_POST); }
-			if($this->input->post('submit') == '   Next >   '){ $stage++; }
-		}
-
-		// Layout
-		$layout['title'] = 'Import Users - Stage '.$stage;
-		$layout['showtitle'] = $layout['title'];
-
-		// Put the stage number into the post array (which is then passed to the form creation helper to make hidden inputs)
-		$_POST['stage'] = $stage;
-
-		// Load view!
-		$body['stage'] = $stage;
-		$body['post'] = $_POST;
-		$body['stage_config'] = $stage_config;
-		$body['departments'] = $this->crud->Get('departments');
-		$layout['body'] = $this->load->view('users/import/stage'.$stage, $body, True);
-		$this->load->view('layout', $layout);
-	} */
-
-
-
-
-
 }
-?>
