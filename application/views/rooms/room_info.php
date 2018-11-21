@@ -1,10 +1,12 @@
 <table width="100%">
 	<tr>
 		<?php
-		if($room->photo != NULL){
-			$photo_320 = 'webroot/images/roomphotos/320/'.$room->photo;
-			if(file_exists($photo_320)){
-				echo '<td width="328" valign="top"><img src="'.$photo_320.'" width="320" align="center" /></td>';
+		if ( ! empty($room->photo)) {
+			$path = "uploads/{$room->photo}";
+			if (is_file(FCPATH . $path)) {
+				$url = base_url($path);
+				$img = img($path, FALSE, "width='200' style='width:320px;height:auto;max-width:320px;padding:1px;border:1px solid #ccc'");
+				echo $img;
 			}
 		}
 		?>

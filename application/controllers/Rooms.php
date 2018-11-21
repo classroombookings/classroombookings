@@ -25,27 +25,26 @@ class Rooms extends MY_Controller
 
 
 
-	function info()
+	function info($room_id = NULL)
 	{
-		#$this->output->enable_profiler(true);
-		//$this->output->cache(60*24*7);
-		$school_id = $this->uri->segment(3);
-		$room_id = $this->uri->segment(4);
+		if (empty($room_id))
+		{
+			show_error('No room to show');
+		}
 
-		$room['users'] = $this->M_users->Get(NULL, $this->school_id, array('user_id', 'username', 'displayname'), 'lastname asc, username asc' );
+		$this->data['room'] = $this->rooms_model->Get($room_id);
 
-		$room['fields'] = $this->M_rooms->GetFields(NULL, $school_id);
-		$room['fieldvalues'] = $this->M_rooms->GetFieldValues($room_id);
-		$room['room'] = $this->M_rooms->Get($room_id, $school_id);
+		if (empty($this->data['room'])) {
+			show_error("The requested room could not be found.", 404, "Room Not Found");
+		}
 
-		#$room = $this->M_rooms->GetInfo($room_id, $school_id);
-		#$room['fields'] = $this->M_rooms->GetFields(NULL, $this->school_id);
-		#$room['fieldvalues'] = $this->M_rooms->GetFieldValues($room_id);
+		$this->data['fields'] = $this->rooms_model->GetFields();
+		$this->data['fieldvalues'] = $this->rooms_model->GetFieldValues($room_id);
 
-		$layout['body'] = $this->load->view('rooms/room_info', $room, True);
-		$layout['title'] = $room['room']->name;
-		#print_r($room);
-		$this->load->view('minilayout', $layout);
+		$this->data['body'] = $this->load->view('rooms/room_info', $this->data, TRUE);
+		$this->data['title'] = $this->data['room']->name;
+
+		return $this->render('minilayout');
 	}
 
 
