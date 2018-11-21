@@ -1,4 +1,5 @@
 <?php
+
 class Bookings_model extends CI_Model
 {
 
@@ -7,40 +8,48 @@ class Bookings_model extends CI_Model
 	var $table_rows = array();
 
 
-	public function __construct(){
+	public function __construct()
+	{
 		parent::__construct();
 	}
 
 
 
 
+	function GetByDate($date = NULL)
+	{
+		if ($date == NULL) {
+			$date = date("Y-m-d");
+		}
 
-	function GetByDate($school_id = NULL, $date = NULL){
-		if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
-		if($date == NULL){ $date = date("Y-m-d"); }
 		$day_num = date('w', strtotime($date));
-		$query_str = "SELECT * FROM bookings WHERE school_id='$school_id' AND (date='$date' OR day_num=$day_num)";
-	#echo $query_str;
+		$query_str = "SELECT * FROM bookings WHERE (`date`='$date' OR day_num=$day_num)";
 		$query = $this->db->query($query_str);
 		$result = $query->result_array();
-	#print_r($result);
 		return $result;
 	}
 
 
 
 
-
-
-	function TableAddColumn($td){
+	function TableAddColumn($td)
+	{
 		$this->table_headings .= $td;
 	}
 
-	function TableAddRow($data){
+
+
+
+	function TableAddRow($data)
+	{
 		$this->table_rows[] = $data;
 	}
 
-	function Table(){
+
+
+
+	function Table()
+	{
 		$table = '<tr>' . $this->table_headings . '</tr>';
 		/* foreach($this->table_rows as $row){
 			$table .= '<tr>' . $row . '</tr>';
@@ -51,8 +60,8 @@ class Bookings_model extends CI_Model
 
 
 
-
-	function BookingCell($data, $key, $rooms, $users, $room_id, $url, $booking_date_ymd = '', $holidays = array()){
+	function BookingCell($data, $key, $rooms, $users, $room_id, $url, $booking_date_ymd = '', $holidays = array())
+	{
 
 		// Check if there is a booking
 		if(isset($data[$key])){
@@ -105,7 +114,7 @@ class Bookings_model extends CI_Model
 				}
 				$cancel_url = site_url('bookings/cancel/'.$booking->booking_id);
 				if(!isset($edit)){ $cell['body'] .= '<br />'; }
-				$cell['body'] .= '<a onclick="if(!confirm(\''.$cancel_msg.'\')){return false;}" href="'.$cancel_url.'" title="Cancel this booking"><img src="webroot/images/ui/delete.gif" width="16" height="16" alt="Cancel" title="Cancel this booking" hspace="8" /></a>';
+				$cell['body'] .= '<a onclick="if(!confirm(\''.$cancel_msg.'\')){return false;}" href="'.$cancel_url.'" title="Cancel this booking"><img src="' . base_url('assets/images/ui/delete.gif') . '" width="16" height="16" alt="Cancel" title="Cancel this booking" hspace="8" /></a>';
 			}
 
 		}
@@ -120,7 +129,7 @@ class Bookings_model extends CI_Model
 			// No bookings
 			$book_url = site_url('bookings/book/'.$url);
 			$cell['class'] = 'free';
-			$cell['body'] = '<a href="'.$book_url.'"><img src="webroot/images/ui/accept.gif" width="16" height="16" alt="Book" title="Book" hspace="4" align="absmiddle" />Book</a>';
+			$cell['body'] = '<a href="'.$book_url.'"><img src="' . base_url('assets/images/ui/accept.gif') . '" width="16" height="16" alt="Book" title="Book" hspace="4" align="absmiddle" />Book</a>';
 			if($this->userauth->CheckAuthLevel(ADMINISTRATOR, $this->authlevel)){
 				$cell['body'] .= '<input type="checkbox" name="recurring[]" value="'.$url.'" />';
 			}
@@ -135,11 +144,23 @@ class Bookings_model extends CI_Model
 
 
 
-	function html($school_id = NULL, $display = NULL, $cols = NULL, $date = NULL, $room_id = NULL, $school, $uri = NULL){
-		if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
+	function html($params = array())
+	{
+		$defaults = array(
+			'school_id' => NULL,
+			'display' => NULL,
+			'cols' => NULL,
+			'date' => NULL,
+			'room_id' => NULL,
+			'school' => array(),
+			'uri' => NULL,
+		);
+
+		$data = array_merge($defaults, $params);
+		extract($data);
 
 		// Format the date to Ymd
-		if($date == NULL){
+		if ($date == NULL) {
 			$date = Now();
 			$date_ymd = date("Y-m-d", $date);
 		} else {
@@ -150,34 +171,30 @@ class Bookings_model extends CI_Model
 		$day_num = date('w', $date);
 		$day_num = ($day_num == 0 ? 7 : $day_num);
 
-
 		// Get info on the current week
 		$this_week = $this->WeekObj($date, $school_id);
-
 
 		// Init HTML + Jscript variable
 		$html = '';
 		$jscript = '';
 
-
 		// Put users into array with their ID as the key
-		foreach($school['users'] as $user){
+		foreach ($school['users'] as $user) {
 			$users[$user->user_id] = $user;
 		}
 
-
 		// Get rooms
-		$rooms = $this->Rooms($school_id);
-		if($rooms == False){
-			$html .= $this->load->view('msgbox/error', 'There are no rooms available. Please contact your administrator.', True);
+		$rooms = $this->Rooms();
+		if ($rooms == FALSE) {
+			$html .= msgbox('error', 'There are no rooms available. Please contact your administrator.');
 			return $html;
 		}
 
 
 		// Find out which columns to display and which view type we use
-		$style = $this->BookingStyle($school_id);
+		$style = $this->BookingStyle();
 		if(!$style OR ($style['cols'] == NULL OR $style['display'] == NULL) ){
-			$html = $this->load->view('msgbox/error', 'No booking style has been configured. Please contact your administrator.', True);
+			$html = msgbox('error', 'No booking style has been configured. Please contact your administrator.');
 			return $html;
 		}
 		$cols = $style['cols'];
@@ -201,7 +218,7 @@ class Bookings_model extends CI_Model
 			$html .= $this->load->view('bookings/select_date', array('chosen_date' => $date), True);
 			break;
 			default:
-			$html .= $this->load->view('msgbox/error', 'Application error: No display type set.', True);
+			$html .= msgbox('error', 'Application error: No display type set.');
 			return $html;
 			break;
 		}
@@ -263,7 +280,7 @@ class Bookings_model extends CI_Model
 		$week_bar['week_name'] = $this_week->name;
 		$html .= $this->load->view('bookings/week_bar', $week_bar, True);
 	} else {
-		$html .= $this->load->view('msgbox/error', 'A configuration error prevented the timetable from loading: <strong>no week configured</strong>.<br /><br />Please contact your administrator.', True);
+		$html .= msgbox('error', 'A configuration error prevented the timetable from loading: <strong>no week configured</strong>.<br /><br />Please contact your administrator.');
 			#return $html;
 		$err = true;
 	}
@@ -327,7 +344,7 @@ class Bookings_model extends CI_Model
 			date("d/m/Y", strtotime($holiday->date_start)),
 			date("d/m/Y", strtotime($holiday->date_end))
 		);
-		$html .= $this->load->view('msgbox/warning', $msg, True);
+		$html .= msgbox('exclamation', $msg);
 
 			// Let them choose the date afterwards/before
 			// If navigating a day at a time, then just go one day.
@@ -360,7 +377,7 @@ class Bookings_model extends CI_Model
 
 
 		// Get periods
-	$query_str = "SELECT * FROM periods WHERE school_id='$school_id' AND bookable=1 ORDER BY time_start asc";
+	$query_str = "SELECT * FROM periods WHERE bookable=1 ORDER BY time_start asc";
 	$query = $this->db->query($query_str);
 	if($query->num_rows() > 0){
 		$result = $query->result();
@@ -378,7 +395,7 @@ class Bookings_model extends CI_Model
 			#$days_available[$day_num] = $school['days_list'][$day_num];
 		}
 	} else {
-		$html .= $this->load->view('msgbox/error', 'There are no periods available. Please see your administrator.', True);
+		$html .= msgbox('error', 'There are no periods available. Please see your administrator.');
 		#return $html;
 		$err = true;
 	}
@@ -387,7 +404,7 @@ class Bookings_model extends CI_Model
 	// If this array isn't set, we don't have any periods configured for *this day*
 		// If there were no periods at all, user would have been told before reaching this stage.
 	if(!isset($periods)){
-		$html .= $this->load->view('msgbox/warning', 'There are no periods configured for this week day. Please choose another date.', True);
+		$html .= msgbox('exclamation', 'There are no periods configured for this week day. Please choose another date.');
 		return $html;
 	}
 
@@ -758,129 +775,140 @@ class Bookings_model extends CI_Model
 
 				}
 
-				break;
+			break;
 
-			}
-
-
-			$html .= $this->Table();
-
-
-		// Finish table
-			$html .= '</table>';
-
-
-		// Visual key
-			$html .= $this->load->view('bookings/key', NULL, True);
-
-
-		// Do javascript for hover DIVs for room information
-			if($jscript != ''){ $html .= '<script type="text/javascript">'.$jscript.'</script>'; }
-
-
-		// Show link to making a booking for admins
-			if($this->userauth->CheckAuthLevel(ADMINISTRATOR, $this->authlevel)){
-				$html .= $this->load->view('bookings/make_recurring', array('users' => $school['users']), True);
-			}
-
-
-		// Finaly return the HTML variable so the controller can then pass it to the view.
-			return $html;
 		}
 
 
+		$html .= $this->Table();
 
 
+		// Finish table
+		$html .= '</table>';
 
-		function Cancel($school_id = NULL, $booking_id){
-			if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
-			$query_str = "DELETE FROM bookings "
-			."WHERE school_id=$school_id AND booking_id=$booking_id LIMIT 1";
-		/* $query_str = "UPDATE bookings SET cancelled=1 "
-		."WHERE school_id=$school_id AND booking_id=$booking_id LIMIT 1"; */
-		$query = $this->db->query($query_str);
-		return $query;
+
+		// Visual key
+		$html .= $this->load->view('bookings/key', NULL, True);
+
+
+		// Do javascript for hover DIVs for room information
+		if($jscript != ''){ $html .= '<script type="text/javascript">'.$jscript.'</script>'; }
+
+
+		// Show link to making a booking for admins
+		if($this->userauth->CheckAuthLevel(ADMINISTRATOR, $this->authlevel)){
+			$html .= $this->load->view('bookings/make_recurring', array('users' => $school['users']), True);
+		}
+
+
+		// Finaly return the HTML variable so the controller can then pass it to the view.
+		return $html;
 	}
 
 
 
 
 
-	function BookingStyle($school_id){
-		$query_str = "SELECT d_columns,displaytype FROM school WHERE school_id='$school_id' LIMIT 1";
+	public function Cancel($booking_id)
+	{
+		$sql = "DELETE FROM bookings
+				WHERE booking_id=$booking_id
+				LIMIT 1";
+
+		$query = $this->db->query($sql);
+		return ($query && $this->db->affected_rows() == 1);
+	}
+
+
+
+
+	function BookingStyle()
+	{
+		$query_str = "SELECT d_columns,displaytype FROM school LIMIT 1";
 		$query = $this->db->query($query_str);
-		if($query->num_rows() == 1){
+		if ($query->num_rows() == 1) {
 			$row = $query->row();
 			$style['cols'] = $row->d_columns;
 			$style['display'] = $row->displaytype;
 			return $style;
 		} else {
-			$style = false;
+			$style = FALSE;
 		}
 	}
 
 
 
 
+	/**
+	 * Get rooms and their users
+	 *
+	 */
+	function Rooms()
+	{
+		$sql = "SELECT rooms.*, users.user_id, users.username, users.displayname
+				FROM rooms
+				LEFT JOIN users ON users.user_id=rooms.user_id
+				WHERE rooms.bookable=1
+				ORDER BY name asc";
 
-	function Rooms($school_id){
-		$query_str = "SELECT rooms.*, users.user_id, users.username, users.displayname "
-		."FROM rooms "
-		."LEFT JOIN users ON users.user_id=rooms.user_id "
-		."WHERE rooms.school_id='$school_id' AND rooms.bookable=1 "
-		."ORDER BY name asc";
-		$query = $this->db->query($query_str);
-		if($query->num_rows() > 0){
+		$query = $this->db->query($sql);
+
+		if ($query->num_rows() > 0) {
 			$result = $query->result();
-		// Put all room data into an array where the key is the room_id
-			foreach($result as $room){
+			// Put all room data into an array where the key is the room_id
+			foreach ($result as $room) {
 				$rooms[$room->room_id] = $room;
 			}
 			return $rooms;
-		} else {
-		#$html .= $this->load->view('msgbox/error', 'There are no rooms available. Please see your administrator.', True);
-		#return $html;
-			return false;
 		}
-	}
 
+		return FALSE;
+	}
 
 
 
 
 	/**
 	 * Returns an object containing the week information for a given date
+	 *
 	 */
-	function WeekObj($date, $school_id = NULL){
-		if($school_id == NULL){ $school_id = $this->session->userdata('school_id'); }
-	// First find the monday date of the week that $date is in
-		if(date("w", $date) == 1){
+	public function WeekObj($date, $school_id = NULL)
+	{
+		// First find the monday date of the week that $date is in
+		if (date("w", $date) == 1) {
 			$nextdate = date("Y-m-d", $date);
 		} else {
 			$nextdate = date("Y-m-d", strtotime("last Monday", $date));
 		}
+
 		// Get week info that this date falls into
-		$query_str = "SELECT * FROM weeks,weekdates "
-		."WHERE weeks.week_id=weekdates.week_id "
-		."AND weekdates.date='$nextdate' "
-		."AND weeks.school_id='$school_id' "
-		."LIMIT 1";
-		$query = $this->db->query($query_str);
-		if($query->num_rows() == 1){
+		$sql = "SELECT * FROM weeks, weekdates
+				WHERE weeks.week_id = weekdates.week_id
+				AND weekdates.date = '$nextdate'
+				LIMIT 1";
+
+		$query = $this->db->query($sql);
+
+		if ($query->num_rows() == 1) {
 			$row = $query->row();
 		} else {
 			$row = false;
 		}
+
 		return $row;
 	}
 
 
 
 
-
-	function Add($data){
+	/**
+	 * Add a booking
+	 *
+	 */
+	function Add($data = array())
+	{
 		// Run query to insert blank row
-		$this->db->insert('bookings', array('booking_id' => NULL) );
+		$this->db->insert('bookings', array('booking_id' => NULL));
 		// Get id of inserted record
 		$booking_id = $this->db->insert_id();
 		// Now call the edit function to update the actual data for this new row now we have the ID
@@ -890,13 +918,12 @@ class Bookings_model extends CI_Model
 
 
 
-
-	function Edit($booking_id, $data){
+	function Edit($booking_id, $data)
+	{
 		$this->db->where('booking_id', $booking_id);
-		$this->db->set('school_id', $data['school_id']);
 		$result = $this->db->update('bookings', $data);
 		// Return bool on success
-		if( $result ){
+		if ($result) {
 			return $booking_id;
 		} else {
 			return false;
@@ -906,48 +933,51 @@ class Bookings_model extends CI_Model
 
 
 
-
-	function ByRoomOwner($user_id){
+	function ByRoomOwner($user_id = 0)
+	{
 		$maxdate = date("Y-m-d", strtotime("+14 days", Now()));
 		$today = date("Y-m-d");
-		$query_str = "SELECT rooms.*, bookings.*, users.username, users.displayname, users.user_id, periods.name as periodname "
-		."FROM bookings "
-		."JOIN rooms ON rooms.room_id=bookings.room_id "
-		."JOIN users ON users.user_id=bookings.user_id "
-		."JOIN periods ON periods.period_id=bookings.period_id "
-		."WHERE rooms.user_id='$user_id' AND bookings.cancelled=0 "
-		."AND bookings.date Is Not NULL "
-		."AND bookings.date <= '$maxdate' "
-		."AND bookings.date >= '$today' "
-		."ORDER BY bookings.date, rooms.name ";
-		$query = $this->db->query($query_str);
-		if($query->num_rows() > 0){
+		$sql = "SELECT rooms.*, bookings.*, users.username, users.displayname, users.user_id, periods.name as periodname
+				FROM bookings
+				JOIN rooms ON rooms.room_id=bookings.room_id
+				JOIN users ON users.user_id=bookings.user_id
+				JOIN periods ON periods.period_id=bookings.period_id
+				WHERE rooms.user_id='$user_id' AND bookings.cancelled=0
+				AND bookings.date IS NOT NULL
+				AND bookings.date <= '$maxdate'
+				AND bookings.date >= '$today'
+				ORDER BY bookings.date, rooms.name ";
+
+		$query = $this->db->query($sql);
+
+		if ($query->num_rows() > 0) {
 			// We have some bookings
 			return $query->result();
-		} else {
-			return false;
 		}
+
+		return FALSE;
 	}
 
 
 
 
-
-	function ByUser($user_id){
+	function ByUser($user_id)
+	{
 		$maxdate = date("Y-m-d", strtotime("+14 days", Now()));
 		$today = date("Y-m-d");
 		// All current bookings for this user between today and 2 weeks' time
-		$query_str = "SELECT rooms.*, bookings.*, periods.name as periodname, periods.time_start, periods.time_end "
-		."FROM bookings "
-		."JOIN rooms ON rooms.room_id=bookings.room_id "
-		."JOIN periods ON periods.period_id=bookings.period_id "
-		."WHERE bookings.user_id='$user_id' AND bookings.cancelled=0 "
-		."AND bookings.date Is Not NULL "
-		."AND bookings.date <= '$maxdate' "
-		."AND bookings.date >= '$today' "
-		."ORDER BY bookings.date asc, periods.time_start asc";
-		$query = $this->db->query($query_str);
-		if($query->num_rows() > 0){
+		$sql = "SELECT rooms.*, bookings.*, periods.name as periodname, periods.time_start, periods.time_end
+				FROM bookings
+				JOIN rooms ON rooms.room_id=bookings.room_id
+				JOIN periods ON periods.period_id=bookings.period_id
+				WHERE bookings.user_id='$user_id' AND bookings.cancelled=0
+				AND bookings.date IS NOT NULL
+				AND bookings.date <= '$maxdate'
+				AND bookings.date >= '$today'
+				ORDER BY bookings.date asc, periods.time_start asc";
+
+		$query = $this->db->query($sql);
+		if ($query->num_rows() > 0) {
 			return $query->result();
 		} else {
 			return false;
@@ -957,31 +987,30 @@ class Bookings_model extends CI_Model
 
 
 
-
-	function TotalNum($user_id){
-
+	function TotalNum($user_id = 0)
+	{
 		$today = date("Y-m-d");
 
 		// All bookings by user, EVER!
-		$query_str = "SELECT * FROM bookings WHERE user_id='$user_id'";
-		$query = $this->db->query($query_str);
+		$sql = "SELECT * FROM bookings WHERE user_id='$user_id'";
+		$query = $this->db->query($sql);
 		$total['all'] = $query->num_rows();
 
 		// All bookings by user, for this academic year, up to and including today
-		$query_str = "SELECT * FROM bookings "
-		."JOIN academicyears ON bookings.date >= academicyears.date_start "
-		."WHERE user_id='$user_id' ";
-		$query = $this->db->query($query_str);
+		$sql = "SELECT * FROM bookings
+				JOIN academicyears ON bookings.date >= academicyears.date_start
+				WHERE user_id='$user_id' ";
+		$query = $this->db->query($sql);
 		$total['yeartodate'] = $query->num_rows();
 
 		// All bookings up to and including today
-		$query_str = "SELECT * FROM bookings WHERE user_id='$user_id' AND date <= '$today'";
-		$query = $this->db->query($query_str);
+		$sql = "SELECT * FROM bookings WHERE user_id='$user_id' AND date <= '$today'";
+		$query = $this->db->query($sql);
 		$total['todate'] = $query->num_rows();
 
 		// All "active" bookings (today onwards)
-		$query_str = "SELECT * FROM bookings WHERE user_id='$user_id' AND date >= '$today'";
-		$query = $this->db->query($query_str);
+		$sql = "SELECT * FROM bookings WHERE user_id='$user_id' AND date >= '$today'";
+		$query = $this->db->query($sql);
 		$total['active'] = $query->num_rows();
 
 		return $total;
@@ -990,6 +1019,4 @@ class Bookings_model extends CI_Model
 
 
 
-
 }
-?>

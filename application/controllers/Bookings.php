@@ -1,70 +1,45 @@
 <?php
-class Bookings extends CI_Controller {
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+require_once(APPPATH . 'third_party/bitmask.php');
+
+class Bookings extends MY_Controller
+{
 
 
-
-
-
-	public function __construct(){
+	public function __construct()
+	{
 		parent::__construct();
 
-	// Load language
-		$this->lang->load('crbs', 'english');
+		$this->require_logged_in();
 
-		// Set school ID
-		$this->school_id = $this->session->userdata('school_id');
+		$this->load->model(array(
+			'crud_model',
+			'rooms_model',
+			'periods_model',
+			'weeks_model',
+			'users_model',
+			'holidays_model',
+			'bookings_model',
+		));
 
-		$this->output->enable_profiler(false);
-
-	// Check user is logged in
-		if(!$this->userauth->loggedin()){
-			$this->session->set_flashdata('login', $this->load->view('msgbox/error', $this->lang->line('crbs_auth_mustbeloggedin'), True) );
-			redirect('site/home', 'location');
-		} else {
-			$this->loggedin = True;
-			$this->authlevel = $this->userauth->GetAuthLevel($this->session->userdata('user_id'));
-		}
-
-		#$this->load->library('parser');
-
-		$this->load->script('bitmask');
-		$this->load->model('crud_model', 'crud');
-
-		$this->load->model('rooms_model', 'M_rooms');
-		$this->load->model('periods_model', 'M_periods');
-		$this->load->model('weeks_model', 'M_weeks');
-
-		$this->load->model('users_model', 'M_users');
-
-		#$this->load->model('holidays_model', 'M_holidays');
-		$this->load->model('bookings_model', 'M_bookings');
-		#$this->load->library('table');
-
-		// Array containing all the data we need (everything but the kitchen sink)
-	#$school['rooms']					= $this->M_rooms->Get(NULL, $this->school_id);
-	#$school['periods']				= $this->M_periods->Get();
-	#$school['weeks']					= $this->M_weeks->Get();
-		#$school['holidays']				= $this->M_holidays->Get();
-	#$school['mondays']				= $this->M_weeks->GetMondays(NULL, $school['holidays']);
-	#$school['weekdateids']		= $this->M_weeks->WeekDateIDs();
-
-		$school['users']					= $this->M_users->Get();
-		$school['days_list'] 			= $this->M_periods->days;
-		$school['days_bitmask']		= $this->M_periods->days_bitmask;
-		$this->school = $school;
+		$this->school = array(
+			'users' => $this->users_model->Get(),
+			'days_list' => $this->periods_model->days,
+			'days_bitmask' => $this->periods_model->days_bitmask,
+		);
 	}
 
 
 
 
-
-	function index(){
-
+	function index()
+	{
 		$uri = $this->uri->uri_to_assoc(3);
 
 		$this->session->set_userdata('uri', $this->uri->uri_string());
 
-		if( ! isset($uri['date']) ){
+		if ( ! isset($uri['date']) ) {
 			$uri['date'] = date("Y-m-d");
 			/*if( $this->session->userdata('chosen_date') ){
 				#echo "session: {$this->session->userdata('chosen_date')}<br />";
@@ -76,32 +51,26 @@ class Bookings extends CI_Controller {
 			#$this->session->set_userdata('chosen_date', $this->school['chosen_date']);
 		}
 
+		$room_of_user = $this->rooms_model->GetByUser($this->session->userdata('user_id'));
 
-		$room_of_user = $this->M_rooms->GetByUser($this->school_id, $this->session->userdata('user_id'));
-
-		if(isset($uri['room'])){
+		if (isset($uri['room'])) {
 			$uri['room'] = $uri['room'];
 		} else {
-			if($room_of_user != False){
+			if ($room_of_user != False){
 				$uri['room'] = $room_of_user->room_id;
 			} else {
 				$uri['room'] = false;
 			}
 		}
 
-
 		#$this->school['room'] = $uri['room'];
 
-
-		$body['html'] = $this->M_bookings->html(
-			$this->school_id,
-			NULL,
-			NULL,
-			strtotime($uri['date']),
-			$uri['room'],
-			$this->school,
-			$uri
-		);
+		$body['html'] = $this->bookings_model->html(array(
+			'date' => strtotime($uri['date']),
+			'room_id' => $uri['room'],
+			'school' => $this->school,
+			'uri' => $uri,
+		));
 
 		/*$body['html'] = $this->M_bookings->htmltable(
 			$this->school_id,
@@ -111,77 +80,69 @@ class Bookings extends CI_Controller {
 			$this->school
 		);*/
 
-		$layout['title'] = 'Bookings';
-		$layout['showtitle'] = '';	//$layout['title'];
-		//$layout['body'] = $this->load->view('bookings/bookings_index', $this->school, True);
-		$layout['body'] = $this->session->flashdata('saved');
-		$layout['body'] .= $body['html'];
-		$this->load->view('layout', $layout);
-		#print_r($_SESSION);
+		$this->data['title'] = 'Bookings';
+		$this->data['showtitle'] = '';
+		$this->data['body'] = $this->session->flashdata('saved');
+		$this->data['body'] .= $body['html'];
+
+		return $this->render();
 	}
 
 
 
 
-  /**
-   * This function takes the date that was POSTed and loads the view()
-   */
-  function load(){
+	/**
+	* This function takes the date that was POSTed and loads the view()
+	*/
+	function load()
+	{
+		$style = $this->bookings_model->BookingStyle();
 
-  	$style = $this->M_bookings->BookingStyle($this->school_id);
+		#$chosen_date = $this->input->post('chosen_date');
 
-	#$chosen_date = $this->input->post('chosen_date');
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('chosen_date', 'Date', 'max_length[10]|callback_valid_date');
+		$this->form_validation->set_rules('room_id', 'Room', 'integer');
+		$this->form_validation->set_rules('direction', 'Diretion', '');
 
-		// Validation rules
-  	$vrules['chosen_date']		= 'max_length[10]|callback__is_valid_date';
-  	$vrules['room_id']				= 'numeric';
-  	$this->validation->set_rules($vrules);
-  	$vfields['chosen_date']		= 'Date';
-  	$vfields['room_id']				= 'Room';
-  	$vfields['direction']			= 'Direction';
-  	$this->validation->set_fields($vfields);
+		if ($this->form_validation->run() == FALSE) {
+			print_r($_POST);
+			echo validation_errors();
+			show_error("Sorry, the requested details cannot be loaded.");
+		}
 
-		// Set the error delims to a nice styled red hint under the fields
-  	$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
+		switch ($style['display']) {
 
-  	if ($this->validation->run() == FALSE){
+			case 'day':
 
-  		show_error('validation failed');
-
-  	} else {
-
-  		switch($style['display']){
-  			case 'day':
 				// Display type is one day at a time - all rooms/periods
-  			if($this->input->post('chosen_date')){
-  				$datearr = explode('/', $this->input->post('chosen_date'));
-  				if(count($datearr) == 3){
-  					$chosen_date = sprintf("%s-%s-%s", $datearr[2], $datearr[1], $datearr[0]);
-  					$url = sprintf('bookings/index/date/%s/direction/%s', $chosen_date, $this->input->post('direction'));
-							#$this->session->set_flashdata('uri', $url);
-  					redirect($url, 'redirect');
-  				} else {
-  					show_error('invalid date');
-  				}
-  			} else {
-  				show_error('no date chosen');
-  			}
-  			break;
-  			case 'room':
-  			if($this->input->post('room_id')){
-  				$url = sprintf(
-  					'bookings/index/date/%s/room/%s/direction/%s',
-  					$this->input->post('chosen_date'),
-  					$this->input->post('room_id'),
-  					$this->input->post('direction')
-  				);
-						#$this->session->set_flashdata('uri', $url);
-  				redirect($url, 'redirect');
-  			} else {
-  				show_error('no day selected');
-  			}
-  			break;
-			} // End switch
+				if ($this->input->post('chosen_date')) {
+					$datearr = explode('/', $this->input->post('chosen_date'));
+					if (count($datearr) == 3) {
+						$chosen_date = sprintf("%s-%s-%s", $datearr[2], $datearr[1], $datearr[0]);
+						$url = sprintf('bookings/index/date/%s/direction/%s', $chosen_date, $this->input->post('direction'));
+						return redirect($url);
+					} else {
+						show_error('Invalid date chosen');
+					}
+				} else {
+					show_error('No date chosen');
+				}
+			break;
+
+			case 'room':
+				if ($this->input->post('room_id')) {
+					$url = sprintf(
+						'bookings/index/date/%s/room/%s/direction/%s',
+						$this->input->post('chosen_date'),
+						$this->input->post('room_id'),
+						$this->input->post('direction')
+					);
+					return redirect($url);
+				} else {
+					show_error('No day selected');
+				}
+			break;
 
 		}
 	}
@@ -190,76 +151,76 @@ class Bookings extends CI_Controller {
 
 
 
-	function book(){
+	function book()
+	{
 		$uri = $this->uri->uri_to_assoc(3);
-		#$this->session->set_userdata('uri', $uri);
 
-		$layout['title'] = 'Book a room';
-		$layout['showtitle'] = $layout['title'];
+		$this->data['title'] = 'Book a room';
+		$this->data['showtitle'] = $this->data['title'];
 
 		$seg_count = $this->uri->total_segments();
-		if($seg_count != 2 && $seg_count != 12){
+		if ($seg_count != 2 && $seg_count != 12) {
 
 			// Not all info in URI
-			$layout['body'] = $this->load->view('msgbox/error', 'Not enough information specified to book a room.', True);
+			$this->data['body'] = msgbox('error', 'Not enough information specified to book a room.');
 
 		} else {
 
 			// Either no URI, or all URI info specified
 
+			$this->data['hidden'] = array();
+
 			// 12 segments means we have all info - adding a booking
-			if($seg_count == 12){
+			if ($seg_count == 12) {
 
 				// Create array of data from the URI
-				$booking['booking_id'] = 'X';
-				$booking['period_id'] = $uri['period'];
-				$booking['room_id'] = $uri['room'];
-				$booking['date']	= date("d/m/Y", strtotime($uri['date']));
+				$booking = array(
+					'booking_id' => NULL,
+					'period_id' => $uri['period'],
+					'room_id' => $uri['room'],
+					'date'	=> date("d/m/Y", strtotime($uri['date'])),
+				);
 
-				if($this->userauth->CheckAuthLevel(ADMINISTRATOR, $this->authlevel)){
+				if ($this->userauth->CheckAuthLevel(ADMINISTRATOR)) {
 					$booking['day_num'] = $uri['day'];
 					$booking['week_id']	= $uri['week'];
 				} else {
 					$booking['user_id'] = $this->session->userdata('user_id');
 				}
 
-				$body['booking'] = $booking;
-				$body['hidden'] = $booking;
+				$this->data['booking'] = $booking;
+				$this->data['hidden'] = $booking;
 
-
-			} else {
-				$body['hidden'] = array();
 			}
 
 			// Lookups we need if an admin user
-			if($this->userauth->CheckAuthLevel(ADMINISTRATOR, $this->authlevel)){
-				$body['days'] = $this->M_periods->days;
-				$body['rooms'] = $this->M_rooms->Get(NULL, $this->school_id);
-				$body['periods'] = $this->M_periods->Get();
-				$body['weeks'] = $this->M_weeks->Get();
-				$body['users'] = $this->M_users->Get();
+			if ($this->userauth->CheckAuthLevel(ADMINISTRATOR)) {
+				$this->data['days'] = $this->periods_model->days;
+				$this->data['rooms'] = $this->rooms_model->Get();
+				$this->data['periods'] = $this->periods_model->Get();
+				$this->data['weeks'] = $this->weeks_model->Get();
+				$this->data['users'] = $this->users_model->Get();
 			}
 
-			$layout['body'] = $this->load->view('bookings/bookings_book', $body, True);
+			$this->data['body'] = $this->load->view('bookings/bookings_book', $this->data, TRUE);
 
 			// Check that the date selected is not in the past
 			$today = strtotime(date("Y-m-d"));
 			$thedate = strtotime($uri['date']);
 
-			if($this->userauth->CheckAuthLevel(TEACHER, $this->authlevel)){
-				if($thedate < $today){
-					$layout['body'] = $this->load->view('msgbox/error', 'You cannot make a booking in the past.', True);
+			if ($this->userauth->CheckAuthLevel(TEACHER)) {
+				if ($thedate < $today) {
+					$this->data['body'] = msgbox('error', 'You cannot make a booking in the past.');
 				}
 			}
 
 			// Now see if user is allowed to book in advance
-			if($this->userauth->CheckAuthLevel(TEACHER, $this->authlevel)){
-
-				$bia = (int) $this->_booking_advance($this->school_id);
+			if ($this->userauth->CheckAuthLevel(TEACHER, $this->authlevel)) {
+				$bia = (int) $this->_booking_advance();
 				if ($bia > 0) {
 					$date_forward = strtotime("+$bia days", $today);
 					if($thedate > $date_forward){
-						$layout['body'] = $this->load->view('msgbox/error', 'You can only book '.$bia.' days in advance.', True);
+						$this->data['body'] =  msgbox('error', 'You can only book '.$bia.' days in advance.');
 					}
 
 				}
@@ -267,17 +228,16 @@ class Bookings extends CI_Controller {
 
 		}
 
-
-		$this->load->view('layout', $layout);
-		#print_r( $_SESSION );
+		return $this->render();
 	}
 
 
 
 
 
-	function recurring(){
-		foreach($this->input->post('recurring') as $booking){
+	function recurring()
+	{
+		foreach ($this->input->post('recurring') as $booking) {
 			$arr = explode('/', $booking);
 			$max = count($arr);
 			#print_r($arr);
@@ -476,30 +436,37 @@ class Bookings extends CI_Controller {
 
 
 
-	function callback__is_valid_date($date){
-		$datearr = split('/', $date);
-		if(count($datearr) == 3){
+	public function valid_date($date)
+	{
+		if (strpos($date, '/') !== FALSE) {
+			$datearr = explode('/', $date);
 			$valid = checkdate($datearr[1], $datarr[0], $datearr[2]);
-			if($valid){
-				$ret = true;
-			} else {
-				$ret = false;
-				$this->validation->set_message('_is_valid_date', 'Invalid date');
-			}
+		} elseif (strpos($date, '-') !== FALSE) {
+			$datearr = explode('-', $date);
+			print_r($datearr);
+			$valid = checkdate($datearr[1], $datearr[2], $datearr[0]);
 		} else {
-			$ret = false;
-			$this->validation->set_message('_is_valid_date', 'Invalid date');
+			$this->form_validation->set_message('valid_date', 'Invalid date');
+			return FALSE;
 		}
-		return $ret;
+
+		if ($valid) {
+			return TRUE;
+		}
+
+		$this->form_validation->set_message('valid_date', 'Invalid date');
+		return FALSE;
 	}
 
 
 
+
 	// Get booking in advance days
-	function _booking_advance($school_id){
-		$query_str = "SELECT bia FROM school WHERE school_id='$school_id' LIMIT 1";
+	function _booking_advance()
+	{
+		$query_str = "SELECT bia FROM school LIMIT 1";
 		$query = $this->db->query($query_str);
-		if($query->num_rows() == 1){
+		if ($query->num_rows() == 1) {
 			$row = $query->row();
 			return $row->bia;
 		} else {
@@ -510,8 +477,4 @@ class Bookings extends CI_Controller {
 
 
 
-
-
-
 }
-?>

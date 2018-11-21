@@ -17,7 +17,7 @@ foreach($rooms as $room){
 		<td valign="middle">
 			<label for="room_id">
 				<?php
-				$url = site_url('rooms/info/'.$this->school_id.'/'.$room_id);
+				$url = site_url('rooms/info/'.$room_id);
 				if(isset($roomphoto[$room_id])){
 					$width = 760;
 				} else {
