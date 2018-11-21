@@ -69,18 +69,15 @@ echo form_open('periods/save', array('class' => 'cssform', 'id' => 'schoolday_ad
 	<p>
 		<label for="days" class="required">Days of the week</label>
 		<?php
-		if (isset($_POST['days'])) {
-			foreach ($_POST['days'] as $v) {
-				$days_bitmask->set_bit($v);
+		$default_value = array();
+		if (isset($period)) {
+			foreach ($period->days_array as $num => $isset) {
+				if ($isset) {
+					$default_value[] = $num;
+				}
 			}
-			$value = $days_bitmask->forward_mask;
 		}
-		else
-		{
-			$value = set_value('days', isset($period) ? $period->days : '');
-		}
-
-		$days_bitmask->reverse_mask($value);
+		$value = set_value('days', $default_value);
 
 		foreach ($days_list as $day_num => $day_name) {
 			$id = "day{$day_num}";
@@ -88,7 +85,7 @@ echo form_open('periods/save', array('class' => 'cssform', 'id' => 'schoolday_ad
 				'name' => 'days[]',
 				'id' => $id,
 				'value' => $day_num,
-				'checked' => $days_bitmask->bit_isset($day_num),
+				'checked' => in_array($day_num, $value),
 				'tabindex' => tab_index(),
 			));
 			echo '<label for="' . $id . '" class="ni">' . $day_name . '</label><br/>';

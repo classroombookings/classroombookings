@@ -31,7 +31,6 @@ echo $iconbar;
 		// Get UNIX timestamp of times to do calculations on
 		$time_start = strtotime($period->time_start);
 		$time_end = strtotime($period->time_end);
-		$days_bitmask->reverse_mask($period->days);
 	?>
 	<tr class="tr<?php echo ($i & 1) ?>">
 		<?php
@@ -40,7 +39,7 @@ echo $iconbar;
 		// $dayofweek = numeric day of week (1=monday) to get "current" period for periods on this day of the week
 		$dayofweek = date('N', $now);
 
-		if( ($now >= $time_start) && ($now < $time_end) && ($days_bitmask->bit_isset($dayofweek) ) ){
+		if( ($now >= $time_start) && ($now < $time_end) && ($period->days_array[$dayofweek]) ){
 			$now_img = img('assets/images/ui/school_manage_times.gif', 'width="16" height="16" alt="Now"');
 		} else {
 			$now_img = '';
@@ -52,11 +51,15 @@ echo $iconbar;
 		<td><?php echo strftime('%H:%M', $time_end) ?></td>
 		<td><?php echo timespan($time_start, $time_end) ?></td>
 		<td><?php
-		foreach($days_list as $day_num => $day_name){
-			$days_bitmask->reverse_mask($period->days);
-			$day = $days_bitmask->bit_isset($day_num) ? '%s' : '<span style="color:#ccc">%s</span>';
-			$day_letter = $day_name{0};
-			echo sprintf($day, $day_letter) . ' ';
+		// echo $period->days;
+		// echo json_encode($period->days_array);
+		foreach ($days_list as $day_num => $day_name) {
+			$letter = "{$day_name[0]}{$day_name[1]}";
+			if ($period->days_array[ $day_num ]) {
+				echo "$letter ";
+			} else {
+				echo "<span style='color:#ccc'>{$letter}</span> ";
+			}
 		}
 		?></td>
 		<td width="45" class="n"><?php

@@ -122,16 +122,11 @@ class Periods extends MY_Controller
 			return (empty($period_id) ? $this->add() : $this->edit($period_id));
 		}
 
-		// Compile bitmask of days
-		foreach ($this->input->post('days') as $day) {
-			$this->periods_model->days_bitmask->set_bit($day);
-		}
-
 		$period_data = array(
 			'name' => $this->input->post('name'),
 			'time_start' => $this->_fix_time($this->input->post('time_start')),
 			'time_end' => $this->_fix_time($this->input->post('time_end')),
-			'days' => $this->periods_model->days_bitmask->forward_mask,
+			'days' => $this->input->post('days'),
 			'bookable' => $this->input->post('bookable'),
 		);
 
