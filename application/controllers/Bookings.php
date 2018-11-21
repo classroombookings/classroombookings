@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-require_once(APPPATH . 'third_party/bitmask.php');
+require_once(APPPATH . 'third_party/simple_bitmask.php');
 
 class Bookings extends MY_Controller
 {
@@ -26,7 +26,6 @@ class Bookings extends MY_Controller
 		$this->school = array(
 			'users' => $this->users_model->Get(),
 			'days_list' => $this->periods_model->days,
-			'days_bitmask' => $this->periods_model->days_bitmask,
 		);
 	}
 

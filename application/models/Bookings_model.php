@@ -377,38 +377,18 @@ class Bookings_model extends CI_Model
 
 
 		// Get periods
-	$query_str = "SELECT * FROM periods WHERE bookable=1 ORDER BY time_start asc";
-	$query = $this->db->query($query_str);
-	if($query->num_rows() > 0){
-		$result = $query->result();
-		foreach($result as $period){
-				// Check which days this period is for
-			if($style['display'] == 'day'){
-				$school['days_bitmask']->reverse_mask($period->days);
-				if($school['days_bitmask']->bit_isset($day_num)){
-					$periods[$period->period_id] = $period;
-				}
-			} else {
-				$periods[$period->period_id] = $period;
-			}
-			#$days[$day_num] = $school['days_list'][$day_num];
-			#$days_available[$day_num] = $school['days_list'][$day_num];
-		}
+	if ($style['display'] == 'day') {
+		$periods = $this->periods_model->GetBookable($day_num);
 	} else {
-		$html .= msgbox('error', 'There are no periods available. Please see your administrator.');
-		#return $html;
-		$err = true;
+		$periods = $this->periods_model->GetBookable();
 	}
 
-
-	// If this array isn't set, we don't have any periods configured for *this day*
-		// If there were no periods at all, user would have been told before reaching this stage.
-	if(!isset($periods)){
-		$html .= msgbox('exclamation', 'There are no periods configured for this week day. Please choose another date.');
-		return $html;
+	if (empty($periods)) {
+		$html .= msgbox('error', 'There are no periods configured or available for this day.');
+		$err = TRUE;
 	}
 
-	if( isset($err) && $err == true){
+	if (isset($err) && $err == TRUE) {
 		return $html;
 	}
 
@@ -540,9 +520,9 @@ class Bookings_model extends CI_Model
 									$url = sprintf($url, $period->period_id, $room_id, $day_num, $this_week->week_id, $booking_date_ymd);
 
 								// Check bitmask to see if this period is bookable on this day
-									$school['days_bitmask']->reverse_mask($period->days);
-									if($school['days_bitmask']->bit_isset($day_num)){
-									// Bookable
+									if ($period->days_array[ $day_num ]) {
+
+										// Bookable
 										$html .= $this->BookingCell($bookings, $period->period_id, $rooms, $users, $room_id, $url, $booking_date_ymd, $holiday_dates);
 									} else {
 									// Period not bookable on this day, do not show or allow any bookings
@@ -698,9 +678,8 @@ class Bookings_model extends CI_Model
 									$url = sprintf($url, $period->period_id, $room->room_id, $day_num, $this_week->week_id, $date_ymd);
 
 								// Check bitmask to see if this period is bookable on this day
-									$school['days_bitmask']->reverse_mask($period->days);
-									if($school['days_bitmask']->bit_isset($day_num)){
-									// Bookable
+									if ($period->days_array[ $day_num ]) {
+										// Bookable
 										$html .= $this->BookingCell($bookings, $period->period_id, $rooms, $users, $room->room_id, $url, $date_ymd, $holiday_dates);
 									} else {
 									// Period not bookable on this day, do not show or allow any bookings
