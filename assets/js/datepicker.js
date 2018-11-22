@@ -325,6 +325,10 @@ function updateDateField(dateFieldName, dateString)
   adjustiFrame();
   targetDateField.focus();
 
+	var event = document.createEvent('HTMLEvents');
+	event.initEvent('change', true, false);
+	targetDateField.dispatchEvent(event);
+
   // after the datepicker has closed, optionally run a user-defined function called
   // datePickerClosed, passing the field that was just updated as a parameter
   // (note that this will only run if the user actually selected a date from the datepicker)

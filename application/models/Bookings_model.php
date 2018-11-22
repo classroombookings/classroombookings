@@ -114,7 +114,13 @@ class Bookings_model extends CI_Model
 				}
 				$cancel_url = site_url('bookings/cancel/'.$booking->booking_id);
 				if(!isset($edit)){ $cell['body'] .= '<br />'; }
-				$cell['body'] .= '<a onclick="if(!confirm(\''.$cancel_msg.'\')){return false;}" href="'.$cancel_url.'" title="Cancel this booking"><img src="' . base_url('assets/images/ui/delete.gif') . '" width="16" height="16" alt="Cancel" title="Cancel this booking" hspace="8" /></a>';
+
+				$src = base_url('assets/images/ui/delete.gif');
+
+				$cell['body'] .= '<button class="button-empty" type="submit" name="cancel" value="' . $booking->booking_id . '" onclick="if(!confirm(\''.$cancel_msg.'\')){return false;}">';
+				$cell['body'] .= '<img alt="cancel" src="' . $src . '">';
+				$cell['body'] .= '</button>';
+				// $cell['body'] .= '<a onclick="if(!confirm(\''.$cancel_msg.'\')){return false;}" href="'.$cancel_url.'" title="Cancel this booking"><img src="' . base_url('assets/images/ui/delete.gif') . '" width="16" height="16" alt="Cancel" title="Cancel this booking" hspace="8" /></a>';
 			}
 
 		}
@@ -401,7 +407,7 @@ class Bookings_model extends CI_Model
 
 
 		// Open form
-	$html .= '<form name="bookings" method="POST" action="' . site_url('bookings/recurring') . '">';
+	$html .= '<form name="bookings" method="POST" action="' . site_url('bookings/action') . '">';
 	$html .= form_hidden('room_id', $room_id);
 
 
@@ -435,7 +441,7 @@ class Bookings_model extends CI_Model
 				$roomtitle['photo_sm'] = 'webroot/images/roomphotos/160/'.$room->photo;
 				$roomtitle['event'] = 'onmouseover="doTooltip(event,'.$room->room_id.')" onmouseout="hideTip()"';
 				$roomtitle['width'] = 760;
-				$jscript .= "messages[$room->room_id] = new Array('{$roomtitle['photo_sm']}','{$room->location}');\n";
+				// $jscript .= "messages[$room->room_id] = new Array('{$roomtitle['photo_sm']}','{$room->location}');\n";
 			} else {
 				$roomtitle['width'] = 400;
 				$roomtitle['event'] = '';
@@ -663,7 +669,7 @@ class Bookings_model extends CI_Model
 									$roomtitle['photo_sm'] = 'webroot/images/roomphotos/160/'.$room->photo;
 									$roomtitle['event'] = 'onmouseover="doTooltip(event,'.$room->room_id.')" onmouseout="hideTip()"';
 									$roomtitle['width'] = 760;
-									$jscript .= "messages[".$room->room_id."] = new Array('".$roomtitle['photo_sm']."','".$room->location."');\n";
+									// $jscript .= "messages[".$room->room_id."] = new Array('".$roomtitle['photo_sm']."','".$room->location."');\n";
 								} else {
 									$roomtitle['width'] = 400;
 									$roomtitle['event'] = '';
@@ -761,24 +767,16 @@ class Bookings_model extends CI_Model
 
 		$html .= $this->Table();
 
-
 		// Finish table
 		$html .= '</table>';
 
-
 		// Visual key
 		$html .= $this->load->view('bookings/key', NULL, True);
-
-
-		// Do javascript for hover DIVs for room information
-		if($jscript != ''){ $html .= '<script type="text/javascript">'.$jscript.'</script>'; }
-
 
 		// Show link to making a booking for admins
 		if($this->userauth->CheckAuthLevel(ADMINISTRATOR, $this->authlevel)){
 			$html .= $this->load->view('bookings/make_recurring', array('users' => $school['users']), True);
 		}
-
 
 		// Finaly return the HTML variable so the controller can then pass it to the view.
 		return $html;
@@ -791,10 +789,10 @@ class Bookings_model extends CI_Model
 	public function Cancel($booking_id)
 	{
 		$sql = "DELETE FROM bookings
-				WHERE booking_id=$booking_id
+				WHERE booking_id = ?
 				LIMIT 1";
 
-		$query = $this->db->query($sql);
+		$query = $this->db->query($sql, array($booking_id));
 		return ($query && $this->db->affected_rows() == 1);
 	}
 

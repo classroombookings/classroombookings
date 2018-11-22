@@ -158,6 +158,7 @@ class Bookings extends MY_Controller
 		$this->data['showtitle'] = $this->data['title'];
 
 		$seg_count = $this->uri->total_segments();
+
 		if ($seg_count != 2 && $seg_count != 12) {
 
 			// Not all info in URI
@@ -232,16 +233,32 @@ class Bookings extends MY_Controller
 
 
 
+	/**
+	 * Process a form action from the bookings table
+	 *
+	 */
+	public function action()
+	{
+		if ($this->input->post('cancel')) {
+			return $this->process_cancel();
+		}
+
+		if ($this->input->post('recurring')) {
+			return $this->process_recurring();
+		}
+	}
 
 
-	function recurring()
+
+
+	private function process_recurring()
 	{
 		foreach ($this->input->post('recurring') as $booking) {
 			$arr = explode('/', $booking);
 			$max = count($arr);
 			#print_r($arr);
 			$booking = array();
-			for($i=0;$i<count($arr);$i=$i+2){
+			for ($i=0;$i<count($arr);$i=$i+2){
 				$booking[$arr[$i]] = $arr[$i+1];
 			}
 			$bookings[] = $booking;
@@ -249,51 +266,59 @@ class Bookings extends MY_Controller
 		$errcount = 0;
 		#echo "<hr>";
 		#echo "<pre>".var_export($bookings,true)."</pre>";
-		foreach($bookings as $booking){
-			$data = array();
-			$data['user_id'] = $this->input->post('user_id');
-			$data['school_id'] = $this->school_id;
-			$data['period_id'] = $booking['period'];
-			$data['room_id'] = $booking['room'];
-			$data['notes'] = $this->input->post('notes');
-			$data['week_id'] = $booking['week'];
-			$data['day_num'] = $booking['day'];
-			if(!$this->M_bookings->Add($data)){
+		foreach ($bookings as $booking){
+			$booking_data = array(
+				'user_id' => $this->input->post('user_id'),
+				'period_id' => $booking['period'],
+				'room_id' => $booking['room'],
+				'notes' => $this->input->post('notes'),
+				'week_id' => $booking['week'],
+				'day_num' => $booking['day'],
+			);
+
+			if ( ! $this->bookings_model->Add($booking_data)){
 				$errcount++;
 			}
 		}
-		if($errcount > 0){
-			$flashmsg = $this->load->view('msgbox/error', 'One or more bookings could not be made.', True);
+
+		if ($errcount > 0) {
+			$flashmsg = msgbox('error', 'One or more bookings could not be made.');
 		} else {
-			$flashmsg = $this->load->view('msgbox/info', 'The bookings were created successfully.', True);
+			$flashmsg = msgbox('info', 'The bookings were created successfully.');
 		}
 
-		$this->session->set_userdata('notes', $data['notes']);
+		$this->session->set_userdata('notes', $booking_data['notes']);
 
 		// Go back to index
 		$this->session->set_flashdata('saved', $flashmsg);
 
 		$uri = $this->session->userdata('uri');
-		#if($data['date']){ $url = 'bookings/index/'.$data['date']; } else { $url = 'bookings'; }
-		$uri = ($uri) ? $uri : 'bookings';
+		if (empty($uri)) {
+			$uri = 'bookings';
+		}
 		redirect($uri, 'location');
-		#echo anchor($uri, 'Go');
 	}
 
 
 
 
+	private function process_cancel()
+	{
+		$id = $this->input->post('cancel');
 
-	function cancel(){
-		$uri = $this->session->userdata('uri');
-		$booking_id = $this->uri->segment(3);
-		if($this->M_bookings->Cancel($this->school_id, $booking_id)){
-			$msg = $this->load->view('msgbox/info', 'The booking has been <strong>cancelled</strong>.', True);
+		if ($this->bookings_model->Cancel($id)){
+			$msg = msgbox('info', 'The booking has been <strong>cancelled</strong>.');
 		} else {
-			$msg = $this->load->view('msgbox/error', 'An error occured cancelling the booking.', True);
+			$msg = msgbox('error', 'An error occured cancelling the booking.');
 		}
+
 		$this->session->set_flashdata('saved', $msg);
-		if($uri == NULL){ $uri = 'bookings'; }
+
+		$uri = $this->session->userdata('uri');
+		if (empty($uri)){
+			$uri = 'bookings';
+		}
+
 		redirect($uri, 'redirect');
 	}
 
@@ -332,104 +357,72 @@ class Bookings extends MY_Controller
 
 
 
-	function save(){
-
+	function save()
+	{
 		// Get ID from form
 		$booking_id = $this->input->post('booking_id');
 
-		// Validation rules
-		$vrules['booking_id']		= 'required';
-		$vrules['date']					= 'max_length[10]|callback__is_valid_date';
-		$vrules['use']					= 'max_length[100]';
-		$this->validation->set_rules($vrules);
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('booking_id', 'Booking ID', 'integer');
+		$this->form_validation->set_rules('date', 'Date', 'max_length[10]|callback_valid_date');
+		$this->form_validation->set_rules('use', 'Notes', 'max_length[100]');
+		$this->form_validation->set_rules('period_id', 'Period', 'integer');
+		$this->form_validation->set_rules('user_id', 'User', 'integer');
+		$this->form_validation->set_rules('room_id', 'Room', 'integer');
+		$this->form_validation->set_rules('week_id', 'Week', 'integer');
+		$this->form_validation->set_rules('day_num', 'Day of week', 'integer');
 
-		// Pretty it up a bit for error validation message
-		$vfields['booking_id']		= 'Booking ID';
-		$vfields['date']					= 'Date';
-		$vfields['period_id']			= 'Period';
-		$vfields['user_id']				= 'User';
-		$vfields['room_id']				= 'Room';
-		$vfields['week_id']				= 'Week';
-		$vfields['day_num']				= 'Day of week';
-		$this->validation->set_fields($vfields);
+		if ($this->form_validation->run() == FALSE) {
+			return (empty($booking_id) ? $this->book() : $this->edit($booking_id));
+		}
 
-		// Set the error delims to a nice styled red hint under the fields
-		$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
+		$booking_data = array(
+			'user_id' => $this->input->post('user_id'),
+			'period_id' => $this->input->post('period_id'),
+			'room_id' => $this->input->post('room_id'),
+			'notes' => $this->input->post('notes'),
+		);
 
-		if ($this->validation->run() == FALSE){
+		// Determine if this booking is recurring or static.
+		if ($this->input->post('date')) {
+			$date_arr = explode('/', $this->input->post('date'));
+			$booking_data['date'] = date("Y-m-d", mktime(0, 0, 0, $date_arr[1], $date_arr[0], $date_arr[2]));
+			$booking_data['day_num'] = NULL;
+			$booking_data['week_id'] = NULL;
+		}
 
-	  // Validation failed
-			if($booking_id != "X"){
-				return $this->Edit($booking_id);
+		if ($this->input->post('recurring') && $this->input->post('week_id') && $this->input->post('day_num')) {
+			$booking_data['date'] = NULL;
+			$booking_data['day_num'] = $this->input->post('day_num');
+			$booking_data['week_id'] = $this->input->post('week_id');
+		}
+
+		if (empty($booking_id)) {
+
+			$booking_id = $this->bookings_model->Add($booking_data);
+
+			if ($booking_id) {
+				$flashmsg = msgbox('info', "The booking has been made.");
 			} else {
-				return $this->book();
+				$line = sprintf($this->lang->line('crbs_action_dberror'), 'adding');
+				$flashmsg = msgbox('error', $line);
 			}
 
 		} else {
 
-			// Validation succeeded
-
-			// Data that goes into database regardless of booking type
-			$data['user_id'] = $this->input->post('user_id');
-			$data['school_id'] = $this->school_id;
-			$data['period_id'] = $this->input->post('period_id');
-			$data['room_id'] = $this->input->post('room_id');
-			$data['notes'] = $this->input->post('notes');
-
-			// Hmm.... now to see if it's a static booking or recurring or whatever... :-)
-			if($this->input->post('date')){
-				// Once-only booking
-
-				$date_arr = explode('/', $this->input->post('date'));
-				$data['date'] = date("Y-m-d", mktime(0,0,0,$date_arr[1], $date_arr[0], $date_arr[2] ) );
-				$data['day_num'] = NULL;
-				$data['week_id'] = NULL;
-			}
-
-			// If week_id and day_num are specified, its recurring
-			if($this->input->post('recurring') && ($this->input->post('week_id') && $this->input->post('day_num'))){
-				// Recurring
-				$data['date'] = NULL;
-				$data['day_num'] = $this->input->post('day_num');
-				$data['week_id'] = $this->input->post('week_id');
-			}
-
-
-			#print '<pre>Going to database: '.var_export($data,true).'</pre>';
-
-
-			// Now see if we are editing or adding
-			if($booking_id == 'X'){
-				// No ID, adding new record
-				#echo 'adding';
-				if(!$this->M_bookings->Add($data)){
-					$flashmsg = $this->load->view('msgbox/error', sprintf($this->lang->line('dberror'), 'adding', 'booking'), True);
-				} else {
-					$flashmsg = $this->load->view('msgbox/info', 'The booking has been made.', True);
-				}
+			if ($this->bookings_model->Edit($booking_id, $booking_data)) {
+				$flashmsg = msgbox('info', "The booking has been updated.");
 			} else {
-				// We have an ID, updating existing record
-				#echo 'editing';
-				if(!$this->M_bookings->Edit($booking_id, $data)){
-					$flashmsg = $this->load->view('msgbox/error', sprintf($this->lang->line('dberror'), 'editing', 'booking'), True);
-				} else {
-					$flashmsg = $this->load->view('msgbox/info', 'The booking has been updated.', True);
-				}
-			} // End of booking_id=X
-
-			#echo $flashmsg;
-
-			// Go back to index
-			$this->session->set_flashdata('saved', $flashmsg);
-
-			$uri = $this->session->userdata('uri');
-			#if($data['date']){ $url = 'bookings/index/'.$data['date']; } else { $url = 'bookings'; }
-			$uri = ($uri) ? $uri : 'bookings';
-			redirect($uri, 'location');
-			#echo anchor($uri, 'OK');
+				$line = sprintf($this->lang->line('crbs_action_dberror'), 'editing');
+				$flashmsg = msgbox('error', $line);
+			}
 
 		}
 
+		$this->session->set_flashdata('saved', $flashmsg);
+		$uri = $this->session->userdata('uri');
+		$uri = ($uri) ? $uri : 'bookings';
+		redirect($uri, 'location');
 	}
 
 
@@ -439,10 +432,9 @@ class Bookings extends MY_Controller
 	{
 		if (strpos($date, '/') !== FALSE) {
 			$datearr = explode('/', $date);
-			$valid = checkdate($datearr[1], $datarr[0], $datearr[2]);
+			$valid = checkdate($datearr[1], $datearr[0], $datearr[2]);
 		} elseif (strpos($date, '-') !== FALSE) {
 			$datearr = explode('-', $date);
-			print_r($datearr);
 			$valid = checkdate($datearr[1], $datearr[2], $datearr[0]);
 		} else {
 			$this->form_validation->set_message('valid_date', 'Invalid date');

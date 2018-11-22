@@ -118,7 +118,7 @@ if($this->loggedin){
 	$scripts[] = base_url('assets/js/util.js');
 	$scripts[] = base_url('assets/js/sorttable.js');
 	$scripts[] = base_url('assets/js/datepicker.js');
-	$scripts[] = base_url('assets/js/imagepreview.js');
+	// $scripts[] = base_url('assets/js/imagepreview.js');
 
 	foreach ($scripts as $script)
 	{
