@@ -305,20 +305,32 @@ class Bookings extends MY_Controller
 	private function process_cancel()
 	{
 		$id = $this->input->post('cancel');
-
-		if ($this->bookings_model->Cancel($id)){
-			$msg = msgbox('info', 'The booking has been <strong>cancelled</strong>.');
-		} else {
-			$msg = msgbox('error', 'An error occured cancelling the booking.');
-		}
-
-		$this->session->set_flashdata('saved', $msg);
+		$booking = $this->bookings_model->Get($id);
+		$user_id = $this->session->userdata('user_id');
+		$room = $this->rooms_model->Get($booking->room_id);
 
 		$uri = $this->session->userdata('uri');
 		if (empty($uri)){
 			$uri = 'bookings';
 		}
 
+		$can_delete = ( ($this->userauth->CheckAuthLevel(ADMINISTRATOR))
+						OR ($user_id == $booking->user_id)
+						OR ( ($user_id == $room->user_id) && ($booking->date != NULL) )
+					);
+
+		if ( ! $can_delete) {
+			$this->session->set_flashdata('saved', msgbox('error', "You do not have the correct privileges to cancel this booking."));
+			return redirect($uri, 'redirect');
+		}
+
+		if ($this->bookings_model->Cancel($id)){
+			$msg = msgbox('info', 'The booking has been cancelled.');
+		} else {
+			$msg = msgbox('error', 'An error occured cancelling the booking.');
+		}
+
+		$this->session->set_flashdata('saved', $msg);
 		redirect($uri, 'redirect');
 	}
 
@@ -397,29 +409,13 @@ class Bookings extends MY_Controller
 			$booking_data['week_id'] = $this->input->post('week_id');
 		}
 
-		if (empty($booking_id)) {
-
-			$booking_id = $this->bookings_model->Add($booking_data);
-
-			if ($booking_id) {
-				$flashmsg = msgbox('info', "The booking has been made.");
-			} else {
-				$line = sprintf($this->lang->line('crbs_action_dberror'), 'adding');
-				$flashmsg = msgbox('error', $line);
-			}
-
+		if ($this->_check_unique_booking($booking_data)) {
+			$this->_persist_booking($booking_id, $booking_data);
 		} else {
-
-			if ($this->bookings_model->Edit($booking_id, $booking_data)) {
-				$flashmsg = msgbox('info', "The booking has been updated.");
-			} else {
-				$line = sprintf($this->lang->line('crbs_action_dberror'), 'editing');
-				$flashmsg = msgbox('error', $line);
-			}
-
+			$flashmsg = msgbox('exclamation', "There is already a booking for that date, period and room.");
+			$this->session->set_flashdata('saved', $flashmsg);
 		}
 
-		$this->session->set_flashdata('saved', $flashmsg);
 		$uri = $this->session->userdata('uri');
 		$uri = ($uri) ? $uri : 'bookings';
 		redirect($uri, 'location');
@@ -447,6 +443,48 @@ class Bookings extends MY_Controller
 
 		$this->form_validation->set_message('valid_date', 'Invalid date');
 		return FALSE;
+	}
+
+
+
+	private function _check_unique_booking($data)
+	{
+		$bookings = $this->bookings_model->GetUnique(array(
+			'date' => $data['date'],
+			'period_id' => $data['period_id'],
+			'room_id' => $data['room_id'],
+		));
+
+		return count($bookings) == 0;
+	}
+
+
+
+	private function _persist_booking($booking_id = NULL, $booking_data = array())
+	{
+		if (empty($booking_id)) {
+
+			$booking_id = $this->bookings_model->Add($booking_data);
+
+			if ($booking_id) {
+				$flashmsg = msgbox('info', "The booking has been made.");
+			} else {
+				$line = sprintf($this->lang->line('crbs_action_dberror'), 'adding');
+				$flashmsg = msgbox('error', $line);
+			}
+
+		} else {
+
+			if ($this->bookings_model->Edit($booking_id, $booking_data)) {
+				$flashmsg = msgbox('info', "The booking has been updated.");
+			} else {
+				$line = sprintf($this->lang->line('crbs_action_dberror'), 'editing');
+				$flashmsg = msgbox('error', $line);
+			}
+
+		}
+
+		$this->session->set_flashdata('saved', $flashmsg);
 	}
 
 

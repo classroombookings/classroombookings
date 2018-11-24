@@ -16,6 +16,22 @@ class Bookings_model extends CI_Model
 
 
 
+	function Get($booking_id)
+	{
+		$this->db->from('bookings');
+		$this->db->where('booking_id', $booking_id);
+
+		$query = $this->db->get();
+		if ($query->num_rows() == 1) {
+			return $query->row();
+		} else {
+			return FALSE;
+		}
+	}
+
+
+
+
 	function GetByDate($date = NULL)
 	{
 		if ($date == NULL) {
@@ -27,6 +43,37 @@ class Bookings_model extends CI_Model
 		$query = $this->db->query($query_str);
 		$result = $query->result_array();
 		return $result;
+	}
+
+
+	function GetUnique($params = array())
+	{
+		$defaults = array(
+			'date' => NULL,
+			'period_id' => 0,
+			'room_id' => 0,
+		);
+
+		$data = array_merge($defaults, $params);
+
+		if (empty($data['date'])) {
+			$data['date'] = date("Y-m-d");
+		}
+
+		$day_num = date('w', strtotime($data['date']));
+		$sql = "SELECT *
+				FROM bookings
+				WHERE (`date`=? OR day_num=?)
+				AND period_id=? AND room_id=?";
+
+		$query = $this->db->query($sql, array(
+			$data['date'],
+			$day_num,
+			$data['period_id'],
+			$data['room_id'],
+		));
+
+		return $query->result_array();
 	}
 
 
@@ -104,7 +151,7 @@ class Bookings_model extends CI_Model
 			// Cancel if user is an Admin, Room owner, or Booking owner
 			$user_id = $this->session->userdata('user_id');
 			if(
-				($this->userauth->CheckAuthLevel(ADMINISTRATOR, $this->authlevel)) OR
+				($this->userauth->CheckAuthLevel(ADMINISTRATOR)) OR
 				($user_id == $booking->user_id) OR
 				( ($user_id == $rooms[$room_id]->user_id) && ($booking->date != NULL) )
 			){
