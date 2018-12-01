@@ -3,6 +3,7 @@
     "description": "Classroombookings",
     "type": "project",
     "require": {
+		"php": ">=5.3.7",
         "codeigniter/framework": "^3",
         "pixelrobin/php-feather": "^1.0"
     },
