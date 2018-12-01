@@ -353,7 +353,7 @@ class Bookings extends MY_Controller
 		$booking = $this->bookings_model->Get($booking_id);
 
 		$query = $this->_get_query();
-		$uri = 'bookings/index?' . http_build_query($query);
+		$uri = 'bookings?' . http_build_query($query);
 
 		$can_edit = ( $this->userauth->CheckAuthLevel(ADMINISTRATOR) OR ($user_id == $booking->user_id));
 
@@ -364,6 +364,7 @@ class Bookings extends MY_Controller
 
 		$this->data['title'] = 'Edit booking';
 		$this->data['showtitle'] = $this->data['title'];
+		$this->data['cancel_uri'] = 'bookings?' . http_build_query($query);
 
 		// Lookups we need if an admin user
 		if ($this->userauth->CheckAuthLevel(ADMINISTRATOR)) {

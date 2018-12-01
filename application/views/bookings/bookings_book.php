@@ -191,7 +191,7 @@ if (isset($booking) && ! empty($booking->date)) {
 $save_label = empty($booking_id) ? 'Book' : 'Save';
 $this->load->view('partials/submit', array(
 	'submit' => array($save_label, tab_index()),
-	'cancel' => array('Cancel', tab_index(), 'bookings?' . $query_string),
+	'cancel' => array('Cancel', tab_index(), $cancel_uri),
 ));
 
 echo form_close();
