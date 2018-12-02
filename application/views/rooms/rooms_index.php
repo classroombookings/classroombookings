@@ -30,14 +30,14 @@ $jscript = 'var messages = [];';
 	if( $rooms ){
 	foreach( $rooms as $room ){ ?>
 	<tr class="tr<?php echo ($i & 1) ?>">
-		<td><?php echo $room->name ?></td>
-		<td><?php echo $room->location ?></td>
+		<td><?php echo html_escape($room->name) ?></td>
+		<td><?php echo html_escape($room->location) ?></td>
 		<td>
 			<?php
 			if ($room->displayname == '' ) {
 				$room->displayname = $room->username;
 			}
-			echo $room->displayname
+			echo html_escape($room->displayname);
 			?>
 		</td>
 		<td width="60" align="center">
@@ -47,7 +47,7 @@ $jscript = 'var messages = [];';
 				$jscript .= "messages[{$room->room_id}] = ['{$photo_path}', '{$room->name}'];\n";
 				if (file_exists(FCPATH . $photo_path)) {
 					$url = base_url($photo_path);
-					echo '<a href="'.$url.'" title="View Photo" onmouseover="doTooltip(event,'.$room->room_id.')" onmouseout="hideTip()">';
+					echo '<a href="'.$url.'" title="View Photo">';
 					echo '<img src="' . base_url('assets/images/ui/picture.gif') . '" width="16" height="16" alt="View Photo" />';
 					echo '</a>'."\n";
 				}

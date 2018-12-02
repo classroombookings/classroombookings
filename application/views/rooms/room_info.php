@@ -17,20 +17,20 @@
 
 			<tr>
 			<td width="50%" valign="top"><strong>Location:</strong></td>
-			<td><?php echo $room->location ?></td>
+			<td><?php echo html_escape($room->location) ?></td>
 			</tr>
 
 			<?php if($room->username){ ?>
 			<tr>
 			<td width="50%" valign="top"><strong>Teacher:</strong></td>
-			<td><?php echo $room->username ?></td>
+			<td><?php echo html_escape($room->username) ?></td>
 			</tr>
 			<?php } ?>
 
 			<?php if($room->notes){ ?>
 			<tr>
 			<td width="50%" valign="top"><strong>Notes:</strong></td>
-			<td><?php echo $room->notes ?></td>
+			<td><?php echo html_escape($room->notes) ?></td>
 			</tr>
 			<?php } ?>
 
@@ -42,11 +42,11 @@
 			{
 				foreach($fields as $field){
 					echo '<tr class="tr'.($i & 1).'">';
-					echo '<td valign="top" width="50%"><strong>'.$field->name.':</strong></td>';
+					echo '<td valign="top" width="50%"><strong>'.html_escape($field->name).':</strong></td>';
 					$value = '';
 					switch($field->type){
 						case 'TEXT':
-							$value = $fieldvalues[$field->field_id];
+							$value = html_escape($fieldvalues[$field->field_id]);
 						break;
 						case 'CHECKBOX':
 							$img = ($fieldvalues[$field->field_id] == 1) ? 'enabled.png|Yes' : 'no.png|No';
@@ -56,7 +56,7 @@
 						case 'SELECT':
 							$options = $field->options;
 							foreach($options as $option){
-								$opts[$option->option_id] = $option->value;
+								$opts[$option->option_id] = html_escape($option->value);
 							}
 							#$value = $opts[$fieldvalues[$field->field_id]];
 							#$value = var_export($opts,true) . $fieldvalues[$field->field_id];

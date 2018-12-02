@@ -27,9 +27,9 @@ echo $iconbar;
 		foreach ($weeks as $week) {
 		?>
 		<tr class="tr<?php echo ($i & 1) ?>">
-			<td><?php echo $week->name ?></td>
+			<td><?php echo html_escape($week->name) ?></td>
 			<td>
-			<?php echo sprintf('<span style="padding:2px;background:#%s;color:#%s">%s</span>', $week->bgcol, $week->fgcol, $week->name); ?></td>
+			<?php echo sprintf('<span style="padding:2px;background:#%s;color:#%s">%s</span>', $week->bgcol, $week->fgcol, html_escape($week->name)); ?></td>
 			<td width="45" class="n"><?php
 				$actions['edit'] = 'weeks/edit/'.$week->week_id;
 				$actions['delete'] = 'weeks/delete/'.$week->week_id;

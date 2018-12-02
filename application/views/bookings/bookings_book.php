@@ -35,7 +35,7 @@ if (isset($booking) && ! empty($booking->date)) {
 		<label>Use:</label>
 		<?php
 		$field = 'notes';
-		$value = set_value($field, isset($booking) ? $booking->notes : '');
+		$value = set_value($field, isset($booking) ? $booking->notes : '', FALSE);
 		echo form_input(array(
 			'name' => $field,
 			'id' => $field,
@@ -60,7 +60,7 @@ if (isset($booking) && ! empty($booking->date)) {
 		if ( ! empty($booking->date)) {
 			$default = date('d/m/Y', strtotime($booking->date));
 		}
-		$value = set_value($field, isset($booking) ? $default : '');
+		$value = set_value($field, isset($booking) ? $default : '', FALSE);
 		echo form_input(array(
 			'name' => $field,
 			'id' => $field,
@@ -79,10 +79,10 @@ if (isset($booking) && ! empty($booking->date)) {
 		<?php
 		$room_options = array();
 		foreach ($rooms as $room) {
-			$room_options[ $room->room_id ] = $room->name;
+			$room_options[ $room->room_id ] = html_escape($room->name);
 		}
 		$field = 'room_id';
-		$value = set_value($field, isset($booking) ? $booking->room_id : '');
+		$value = set_value($field, isset($booking) ? $booking->room_id : '', FALSE);
 		echo form_dropdown('room_id', $room_options, $value, 'tabindex="' . tab_index() . '"');
 		?>
 	</p>
@@ -98,10 +98,10 @@ if (isset($booking) && ! empty($booking->date)) {
 				$period->name,
 				date('G:i', strtotime($period->time_start)),
 				date('G:i', strtotime($period->time_end)));
-			$period_options[ $period->period_id ] = $label;
+			$period_options[ $period->period_id ] = html_escape($label);
 		}
 		$field = 'period_id';
-		$value = set_value($field, isset($booking) ? $booking->period_id : '');
+		$value = set_value($field, isset($booking) ? $booking->period_id : '', FALSE);
 		echo form_dropdown('period_id', $period_options, $value, 'tabindex="' . tab_index() . '"');
 		?>
 	</p>
@@ -114,10 +114,10 @@ if (isset($booking) && ! empty($booking->date)) {
 		$user_options = array('' => '(None)');
 		foreach ($users as $user) {
 			$label = ($user->displayname ? $user->displayname : $user->username);
-			$user_options[ $user->user_id ] = $label;
+			$user_options[ $user->user_id ] = html_escape($label);
 		}
 		$field = 'user_id';
-		$value = set_value($field, isset($booking) ? $booking->user_id : $this->session->userdata('user_id'));
+		$value = set_value($field, isset($booking) ? $booking->user_id : $this->session->userdata('user_id'), FALSE);
 		echo form_dropdown('user_id', $user_options, $value, 'id="user_id" tabindex="' . tab_index() . '"');
 		?>
 	</p>
@@ -161,10 +161,10 @@ if (isset($booking) && ! empty($booking->date)) {
 		<?php
 		$week_options = array('' => '(None)');
 		foreach ($weeks as $week) {
-			$week_options[ $week->week_id ] = $week->name;
+			$week_options[ $week->week_id ] = html_escape($week->name);
 		}
 		$field = 'week_id';
-		$value = set_value($field, isset($booking) ? $booking->week_id : '');
+		$value = set_value($field, isset($booking) ? $booking->week_id : '', FALSE);
 		echo form_dropdown('week_id', $week_options, $value, 'id="week_id" tabindex="' . tab_index() . '"');
 		?>
 	</p>
@@ -176,7 +176,7 @@ if (isset($booking) && ! empty($booking->date)) {
 		$day_options = array('' => '(None)');
 		$day_options += $days;
 		$field = 'day_num';
-		$value = set_value($field, isset($booking) ? $booking->day_num : '');
+		$value = set_value($field, isset($booking) ? $booking->day_num : '', FALSE);
 		echo form_dropdown('day_num', $day_options, $value, 'id="day_num" tabindex="' . tab_index() . '"');
 		?>
 	</p>

@@ -26,8 +26,8 @@ echo $iconbar;
 	foreach ($departments as $department) {
 	?>
 	<tr class="tr<?php echo ($i & 1) ?>">
-		<td><?php echo $department->name ?></td>
-		<td><?php echo $department->description ?></td>
+		<td><?php echo html_escape($department->name) ?></td>
+		<td><?php echo html_escape($department->description) ?></td>
 		<td width="45" class="n"><?php
 			$actions['edit'] = 'departments/edit/'.$department->department_id;
 			$actions['delete'] = 'departments/delete/'.$department->department_id;

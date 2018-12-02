@@ -16,7 +16,7 @@ echo form_open('periods/save', array('class' => 'cssform', 'id' => 'schoolday_ad
 		<label for="name" class="required">Name</label>
 		<?php
 		$field = 'name';
-		$value = set_value($field, isset($period) ? $period->name : '');
+		$value = set_value($field, isset($period) ? $period->name : '', FALSE);
 		echo form_input(array(
 			'name' => $field,
 			'id' => $field,
@@ -33,7 +33,7 @@ echo form_open('periods/save', array('class' => 'cssform', 'id' => 'schoolday_ad
 		<label for="time_start" class="required">Start time</label>
 		<?php
 		$field = 'time_start';
-		$value = set_value($field, isset($period) ? $period->time_start : '');
+		$value = set_value($field, isset($period) ? $period->time_start : '', FALSE);
 		$value = strftime('%H:%M', strtotime($value));
 		echo form_input(array(
 			'name' => $field,
@@ -52,7 +52,7 @@ echo form_open('periods/save', array('class' => 'cssform', 'id' => 'schoolday_ad
 		<label for="time_end" class="required">End time</label>
 		<?php
 		$field = 'time_end';
-		$value = set_value($field, isset($period) ? $period->time_end : '');
+		$value = set_value($field, isset($period) ? $period->time_end : '', FALSE);
 		$value = strftime('%H:%M', strtotime($value));
 		echo form_input(array(
 			'name' => $field,

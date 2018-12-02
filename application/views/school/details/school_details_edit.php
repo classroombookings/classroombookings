@@ -11,7 +11,7 @@ echo form_open_multipart('school/details_submit', array('id'=>'schooldetails', '
 	<p>
 		<label for="schoolname" class="required">School name</label>
 		<?php
-		$value = set_value('schoolname', $info->name);
+		$value = set_value('schoolname', $info->name, FALSE);
 		echo form_input(array(
 			'name' => 'schoolname',
 			'id' => 'schoolname',
@@ -27,7 +27,7 @@ echo form_open_multipart('school/details_submit', array('id'=>'schooldetails', '
 	<p>
 		<label for="website">Website address</label>
 		<?php
-		$value = set_value('website', $info->website);
+		$value = set_value('website', $info->website, FALSE);
 		echo form_input(array(
 			'name' => 'website',
 			'id' => 'website',
@@ -106,7 +106,7 @@ echo form_open_multipart('school/details_submit', array('id'=>'schooldetails', '
 	<p>
 		<label for="colour">Header colour</label>
 		<?php
-		$value = set_value('colour', ($info->colour ? $info->colour : '468ED8'));
+		$value = set_value('colour', ($info->colour ? $info->colour : '468ED8'), FALSE);
 		echo colour_widget(array(
 			'name' => 'colour',
 			'tabindex' => tab_index(),
@@ -120,7 +120,7 @@ echo form_open_multipart('school/details_submit', array('id'=>'schooldetails', '
 	<p>
 		<label for="bia">Booking in advance</label>
 		<?php
-		$value = (int) set_value('bia', $info->bia);
+		$value = (int) set_value('bia', $info->bia, FALSE);
 		echo form_input(array(
 			'name' => 'bia',
 			'id' => 'bia',
@@ -139,7 +139,7 @@ echo form_open_multipart('school/details_submit', array('id'=>'schooldetails', '
 	<p>
 		<label for="displaytype">Bookings display type</label>
 		<?php
-		$displaytype = set_value('displaytype', $info->displaytype);
+		$displaytype = set_value('displaytype', $info->displaytype, FALSE);
 		$options = array(
 			'day' => 'One day at a time',
 			'room' => 'One room at a time',
@@ -161,7 +161,7 @@ echo form_open_multipart('school/details_submit', array('id'=>'schooldetails', '
 	<p>
 		<label for="columns">Bookings columns</label>
 		<?php
-		$columns = set_value('d_columns', $info->d_columns);
+		$columns = set_value('d_columns', $info->d_columns, FALSE);
 		?>
 		<select name="d_columns" id="d_columns" tabindex="<?php echo tab_index() ?>">
 			<option value="periods" class="day room" <?= $columns == 'periods' ? 'selected="selected"' : '' ?>>Periods</option>

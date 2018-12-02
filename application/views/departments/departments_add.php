@@ -15,7 +15,7 @@ echo form_open('departments/save', array('class' => 'cssform', 'id' => 'departme
 		<label for="name" class="required">Name</label>
 		<?php
 		$field = 'name';
-		$value = set_value($field, isset($department) ? $department->name : '');
+		$value = set_value($field, isset($department) ? $department->name : '', FALSE);
 		echo form_input(array(
 			'name' => $field,
 			'id' => $field,
@@ -32,7 +32,7 @@ echo form_open('departments/save', array('class' => 'cssform', 'id' => 'departme
 		<label for="description">Description</label>
 		<?php
 		$field = 'description';
-		$value = set_value($field, isset($department) ? $department->description : '');
+		$value = set_value($field, isset($department) ? $department->description : '', FALSE);
 		echo form_textarea(array(
 			'name' => $field,
 			'id' => $field,

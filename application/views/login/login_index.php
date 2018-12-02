@@ -12,7 +12,7 @@ echo form_open('login/submit', array('id'=>'login','class'=>'cssform'), array('p
 	<p>
 	  <label for="username" class="required">Username</label>
 	  <?php
-		$value = set_value('username');
+		$value = set_value('username', '', FALSE);
 		echo form_input(array(
 			'name' => 'username',
 			'id' => 'username',

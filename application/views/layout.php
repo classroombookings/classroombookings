@@ -8,7 +8,7 @@ if($this->loggedin){
 	if($this->userauth->CheckAuthLevel(ADMINISTRATOR)){ $icon = 'user_administrator.gif'; } else { $icon = 'user_teacher.gif'; }
 	$menu[3]['text'] = img('assets/images/ui/logout.gif', FALSE, 'hspace="4" align="top" alt=" "') . 'Logout';
 	$menu[3]['href'] = site_url('logout');
-	$menu[3]['title'] = 'Close your current classroombookings session';
+	$menu[3]['title'] = 'Log out of classroombookings';
 }
 ?>
 
@@ -18,7 +18,7 @@ if($this->loggedin){
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="author" content="Craig A Rodway">
-	<title><?= html_escape($title) ?> | Classroombookings</title>
+	<title><?= html_escape($title) ?> | classroombookings</title>
 	<link rel="stylesheet" type="text/css" media="screen" href="<?= base_url('assets/style.css') ?>">
 	<link rel="stylesheet" type="text/css" media="print" href="<?= base_url('assets/print.css') ?>">
 	<link rel="stylesheet" type="text/css" media="screen" href="<?= base_url('assets/sorttable.css') ?>">
@@ -64,7 +64,7 @@ if($this->loggedin){
 				if($this->session->userdata('schoolname')){
 					echo anchor('/', html_escape($this->session->userdata('schoolname')));
 				} else {
-					$attrs = "title='Classroombookings' style='font-weight:normal;color:#0081C2;letter-spacing:-2px'";
+					$attrs = "title='classroombookings' style='font-weight:normal;color:#0081C2;letter-spacing:-2px'";
 					$output = "classroom";
 					$output .= "<span style='color:#ff6400;font-weight:bold'>bookings</span>";
 					echo anchor('/', $output, $attrs);
@@ -82,7 +82,7 @@ if($this->loggedin){
 		<?php } ?>
 
 		<div class="content_area">
-			<?php if(isset($showtitle)){ echo '<h2>'.$showtitle.'</h2>'; } ?>
+			<?php if(isset($showtitle)){ echo '<h2>'.html_escape($showtitle).'</h2>'; } ?>
 			<?php echo $body ?>
 		</div>
 
@@ -100,7 +100,7 @@ if($this->loggedin){
 				?>
 				<br /><br />
 				<span style="font-size:90%;color:#678; line-height: 2">
-					<a href="https://www.classroombookings.com/" target="_blank">Classroombookings</a> version <?= VERSION ?>.
+					<a href="https://www.classroombookings.com/" target="_blank">classroombookings</a> version <?= VERSION ?>.
 					&copy; <?= date('Y') ?> Craig A Rodway.
 					<br />
 					Load time: <?php echo $this->benchmark->elapsed_time() ?> seconds.

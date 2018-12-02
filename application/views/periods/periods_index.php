@@ -46,7 +46,7 @@ echo $iconbar;
 		}
 		?>
 		<td width="20" align="center"><?php echo $now_img ?></td>
-		<td><?php echo $period->name ?></td>
+		<td><?php echo html_escape($period->name) ?></td>
 		<td><?php echo strftime('%H:%M', $time_start) ?></td>
 		<td><?php echo strftime('%H:%M', $time_end) ?></td>
 		<td><?php echo timespan($time_start, $time_end) ?></td>

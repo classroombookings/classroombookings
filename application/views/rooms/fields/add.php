@@ -23,7 +23,7 @@ echo form_open('rooms/save_field', array('class' => 'cssform', 'id' => 'fields_a
 		<label for="name" class="required">Name</label>
 		<?php
 		$input_name = 'name';
-		$value = set_value($input_name, isset($field) ? $field->name : '');
+		$value = set_value($input_name, isset($field) ? $field->name : '', FALSE);
 		echo form_input(array(
 			'name' => $input_name,
 			'id' => $input_name,
@@ -42,7 +42,7 @@ echo form_open('rooms/save_field', array('class' => 'cssform', 'id' => 'fields_a
 		<label for="type">Type</label>
 		<?php
 		$input_name = 'type';
-		$value = set_value($input_name, isset($field) ? $field->type : '');
+		$value = set_value($input_name, isset($field) ? $field->type : '', FALSE);
 		$dropdown = form_dropdown($input_name, $options_list, $value, 'id="' . $input_name .'" tabindex="' . tab_index() . '" onchange="toggleOptions()"');
 		echo $dropdown;
 	?>
@@ -73,11 +73,11 @@ echo form_open('rooms/save_field', array('class' => 'cssform', 'id' => 'fields_a
 			if (isset($field) && is_array($field->options)) {
 				$option_values = array();
 				foreach ($field->options as $option) {
-					$option_values[] = $option->value;
+					$option_values[] = html_escape($option->value);
 				}
 				$options_str = implode("\n", $option_values);
 			}
-			$value = set_value($input_name, $options_str);
+			$value = set_value($input_name, $options_str, FALSE);
 			echo form_textarea(array(
 				'name' => $input_name,
 				'id' => $input_name,

@@ -1,3 +1,3 @@
 <td align="center" width="<?php echo $width ?>">
-	<strong><?php echo $name ?></strong><br /><br />
+	<strong><?php echo html_escape($name) ?></strong><br /><br />
 </td>

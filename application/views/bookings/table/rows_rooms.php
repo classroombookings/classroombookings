@@ -6,6 +6,7 @@ if (isset($roomphoto)){
 }
 
 $url = site_url('rooms/info/'.$room_id);
+$name = html_escape($name);
 $title = '<a onclick="window.open(\''.$url.'\',\'\',\'width='.$width.',height=360,scrollbars\');return false;" href="'.$url.'" title="View More Information">'.$name.'</a>'."\n";
 ?>
 
@@ -14,6 +15,7 @@ $title = '<a onclick="window.open(\''.$url.'\',\'\',\'width='.$width.',height=36
 	<?php
 	$user = ($displayname == '') ? $username : $displayname;
 	if ( ! empty($user)) {
+		$user = html_escape($user);
 		echo "<br>";
 		echo "<span style='font-size:90%;'>{$user}</span>";
 	}

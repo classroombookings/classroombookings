@@ -28,7 +28,7 @@ echo $iconbar;
 	foreach( $holidays as $holiday ){
 	?>
 	<tr class="tr<?php echo ($i & 1) ?>">
-		<td><?php echo $holiday->name ?></td>
+		<td><?php echo html_escape($holiday->name) ?></td>
 		<td><?php echo date("d/m/Y", strtotime($holiday->date_start)); ?></td>
 		<td><?php echo date("d/m/Y", strtotime($holiday->date_end)) ?></td>
 		<td><?php

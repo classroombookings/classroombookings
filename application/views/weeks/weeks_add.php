@@ -34,7 +34,7 @@ echo form_open('weeks/save', array('class' => 'cssform', 'id' => 'week_add'), ar
 		<label for="bgcol" class="required">Background Colour</label>
 		<?php
 		$field = 'bgcol';
-		$value = set_value($field, isset($week) ? $week->bgcol : 'FFFFFF');
+		$value = set_value($field, isset($week) ? $week->bgcol : 'FFFFFF', FALSE);
 		echo form_input(array(
 			'name' => $field,
 			'id' => $field,
@@ -52,7 +52,7 @@ echo form_open('weeks/save', array('class' => 'cssform', 'id' => 'week_add'), ar
 		<label for="fgcol" class="required">Foreground Colour</label>
 		<?php
 		$field = 'fgcol';
-		$value = set_value($field, isset($week) ? $week->fgcol : 'FFFFFF');
+		$value = set_value($field, isset($week) ? $week->fgcol : 'FFFFFF', FALSE);
 		echo form_input(array(
 			'name' => $field,
 			'id' => $field,

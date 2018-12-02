@@ -27,7 +27,7 @@ echo $iconbar;
 	if ($fields) {
 	foreach ($fields as $field) { ?>
 	<tr class="tr<?php echo ($i & 1) ?>">
-		<td><?php echo $field->name ?></td>
+		<td><?php echo html_escape($field->name) ?></td>
 		<td><?php echo $options_list[$field->type] ?></td>
 		<td><?php
 		if (isset($field->options) && is_array($field->options)) {
@@ -35,7 +35,7 @@ echo $iconbar;
 			foreach ($field->options as $option) {
 				$label = trim($option->value);
 				if (empty($label)) continue;
-				$values[] = $label;
+				$values[] = html_escape($label);
 			}
 			echo implode(", ", $values);
 		}

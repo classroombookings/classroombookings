@@ -16,7 +16,7 @@ echo form_open_multipart('users/save', array('class' => 'cssform', 'id' => 'user
 		<label for="username" class="required">Username</label>
 		<?php
 		$field = 'username';
-		$value = set_value($field, isset($user) ? $user->username : '');
+		$value = set_value($field, isset($user) ? $user->username : '', FALSE);
 		echo form_input(array(
 			'name' => $field,
 			'id' => $field,
@@ -33,7 +33,7 @@ echo form_open_multipart('users/save', array('class' => 'cssform', 'id' => 'user
 		<label for="authlevel" class="required">Type</label>
 		<?php
 		$field = 'authlevel';
-		$value = set_value($field, isset($user) ? $user->authlevel : '2');
+		$value = set_value($field, isset($user) ? $user->authlevel : '2', FALSE);
 		$options = array('1' => 'Administrator', '2' => 'Teacher');
 		echo form_dropdown(
 			$field,
@@ -66,7 +66,7 @@ echo form_open_multipart('users/save', array('class' => 'cssform', 'id' => 'user
 		<label for="email">Email address</label>
 		<?php
 		$field = 'email';
-		$value = set_value($field, isset($user) ? $user->email : '');
+		$value = set_value($field, isset($user) ? $user->email : '', FALSE);
 		echo form_input(array(
 			'name' => $field,
 			'id' => $field,
@@ -131,7 +131,7 @@ echo form_open_multipart('users/save', array('class' => 'cssform', 'id' => 'user
 		<label for="firstname">First name</label>
 		<?php
 		$field = 'firstname';
-		$value = set_value($field, isset($user) ? $user->firstname : '');
+		$value = set_value($field, isset($user) ? $user->firstname : '', FALSE);
 		echo form_input(array(
 			'name' => $field,
 			'id' => $field,
@@ -148,7 +148,7 @@ echo form_open_multipart('users/save', array('class' => 'cssform', 'id' => 'user
 		<label for="lastname">Last name</label>
 		<?php
 		$field = 'lastname';
-		$value = set_value($field, isset($user) ? $user->lastname : '');;
+		$value = set_value($field, isset($user) ? $user->lastname : '', FALSE);
 		echo form_input(array(
 			'name' => $field,
 			'id' => $field,
@@ -165,7 +165,7 @@ echo form_open_multipart('users/save', array('class' => 'cssform', 'id' => 'user
 		<label for="displayname">Display name</label>
 		<?php
 		$field = 'displayname';
-		$value = set_value($field, isset($user) ? $user->displayname : '');
+		$value = set_value($field, isset($user) ? $user->displayname : '', FALSE);
 		echo form_input(array(
 			'name' => $field,
 			'id' => $field,
@@ -184,10 +184,10 @@ echo form_open_multipart('users/save', array('class' => 'cssform', 'id' => 'user
 		$options = array('' => '(None)');
 		if ($departments) {
 			foreach ($departments as $department) {
-				$options[$department->department_id] = $department->name;
+				$options[$department->department_id] = html_escape($department->name);
 			}
 		}
-		$value = set_value($field, isset($user) ? $user->department_id : '');
+		$value = set_value($field, isset($user) ? $user->department_id : '', FALSE);
 		echo form_dropdown(
 			'department_id',
 			$options,
@@ -201,7 +201,7 @@ echo form_open_multipart('users/save', array('class' => 'cssform', 'id' => 'user
 		<label for="ext">Phone extension</label>
 		<?php
 		$field = 'ext';
-		$value = set_value($field, isset($user) ? $user->ext : '');
+		$value = set_value($field, isset($user) ? $user->ext : '', FALSE);
 		echo form_input(array(
 			'name' => $field,
 			'id' => $field,

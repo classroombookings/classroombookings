@@ -35,10 +35,10 @@ echo $iconbar;
 		?>
 		<td width="50" align="center"><img src="<?= base_url("assets/images/ui/{$img_type}") ?>" width="16" height="16"  alt="<?php echo $img_type ?>" /></td>
 		<td width="70" align="center"><img src="<?= base_url("assets/images/ui/{$img_enabled}") ?>" width="16" height="16"  alt="<?php echo $img_enabled ?>" /></td>
-		<td><?php echo $user->username ?></td>
+		<td><?php echo html_escape($user->username) ?></td>
 		<td><?php
 		if( $user->displayname == '' ){ $user->displayname = $user->username; }
-		echo $user->displayname;
+		echo html_escape($user->displayname);
 		?></td>
 		<td><?php
 		if($user->lastlogin == '0000-00-00 00:00:00'){

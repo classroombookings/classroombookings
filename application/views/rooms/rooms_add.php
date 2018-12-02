@@ -16,7 +16,7 @@ echo form_open_multipart('rooms/save', array('class' => 'cssform', 'id' => 'room
 		<label for="name" class="required">Name</label>
 		<?php
 		$field = 'name';
-		$value = set_value($field, isset($room) ? $room->name : '');
+		$value = set_value($field, isset($room) ? $room->name : '', FALSE);
 		echo form_input(array(
 			'name' => $field,
 			'id' => $field,
@@ -33,7 +33,7 @@ echo form_open_multipart('rooms/save', array('class' => 'cssform', 'id' => 'room
 		<label for="location">Location</label>
 		<?php
 		$field = 'location';
-		$value = set_value($field, isset($room) ? $room->location : '');
+		$value = set_value($field, isset($room) ? $room->location : '', FALSE);
 		echo form_input(array(
 			'name' => $field,
 			'id' => $field,
@@ -52,10 +52,10 @@ echo form_open_multipart('rooms/save', array('class' => 'cssform', 'id' => 'room
 		$userlist = array('' => '(None)');
 		foreach ($users as $user) {
 			$label = empty($user->displayname) ? $user->username : $user->displayname;
-			$userlist[ $user->user_id ] = $label;
+			$userlist[ $user->user_id ] = html_escape($label);
 		}
 		$field = 'user_id';
-		$value = set_value($field, isset($room) ? $room->user_id : '');
+		$value = set_value($field, isset($room) ? $room->user_id : '', FALSE);
 		echo form_dropdown($field, $userlist, $value, 'tabindex="'.tab_index().'"');
 		?>
 	</p>
@@ -65,7 +65,7 @@ echo form_open_multipart('rooms/save', array('class' => 'cssform', 'id' => 'room
 		<label for="notes">Notes</label>
 		<?php
 		$field = 'notes';
-		$value = set_value($field, isset($room) ? $room->notes : '');
+		$value = set_value($field, isset($room) ? $room->notes : '', FALSE);
 		echo form_textarea(array(
 			'name' => $field,
 			'id' => $field,
@@ -191,7 +191,7 @@ echo form_open_multipart('rooms/save', array('class' => 'cssform', 'id' => 'room
 			case Rooms_model::FIELD_TEXT:
 
 				$input = "f{$field->field_id}";
-				$value = set_value($input, element($field->field_id, $fieldvalues));
+				$value = set_value($input, element($field->field_id, $fieldvalues), FALSE);
 				echo form_input(array(
 					'name' => $input,
 					'id' => $input,
@@ -207,11 +207,11 @@ echo form_open_multipart('rooms/save', array('class' => 'cssform', 'id' => 'room
 			case Rooms_model::FIELD_SELECT:
 
 				$input = "f{$field->field_id}";
-				$value = set_value($input, element($field->field_id, $fieldvalues));
+				$value = set_value($input, element($field->field_id, $fieldvalues), FALSE);
 				$options = $field->options;
 				$opts = array();
 				foreach ($options as $option) {
-					$opts[$option->option_id] = $option->value;
+					$opts[$option->option_id] = html_escape($option->value);
 				}
 				echo form_dropdown($input, $opts, $value, 'tabindex="'.tab_index().'"');
 

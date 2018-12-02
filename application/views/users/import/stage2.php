@@ -41,7 +41,7 @@ function import_status($key) {
 
 			echo '<tr>';
 			echo "<td>#{$row->line}</td>";
-			echo '<td>' . $row->user->username . '</td>';
+			echo '<td>' . html_escape($row->user->username) . '</td>';
 			echo '<td>' . ($row->status == 'success' ? 'Yes' : 'No') . '</td>';
 			echo "<td style='font-weight:bold;color:{$colour}'>" . import_status($row->status) . "</td>";
 			echo '</tr>';

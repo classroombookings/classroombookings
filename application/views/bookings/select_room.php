@@ -2,7 +2,7 @@
 $roomlist = array();
 $roomphoto = array();
 foreach($rooms as $room){
-	$roomlist[$room->room_id] = $room->name;
+	$roomlist[$room->room_id] = html_escape($room->name);
 	if($room->photo != NULL){
 		$roomphoto[$room->room_id] = TRUE;
 	} else {

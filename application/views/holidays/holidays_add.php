@@ -15,7 +15,7 @@ echo form_open('holidays/save', array('class' => 'cssform', 'id' => 'holiday_add
 		<label for="name" class="required">Name</label>
 		<?php
 		$field = 'name';
-		$value = set_value($field, isset($holiday) ? $holiday->name : '');
+		$value = set_value($field, isset($holiday) ? $holiday->name : '', FALSE);
 		echo form_input(array(
 			'name' => $field,
 			'id' => $field,
@@ -36,7 +36,7 @@ echo form_open('holidays/save', array('class' => 'cssform', 'id' => 'holiday_add
 		            ? date('d/m/Y', strtotime($holiday->date_start))
 		            : date('d/m/Y')
 		        );
-		$value = set_value($field, $default);
+		$value = set_value($field, $default, FALSE);
 		echo form_input(array(
 			'name' => $field,
 			'id' => $field,
@@ -59,7 +59,7 @@ echo form_open('holidays/save', array('class' => 'cssform', 'id' => 'holiday_add
 		            ? date('d/m/Y', strtotime($holiday->date_end))
 		            : date('d/m/Y')
 		        );
-		$value = set_value($field, $default);
+		$value = set_value($field, $default, FALSE);
 		echo form_input(array(
 			'name' => $field,
 			'id' => $field,

@@ -19,7 +19,7 @@ echo form_open('weeks/saveacademicyear', array('class' => 'cssform', 'id' => 'sa
 		<label for="date_start" class="required">Start date:</label>
 		<?php
 		$field = 'date_start';
-		$value = set_value('date_start', date('d/m/Y', strtotime($academicyear->date_start)));
+		$value = set_value('date_start', date('d/m/Y', strtotime($academicyear->date_start)), FALSE);
 		echo form_input(array(
 			'name' => 'date_start',
 			'id' => 'date_start',
@@ -37,7 +37,7 @@ echo form_open('weeks/saveacademicyear', array('class' => 'cssform', 'id' => 'sa
 		<label for="date_end" class="required">End date:</label>
 		<?php
 		$field = 'date_end';
-		$value = set_value($field, date('d/m/Y', strtotime($academicyear->date_end)));
+		$value = set_value($field, date('d/m/Y', strtotime($academicyear->date_end)), FALSE);
 		echo form_input(array(
 			'name' => 'date_end',
 			'id' => 'date_end',

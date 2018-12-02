@@ -28,7 +28,7 @@
 <body style="background-image:url('<?= base_url('assets/images/bg/global.png') ?>')">
 
 	<div id="content">
-		<h3 style="margin:0;"><?php echo $title ?></h3>
+		<h3 style="margin:0;"><?php echo html_escape($title) ?></h3>
 		<br />
 		<?php echo $body ?>
 	</div>

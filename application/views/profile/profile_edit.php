@@ -12,7 +12,7 @@ echo form_open('profile/save', array('class' => 'cssform', 'id' => 'profile_edit
 	<p>
 	  <label for="email" class="required">Email address</label>
 	  <?php
-		$email = set_value('email', $user->email);
+		$email = set_value('email', $user->email, FALSE);
 		echo form_input(array(
 			'name' => 'email',
 			'id' => 'email',
@@ -67,7 +67,7 @@ echo form_open('profile/save', array('class' => 'cssform', 'id' => 'profile_edit
 	<p>
 	  <label for="firstname">First name</label>
 	  <?php
-		$firstname = set_value('firstname', $user->firstname);
+		$firstname = set_value('firstname', $user->firstname, FALSE);
 		echo form_input(array(
 			'name' => 'firstname',
 			'id' => 'firstname',
@@ -84,7 +84,7 @@ echo form_open('profile/save', array('class' => 'cssform', 'id' => 'profile_edit
 	<p>
 	  <label for="lastname">Last name</label>
 	  <?php
-		$lastname = set_value('lastname', $user->lastname);
+		$lastname = set_value('lastname', $user->lastname, FALSE);
 		echo form_input(array(
 			'name' => 'lastname',
 			'id' => 'lastname',
@@ -101,7 +101,7 @@ echo form_open('profile/save', array('class' => 'cssform', 'id' => 'profile_edit
 	<p>
 	  <label for="displayname">Display name</label>
 	  <?php
-		$displayname = set_value('displayname', $user->displayname);
+		$displayname = set_value('displayname', $user->displayname, FALSE);
 		echo form_input(array(
 			'name' => 'displayname',
 			'id' => 'displayname',
@@ -118,7 +118,7 @@ echo form_open('profile/save', array('class' => 'cssform', 'id' => 'profile_edit
 	<p>
 	  <label for="ext">Extension</label>
 	  <?php
-		$ext = set_value('ext', $user->ext);
+		$ext = set_value('ext', $user->ext, FALSE);
 		echo form_input(array(
 			'name' => 'ext',
 			'id' => 'ext',
