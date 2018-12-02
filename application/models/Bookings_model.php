@@ -915,6 +915,8 @@ class Bookings_model extends CI_Model
 			$html .= $this->load->view('bookings/make_recurring', array('users' => $school['users']), TRUE);
 		}
 
+		$html .= form_close();
+
 		// Finaly return the HTML variable so the controller can then pass it to the view.
 		return $html;
 	}

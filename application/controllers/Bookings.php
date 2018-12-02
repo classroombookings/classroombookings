@@ -215,6 +215,8 @@ class Bookings extends MY_Controller
 		$query = $this->_get_query();
 		$this->data['query_string'] = http_build_query($query);
 
+		$this->data['cancel_uri'] = 'bookings?' . http_build_query($query);
+
 		$this->data['body'] = $this->load->view('bookings/bookings_book', $this->data, TRUE);
 
 		// If we have a date and the user is a teacher, do some extra checks
