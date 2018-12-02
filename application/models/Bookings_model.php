@@ -142,14 +142,15 @@ class Bookings_model extends CI_Model
 				$username = $users[$booking->user_id]->username;
 				$displayname = trim($users[$booking->user_id]->displayname);
 				if(strlen($displayname) < 2){ $displayname = $username; }
-				$cell['body'] .= '<strong>'.$displayname.'</strong>';
+				$cell['body'] .= '<strong>'.html_escape($displayname).'</strong>';
 				$user = 1;
 			}
 
 			// Any notes?
 			if($booking->notes){
 				if(isset($user)){ $cell['body'] .= '<br />'; }
-				$cell['body'] .= '<span title="'.$booking->notes.'">'.character_limiter($booking->notes, 15).'</span>';
+				$notes = html_escape($booking->notes);
+				$cell['body'] .= '<span title="'.$notes.'">'.character_limiter($notes, 15).'</span>';
 			}
 
 			// Edit if admin?
@@ -171,7 +172,7 @@ class Bookings_model extends CI_Model
 			){
 				$cancel_msg = 'Are you sure you want to cancel this booking?';
 				if($user_id != $booking->user_id){
-					$cancel_msg = 'Are you sure you want to cancel this booking?\n\n(**) Please take caution, it is not your own booking!!';
+					$cancel_msg = 'Are you sure you want to cancel this booking?\n\n(**) Please take caution, it is not your own.';
 				}
 				$cancel_url = site_url('bookings/cancel/'.$booking->booking_id);
 				if(!isset($edit)){ $cell['body'] .= '<br />'; }
