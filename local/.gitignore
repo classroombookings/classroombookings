@@ -1,5 +1,6 @@
 *
 !.gitignore
+!.htaccess
 !index.html
 !logs
 !sessions
