@@ -49,7 +49,7 @@ if (isset($booking) && ! empty($booking->date)) {
 	<?php echo form_error($field); ?>
 
 
-	<?php if ($this->userauth->CheckAuthLevel(ADMINISTRATOR)): ?>
+	<?php if ($this->userauth->is_level(ADMINISTRATOR)): ?>
 
 
 	<p>
@@ -117,7 +117,7 @@ if (isset($booking) && ! empty($booking->date)) {
 			$user_options[ $user->user_id ] = html_escape($label);
 		}
 		$field = 'user_id';
-		$value = set_value($field, isset($booking) ? $booking->user_id : $this->session->userdata('user_id'), FALSE);
+		$value = set_value($field, isset($booking) ? $booking->user_id : $this->userauth->user->user_id, FALSE);
 		echo form_dropdown('user_id', $user_options, $value, 'id="user_id" tabindex="' . tab_index() . '"');
 		?>
 	</p>
@@ -130,7 +130,7 @@ if (isset($booking) && ! empty($booking->date)) {
 </fieldset>
 
 
-<?php if ($this->userauth->CheckAuthLevel(ADMINISTRATOR)): ?>
+<?php if ($this->userauth->is_level(ADMINISTRATOR)): ?>
 
 
 <fieldset>

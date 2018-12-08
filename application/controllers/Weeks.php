@@ -88,10 +88,10 @@ class Weeks extends MY_Controller
 			show_404();
 		}
 
-		$this->data['weeks'] = $this->weeks_model->Get(NULL);	// $this->session->userdata('schoolcode') );
+		$this->data['weeks'] = $this->weeks_model->Get(NULL);
 		$this->data['mondays'] = $this->weeks_model->GetMondays();
 		$this->data['academicyear'] = $this->weeks_model->GetAcademicYear();
-		$this->data['weekscount'] = count($this->data['weeks']);	//$this->M_weeks->Get());	//$this->session->userdata('schoolcode')));
+		$this->data['weekscount'] = count($this->data['weeks']);
 
 		$this->data['title'] = 'Edit Week';
 		$this->data['showtitle'] = $this->data['title'];

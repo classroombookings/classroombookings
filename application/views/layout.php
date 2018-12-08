@@ -1,11 +1,11 @@
 <?php
 
-if($this->loggedin){
+if ($this->userauth->loggedin()) {
 	$menu[1]['text'] = img('assets/images/ui/link_controlpanel.gif', FALSE, 'hspace="4" align="top" alt=" "') . 'Control Panel';
 	$menu[1]['href'] = site_url('controlpanel');
 	$menu[1]['title'] = 'Tasks';
 
-	if($this->userauth->CheckAuthLevel(ADMINISTRATOR)){ $icon = 'user_administrator.gif'; } else { $icon = 'user_teacher.gif'; }
+	if($this->userauth->is_level(ADMINISTRATOR)){ $icon = 'user_administrator.gif'; } else { $icon = 'user_teacher.gif'; }
 	$menu[3]['text'] = img('assets/images/ui/logout.gif', FALSE, 'hspace="4" align="top" alt=" "') . 'Logout';
 	$menu[3]['href'] = site_url('logout');
 	$menu[3]['title'] = 'Log out of classroombookings';
@@ -36,7 +36,7 @@ if($this->loggedin){
 		<div class="header">
 
 			<div class="nav-box">
-				<?php if(!$this->loggedin){ echo '<br /><br />'; } ?>
+				<?php if( ! $this->userauth->loggedin()) { echo '<br /><br />'; } ?>
 				<?php
 				$i=0;
 				if(isset($menu)){
@@ -48,7 +48,7 @@ if($this->loggedin){
 				}
 				?><br />
 				<?php
-				if ($this->loggedin) {
+				if ($this->userauth->loggedin()) {
 					$displayname = isset($_SESSION['displayname']) ? $_SESSION['displayname'] : NULL;
 					$username = isset($_SESSION['username']) ? $_SESSION['username'] : NULL;
 					$output = html_escape(strlen($displayname) > 1 ? $displayname : $username);
@@ -61,8 +61,9 @@ if($this->loggedin){
 
 			<span class="title">
 				<?php
-				if($this->session->userdata('schoolname')){
-					echo anchor('/', html_escape($this->session->userdata('schoolname')));
+				$name = setting('name');
+				if (strlen($name)) {
+					echo anchor('/', html_escape($name));
 				} else {
 					$attrs = "title='classroombookings' style='font-weight:normal;color:#0081C2;letter-spacing:-2px'";
 					$output = "classroom";
@@ -74,11 +75,11 @@ if($this->loggedin){
 
 		</div>
 
-		<?php if(isset($midsection)){ ?>
+		<?php if (isset($midsection)): ?>
 			<div class="mid-section" align="center">
 				<h1 style="font-weight:normal"><?php echo $midsection ?></h1>
 			</div>
-		<?php } ?>
+		<?php endif; ?>
 
 		<div class="content_area">
 			<?php if(isset($showtitle)){ echo '<h2>'.html_escape($showtitle).'</h2>'; } ?>

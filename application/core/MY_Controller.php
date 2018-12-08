@@ -4,23 +4,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class MY_Controller extends CI_Controller
 {
 
-	/**
-	 * Whether the user is loged in
-	 *
-	 * @var boolean
-	 *
-	 */
-	public $loggedin = FALSE;
-
-
-	/**
-	 * Auth level of logged-in user
-	 *
-	 * @var boolean
-	 *
-	 */
-	public $authlevel = FALSE;
-
 
 	/**
 	 * Global data for view
@@ -51,16 +34,13 @@ class MY_Controller extends CI_Controller
 		if ( ! $this->userauth->loggedin()) {
 			$this->session->set_flashdata('auth', msgbox('error', $this->lang->line('crbs_mustbeloggedin')));
 			redirect('login');
-		} else {
-			$this->loggedin = TRUE;
-			$this->authlevel = $this->userauth->GetAuthLevel($this->session->userdata('user_id'));
 		}
 	}
 
 
 	public function require_auth_level($level)
 	{
-		if ( ! $this->userauth->CheckAuthLevel($level)) {
+		if ( ! $this->userauth->is_level($level)) {
 			$this->session->set_flashdata('auth', msgbox('error', $this->lang->line('crbs_mustbeadmin')));
 			redirect('controlpanel');
 		}

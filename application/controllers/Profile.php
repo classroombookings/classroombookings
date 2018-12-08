@@ -22,8 +22,8 @@ class Profile extends MY_Controller
 
 	function index()
 	{
-		// Get User ID from session
-		$user_id = $this->session->userdata('user_id');
+		// Get User ID
+		$user_id = $this->userauth->user->user_id;
 
 		// Get bookings for a room if this user owns one
 		$this->data['myroom'] = $this->bookings_model->ByRoomOwner($user_id);
@@ -42,8 +42,8 @@ class Profile extends MY_Controller
 
 	function edit()
 	{
-		// Get User ID from session
-		$user_id = $this->session->userdata('user_id');
+		// Get User ID
+		$user_id = $this->userauth->user->user_id;
 
 		$this->data['user'] = $this->users_model->Get($user_id);
 
@@ -68,8 +68,8 @@ class Profile extends MY_Controller
 
 	function save()
 	{
-		// Get User ID from session
-		$user_id = $this->session->userdata('user_id');
+		// Get User ID
+		$user_id = $this->userauth->user->user_id;
 
 		$this->load->library('form_validation');
 		$this->form_validation->set_rules('password1', 'Password', 'min_length[6]');
@@ -96,7 +96,7 @@ class Profile extends MY_Controller
 
 		// Only update password if one was supplied
 		if ($this->input->post('password1') && $this->input->post('password2')) {
-			$data['password'] = sha1($this->input->post('password1'));
+			$data['password'] = password_hash($this->input->post('password1'), PASSWORD_DEFAULT);
 		}
 
 		// Update session variable with displayname

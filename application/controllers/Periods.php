@@ -22,7 +22,7 @@ class Periods extends MY_Controller
 	function index()
 	{
 		// Get data from database
-		$this->data['periods'] = $this->periods_model->Get();	//$this->session->userdata('schoolcode'));
+		$this->data['periods'] = $this->periods_model->Get();
 		$this->data['days_list'] = $this->periods_model->days;
 		$this->data['days_bitmask'] = $this->periods_model->days_bitmask;
 

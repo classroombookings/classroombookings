@@ -10,7 +10,7 @@ $menu[$i]['href'] = site_url('bookings');
 
 $i++;
 $menu[$i]['text'] = 'My Profile';
-$menu[$i]['icon'] = ($this->userauth->CheckAuthLevel(ADMINISTRATOR, $this->authlevel)) ? 'user_administrator.gif' : 'user_teacher.gif';
+$menu[$i]['icon'] = ($this->userauth->is_level(ADMINISTRATOR)) ? 'user_administrator.gif' : 'user_teacher.gif';
 $menu[$i]['href'] = site_url('profile');
 
 $i++;
@@ -90,7 +90,7 @@ dotable($menu);
 
 
 // Check if user is admin
-if($this->userauth->CheckAuthLevel(ADMINISTRATOR, $this->authlevel)){
+if ($this->userauth->is_level(ADMINISTRATOR)) {
 	echo '<h2>School-related</h2>';
 	dotable($school);
 	echo '<h2>Management</h2>';

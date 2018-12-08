@@ -29,7 +29,7 @@
 <h5>
 	<a href="<?php echo site_url('profile') ?>">
 		<?php
-		if( $this->userauth->CheckAuthLevel( ADMINISTRATOR ) ){ $icon = 'user_administrator.png'; } else { $icon = 'user_teacher.png'; }
+		if ($this->userauth->is_level(ADMINISTRATOR)) { $icon = 'user_administrator.png'; } else { $icon = 'user_teacher.png'; }
 		?>
 		<img src="webroot/images/ui/<?php echo $icon ?>" alt="Profile" hspace="4" align="top" width="16" height="16" />
 		My profile

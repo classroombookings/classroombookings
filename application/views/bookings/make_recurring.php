@@ -8,7 +8,7 @@
 		if( $user->displayname == '' ){ $user->displayname = $user->username; }
   		$userlist[$user->user_id] = html_escape($user->displayname);		#@field($user->displayname, $user->username);
 	}
-	$user_id = $this->session->userdata('user_id');
+	$user_id = $this->userauth->user->user_id;
 	echo form_dropdown('user_id', $userlist, $user_id, 'id="user_id"');
 	?>
 	<button type="submit" name="action" value="recurring">Make Recurring Booking</button>

@@ -1,7 +1,15 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+// Classroombookings version
+//
 define('VERSION', '2.0.0');
+
+// User auth types
+//
+define('ADMINISTRATOR', 1);
+define('TEACHER', 2) ;
+
 
 /*
 |--------------------------------------------------------------------------

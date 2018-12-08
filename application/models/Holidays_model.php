@@ -42,7 +42,6 @@ class Holidays_model extends CI_Model
 	function delete($id)
 	{
 		$this->db->where('holiday_id', $id);
-		// $this->db->where('school_id', $this->session->userdata('school_id'));
 		$this->db->delete('holidays');
 	}
 

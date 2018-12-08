@@ -30,7 +30,7 @@ echo $iconbar;
 	foreach ($users as $user) { ?>
 	<tr class="tr<?php echo ($i & 1) ?>">
 		<?php
-		$img_type = ($this->userauth->CheckAuthLevel(ADMINISTRATOR, $user->authlevel)) ? 'user_administrator.gif' : 'user_teacher.gif';
+		$img_type = ($user->authlevel == ADMINISTRATOR ? 'user_administrator.gif' : 'user_teacher.gif');
 		$img_enabled = ($user->enabled == 1) ? 'enabled.gif' : 'no.gif';
 		?>
 		<td width="50" align="center"><img src="<?= base_url("assets/images/ui/{$img_type}") ?>" width="16" height="16"  alt="<?php echo $img_type ?>" /></td>

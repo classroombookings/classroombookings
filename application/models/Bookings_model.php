@@ -154,7 +154,7 @@ class Bookings_model extends CI_Model
 			}
 
 			// Edit if admin?
-			 if($this->userauth->CheckAuthLevel(ADMINISTRATOR, $this->authlevel)){
+			 if($this->userauth->is_level(ADMINISTRATOR)){
 				$edit_url = site_url('bookings/edit/'.$booking->booking_id);
 				$src = base_url('assets/images/ui/edit.gif');
 				$cell['body'] .= '<br /><a class="booking-action" href="'.$edit_url.'" title="Edit this booking">';
@@ -164,9 +164,9 @@ class Bookings_model extends CI_Model
 			}
 
 			// Cancel if user is an Admin, Room owner, or Booking owner
-			$user_id = $this->session->userdata('user_id');
+			$user_id = $this->userauth->user->user_id;
 			if(
-				($this->userauth->CheckAuthLevel(ADMINISTRATOR)) OR
+				($this->userauth->is_level(ADMINISTRATOR)) OR
 				($user_id == $booking->user_id) OR
 				( ($user_id == $rooms[$room_id]->user_id) && ($booking->date != NULL) )
 			){
@@ -199,7 +199,7 @@ class Bookings_model extends CI_Model
 			$book_url = site_url($url);	//site_url('bookings/book/'.$url);
 			$cell['class'] = 'free';
 			$cell['body'] = '<a href="'.$book_url.'"><img src="' . base_url('assets/images/ui/accept.gif') . '" width="16" height="16" alt="Book" title="Book" hspace="4" align="absmiddle" />Book</a>';
-			if($this->userauth->CheckAuthLevel(ADMINISTRATOR, $this->authlevel)){
+			if($this->userauth->is_level(ADMINISTRATOR)){
 				$cell['body'] .= '<input type="checkbox" name="recurring[]" value="'.$url.'" />';
 			}
 
@@ -912,7 +912,7 @@ class Bookings_model extends CI_Model
 		$html .= $this->load->view('bookings/key', NULL, TRUE);
 
 		// Show link to making a booking for admins
-		if ($this->userauth->CheckAuthLevel(ADMINISTRATOR)) {
+		if ($this->userauth->is_level(ADMINISTRATOR)) {
 			$html .= $this->load->view('bookings/make_recurring', array('users' => $school['users']), TRUE);
 		}
 

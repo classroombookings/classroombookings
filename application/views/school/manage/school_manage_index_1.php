@@ -1,7 +1,3 @@
-<?php
-#if( $this->userauth->CheckAuthLevel( TEACHER ) ){ echo 'teacher'; }
-#if( $this->userauth->CheckAuthLevel( ADMINISTRATOR ) ){ echo 'admin'; }
-?>
 
 <h5>
 	<a href="<?php echo site_url('school/details') ?>">

@@ -12,8 +12,6 @@ class Users_model extends CI_Model
 	}
 
 
-
-
 	function Get($user_id = NULL, $pp = 10, $start = 0)
 	{
 		if ($user_id == NULL) {
@@ -24,22 +22,16 @@ class Users_model extends CI_Model
 	}
 
 
-
-
 	function Add($data)
 	{
 		return $this->crud_model->Add('users', 'user_id', $data);
 	}
 
 
-
-
 	function Edit($user_id, $data)
 	{
 		return $this->crud_model->Edit('users', 'user_id', $user_id, $data);
 	}
-
-
 
 
 	/**

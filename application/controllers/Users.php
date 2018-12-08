@@ -175,7 +175,7 @@ class Users extends MY_Controller
 		);
 
 		if ($this->input->post('password1') && $this->input->post('password2')) {
-			$user_data['password'] = sha1($this->input->post('password1'));
+			$user_data['password'] = password_hash($this->input->post('password1'), PASSWORD_DEFAULT);
 		}
 
 		if (empty($user_id)) {
@@ -443,7 +443,7 @@ class Users extends MY_Controller
 			return 'username_exists';
 		}
 
-		$data['password'] = sha1($data['password']);
+		$data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
 
 		$res = $this->users_model->Add($data);
 

@@ -10,7 +10,7 @@ class Migration_Update_users extends CI_Migration
 			'password' => array(
 				'name' => 'password',
 				'type' => 'VARCHAR',
-				'constraint' => '100',
+				'constraint' => '255',
 			),
 		);
 

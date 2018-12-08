@@ -48,7 +48,7 @@ class School extends MY_Controller
 	function manage()
 	{
 		$layout['showtitle'] = 'Tasks';
-		$layout['title'] = 'Manage ' . $this->session->userdata('schoolname');
+		$layout['title'] = 'Manage ' . setting('name');
 
 		// Initialise with empty string
 		$layout['body'] = '';

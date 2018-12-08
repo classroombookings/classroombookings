@@ -68,7 +68,7 @@ class Bookings extends MY_Controller
 			#$this->session->set_userdata('chosen_date', $this->school['chosen_date']);
 		}
 
-		$room_of_user = $this->rooms_model->GetByUser($this->session->userdata('user_id'));
+		$room_of_user = $this->rooms_model->GetByUser($this->userauth->user->user_id);
 
 		if ( ! isset($query['room'])) {
 			if ( ! empty($room_of_user)) {
@@ -191,9 +191,9 @@ class Bookings extends MY_Controller
 			$booking->room_id = $query['room'];
 			$booking->date = $query['date'];
 			$booking->notes = '';
-			$booking->user_id = $this->session->userdata('user_id');
+			$booking->user_id = $this->userauth->user->user_id;
 
-			if ($this->userauth->CheckAuthLevel(ADMINISTRATOR)) {
+			if ($this->userauth->is_level(ADMINISTRATOR)) {
 				$booking->day_num = isset($query['day']) ? $query['day'] : NULL;
 				$booking->week_id = isset($query['week']) ? $query['week'] : NULL;
 			}
@@ -204,7 +204,7 @@ class Bookings extends MY_Controller
 		}
 
 		// Lookups we need if an admin user
-		if ($this->userauth->CheckAuthLevel(ADMINISTRATOR)) {
+		if ($this->userauth->is_level(ADMINISTRATOR)) {
 			$this->data['days'] = $this->periods_model->days;
 			$this->data['rooms'] = $this->rooms_model->Get();
 			$this->data['periods'] = $this->periods_model->Get();
@@ -222,7 +222,7 @@ class Bookings extends MY_Controller
 		// If we have a date and the user is a teacher, do some extra checks
 		//
 
-		if (isset($query['date']) && $this->userauth->CheckAuthLevel(TEACHER)) {
+		if (isset($query['date']) && $this->userauth->is_level(TEACHER)) {
 
 			// Check that the date selected is not in the past
 			//
@@ -321,13 +321,13 @@ class Bookings extends MY_Controller
 	{
 		$id = $this->input->post('cancel');
 		$booking = $this->bookings_model->Get($id);
-		$user_id = $this->session->userdata('user_id');
+		$user_id = $this->userauth->user->user_id;
 		$room = $this->rooms_model->Get($booking->room_id);
 
 		$query = $this->_get_query();
 		$uri = 'bookings/index?' . http_build_query($query);
 
-		$can_delete = ( ($this->userauth->CheckAuthLevel(ADMINISTRATOR))
+		$can_delete = ( ($this->userauth->is_level(ADMINISTRATOR))
 						OR ($user_id == $booking->user_id)
 						OR ( ($user_id == $room->user_id) && ($booking->date != NULL) )
 					);
@@ -357,7 +357,7 @@ class Bookings extends MY_Controller
 		$query = $this->_get_query();
 		$uri = 'bookings?' . http_build_query($query);
 
-		$can_edit = ( $this->userauth->CheckAuthLevel(ADMINISTRATOR) OR ($user_id == $booking->user_id));
+		$can_edit = ( $this->userauth->is_level(ADMINISTRATOR) OR ($this->userauth->user->user_id == $booking->user_id));
 
 		if ( ! $can_edit) {
 			$this->session->set_flashdata('saved', msgbox('error', "You do not have the correct privileges to cancel this booking."));
@@ -369,7 +369,7 @@ class Bookings extends MY_Controller
 		$this->data['cancel_uri'] = 'bookings?' . http_build_query($query);
 
 		// Lookups we need if an admin user
-		if ($this->userauth->CheckAuthLevel(ADMINISTRATOR)) {
+		if ($this->userauth->is_level(ADMINISTRATOR)) {
 			$this->data['days'] = $this->periods_model->days;
 			$this->data['rooms'] = $this->rooms_model->Get();
 			$this->data['periods'] = $this->periods_model->Get();
