@@ -14,7 +14,6 @@ class Rooms extends MY_Controller
 		$this->require_logged_in();
 
 		$this->load->model('crud_model');
-		$this->load->model('school_model');
 		$this->load->model('rooms_model');
 		$this->load->model('users_model');
 		$this->load->helper('number');

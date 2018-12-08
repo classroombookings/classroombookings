@@ -14,7 +14,6 @@ class Periods extends MY_Controller
 
 		$this->load->model('crud_model');
 		$this->load->model('periods_model');
-		$this->load->model('school_model');
 	}
 
 

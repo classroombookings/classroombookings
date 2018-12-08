@@ -16,7 +16,6 @@ class School extends MY_Controller
 
 		// Load models etc.
 		$this->load->helper('file');
-		$this->load->model('school_model');
 	}
 
 
@@ -68,7 +67,7 @@ class School extends MY_Controller
 	{
 		$this->require_auth_level(ADMINISTRATOR);
 
-		$this->data['info'] = $this->school_model->GetInfo();	//ByCode($this->session->userdata('schoolcode'));
+		$this->data['settings'] = $this->settings_model->get_all('crbs');
 
 		$this->data['title'] = 'School Information';
 		$this->data['showtitle'] = $this->data['title'];
@@ -158,7 +157,7 @@ class School extends MY_Controller
 			}
 		}
 
-		$school_data = array(
+		$settings = array(
 			'name' => $this->input->post('schoolname'),
 			'website' => $this->input->post('website'),
 			'colour' => $this->_makecol($this->input->post('colour')),
@@ -167,23 +166,24 @@ class School extends MY_Controller
 			'd_columns' => $this->input->post('d_columns'),
 		);
 
-		if ($upload == TRUE) {
-			$this->school_model->delete_logo();
-			$school_data['logo'] = $upload_data['file_name'];
-		}
+		if ($upload == TRUE || $this->input->post('logo_delete')) {
 
-		// If user clicked the 'delete logo' button on an edit, delete logo
-		if ($this->input->post('logo_delete') == '1') {
-			$this->school_model->delete_logo();
+			// Remove current one
+			$logo = setting('logo');
+			@unlink(FCPATH . 'uploads/' . $logo);
+			$settings['logo'] = '';
+
+			if ($upload == TRUE) {
+				$settings['logo'] = $upload_data['file_name'];
+			}
 		}
 
 		// If colour is empty then set the default so Gradient still works
-		if (empty($school_data['colour'])) {
-			$school_data['colour'] = '468ED8';
+		if ( ! strlen($settings['colour'])) {
+			$settings['colour'] = '468ED8';
 		}
 
-		$school = $this->school_model->GetInfo();
-		$this->school_model->edit('school_id', $school->school_id, $school_data);
+		$this->settings_model->set($settings);
 
 		$this->session->set_flashdata('saved', msgbox('info', 'School Details have been updated.'));
 

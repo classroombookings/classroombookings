@@ -940,16 +940,16 @@ class Bookings_model extends CI_Model
 
 	function BookingStyle()
 	{
-		$query_str = "SELECT d_columns,displaytype FROM school LIMIT 1";
-		$query = $this->db->query($query_str);
-		if ($query->num_rows() == 1) {
-			$row = $query->row();
-			$style['cols'] = $row->d_columns;
-			$style['display'] = $row->displaytype;
-			return $style;
-		} else {
-			$style = FALSE;
+		$out = array(
+			'cols' => setting('d_columns'),
+			'display' => setting('displaytype'),
+		);
+
+		if (empty($out['cols']) || empty($out['display'])) {
+			return FALSE;
 		}
+
+		return $out;
 	}
 
 

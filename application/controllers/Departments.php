@@ -16,7 +16,6 @@ class Departments extends MY_Controller
 
 		$this->load->library('pagination');
 		$this->load->model('crud_model');
-		$this->load->model('school_model');
 		$this->load->model('departments_model');
 	}
 

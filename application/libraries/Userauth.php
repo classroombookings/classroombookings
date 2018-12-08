@@ -34,7 +34,6 @@ class Userauth{
 	public function __construct(){
 		$this->object =& get_instance();
 		$this->object->load->database();
-		$this->object->load->model('school_model');
 		log_message('debug','User Authentication Class Initialised via '.get_class($this->object));
 	}
 
@@ -97,8 +96,6 @@ class Userauth{
 
 			if ($return == 1) {
 
-				$school = $this->object->school_model->GetInfo();
-
 				// 1 row returned with matching user & pass = validated!
 
 				// Get row from query (fullname, email)
@@ -128,9 +125,8 @@ class Userauth{
 													);*/
 				$sessdata['user_id'] = $row->user_id;
 				$sessdata['username'] = $row->username;
-				$sessdata['schoolname'] = $school->schoolname;
+				$sessdata['schoolname'] = setting('name');
 				$sessdata['displayname'] = $row->displayname;
-				$sessdata['school_id'] = $school->school_id;
 				$sessdata['loggedin'] = 'true';
 				// Hash is <login_date><username><schoolcode><authlevel>
 				$str = 'c0d31gn1t3r'.$timestamp.$username.$this->GetAuthLevel($row->user_id);

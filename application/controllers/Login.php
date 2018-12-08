@@ -9,8 +9,6 @@ class Login extends MY_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		$this->loggedin = False;
-		$this->load->model('school_model');
 	}
 
 
@@ -18,8 +16,7 @@ class Login extends MY_Controller
 	{
 		$layout['title'] = 'Login';
 		$layout['showtitle'] = $layout['title'];
-		$school_data = $this->school_model->GetInfo();
-		$logo = 'uploads/' . $school_data->logo;
+		$logo = 'uploads/' . setting('logo');
 
 		$columns = array(
 			'c1' => array(
@@ -32,13 +29,13 @@ class Login extends MY_Controller
 			),
 		);
 
-		if ( ! empty($school_data->logo) && file_exists(FCPATH . $logo)) {
+		if (strlen(setting('logo')) && file_exists(FCPATH . $logo)) {
 			$columns['c2']['content'] = img($logo, FALSE, 'style="max-width:100%;height:auto;display:block"');
 		} else {
 			$columns['c2']['content'] = '';
 		}
 
-		$layout['showtitle'] = 'Login to ' . $school_data->name;
+		$layout['showtitle'] = 'Login to ' . setting('name');
 		$layout['body'] = $this->load->view('columns', $columns, TRUE);
 
 		$this->load->view('layout', $layout);

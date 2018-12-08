@@ -235,7 +235,7 @@ class Bookings extends MY_Controller
 
 			// Now see if user is allowed to book in advance
 			//
-			$bia = (int) $this->_booking_advance();
+			$bia = (int) setting('bia');
 			if ($bia > 0) {
 				$date_forward = strtotime("+{$bia} days", $today);
 				if ($thedate > $date_forward) {
@@ -476,17 +476,12 @@ class Bookings extends MY_Controller
 
 	private function _check_unique_booking($data)
 	{
-		// print_r($data);
-
 		$bookings = $this->bookings_model->GetUnique(array(
 			'date' => $data['date'],
 			'period_id' => $data['period_id'],
 			'room_id' => $data['room_id'],
 			'booking_id' => $data['booking_id'],
 		));
-
-		// print_r($bookings);
-		// die();
 
 		return count($bookings) == 0;
 	}
@@ -521,23 +516,6 @@ class Bookings extends MY_Controller
 
 		$this->session->set_flashdata('saved', $flashmsg);
 	}
-
-
-
-
-	// Get booking in advance days
-	function _booking_advance()
-	{
-		$query_str = "SELECT bia FROM school LIMIT 1";
-		$query = $this->db->query($query_str);
-		if ($query->num_rows() == 1) {
-			$row = $query->row();
-			return $row->bia;
-		}
-		return 0;
-	}
-
-
 
 
 }
