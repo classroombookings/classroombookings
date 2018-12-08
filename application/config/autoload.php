@@ -64,6 +64,7 @@ $autoload['libraries'] = array(
 	'form_validation',
 	'userauth',
 	'user_agent',
+	'migration',
 );
 
 /*
@@ -150,4 +151,6 @@ $autoload['language'] = array(
 |
 |	$autoload['model'] = array('first_model' => 'first');
 */
-$autoload['model'] = array();
+$autoload['model'] = array(
+	'settings_model',
+);

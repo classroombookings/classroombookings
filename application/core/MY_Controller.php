@@ -34,7 +34,14 @@ class MY_Controller extends CI_Controller
 	public function __construct()
 	{
 		parent::__construct();
+
 		$this->output->enable_profiler(config_item('show_profiler') === TRUE);
+
+		if ( ! is_installed()) {
+			redirect('install');
+		}
+
+		$this->migration->latest();
 	}
 
 
