@@ -68,7 +68,6 @@ if($this->loggedin){
 					$output = "classroom";
 					$output .= "<span style='color:#ff6400;font-weight:bold'>bookings</span>";
 					echo anchor('/', $output, $attrs);
-					echo "<sup style='font-weight:bold;color:#555;letter-spacing:-1px;font-size:12pt'>BETA</sup>";
 				}
 				?>
 			</span>
