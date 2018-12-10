@@ -22,7 +22,6 @@ class MY_Controller extends CI_Controller
 
 		$this->load->library('session');
 		$this->load->library('form_validation');
-		$this->load->library('userauth');
 
 		if (get_class($this) !== 'Install') {
 
@@ -31,6 +30,7 @@ class MY_Controller extends CI_Controller
 			}
 
 			$this->load->database();
+			$this->load->library('userauth');
 
 			$this->load->library('migration');
 			$this->migration->latest();

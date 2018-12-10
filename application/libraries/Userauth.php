@@ -16,8 +16,11 @@ class Userauth
 	public function __construct()
 	{
 		$this->CI =& get_instance();
-		$this->CI->load->model('users_model');
-		$this->init_user();
+
+		if ($this->CI->config->item('is_installed')) {
+			$this->CI->load->model('users_model');
+			$this->init_user();
+		}
 	}
 
 
