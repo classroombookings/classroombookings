@@ -19,28 +19,16 @@ class Migration_Add_settings extends CI_Migration
 	private function create_table()
 	{
 		$fields = array(
-			'group' => array(
-				'type' => 'varchar',
-				'constraint' => 50,
-				'null' => FALSE,
-			),
-			'name' => array(
-				'type' => 'varchar',
-				'constraint' => 50,
-				'null' => FALSE,
-			),
-			'value' => array(
-				'type' => 'text',
-				'null' => TRUE,
-			),
+			'group' => array('type' => 'varchar', 'constraint' => 50, 'null' => FALSE),
+			'name' => array('type' => 'varchar', 'constraint' => 50, 'null' => FALSE),
+			'value' => array('type' => 'text', 'null' => TRUE),
 		);
 
 		$this->dbforge->add_field($fields);
 
-		$this->dbforge->add_key(array('group', 'name'));
+		$this->dbforge->create_table('settings', TRUE, array('ENGINE' => 'InnoDB'));
 
-		$attributes = array('ENGINE' => 'InnoDB');
-		$this->dbforge->create_table('settings', TRUE, $attributes);
+		$this->db->query("ALTER TABLE `settings` ADD UNIQUE `group_name` (`group`, `name`)");
 	}
 
 
