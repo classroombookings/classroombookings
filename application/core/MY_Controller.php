@@ -30,7 +30,7 @@ class MY_Controller extends CI_Controller
 				redirect('install');
 			}
 
-			$this->load->library('database');
+			$this->load->database();
 
 			$this->load->library('migration');
 			$this->migration->latest();
