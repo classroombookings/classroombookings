@@ -49,9 +49,7 @@ if ($this->userauth->loggedin()) {
 				?><br />
 				<?php
 				if ($this->userauth->loggedin()) {
-					$displayname = isset($_SESSION['displayname']) ? $_SESSION['displayname'] : NULL;
-					$username = isset($_SESSION['username']) ? $_SESSION['username'] : NULL;
-					$output = html_escape(strlen($displayname) > 1 ? $displayname : $username);
+					$output = html_escape(strlen($this->userauth->user->displayname) > 1 ? $this->userauth->user->displayname : $this->userauth->user->username);
 					echo "<p class='normal'>Logged in as {$output}</p>";
 				}
 				?>
