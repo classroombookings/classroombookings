@@ -49,42 +49,6 @@ function php_size_to_bytes($sSize)
 }
 
 
-
-
-/**
- * Determine if classroombookings is installed yet or not.
- *
- * If it's installed, a `.installed` file will be present in the `local` dir.
- * If that doesn't exist, further checks are done for the database connection.
- *
- */
-function is_installed()
-{
-	$file_path = FCPATH . 'local/.installed';
-
-	// 1. Do we have a .installed file? (v2)
-	if (is_file($file_path)) {
-		return TRUE;
-	}
-
-	// 2. Check if we have DB connection info
-	$CI =& get_instance();
-
-	$has_connection = (strlen($CI->db->dsn) || strlen($CI->db->username));
-	$table_exists = $CI->db->table_exists('bookings') && $CI->db->table_exists('users');
-	$num_users = (int) $CI->db->count_all('users');
-
-	if ($has_connection && $table_exists && $num_users > 0) {
-		// Actually installed, but no file - write it now.
-		$CI->load->helper('file');
-		write_file($file_path, time());
-		return TRUE;
-	}
-
-	return FALSE;
-}
-
-
 function setting($key, $group = 'crbs')
 {
 	$CI =& get_instance();

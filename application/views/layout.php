@@ -61,7 +61,10 @@ if ($this->userauth->loggedin()) {
 
 			<span class="title">
 				<?php
-				$name = setting('name');
+				$name = '';
+				if (config_item('is_installed')) {
+					$name = setting('name');
+				}
 				if (strlen($name)) {
 					echo anchor('/', html_escape($name));
 				} else {

@@ -20,11 +20,23 @@ class MY_Controller extends CI_Controller
 
 		$this->output->enable_profiler(config_item('show_profiler') === TRUE);
 
-		if ( ! is_installed()) {
-			redirect('install');
+		$this->load->library('session');
+		$this->load->library('form_validation');
+		$this->load->library('userauth');
+
+		if (get_class($this) !== 'Install') {
+
+			if ( ! config_item('is_installed')) {
+				redirect('install');
+			}
+
+			$this->load->library('database');
+
+			$this->load->library('migration');
+			$this->migration->latest();
+
 		}
 
-		$this->migration->latest();
 	}
 
 

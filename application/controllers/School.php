@@ -9,23 +9,10 @@ class School extends MY_Controller
 	{
 		parent::__construct();
 
-		// Check to see if it's installed
-		$this->installed();
-
 		$this->require_logged_in();
 
 		// Load models etc.
 		$this->load->helper('file');
-	}
-
-
-	function installed()
-	{
-		$query_str = "SHOW TABLES";
-		$query = $this->db->query($query_str);
-		if ($query->num_rows() == 0) {
-			redirect('install');
-		}
 	}
 
 

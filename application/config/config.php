@@ -23,7 +23,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = '';
+$config['base_url'] = 'http://' . $_SERVER['HTTP_HOST'] . '/';
 
 /*
 |--------------------------------------------------------------------------
@@ -223,7 +223,7 @@ $config['allow_get_array'] = TRUE;
 | your log files will fill up very fast.
 |
 */
-$config['log_threshold'] = 0;
+$config['log_threshold'] = 1;
 
 /*
 |--------------------------------------------------------------------------
@@ -523,11 +523,18 @@ $config['rewrite_short_tags'] = FALSE;
 $config['proxy_ips'] = '';
 
 
-if (is_file(FCPATH . 'local/config.php'))
-{
+// Default value for installed should be false.
+// If there is a local/config.php file, then it is considered installed.
+$config['is_installed'] = FALSE;
+
+
+if (is_file(FCPATH . 'local/config.php')) {
+
+	// Mark app as installed
+	$config['is_installed'] = TRUE;
+
 	$local_config = include(FCPATH . 'local/config.php');
-	if (array_key_exists('config', $local_config) && is_array($local_config['config']))
-	{
+	if (array_key_exists('config', $local_config) && is_array($local_config['config'])) {
 		$config = array_merge($config, $local_config['config']);
 	}
 }
