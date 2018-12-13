@@ -1,241 +1,571 @@
 <?php
-class Install extends CI_Controller {
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Install extends MY_Controller
+{
 
 
+	/**
+	 * Installation step. Populated from session if present.
+	 *
+	 * @var string
+	 *
+	 */
+	private $step = 'config';
 
 
+	/**
+	 * Keep track of error messages during final install step.
+	 *
+	 * @var array
+	 *
+	 */
+	private $errors = array();
 
-	public function __construct(){
+
+	public function __construct()
+	{
 		parent::__construct();
-		$this->loggedin = False;
-		$this->load->model('crud_model', 'crud');
-		$this->load->model('school_model', 'M_school');
+
+		$this->load->model('crud_model');
 		$this->load->helper('file');
-	}
+		$this->load->helper('array');
+		$this->load->library('userauth');
 
-
-
-
-
-	function index(){
-	// Read database info from file
-		include('system/application/config/database.php');
-		$content0['db']['hostname'] = $db['default']['hostname'];
-		$content0['db']['username'] = $db['default']['username'];
-		$content0['db']['database'] = $db['default']['database'];
-		$content0['db']['password'] = str_repeat('*', strlen($db['default']['password']));
-		unset($db);
-
-	  // Initialise columns view
-		$content[0]['content'] = $this->load->view('install/install_index', $content0, True);
-		$content[0]['width'] = '72%';
-		$content[1]['content'] = $this->load->view('install/install_index_side', NULL, True);
-		$content[1]['width'] = '28%';
-
-	  // Load view
-		$layout['title'] = 'Install classroombookings';
-		$layout['showtitle'] = $layout['title'];
-		$layout['body'] = $this->load->view('columns', $content, True );
-		$this->load->view('layout', $layout);
-	}
-
-
-
-
-
-  /**
-   * Controller function to handle a submitted form
-   */
-  function submit(){
-		// Parse data input from view and carry out appropriate action.
-		// Get ID from form
-		#$mfrid = $this->input->post('mfrid');
-
-		// Validation rules
-  	$vrules['schoolname']			= "required|max_length[255]";
-  	$vrules['website']	  		= "prep_url|max_length[255]";
-  	$vrules['username']   		= "required|max_length[20]|min_length[4]";
-  	$vrules['password1']			= "required|max_length[20]|min_length[6]";
-  	$vrules['password2']			= "required|max_length[20]|min_length[6]|matches[password1]";
-  	$this->validation->set_rules($vrules);
-
-		// Pretty it up a bit for error validation message
-  	$vfields['schoolname']		= 'School name';
-  	$vfields['website']	  		= 'Website address';
-  	$vfields['username']			= 'Username';
-  	$vfields['password1']			= 'Password';
-  	$vfields['password2']			= 'Password confirmation';
-  	$this->validation->set_fields($vfields);
-
-		// Set the error delims to a nice styled red box
-  	$this->validation->set_error_delimiters('<p class="hint error"><span>', '</span></p>');
-
-
-  	if ($this->validation->run() == FALSE){
-
-	  // Validation failed
-  		return $this->index();
-
-  	} else {
-
-		  // Validation succeeded!
-
-		  // Create database tables first
-  		$tables = $this->_create_tables();
-  		if($tables == FALSE){
-  			$body['db'] = $this->load->view('msgbox/error', 'An error occured creating the database tables.', True);
-  		} else {
-  			$body['db'] = $this->load->view('msgbox/info', 'Database tables were created successfully.', True);
-  		}
-
-
-		  // Create school
-  		$school_data['name'] = $this->input->post('schoolname');
-  		$school_data['website'] = $this->input->post('website');
-  		$school_id = $this->M_school->add($school_data);
-
-
-			// Create user
-  		$user_data['school_id']		= $school_id;
-  		$user_data['username'] 		= $this->input->post('username');
-  		$user_data['password']		= sha1($this->input->post('password1'));
-  		$user_data['authlevel']		= 1;
-  		$user_data['enabled']			= 1;
-  		$user_data['email']				= $this->input->post('email');
-  		$this->crud->Add('users', 'user_id', $user_data);
-
-
-			/* if( !$this->crud->Add('ci_users', 'user_id', $user_data) ){
-				$flashmsg = $this->load->view('msgbox/error', 'A database error occured while adding the user. Please notify the administrator.', True);
-			} else {
-				$flashmsg = $this->load->view('msgbox/info', 'User <strong>'.$data['username'].'</strong> has been created.', True);
-			} */
-
-
-			// Body info
-			$body['user'] = $user_data;
-			$body['school'] = $school_data;
-
-			$layout['title'] = 'Congratulations!';
-			$layout['showtitle'] = $layout['title'];
-			$layout['body'] = $this->load->view('install/finished', $body, True);
-			$this->load->view('layout', $layout);
+		if (config_item('is_installed') && ! isset($_SESSION['install_complete'])) {
+			$this->session->set_flashdata('saved', msgbox("info", "Classroombookings is already installed."));
+			return redirect('');
 		}
 
+		$this->init();
 	}
 
 
+	/**
+	 * Initialisation for all pages of installation process.
+	 *
+	 * Just check session, init vars and things that are needed.
+	 *
+	 */
+	private function init()
+	{
+		if (isset($_SESSION['install_step'])) {
+			$this->step = $_SESSION['install_step'];
+		}
+
+		if ( ! isset($_SESSION['data'])) {
+			$_SESSION['data'] = array();
+		}
+
+		if ( ! isset($_SESSION['requirements'])) {
+			$_SESSION['requirements'] = array();
+		}
+
+		if ( ! array_key_exists('install_complete', $_SESSION)) {
+			$_SESSION['install_complete'] = FALSE;
+		}
+	}
 
 
+	public function index()
+	{
+		redirect('install/' . $this->step);
+	}
 
-	function _create_tables(){
-		$errcount = 0;
-		$file = read_file('classroombookings.sql');
-		$array = explode(';', $file);
-		foreach($array as $query){
-			if($query != NULL){
-				// Read file successfully - return the result of the query (true/false)
-				$query = $this->db->query($query);
-				if( $query == FALSE ){ $errcount++; }
+
+	public function config()
+	{
+		if (is_file(FCPATH . 'local/config.php')) {
+			// Config file already present
+			$local_config = require(FCPATH . 'local/config.php');
+			if ( ! is_array($local_config)) {
+				show_error("The 'local/config.php' file is not in a recognised format.");
+			}
+			$db_config = element('database', $local_config, array());
+			$_SESSION['db_config'] = $db_config;
+			$test_db = $this->load->database($db_config, TRUE);
+			$res = $test_db->initialize();
+			if ( ! $res) {
+				$this->data['notice'] = msgbox('error', "Could not connect to the database using the details in your local/config.php file.");
+			} else {
+				$_SESSION['requirements']['database'] = array('status' => 'ok');
+				$_SESSION['install_step'] = 'info';
+				$_SESSION['step_config'] = TRUE;
+				redirect('install/info');
 			}
 		}
-		if($errcount > 0){
-			return false;
-		} else {
-			return true;
-		}
-	}
 
+		if ($this->input->post()) {
 
+			$this->form_validation->set_rules('hostname', 'Hostname', 'required');
+			$this->form_validation->set_rules('database', 'Database', 'required');
+			$this->form_validation->set_rules('username', 'Username', 'required');
+			$this->form_validation->set_rules('password', 'Password', 'required');
+			$this->form_validation->set_rules('url', 'URL', 'required|valid_url');
 
+			if ($this->form_validation->run() == FALSE) {
 
+				$this->data['notice'] = validation_errors();
 
-	function validate($valcode){
-		$retval = $this->_validate($valcode);
-		if($retval != False){
-			$code = 'login/'.$retval;
-			$body = $this->load->view('msgbox/info', 'Your account has been successfully validated!', True);
-			$icondata[0] = array($code, 'Click here to login', 'user_go.png' );
-			$body .= $this->load->view('partials/iconbar', $icondata, True);
-		} else {
-			$body = $this->load->view('msgbox/error', 'Your account could not be validated. Please <a href="'.site_url('contact').'">contact us</a>.', True);
-		}
-		$layout['title'] = 'Congratulations!';
-		$layout['showtitle'] = $layout['title'];
-		$layout['body'] = $body;
-		$this->load->view('layout', $layout);
-	}
+			} else {
 
+				// Check DB
+				$data = array(
+					'driver' => defined('PDO::ATTR_DRIVER_NAME') ? 'pdo' : 'mysqli',
+					'hostname' => $this->input->post('hostname'),
+					'database' => $this->input->post('database'),
+					'username' => $this->input->post('username'),
+					'password' => $this->input->post('password'),
+					'url' => $this->input->post('url'),
+				);
 
+				$db_config = array(
+					'username' => $data['username'],
+					'password' => $data['password'],
+					'dbdriver' => $data['driver'],
+				);
 
-
-
-	function _validate($valcode){
-		// See if we have validation code (also get school_id)
-		$query_str = "SELECT school_id,validate FROM ci_users WHERE validate='$valcode' LIMIT 1";
-		$query = $this->db->query($query_str);
-		// One row - validation code exists!
-		if($query->num_rows() == 1){
-
-			// Now we get the school_id
-			$row = $query->row();
-			$school_id = $row->school_id;
-
-			// Get the school code
-			$query_str = "SELECT code FROM schools WHERE school_id='$school_id' LIMIT 1";
-			$query = $this->db->query($query_str);
-
-			if($query->num_rows() == 1){
-				// Got school code
-				$row = $query->row();
-				$school_code = $row->code;
-
-				// Now update the ci_users table and enable the user
-				$query_str = "UPDATE ci_users SET enabled=1 WHERE validate='$valcode' LIMIT 1";
-				$query = $this->db->query($query_str);
-
-				if($query){
-					// User updated OK
-					return $school_code;
-				} else {
-					return false;
+				switch ($data['driver']) {
+					case 'pdo':
+						$db_config['dsn'] = "mysql:host={$data['hostname']};dbname={$data['database']}";
+					break;
+					case 'mysqli':
+						$db_config['hostname'] = $data['hostname'];
+						$db_config['database'] = $data['database'];
+					break;
 				}
-			} else {
-				return false;
+
+				$_SESSION['db_config'] = $db_config;
+
+				$test_db = $this->load->database($db_config, TRUE);
+				$res = $test_db->initialize();
+
+				if ( ! $res) {
+					$this->data['notice'] = msgbox('error', "Could not connect to the database with the provided values.");
+				} else {
+					if ( ! $err) {
+						$_SESSION['requirements']['database'] = array('status' => 'ok');
+						$_SESSION['data'] = array_merge($_SESSION['data'], $data);
+						$_SESSION['install_step'] = 'info';
+						$_SESSION['step_config'] = TRUE;
+						redirect('install/info');
+					}
+				}
 			}
+
+		}
+
+		$this->data['title'] = 'Install classroombookings - Configuration';
+		$this->data['showtitle'] = $this->data['title'];
+
+		$columns = array(
+			'c1' => array(
+				'content' => $this->load->view('install/config', $this->data, TRUE),
+				'width' => '70%',
+			),
+			'c2' => array(
+				'content' => $this->load->view('install/config_side', $this->data, TRUE),
+				'width' => '30%',
+			),
+		);
+
+		$this->data['body'] = $this->load->view('columns', $columns, TRUE);
+
+		return $this->render();
+	}
+
+
+	public function info()
+	{
+		if ( ! isset($_SESSION['step_config'])) {
+			return redirect('install/config');
+		}
+
+		if ($this->input->post()) {
+
+			$this->form_validation->set_rules('name', 'School name', 'required');
+			$this->form_validation->set_rules('admin_username', 'Username', 'required');
+			$this->form_validation->set_rules('admin_password', 'Password', 'required');
+
+			if ($this->form_validation->run() == FALSE) {
+
+				$this->data['notice'] = validation_errors();
+
+			} else {
+
+				$data = array(
+					'name' => $this->input->post('name'),
+					'admin_username' => $this->input->post('admin_username'),
+					'admin_password' => $this->input->post('admin_password'),
+				);
+
+				$_SESSION['data'] = array_merge($_SESSION['data'], $data);
+				$_SESSION['install_step'] = 'checks';
+				$_SESSION['step_info'] = TRUE;
+				redirect('install/checks');
+			}
+		}
+
+		$this->data['title'] = 'Install classroombookings - Information';
+		$this->data['showtitle'] = $this->data['title'];
+
+		$columns = array(
+			'c1' => array(
+				'content' => $this->load->view('install/info', $this->data, TRUE),
+				'width' => '70%',
+			),
+			'c2' => array(
+				'content' => $this->load->view('install/info_side', $this->data, TRUE),
+				'width' => '30%',
+			),
+		);
+
+		$this->data['body'] = $this->load->view('columns', $columns, TRUE);
+
+		return $this->render();
+	}
+
+
+	public function checks()
+	{
+		if ( ! isset($_SESSION['step_info'])) {
+			return redirect('install/info');
+		}
+
+		if ($this->input->post()) {
+
+			$res = $this->start_install();
+
+			if ( ! $res) {
+
+				if (empty($this->errors)) {
+					$msg = 'An unknown error occurred.';
+				} else {
+					$msg = implode("<br>", array_values($this->errors));
+				}
+
+				$this->data['notice'] = msgbox('error', $msg);
+
+			} else {
+
+
+				$_SESSION['install_complete'] = TRUE;
+				$_SESSION['step_checks'] = TRUE;
+				$_SESSION['install_step'] = 'complete';
+				redirect('install/complete');
+
+			}
+		}
+
+		// Check requirements (again). It will (re-)populate the session var with results
+		$this->check_requirements();
+
+		$this->data['requirements'] = $_SESSION['requirements'];
+
+		$this->data['title'] = 'Install classroombookings - Check requirements';
+		$this->data['showtitle'] = $this->data['title'];
+		$this->data['body'] = $this->load->view('install/check', $this->data, TRUE);
+
+		return $this->render();
+	}
+
+
+	public function complete()
+	{
+		if ( ! isset($_SESSION['step_checks']) && ! isset($_SESSION['install_complete'])) {
+			return redirect('install/checks');
+		}
+
+		$this->cleanup();
+
+		$this->load->database();
+		$this->load->library('userauth');
+
+		$this->data['title'] = 'Install classroombookings';
+		$this->data['showtitle'] = $this->data['title'];
+		$this->data['body'] = $this->load->view('install/complete', $this->data, TRUE);
+
+		return $this->render();
+	}
+
+
+	private function cleanup()
+	{
+		unset($_SESSION['data']);
+		unset($_SESSION['requirements']);
+		unset($_SESSION['install_step']);
+		unset($_SESSION['step_config']);
+		unset($_SESSION['step_info']);
+		unset($_SESSION['step_checks']);
+		unset($_SESSION['db_config']);
+	}
+
+
+	private function check_requirements()
+	{
+		// PHP version
+		//
+		$_SESSION['requirements']['php_version'] = array('message' => 'Your PHP vrsion is ' . PHP_VERSION . '.');
+		$has_php = (version_compare(PHP_VERSION, '5.5.0') >= 0);
+		if ( ! $has_php) {
+			$_SESSION['requirements']['php_version']['status'] = 'err';
 		} else {
-			return false;
+			$_SESSION['requirements']['php_version']['status'] = 'ok';
+		}
+
+		// PHP GD library
+		//
+		$has_gd = (extension_loaded('gd') && function_exists('imagecreate'));
+		$message = '';
+		$gd_status = ($has_gd ? 'ok' : 'err');
+		if ( ! $has_gd) {
+			$message = "Please install and/or enable the 'php_gd' module in your PHP configuration.";
+		}
+		$_SESSION['requirements']['php_module_gd'] = array('status' => $gd_status, 'message' => $message);
+
+		// 'local' folder
+		//
+		$local_path = FCPATH . 'local';
+		$message = '';
+		$has_local = TRUE;
+		if ( ! is_dir($local_path))
+		{
+			if ( ! mkdir($local_path, 0700, TRUE))
+			{
+				$message = "'local' folder does not exist and could not be created.";
+				$has_local = FALSE;
+			}
+		}
+		elseif ( ! is_writable($local_path))
+		{
+			$has_local = FALSE;
+			$message = "'local' folder does not have writable permissions.";
+		}
+
+		$local_status = ($has_local ? 'ok' : 'err');
+
+		$_SESSION['requirements']['folder_local'] = array('status' => $local_status, 'message' => $message);
+
+		// 'uploads' folder
+		//
+		$uploads_path = FCPATH . 'uploads';
+		$message = '';
+		$has_uploads = TRUE;
+		if ( ! is_dir($uploads_path))
+		{
+			if ( ! mkdir($uploads_path, 0700, TRUE))
+			{
+				$message = "'uploads' folder does not exist and could not be created.";
+				$has_uploads = FALSE;
+			}
+		}
+		elseif ( ! is_writable($uploads_path))
+		{
+			$has_uploads = FALSE;
+			$message = "'uploads' folder does not have writable permissions.";
+		}
+
+		$uploads_status = ($has_uploads ? 'ok' : 'err');
+
+		$_SESSION['requirements']['folder_uploads'] = array('status' => $uploads_status, 'message' => $message);
+
+		// Database
+		//
+		$db_config = $_SESSION['db_config'];
+		$test_db = $this->load->database($db_config, TRUE);
+		$res = $test_db->initialize();
+		$num_tables = count($test_db->list_tables());
+
+		if ( ! $res) {
+			$_SESSION['requirements']['database'] = array('status' => 'err', 'message' => 'Could not connect with the provided settings.');
+		} else {
+			$_SESSION['requirements']['database'] = array('status' => 'ok');
+		}
+
+		if ($num_tables > 0) {
+			$_SESSION['requirements']['database_empty'] = array('status' => 'err', 'message' => "There are {$num_tables} tables in the database.");
+		} else {
+			$_SESSION['requirements']['database_empty'] = array('status' => 'ok');
 		}
 	}
 
 
+	private function start_install()
+	{
+		// Set up temp DB connection
+		//
+		if (is_file(FCPATH . 'local/config.php')) {
 
+			// Config file already present
+			$local_config = require(FCPATH . 'local/config.php');
+			if ( ! is_array($local_config)) {
+				show_error("The 'local/config.php' file is not in a recognised format.");
+			}
+			$db_config = element('database', $local_config, array());
+			$db_config['db_debug'] = FALSE;
 
-	function schoolcode_exists($schoolcode){
-		$lookup = $this->M_school->schoolcode_exists($schoolcode);
-		if( $lookup == 0 ){
-			$ret = true;
-		}
-		if( $lookup == 1 ){
-			$this->validation->set_message('schoolcode_exists', 'The school code you entered has already been taken.');
-			$ret = false;
-		}
-		if( $lookup == 3){
-			$this->validation->set_message('schoolcode_exists', 'The school code you entered is restricted; please choose another one.');
-			$ret = false;
-		}
-		return $ret;
-		/*if ($this->M_school->schoolcode_exists($schoolcode)){
-			$this->validation->set_message('schoolcode_exists', 'The school code you entered already exists');
-			return false;
 		} else {
-			return true;
-		}*/
+
+			$db_config = array(
+				'username' => $_SESSION['data']['username'],
+				'password' => $_SESSION['data']['password'],
+				'dbdriver' => $_SESSION['data']['driver'],
+				'db_debug' => FALSE,
+			);
+
+			switch ($_SESSION['data']['driver']) {
+				case 'pdo':
+					$db_config['dsn'] = "mysql:host={$_SESSION['data']['hostname']};dbname={$_SESSION['data']['database']}";
+				break;
+				case 'mysqli':
+					$db_config['hostname'] = $_SESSION['data']['hostname'];
+					$db_config['database'] = $_SESSION['data']['database'];
+				break;
+			}
+
+		}
+
+		$this->load->database($db_config);
+		$this->load->dbforge();
+
+		// Each function should simply return TRUE/FALSE based on whether it succeeded.
+		// If an error occurs, the function should populate var: $this->errors['section'] = 'ERROR_MESSAGE';
+		//
+
+		if ( ! $this->install_structure()) {
+			log_message("error", "Install: structure failed.");
+			return FALSE;
+		}
+
+		if ( ! $this->install_settings()) {
+			log_message("error", "Install: settings failed.");
+			return FALSE;
+		}
+
+		if ( ! $this->install_user()) {
+			log_message("error", "Install: user failed.");
+			return FALSE;
+		}
+
+		if ( ! $this->install_config()) {
+			log_message("error", "Install: config failed.");
+			return FALSE;
+		}
+
+		write_file(FCPATH . 'local/.installed', date("Y-m-d H:i:s"));
+
+		return TRUE;
 	}
 
 
+	/**
+	 * Create the tables in the database.
+	 *
+	 */
+	private function install_structure()
+	{
+		$errors = array();
 
+		$this->load->model('install_model');
+		$res = $this->install_model->run();
+
+		if (is_array($res) && count($res) > 0) {
+			log_message("error", "Error creating tables: " . json_encode($res));
+			$this->errors['structure'] = "There was a problem creating the following tables: " . implode(', ', array_values($res));
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+
+	/**
+	 * Insert rows for the initial settings - some default, some captured from the user.
+	 *
+	 */
+	private function install_settings()
+	{
+		// Default settings + school name
+		//
+		$settings = array(
+			'bia' => '0',
+			'colour' => '468ED8',
+			'displaytype' => 'day',
+			'd_columns' => 'periods',
+			'logo' => '',
+			'website' => '',
+			'name' => $_SESSION['data']['name'],
+		);
+
+		$this->load->model('settings_model');
+		return $this->settings_model->set($settings);
+	}
+
+
+	/**
+	 * Create initial user account for admin
+	 *
+	 */
+	private function install_user()
+	{
+		// Create first admin user
+
+		$user = array(
+			'username' => $_SESSION['data']['admin_username'],
+			'password' => password_hash($_SESSION['data']['admin_password'], PASSWORD_DEFAULT),
+			'authlevel' => ADMINISTRATOR,
+			'enabled' => '1',
+		);
+
+		$this->load->model('users_model');
+		return $this->users_model->Add($user);
+	}
+
+
+	/**
+	 * Save settings to config file
+	 *
+	 */
+	private function install_config()
+	{
+		if (is_file(FCPATH . 'local/config.php')) {
+			// Skip writing if it already exists
+			return TRUE;
+		}
+
+		// Otherwise, get template, put values in it, and save.
+		$config_tpl = file_get_contents(APPPATH . 'install/config.tpl.php');
+
+		$data = array(
+			'base_url' => $_SESSION['data']['url'],
+			'db_dsn' => '',
+			'db_host' => '',
+			'db_user' => $_SESSION['data']['username'],
+			'db_pass' => $_SESSION['data']['password'],
+			'db_name' => '',
+		);
+
+		if ($_SESSION['data']['driver'] == 'pdo') {
+			$data['db_driver'] = 'pdo';
+			$data['db_dsn'] = "mysql:host={$_SESSION['data']['hostname']};dbname={$_SESSION['data']['database']}";
+		} else {
+			$data['db_driver'] = 'mysqli';
+			$data['db_host'] = $_SESSION['data']['hostname'];
+			$data['db_name'] = $_SESSION['data']['database'];
+		}
+
+		$this->load->library('parser');
+		$config_contents = $this->parser->parse_string($config_tpl, $data);
+
+		$res = write_file(FCPATH . 'local/config.php', $config_contents);
+
+		if ( ! $res) {
+			log_message("error", "Unable to save config to file.");
+			$this->errors['config'] = "Could not save config to file.";
+		}
+
+		return $res;
+	}
 
 
 }
-?>

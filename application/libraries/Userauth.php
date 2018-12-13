@@ -18,6 +18,7 @@ class Userauth
 		$this->CI =& get_instance();
 
 		if ($this->CI->config->item('is_installed')) {
+			$this->CI->load->database();
 			$this->CI->load->model('users_model');
 			$this->init_user();
 		}

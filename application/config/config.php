@@ -523,16 +523,11 @@ $config['rewrite_short_tags'] = FALSE;
 $config['proxy_ips'] = '';
 
 
-// Default value for installed should be false.
-// If there is a local/config.php file, then it is considered installed.
-$config['is_installed'] = FALSE;
+// Specify whether this instance is installed
+$config['is_installed'] = is_file(FCPATH . 'local/.installed');
 
 
 if (is_file(FCPATH . 'local/config.php')) {
-
-	// Mark app as installed
-	$config['is_installed'] = TRUE;
-
 	$local_config = include(FCPATH . 'local/config.php');
 	if (array_key_exists('config', $local_config) && is_array($local_config['config'])) {
 		$config = array_merge($config, $local_config['config']);
