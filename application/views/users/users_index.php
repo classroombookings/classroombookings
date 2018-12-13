@@ -41,7 +41,7 @@ echo $iconbar;
 		echo html_escape($user->displayname);
 		?></td>
 		<td><?php
-		if($user->lastlogin == '0000-00-00 00:00:00'){
+		if($user->lastlogin == '0000-00-00 00:00:00' || empty($user->lastlogin)){
 			$lastlogin = 'Never';
 		} else {
 			$lastlogin = date("d/m/Y, H:i", strtotime($user->lastlogin));
