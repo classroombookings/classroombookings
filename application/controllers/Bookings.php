@@ -270,30 +270,27 @@ class Bookings extends MY_Controller
 
 	private function process_recurring()
 	{
+		$bookings = array();
+
 		foreach ($this->input->post('recurring') as $booking) {
-			$arr = explode('/', $booking);
-			$max = count($arr);
-			#print_r($arr);
-			$booking = array();
-			for ($i=0;$i<count($arr);$i=$i+2){
-				$booking[$arr[$i]] = $arr[$i+1];
-			}
-			$bookings[] = $booking;
+			list($uri, $params) = explode('?', $booking);
+			parse_str($params, $data);
+			$bookings[] = $data;
 		}
+
 		$errcount = 0;
-		#echo "<hr>";
-		#echo "<pre>".var_export($bookings,true)."</pre>";
-		foreach ($bookings as $booking){
+
+		foreach ($bookings as $booking) {
 			$booking_data = array(
 				'user_id' => $this->input->post('user_id'),
 				'period_id' => $booking['period'],
 				'room_id' => $booking['room'],
 				'notes' => $this->input->post('notes'),
 				'week_id' => $booking['week'],
-				'day_num' => $booking['day'],
+				'day_num' => $booking['day_num'],
 			);
 
-			if ( ! $this->bookings_model->Add($booking_data)){
+			if ( ! $this->bookings_model->Add($booking_data)) {
 				$errcount++;
 			}
 		}

@@ -43,7 +43,9 @@ class Weeks_model extends CI_Model
 
 	function Add($data)
 	{
-		return $this->crud_model->Add('weeks', 'week_id', $data);
+		$query = $this->db->insert('weeks', $data);
+		echo $this->db->last_query();
+		return ($query ? $this->db->insert_id() : $query);
 	}
 
 
@@ -51,7 +53,9 @@ class Weeks_model extends CI_Model
 
 	function Edit($week_id, $data)
 	{
-		return $this->crud_model->Edit('weeks', 'week_id', $week_id, $data);
+		$this->db->where('week_id', $week_id);
+		$result = $this->db->update('weeks', $data);
+		return ($result ? $week_id : FALSE);
 	}
 
 

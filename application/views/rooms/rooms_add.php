@@ -173,7 +173,7 @@ echo form_open_multipart('rooms/save', array('class' => 'cssform', 'id' => 'room
 </fieldset>
 
 
-<?php if (isset($fields)): ?>
+<?php if (isset($fields) && is_array($fields)): ?>
 
 <fieldset>
 

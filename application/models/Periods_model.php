@@ -32,8 +32,10 @@ class Periods_model extends CI_Model
 	{
 		if ($period_id == NULL) {
 			$rows = $this->crud_model->Get('periods', NULL, NULL, NULL, 'time_start asc');
-			foreach ($rows as &$row) {
-				$this->populate_row($row);
+			if (is_array($rows)) {
+				foreach ($rows as &$row) {
+					$this->populate_row($row);
+				}
 			}
 			return $rows;
 		} else {

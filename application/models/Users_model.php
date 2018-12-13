@@ -24,13 +24,16 @@ class Users_model extends CI_Model
 
 	function Add($data)
 	{
-		return $this->crud_model->Add('users', 'user_id', $data);
+		$query = $this->db->insert('users', $data);
+		return ($query ? $this->db->insert_id() : $query);
 	}
 
 
 	function Edit($user_id, $data)
 	{
-		return $this->crud_model->Edit('users', 'user_id', $user_id, $data);
+		$this->db->where('user_id', $user_id);
+		$result = $this->db->update('users', $data);
+		return ($result ? $user_id : FALSE);
 	}
 
 

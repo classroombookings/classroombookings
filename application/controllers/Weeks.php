@@ -62,7 +62,7 @@ class Weeks extends MY_Controller
 
 		$this->data['weeks'] = $this->weeks_model->Get();
 		$this->data['mondays'] = $this->weeks_model->GetMondays();
-		$this->data['weekscount'] = count($this->data['weeks']);
+		$this->data['weekscount'] = (is_array($this->data['weeks']) ? count($this->data['weeks']) : 0);
 
 		// Load view
 		$this->data['title'] = 'Add Week';
