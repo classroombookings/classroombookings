@@ -452,7 +452,7 @@ class Install extends MY_Controller
 			return FALSE;
 		}
 
-		write_file(FCPATH . 'local/.installed', date("Y-m-d H:i:s"));
+		write_file(FCPATH . 'local/installed', date("Y-m-d H:i:s"));
 
 		return TRUE;
 	}
