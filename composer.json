@@ -2,6 +2,8 @@
     "name": "craigrodway/classroombookings",
     "description": "Classroombookings",
     "type": "project",
+    "keywords": ["roombooking", "booking", "scheduling", "education", "schools"],
+    "homepage": "https://classroombookings.com/",
     "require": {
 		"php": ">=5.5.0",
         "codeigniter/framework": "^3",
@@ -13,5 +15,8 @@
             "name": "Craig A Rodway",
             "email": "craig.rodway@gmail.com"
         }
-    ]
+    ],
+    "config": {
+    	"vendor-dir": "application/vendor"
+    }
 }
