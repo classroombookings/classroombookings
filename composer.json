@@ -18,5 +18,14 @@
     ],
     "config": {
     	"vendor-dir": "application/vendor"
+    },
+    "archive": {
+    	"exclude": [
+    		"!application/vendor/*",
+    		".gitignore",
+    		".editorconfig",
+    		"composer.json",
+    		"composer.lock"
+    	]
     }
 }
