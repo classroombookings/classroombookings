@@ -305,7 +305,7 @@ class Install extends MY_Controller
 	{
 		// PHP version
 		//
-		$_SESSION['requirements']['php_version'] = array('message' => 'Your PHP vrsion is ' . PHP_VERSION . '.');
+		$_SESSION['requirements']['php_version'] = array('message' => 'Your PHP version is ' . PHP_VERSION . '.');
 		$has_php = (version_compare(PHP_VERSION, '5.5.0') >= 0);
 		if ( ! $has_php) {
 			$_SESSION['requirements']['php_version']['status'] = 'err';
