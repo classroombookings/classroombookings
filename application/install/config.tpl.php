@@ -11,7 +11,7 @@ return array(
 	),
 
 	'database' => array(
-		'dsn'	=> '{db_dsn}',
+		'dsn' => '{db_dsn}',
 		'hostname' => '{db_host}',
 		'username' => '{db_user}',
 		'password' => '{db_pass}',

@@ -32,12 +32,23 @@ class Install extends MY_Controller
 		$this->load->helper('array');
 		$this->load->library('userauth');
 
+		// First, check if we are upgrading from v1.
+		if ($this->check_upgrade()) {
+			redirect('upgrade');
+		}
+
 		if (config_item('is_installed') && ! isset($_SESSION['install_complete'])) {
 			$this->session->set_flashdata('saved', msgbox("info", "Classroombookings is already installed."));
 			return redirect('');
 		}
 
 		$this->init();
+	}
+
+
+	private function check_upgrade()
+	{
+		return (is_dir(FCPATH . 'webroot') && is_dir(FCPATH . 'system'));
 	}
 
 

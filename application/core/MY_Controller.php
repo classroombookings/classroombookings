@@ -23,7 +23,7 @@ class MY_Controller extends CI_Controller
 		$this->load->library('session');
 		$this->load->library('form_validation');
 
-		if (get_class($this) !== 'Install') {
+		if (get_class($this) !== 'Install' && get_class($this) !== 'Upgrade') {
 
 			if ( ! config_item('is_installed')) {
 				redirect('install');
