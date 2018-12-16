@@ -36,7 +36,7 @@ $errors = 0;
 		$scheme = empty($scheme) ? 'http' : $scheme;
 		$default = "{$scheme}://{$_SERVER['HTTP_HOST']}/";
 		$field = 'url';
-		$value = set_value($field, isset($_SESSION['data'][$field]) ? $_SESSION['data'][$field] : $default, FALSE);
+		$value = set_value($field, isset($_SESSION[$field]) ? $_SESSION[$field] : $default, FALSE);
 		echo form_input(array(
 			'name' => $field,
 			'id' => $field,
