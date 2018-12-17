@@ -86,9 +86,7 @@ echo form_open_multipart(current_url(), array('class' => 'cssform', 'id' => 'ins
 	<p>
 		<label for="url" class="required">URL</label>
 		<?php
-		$scheme = $_SERVER['REQUEST_SCHEME'];
-		$scheme = empty($scheme) ? 'http' : $scheme;
-		$default = "{$scheme}://{$_SERVER['HTTP_HOST']}/";
+		$default = config_item('base_url');
 		$field = 'url';
 		$value = set_value($field, isset($_SESSION['data'][$field]) ? $_SESSION['data'][$field] : $default, FALSE);
 		echo form_input(array(

@@ -32,9 +32,7 @@ $errors = 0;
 	<p>
 		<label for="url" class="required">URL</label>
 		<?php
-		$scheme = $_SERVER['REQUEST_SCHEME'];
-		$scheme = empty($scheme) ? 'http' : $scheme;
-		$default = "{$scheme}://{$_SERVER['HTTP_HOST']}/";
+		$default = config_item('base_url');
 		$field = 'url';
 		$value = set_value($field, isset($_SESSION[$field]) ? $_SESSION[$field] : $default, FALSE);
 		echo form_input(array(
