@@ -22,6 +22,9 @@
     "archive": {
     	"exclude": [
     		"!application/vendor/*",
+    		"application/vendor/codeigniter/framework/application",
+    		"application/vendor/codeigniter/framework/tests",
+    		"application/vendor/codeigniter/framework/user_guide",
     		".gitignore",
     		".editorconfig",
     		"composer.json",
