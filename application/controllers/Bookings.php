@@ -24,7 +24,7 @@ class Bookings extends MY_Controller
 		));
 
 		$this->school = array(
-			'users' => $this->users_model->Get(),
+			'users' => $this->users_model->Get(NULL, NULL, NULL),
 			'days_list' => $this->periods_model->days,
 		);
 	}
@@ -209,7 +209,7 @@ class Bookings extends MY_Controller
 			$this->data['rooms'] = $this->rooms_model->Get();
 			$this->data['periods'] = $this->periods_model->Get();
 			$this->data['weeks'] = $this->weeks_model->Get();
-			$this->data['users'] = $this->users_model->Get();
+			$this->data['users'] = $this->users_model->Get(NULL, NULL, NULL);
 		}
 
 		$query = $this->_get_query();
@@ -371,7 +371,7 @@ class Bookings extends MY_Controller
 			$this->data['rooms'] = $this->rooms_model->Get();
 			$this->data['periods'] = $this->periods_model->Get();
 			$this->data['weeks'] = $this->weeks_model->Get();
-			$this->data['users'] = $this->users_model->Get();
+			$this->data['users'] = $this->users_model->Get(NULL, NULL, NULL);
 		}
 
 		$this->data['booking'] = $booking;
