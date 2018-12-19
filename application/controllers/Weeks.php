@@ -251,13 +251,13 @@ class Weeks extends MY_Controller
 	 		$ret = true;
 	 		for($i=0;$i<strlen($colour);$i++){
 	 			if(!in_array($colour{$i}, $hex)){
-	 				$this->validation->set_message('_is_valid_colour', $this->lang->line('colour_invalid'));
+	 				$this->form_validation->set_message('_is_valid_colour', $this->lang->line('colour_invalid'));
 	 				return false;
 	 				$ret = false;
 	 			}
 	 		}
 	 	} else {
-	 		$this->validation->set_message('_is_valid_colour', $this->lang->line('colour_invalid'));
+	 		$this->form_validation->set_message('_is_valid_colour', $this->lang->line('colour_invalid'));
 	 		$ret = false;
 	 	}
 	 	return $ret;
