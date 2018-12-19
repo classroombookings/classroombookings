@@ -53,6 +53,26 @@ class Install extends MY_Controller
 
 
 	/**
+	 * Get the available DB drivers
+	 *
+	 */
+	private function get_db_drivers()
+	{
+		$drivers = array();
+
+		if (extension_loaded('PDO') && extension_loaded('pdo_mysql')) {
+			$drivers[] = 'pdo';
+		}
+
+		if (function_exists('mysqli_connect')) {
+			$drivers[] = 'mysqli';
+		}
+
+		return $drivers;
+	}
+
+
+	/**
 	 * Initialisation for all pages of installation process.
 	 *
 	 * Just check session, init vars and things that are needed.
@@ -86,7 +106,15 @@ class Install extends MY_Controller
 
 	public function config()
 	{
-		if (is_file(FCPATH . 'local/config.php')) {
+		$notices = '';
+
+		$drivers = $this->get_db_drivers();
+		if (empty($drivers)) {
+			$notices .= msgbox('error', "Your PHP configuration does not have any MySQL database drivers available.");
+			$notices .= msgbox('error', "Install or enable extension 'mysqli' or 'pdo_mysql' (preferred).");
+		}
+
+		if (is_file(FCPATH . 'local/config.php') && ! empty($drivers)) {
 			// Config file already present
 			$local_config = require(FCPATH . 'local/config.php');
 			if ( ! is_array($local_config)) {
@@ -180,7 +208,7 @@ class Install extends MY_Controller
 			),
 		);
 
-		$this->data['body'] = $this->load->view('columns', $columns, TRUE);
+		$this->data['body'] = $notices . $this->load->view('columns', $columns, TRUE);
 
 		return $this->render();
 	}
