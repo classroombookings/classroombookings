@@ -4,7 +4,7 @@ class Install_model extends CI_Model
 {
 
 
-	private $migration_version = '20181212152000';
+	private $migration_version = '20181219134900';
 
 
 	private function get_attributes()
