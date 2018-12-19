@@ -528,7 +528,7 @@ $config['proxy_ips'] = '';
 
 // Specify whether this instance is installed via file detection.
 // This is written to during installation process.
-$config['is_installed'] = is_file(FCPATH . 'local/installed') || is_file(FCPATH . '.installed');
+$config['is_installed'] = is_file(FCPATH . 'local/installed') || is_file(FCPATH . 'local/.installed');
 
 
 if (is_file(FCPATH . 'local/config.php')) {
