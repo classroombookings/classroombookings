@@ -40,7 +40,7 @@ h6{ font-size:10pt; }
 img{ border:0; }
 
 .outer{
-  width:740px;
+  width:960px;
   clear:both;
   margin-left:auto;
   margin-right:auto;
@@ -113,19 +113,19 @@ img{ border:0; }
   padding-top:10px;
 }
 
-A{
+a{
   font-style:normal;
   color:#006699;
   text-decoration:none;
 }
 
-A:hover{
+a:hover{
   font-style:normal;
   color:#55B10A;
   text-decoration:none;
 }
 
-A:visited:hover{
+a:visited:hover{
   font-style:normal;
   color:#15A300;
   text-decoration:none;
