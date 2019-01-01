@@ -33,7 +33,7 @@ echo $iconbar;
 		<td><?php echo date("d/m/Y", strtotime($holiday->date_end)) ?></td>
 		<td><?php
 		if(strtotime($holiday->date_start) != strtotime($holiday->date_end)){
-			echo timespan(strtotime($holiday->date_start), strtotime($holiday->date_end));
+			echo timespan(strtotime($holiday->date_start), strtotime($holiday->date_end) + (3600*24));
 		} else {
 			echo "1 Day";
 		}
