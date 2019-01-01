@@ -104,6 +104,8 @@ echo form_open_multipart('school/details_submit', array('id'=>'schooldetails', '
 
 	<legend accesskey="S" tabindex="<?php echo tab_index() ?>">Settings</legend>
 
+	<?php
+	/*
 	<p>
 		<label for="colour">Header colour</label>
 		<?php
@@ -117,6 +119,8 @@ echo form_open_multipart('school/details_submit', array('id'=>'schooldetails', '
 		<p class="hint">In hexadecimal format. Leave blank to use default blue.</p>
 	</p>
 	<?php echo form_error('colour'); ?>
+	*/
+	?>
 
 	<p>
 		<label for="bia">Booking in advance</label>
