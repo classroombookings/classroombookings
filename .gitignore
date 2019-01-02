@@ -1,0 +1,3 @@
+/application/vendor/
+/node_modules/
+.env

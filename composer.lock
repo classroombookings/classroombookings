@@ -1,0 +1,98 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "77afa9ef1102fa0fe6d9f6b819175fbb",
+    "packages": [
+        {
+            "name": "codeigniter/framework",
+            "version": "3.1.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bcit-ci/CodeIgniter.git",
+                "reference": "30e2eafa86c4c7b6b39cea3e7089a90df9f603fb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bcit-ci/CodeIgniter/zipball/30e2eafa86c4c7b6b39cea3e7089a90df9f603fb",
+                "reference": "30e2eafa86c4c7b6b39cea3e7089a90df9f603fb",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.7"
+            },
+            "require-dev": {
+                "mikey179/vfsstream": "1.1.*",
+                "phpunit/phpunit": "4.* || 5.*"
+            },
+            "suggest": {
+                "paragonie/random_compat": "Provides better randomness in PHP 5.x"
+            },
+            "type": "project",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "The CodeIgniter framework",
+            "homepage": "https://codeigniter.com",
+            "time": "2018-06-12T13:45:46+00:00"
+        },
+        {
+            "name": "pixelrobin/php-feather",
+            "version": "v1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Pixelrobin/php-feather.git",
+                "reference": "0f51e46d15d6d4c16bdb2b244d3aee00d24f57ca"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Pixelrobin/php-feather/zipball/0f51e46d15d6d4c16bdb2b244d3aee00d24f57ca",
+                "reference": "0f51e46d15d6d4c16bdb2b244d3aee00d24f57ca",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "7"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Feather\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Savchuk",
+                    "email": "pixelrobin@hotmail.com"
+                }
+            ],
+            "description": "PHP library for feather icons",
+            "keywords": [
+                "feather",
+                "icons",
+                "pixelrobin",
+                "svg"
+            ],
+            "time": "2018-10-31T04:45:42+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=5.5.0"
+    },
+    "platform-dev": []
+}

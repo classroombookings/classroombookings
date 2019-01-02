@@ -1,0 +1,47 @@
+.sort-table{
+	border:0px Solid ThreeDShadow;
+	background:#fff;
+	color:WindowText;
+}
+
+.sort-table thead {
+	background:ButtonFace;
+}
+
+.sort-table td {
+	/*padding:	2px 5px;*/
+}
+
+.sort-table thead td {
+	border:0px solid;
+	border-color:ButtonHighlight ButtonShadow ButtonShadow ButtonHighlight;
+	cursor: pointer;
+}
+
+.sort-table thead td:active {
+	border-color:ButtonShadow ButtonHighlight ButtonHighlight ButtonShadow;
+	/*padding:		3px 4px 1px 6px;*/
+}
+
+.sort-table thead td[_sortType=None]:active {
+	border-color:ButtonHighlight ButtonShadow ButtonShadow ButtonHighlight;
+	padding:2px 5px;
+}
+
+.sort-arrow{
+	width: 11px;
+	height:11px;
+	background-position:center center;
+	background-repeat:no-repeat;
+	margin:0 2px;
+	/*display:none;*/
+	border: 0;
+}
+
+.sort-arrow.descending {
+	background-image:	url(./bullet_arrow_down.png);
+}
+
+.sort-arrow.ascending {
+	background-image:url(./bullet_arrow_up.png);
+}
