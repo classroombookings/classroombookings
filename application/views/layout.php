@@ -23,6 +23,15 @@ if ($this->userauth->loggedin()) {
 	<link rel="stylesheet" type="text/css" media="print" href="<?= base_url('assets/print.css') ?>">
 	<link rel="stylesheet" type="text/css" media="screen" href="<?= base_url('assets/sorttable.css') ?>">
 	<link rel="stylesheet" type="text/css" media="screen" href="<?= base_url('assets/datepicker.css') ?>">
+	<link rel="apple-touch-icon" sizes="180x180" href="<?= base_url('assets/brand/apple-touch-icon.png') ?>">
+	<link rel="icon" type="image/png" sizes="32x32" href="<?= base_url('assets/brand/favicon-32x32.png') ?>">
+	<link rel="icon" type="image/png" sizes="16x16" href="<?= base_url('assets/brand/favicon-16x16.png') ?>">
+	<link rel="manifest" href="<?= base_url('assets/brand/site.webmanifest') ?>">
+	<link rel="mask-icon" href="<?= base_url('assets/brand/safari-pinned-tab.svg') ?>" color="#ff6400">
+	<link rel="shortcut icon" href="<?= base_url('assets/brand/favicon.ico') ?>">
+	<meta name="msapplication-TileColor" content="#ff6400">
+	<meta name="msapplication-config" content="<?= base_url('assets/brand/browserconfig.xml') ?>">
+	<meta name="theme-color" content="#ff6400">
 	<script>
 	var h = document.getElementsByTagName("html")[0];
 	(h ? h.classList.add('js') : h.className += ' ' + 'js');

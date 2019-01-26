@@ -24,7 +24,6 @@ class Periods extends MY_Controller
 		// Get data from database
 		$this->data['periods'] = $this->periods_model->Get();
 		$this->data['days_list'] = $this->periods_model->days;
-		$this->data['days_bitmask'] = $this->periods_model->days_bitmask;
 
 		$this->data['title'] = 'The School Day';
 		$this->data['showtitle'] = $this->data['title'];	// . ' ('.$section.')';
@@ -45,7 +44,6 @@ class Periods extends MY_Controller
 		// Load view
 
 		$this->data['days_list'] = $this->periods_model->days;
-		$this->data['days_bitmask'] = $this->periods_model->days_bitmask;
 
 		$columns = array(
 			'c1' => array(
@@ -82,7 +80,6 @@ class Periods extends MY_Controller
 		}
 
 		$this->data['days_list'] = $this->periods_model->days;
-		$this->data['days_bitmask'] = $this->periods_model->days_bitmask;
 
 		$columns = array(
 			'c1' => array(
@@ -113,6 +110,13 @@ class Periods extends MY_Controller
 
 		$this->form_validation->set_rules('period_id', 'ID', 'integer');
 		$this->form_validation->set_rules('name', 'Name', 'required|min_length[1]|max_length[30]');
+		$this->form_validation->set_rules('day_1', 'Monday', 'required|integer');
+		$this->form_validation->set_rules('day_2', 'Tuesday', 'required|integer');
+		$this->form_validation->set_rules('day_3', 'Wednesday', 'required|integer');
+		$this->form_validation->set_rules('day_4', 'Thursday', 'required|integer');
+		$this->form_validation->set_rules('day_5', 'Friday', 'required|integer');
+		$this->form_validation->set_rules('day_6', 'Saturday', 'required|integer');
+		$this->form_validation->set_rules('day_7', 'Sunday', 'required|integer');
 		$this->form_validation->set_rules('time_start', 'Start time', 'required|min_length[4]|max_length[5]|callback__is_valid_time');
 		$this->form_validation->set_rules('time_end', 'End time', 'required|min_length[4]|max_length[5]|callback__is_valid_time|callback__is_after[time_start]');
 		$this->form_validation->set_rules('bookable', 'Bookable', 'required|integer');
@@ -125,7 +129,13 @@ class Periods extends MY_Controller
 			'name' => $this->input->post('name'),
 			'time_start' => $this->_fix_time($this->input->post('time_start')),
 			'time_end' => $this->_fix_time($this->input->post('time_end')),
-			'days' => $this->input->post('days'),
+			'day_1' => $this->input->post('day_1'),
+			'day_2' => $this->input->post('day_2'),
+			'day_3' => $this->input->post('day_3'),
+			'day_4' => $this->input->post('day_4'),
+			'day_5' => $this->input->post('day_5'),
+			'day_6' => $this->input->post('day_6'),
+			'day_7' => $this->input->post('day_7'),
 			'bookable' => $this->input->post('bookable'),
 		);
 

@@ -1,0 +1,19 @@
+{
+    "name": "classroombookings",
+    "short_name": "classroombookings",
+    "icons": [
+        {
+            "src": "assets/brand/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "assets/brand/android-chrome-384x384.png",
+            "sizes": "384x384",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#ff6400",
+    "background_color": "#ff6400",
+    "display": "standalone"
+}

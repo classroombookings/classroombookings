@@ -1,8 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-require_once(APPPATH . 'third_party/simple_bitmask.php');
-
 class Bookings extends MY_Controller
 {
 

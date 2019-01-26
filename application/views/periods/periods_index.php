@@ -26,8 +26,8 @@ echo $iconbar;
 	<tbody>
 	<?php
 	$i=0;
-	if( $periods ){
-	foreach( $periods as $period ){
+	if ($periods) {
+	foreach ($periods as $period) {
 		// Get UNIX timestamp of times to do calculations on
 		$time_start = strtotime($period->time_start);
 		$time_end = strtotime($period->time_end);
@@ -38,8 +38,9 @@ echo $iconbar;
 		$now = now();
 		// $dayofweek = numeric day of week (1=monday) to get "current" period for periods on this day of the week
 		$dayofweek = date('N', $now);
+		$key = "day_{$dayofweek}";
 
-		if( ($now >= $time_start) && ($now < $time_end) && ($period->days_array[$dayofweek]) ){
+		if ( ($now >= $time_start) && ($now < $time_end) && ($period->{$key} == '1') ) {
 			$now_img = img('assets/images/ui/school_manage_times.gif', 'width="16" height="16" alt="Now"');
 		} else {
 			$now_img = '';
@@ -51,11 +52,10 @@ echo $iconbar;
 		<td><?php echo strftime('%H:%M', $time_end) ?></td>
 		<td><?php echo timespan($time_start, $time_end) ?></td>
 		<td><?php
-		// echo $period->days;
-		// echo json_encode($period->days_array);
 		foreach ($days_list as $day_num => $day_name) {
+			$key = "day_{$day_num}";
 			$letter = "{$day_name[0]}{$day_name[1]}";
-			if ($period->days_array[ $day_num ]) {
+			if ($period->{$key} == '1') {
 				echo "$letter ";
 			} else {
 				echo "<span style='color:#ccc'>{$letter}</span> ";
