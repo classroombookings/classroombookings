@@ -1,5 +1,16 @@
 # classroombookings Changelog
 
+## [2.0.1] - 2019-01-26
+
+Minor fix to day settings for periods and addition of favicon.
+
+### Added
+- Favicon to help classroombookings stand out in tabs and windows.
+
+### Changed
+- Fixed an issue relating to possible issues with period days being shifted by one if upgraded from v1 to v2.
+
+
 ## [2.0.0] - 2019-01-02
 
 The big one! Major update to support modern PHP, plus others.
