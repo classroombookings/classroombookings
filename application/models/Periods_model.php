@@ -1,15 +1,11 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-// require_once(APPPATH . 'third_party/bitmask.php');
-require_once(APPPATH . 'third_party/simple_bitmask.php');
-
 class Periods_model extends CI_Model
 {
 
 
 	public $days = array();
-	public $days_bitmask;
 
 
 	public function __construct()
@@ -31,45 +27,34 @@ class Periods_model extends CI_Model
 	function Get($period_id = NULL)
 	{
 		if ($period_id == NULL) {
-			$rows = $this->crud_model->Get('periods', NULL, NULL, NULL, 'time_start asc');
-			if (is_array($rows)) {
-				foreach ($rows as &$row) {
-					$this->populate_row($row);
-				}
-			}
+			$rows = $this->crud_model->Get('periods', NULL, NULL, NULL, 'day_1 desc, day_2 desc, day_3 desc, day_4 desc, day_5 desc, day_6 desc, day_7 desc, time_start asc');
 			return $rows;
 		} else {
 			$row = $this->crud_model->Get('periods', 'period_id', $period_id);
-			return $this->populate_row($row);
+			return $row;
 		}
 	}
-
 
 
 	public function GetBookable($day_num = NULL)
 	{
 		$out = array();
+		$where = array('bookable' => '1');
 
-		$sql = "SELECT * FROM periods WHERE bookable = 1 ORDER BY time_start ASC";
-		$query = $this->db->query($sql);
+		if ($day_num !== NULL && is_numeric($day_num))
+		{
+			$where["day_{$day_num}"] = '1';
+		}
 
-		if ($query->num_rows() > 0) {
+		$this->db->where($where);
+		$this->db->order_by('time_start', 'ASC');
+		$query = $this->db->get('periods');
 
-			$result = $query->result();
-
-			foreach ($result as &$row) {
-
-				$this->populate_row($row);
-
-				if ($day_num === NULL) {
-					$out[ $row->period_id ] = $row;
-					continue;
-				}
-
-				if ($day_num !== NULL && $row->days_array[ $day_num ]) {
-					$out[ $row->period_id ] = $row;
-					continue;
-				}
+		if ($query->num_rows() > 0)
+		{
+			foreach ($query->result() as $row)
+			{
+				$out[$row->period_id] = $row;
 			}
 		}
 
@@ -77,27 +62,8 @@ class Periods_model extends CI_Model
 	}
 
 
-
-	public function populate_row($row)
-	{
-		$bitmask = new SimpleBitmask(array_keys($this->days));
-		$row->days_array = $bitmask->getOptions($row->days);
-		return $row;
-	}
-
-
-
-
 	function Add($data)
 	{
-		if (is_array($data['days'])) {
-			$bitmask = new SimpleBitmask(array_keys($this->days));
-			foreach ($data['days'] as $num) {
-				$bitmask->options[ $num ] = TRUE;
-			}
-			$data['days'] = $bitmask->toBitmask();
-		}
-
 		return $this->crud_model->Add('periods', 'period_id', $data);
 	}
 
@@ -106,14 +72,6 @@ class Periods_model extends CI_Model
 
 	function Edit($period_id, $data)
 	{
-		if (is_array($data['days'])) {
-			$bitmask = new SimpleBitmask(array_keys($this->days));
-			foreach ($data['days'] as $num) {
-				$bitmask->options[ $num ] = TRUE;
-			}
-			$data['days'] = $bitmask->toBitmask();
-		}
-
 		return $this->crud_model->Edit('periods', 'period_id', $period_id, $data);
 	}
 

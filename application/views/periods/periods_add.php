@@ -70,29 +70,21 @@ echo form_open('periods/save', array('class' => 'cssform', 'id' => 'schoolday_ad
 		<label for="days" class="required">Days of the week</label>
 		<?php
 		$default_value = array();
-		if (isset($period)) {
-			foreach ($period->days_array as $num => $isset) {
-				if ($isset) {
-					$default_value[] = $num;
-				}
-			}
-		}
-		$value = set_value('days', $default_value);
 
 		foreach ($days_list as $day_num => $day_name) {
-			$id = "day{$day_num}";
+			$field = "day_{$day_num}";
+			echo form_hidden($field, '0');
 			echo form_checkbox(array(
-				'name' => 'days[]',
-				'id' => $id,
-				'value' => $day_num,
-				'checked' => in_array($day_num, $value),
+				'name' => $field,
+				'id' => $field,
+				'value' => '1',
+				'checked' => set_value($field, isset($period) ? $period->$field : ($day_num < 6)),
 				'tabindex' => tab_index(),
 			));
-			echo '<label for="' . $id . '" class="ni">' . $day_name . '</label><br/>';
+			echo '<label for="' . $field . '" class="ni">' . $day_name . '</label><br/>';
 		}
 		?>
 	</p>
-	<?php echo form_error("days[]") ?>
 
 	<p>
 		<label for="bookable">Can be booked</label>
@@ -104,7 +96,7 @@ echo form_open('periods/save', array('class' => 'cssform', 'id' => 'schoolday_ad
 			'id' => 'bookable',
 			'value' => '1',
 			'tabindex' => tab_index(),
-			'checked' => set_checkbox($field, isset($period) ? $period->bookable : 1, TRUE),
+			'checked' => set_value($field, isset($period) ? $period->bookable : 1, TRUE),
 		));
 		?>
 		<p class="hint">Tick this box to allow bookings for this period</p>

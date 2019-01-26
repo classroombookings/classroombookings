@@ -633,8 +633,9 @@ class Bookings_model extends CI_Model
 								);
 								$url = 'bookings/book?' . http_build_query($book_url_query);
 
-								// Check bitmask to see if this period is bookable on this day
-								if ($period->days_array[ $day_num ]) {
+								// This period is bookable on this day?
+								$key = "day_{$day_num}";
+								if ($period->{$key} == '1') {
 									// Bookable
 									$html .= $this->BookingCell($bookings, $period->period_id, $rooms, $users, $query['room'], $url, $booking_date_ymd, $holiday_dates);
 								} else {
@@ -663,7 +664,7 @@ class Bookings_model extends CI_Model
 
 						// Columns are days, so each row is a period
 
-						foreach($periods as $period) {
+						foreach ($periods as $period) {
 
 							// Get bookings
 							$bookings = array();
@@ -720,8 +721,9 @@ class Bookings_model extends CI_Model
 								// $url = 'period/%s/room/%s/day/%s/week/%s/date/%s';
 								// $url = sprintf($url, $period->period_id, $room_id, $day_num, $this_week->week_id, $booking_date_ymd);
 
-								// Check bitmask to see if this period is bookable on this day
-								if ($period->days_array[ $day_num ]) {
+								// Is this period bookable on this day?
+								$key = "day_{$day_num}";
+								if ($period->{$key} == '1') {
 									// Bookable
 									$html .= $this->BookingCell($bookings, $day_num, $rooms, $users, $query['room'], $url, $booking_date_ymd, $holiday_dates);
 								} else {
@@ -804,8 +806,8 @@ class Bookings_model extends CI_Model
 								);
 								$url = 'bookings/book?' . http_build_query($book_url_query);
 
-								// Check bitmask to see if this period is bookable on this day
-								if ($period->days_array[ $day_num ]) {
+								$key = "day_{$day_num}";
+								if ($period->{$key} == '1') {
 									// Bookable
 									$html .= $this->BookingCell($bookings, $period->period_id, $rooms, $users, $room->room_id, $url, $date_ymd, $holiday_dates);
 								} else {
@@ -879,8 +881,9 @@ class Bookings_model extends CI_Model
 								// $url = 'period/%s/room/%s/day/%s/week/%s/date/%s';
 								// $url = sprintf($url, $period->period_id, $room->room_id, $day_num, $this_week->week_id, $date_ymd);
 
-								// Check bitmask to see if this period is bookable on this day
-								if ($period->days_array[ $day_num ]) {
+								// Bookable on this day?
+								$key = "day_{$day_num}";
+								if ($period->{$key} == '1') {
 									// Bookable
 									$html .= $this->BookingCell($bookings, $room->room_id, $rooms, $users, $room->room_id, $url, $date_ymd, $holiday_dates);
 								} else {
