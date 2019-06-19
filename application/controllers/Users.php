@@ -65,7 +65,7 @@ class Users extends MY_Controller
 	 */
 	function add()
 	{
-		$this->data['departments'] = $this->departments_model->Get();
+		$this->data['departments'] = $this->departments_model->Get(NULL, NULL, NULL);
 
 		$this->data['title'] = 'Add User';
 		$this->data['showtitle'] = $this->data['title'];
@@ -101,7 +101,7 @@ class Users extends MY_Controller
 			show_404();
 		}
 
-		$this->data['departments'] = $this->departments_model->Get();
+		$this->data['departments'] = $this->departments_model->Get(NULL, NULL, NULL);
 
 		$this->data['title'] = 'Edit User';
 		$this->data['showtitle'] = $this->data['title'];

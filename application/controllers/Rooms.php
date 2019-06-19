@@ -75,7 +75,7 @@ class Rooms extends MY_Controller
 		$this->require_auth_level(ADMINISTRATOR);
 
 		// Get list of users
-		$this->data['users'] = $this->users_model->Get();
+		$this->data['users'] = $this->users_model->Get(NULL, NULL, NULL);
 		$this->data['fields'] = $this->rooms_model->GetFields();
 		$this->data['fieldvalues'] = array();
 
@@ -115,7 +115,7 @@ class Rooms extends MY_Controller
 			show_404();
 		}
 
-		$this->data['users'] = $this->users_model->Get();
+		$this->data['users'] = $this->users_model->Get(NULL, NULL, NULL);
 		$this->data['fields'] = $this->rooms_model->GetFields();
 		$this->data['fieldvalues'] = $this->rooms_model->GetFieldValues($id);
 
