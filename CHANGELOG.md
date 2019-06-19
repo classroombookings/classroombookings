@@ -1,5 +1,12 @@
 # classroombookings Changelog
 
+## [2.0.2] 2019-06-19
+
+One small bugfix.
+
+### Changed
+- Fixed an issue with User and Department lists having default limit applied when they shouldn't.
+
 ## [2.0.1] - 2019-01-26
 
 Minor fix to day settings for periods and addition of favicon.
