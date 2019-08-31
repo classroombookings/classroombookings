@@ -1,34 +1,40 @@
 {
-    "name": "craigrodway/classroombookings",
-    "description": "Classroombookings",
-    "type": "project",
-    "keywords": ["roombooking", "booking", "scheduling", "education", "schools"],
-    "homepage": "https://classroombookings.com/",
-    "require": {
+	"name": "craigrodway/classroombookings",
+	"description": "Classroombookings",
+	"type": "project",
+	"keywords": ["roombooking", "booking", "scheduling", "education", "schools"],
+	"homepage": "https://classroombookings.com/",
+	"require": {
 		"php": ">=5.5.0",
-        "codeigniter/framework": "^3",
-        "pixelrobin/php-feather": "^1.0"
-    },
-    "license": "AGPLv3",
-    "authors": [
-        {
-            "name": "Craig A Rodway",
-            "email": "craig.rodway@gmail.com"
-        }
-    ],
-    "config": {
-    	"vendor-dir": "application/vendor"
-    },
-    "archive": {
-    	"exclude": [
-    		"!application/vendor/*",
-    		"application/vendor/codeigniter/framework/application",
-    		"application/vendor/codeigniter/framework/tests",
-    		"application/vendor/codeigniter/framework/user_guide",
-    		".gitignore",
-    		".editorconfig",
-    		"composer.json",
-    		"composer.lock"
-    	]
-    }
+		"codeigniter/framework": "^3",
+		"pixelrobin/php-feather": "^1.0"
+	},
+	"license": "AGPLv3",
+	"authors": [
+		{
+			"name": "Craig A Rodway",
+			"email": "craig.rodway@gmail.com"
+		}
+	],
+	"config": {
+		"vendor-dir": "application/vendor"
+	},
+	"archive": {
+		"exclude": [
+			"!application/vendor/*",
+			"application/vendor/codeigniter/framework/application",
+			"application/vendor/codeigniter/framework/tests",
+			"application/vendor/codeigniter/framework/user_guide",
+			".gitignore",
+			".editorconfig",
+			"composer.json",
+			"composer.lock"
+		]
+	},
+	"scripts": {
+		"build": [
+			"@composer dump-autoload -o",
+			"@composer archive --format=zip --file build"
+		]
+	}
 }
