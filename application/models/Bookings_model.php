@@ -187,14 +187,8 @@ class Bookings_model extends CI_Model
 			}
 
 		}
-		elseif (isset($holidays[$booking_date_ymd]))
-		{
-			$cell['class'] = 'holiday';
-			$cell['body'] = $holidays[$booking_date_ymd][0]->name;
-		}
 		else
 		{
-
 			// No bookings
 			$book_url = site_url($url);	//site_url('bookings/book/'.$url);
 			$cell['class'] = 'free';
@@ -204,6 +198,14 @@ class Bookings_model extends CI_Model
 			}
 
 		}
+
+		// If a holiday is applicable, display that instead.
+		if (isset($holidays[$booking_date_ymd]))
+		{
+			$cell['class'] = 'holiday';
+			$cell['body'] = $holidays[$booking_date_ymd][0]->name;
+		}
+
 	#$cell['width'] =
 		#return sprintf('<td class="%s" valign="middle" align="center">%s</td>', $cell['class'], $cell['body']);
 		return $this->load->view('bookings/table/bookingcell', $cell, True);
