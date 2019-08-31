@@ -476,6 +476,7 @@ class Bookings extends MY_Controller
 			'period_id' => $data['period_id'],
 			'room_id' => $data['room_id'],
 			'booking_id' => $data['booking_id'],
+			'week_id' => $data['week_id'],
 		));
 
 		return count($bookings) == 0;

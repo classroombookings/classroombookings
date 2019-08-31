@@ -53,6 +53,7 @@ class Bookings_model extends CI_Model
 			'date' => NULL,
 			'period_id' => 0,
 			'room_id' => 0,
+			'week_id' => 0,
 		);
 
 		$data = array_merge($defaults, $params);
@@ -61,8 +62,12 @@ class Bookings_model extends CI_Model
 			$data['date'] = date("Y-m-d");
 		}
 
-		$week = $this->WeekObj(strtotime($data['date']));
-		$week_id = ($week ? $week->week_id : 0);
+		if (empty($data['week_id'])) {
+			$week = $this->WeekObj(strtotime($data['date']));
+			$week_id = ($week ? $week->week_id : 0);
+		} else {
+			$week_id = $data['week_id'];
+		}
 
 		$day_num = date('w', strtotime($data['date']));
 		$sql = "SELECT *
