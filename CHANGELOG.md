@@ -1,6 +1,14 @@
 # classroombookings Changelog
 
 
+## [2.0.4] 2019-08-31
+
+Another update to  make the "existing booking" check more robust.
+
+### Changed
+- Updated "Existing Bookings" check to make sure the Week was properly included.
+
+
 ## [2.0.3] 2019-08-31
 
 Small update to address a Holiday display issue.
