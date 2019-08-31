@@ -1,11 +1,21 @@
 # classroombookings Changelog
 
+
+## [2.0.3] 2019-08-31
+
+Small update to address a Holiday display issue.
+
+### Changed
+- Updated Bookings to display Holiday details, when applicable, instead of an existing static or recurring booking.
+
+
 ## [2.0.2] 2019-06-19
 
 One small bugfix.
 
 ### Changed
 - Fixed an issue with User and Department lists having default limit applied when they shouldn't.
+
 
 ## [2.0.1] - 2019-01-26
 
