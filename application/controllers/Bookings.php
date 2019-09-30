@@ -194,6 +194,10 @@ class Bookings extends MY_Controller
 			if ($this->userauth->is_level(ADMINISTRATOR)) {
 				$booking->day_num = isset($query['day']) ? $query['day'] : NULL;
 				$booking->week_id = isset($query['week']) ? $query['week'] : NULL;
+
+				if (empty($booking->day_num)) {
+					$booking->day_num = date('w', strtotime($query['date']));
+				}
 			}
 
 			$this->data['booking'] = $booking;
@@ -477,6 +481,7 @@ class Bookings extends MY_Controller
 			'room_id' => $data['room_id'],
 			'booking_id' => $data['booking_id'],
 			'week_id' => $data['week_id'],
+			'day_num' => $data['day_num'],
 		));
 
 		return count($bookings) == 0;

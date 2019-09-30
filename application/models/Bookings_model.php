@@ -54,6 +54,7 @@ class Bookings_model extends CI_Model
 			'period_id' => 0,
 			'room_id' => 0,
 			'week_id' => 0,
+			'day_num' => NULL,
 		);
 
 		$data = array_merge($defaults, $params);
@@ -69,7 +70,12 @@ class Bookings_model extends CI_Model
 			$week_id = $data['week_id'];
 		}
 
-		$day_num = date('w', strtotime($data['date']));
+		if ( ! strlen($data['day_num'])) {
+			$day_num = date('w', strtotime($data['date']));
+		} else {
+			$day_num = $data['day_num'];
+		}
+
 		$sql = "SELECT *
 				FROM bookings
 				WHERE (`date` = ? OR (day_num = ? AND week_id = ?) )
