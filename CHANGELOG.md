@@ -1,9 +1,20 @@
 # classroombookings Changelog
 
 
+## [2.0.5] 2019-09-30
+
+Another update to "existing booking" check and minor tweaks.
+
+### Changed
+- Updated "Existing Bookings" check to make sure the Weekday was properly included.
+- Updated the 'Recurring' section of the 'Make a booking' page to default the weekday value to the weekday of the chosen date.
+- Updated 'Add week' page to have a default contrasting background colour.
+
+
+
 ## [2.0.4] 2019-08-31
 
-Another update to  make the "existing booking" check more robust.
+Another update to make the "existing booking" check more robust.
 
 ### Changed
 - Updated "Existing Bookings" check to make sure the Week was properly included.
