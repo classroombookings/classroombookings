@@ -1,6 +1,20 @@
 # classroombookings Changelog
 
 
+## [2.1.0] 2019-11-13
+
+Introducing the new 'Maintenance Mode' feature.
+
+When eabled, Maintenance Mode prevents Teacher user accounts from viewing and making changes to bookings. The message can be customised, and will be displayed at the top of all pages.
+
+
+### Added
+- Added a new section to the School Details settings page to manage Maintenance Mode.
+
+### Fixed
+- Fixed an issue with one of the database migrations that might occur when updating from a pervious version.
+
+
 ## [2.0.5] 2019-09-30
 
 Another update to "existing booking" check and minor tweaks.
