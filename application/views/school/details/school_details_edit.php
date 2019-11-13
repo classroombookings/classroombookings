@@ -179,6 +179,49 @@ echo form_open_multipart('school/details_submit', array('id'=>'schooldetails', '
 
 </fieldset>
 
+
+<fieldset>
+
+	<legend accesskey="M" tabindex="<?php echo tab_index() ?>">Maintenance Mode</legend>
+
+	<div>Enabling Maintenance Mode prevents Teacher user accounts from viewing and making bookings. All users can still log in to make changes to their own account or change their password.</div>
+
+	<p>
+		<label for="maintenance_mode">Maintenance Mode</label>
+		<?php
+		$value = set_value('maintenance_mode', element('maintenance_mode', $settings, '0'), FALSE);
+		echo form_hidden('maintenance_mode', '0');
+		echo form_checkbox(array(
+			'name' => 'maintenance_mode',
+			'id' => 'maintenance_mode',
+			'value' => '1',
+			'tabindex' => tab_index(),
+			'checked' => ($value == '1')
+		));
+		?>
+	</p>
+
+
+	<p>
+		<label for="maintenance_mode_message">Message</label>
+		<?php
+		$field = 'maintenance_mode_message';
+		$value = set_value($field, element($field, $settings, ''), FALSE);
+		echo form_textarea(array(
+			'name' => $field,
+			'id' => $field,
+			'rows' => '5',
+			'cols' => '60',
+			'tabindex' => tab_index(),
+			'value' => $value,
+		));
+		?>
+		<p class="hint">This is the message that will be displayed during maintenance mode.</p>
+	</p>
+	<?php echo form_error($field) ?>
+
+</fieldset>
+
 <script type="text/javascript">
 Q.push(function() {
 	dynamicSelect('displaytype', 'd_columns');

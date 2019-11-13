@@ -40,6 +40,20 @@ if ($this->userauth->loggedin()) {
 	</script>
 </head>
 <body style="background-image:url('<?= base_url('assets/images/bg/global.png') ?>')">
+
+	<?php
+	if (setting('maintenance_mode') == 1) {
+		$message = setting('maintenance_mode_message');
+		if ( ! strlen($message)) {
+			$message = 'classroombookings is currently in maintenance mode. Please check again soon.';
+		}
+		echo "<div class='maintenance-wrapper'>";
+		echo "<div class='outer'>";
+		echo html_escape($message);
+		echo "</div>";
+		echo "</div>";
+	}
+	?>
 	<div class="outer">
 
 		<div class="header">
