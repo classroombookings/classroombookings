@@ -25,6 +25,15 @@ class Bookings extends MY_Controller
 			'users' => $this->users_model->Get(NULL, NULL, NULL),
 			'days_list' => $this->periods_model->days,
 		);
+
+		if ($this->userauth->is_level(TEACHER) && setting('maintenance_mode')) {
+			$this->data['title'] = 'Bookings';
+			$this->data['showtitle'] = '';
+			$this->data['body'] = '';
+			$this->render();
+			$this->output->_display();
+			exit();
+		}
 	}
 
 

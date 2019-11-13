@@ -84,6 +84,8 @@ class School extends MY_Controller
 		$this->form_validation->set_rules('userfile', 'Logo', '');
 		$this->form_validation->set_rules('d_columns', 'Display columns', 'callback__valid_columns');
 		$this->form_validation->set_rules('bia', 'Booking in advance', 'max_length[3]|numeric');
+		$this->form_validation->set_rules('maintenance_mode', 'Maintenance mode', 'is_natural');
+		$this->form_validation->set_rules('maintenance_mode_message', 'Maintenance mode message', 'max_length[1024]');
 
 		if ($this->form_validation->run() == FALSE) {
 			// Validation failed
@@ -151,6 +153,8 @@ class School extends MY_Controller
 			'bia' => (int) $this->input->post('bia'),
 			'displaytype' => $this->input->post('displaytype'),
 			'd_columns' => $this->input->post('d_columns'),
+			'maintenance_mode' => $this->input->post('maintenance_mode'),
+			'maintenance_mode_message' => $this->input->post('maintenance_mode_message'),
 		);
 
 		if ($upload == TRUE || $this->input->post('logo_delete')) {
