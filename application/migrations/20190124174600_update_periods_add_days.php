@@ -89,6 +89,10 @@ class Migration_Update_periods_add_days extends CI_Migration
 				}
 			}
 
+			if (empty($update)) {
+				continue;
+			}
+
 			$this->db->update('periods', $update, "period_id = {$period['period_id']}", 1);
 		}
 	}
