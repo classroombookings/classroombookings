@@ -1,5 +1,10 @@
 # classroombookings Changelog
 
+## [2.1.1] 2019-12-02
+
+### Fixed
+- Fixed issue where Install page wouldn't load/would display errors when trying to load database.
+
 
 ## [2.1.0] 2019-11-13
 
