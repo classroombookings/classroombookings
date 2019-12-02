@@ -17,6 +17,11 @@ class Settings_model extends CI_Model
 
 	public function get($name, $group = 'crbs')
 	{
+		// Check for db var (not set during install)
+		if ( ! isset($this->db)) {
+			return FALSE;
+		}
+
 		if (array_key_exists($group, $this->_cache) && array_key_exists($name, $this->_cache[$group])) {
 			return $this->_cache[$group][$name];
 		}
@@ -48,6 +53,11 @@ class Settings_model extends CI_Model
 
 	public function get_all($group = NULL)
 	{
+		// Check for db var (not set during install)
+		if ( ! isset($this->db)) {
+			return FALSE;
+		}
+
 		$where = array();
 
 		if (strlen($group)) {
