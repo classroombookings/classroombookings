@@ -17,8 +17,7 @@ class Settings_model extends CI_Model
 
 	public function get($name, $group = 'crbs')
 	{
-		// Check for db var (not set during install)
-		if ( ! isset($this->db)) {
+		if ( ! config_item('is_installed')) {
 			return FALSE;
 		}
 
@@ -53,8 +52,7 @@ class Settings_model extends CI_Model
 
 	public function get_all($group = NULL)
 	{
-		// Check for db var (not set during install)
-		if ( ! isset($this->db)) {
+		if ( ! config_item('is_installed')) {
 			return FALSE;
 		}
 
