@@ -1,5 +1,11 @@
 # classroombookings Changelog
 
+## [2.1.2] 2019-12-03
+
+### Fixed
+- Fixed previous fix for database detection during installation which affected post-install.
+
+
 ## [2.1.1] 2019-12-02
 
 ### Fixed
