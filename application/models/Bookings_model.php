@@ -59,10 +59,6 @@ class Bookings_model extends CI_Model
 
 		$data = array_merge($defaults, $params);
 
-		if (empty($data['date'])) {
-			$data['date'] = date("Y-m-d");
-		}
-
 		if (empty($data['week_id'])) {
 			$week = $this->WeekObj(strtotime($data['date']));
 			$week_id = ($week ? $week->week_id : 0);
@@ -78,22 +74,24 @@ class Bookings_model extends CI_Model
 
 		$sql = "SELECT *
 				FROM bookings
-				WHERE (`date` = ? OR (day_num = ? AND week_id = ?) )
-				AND period_id = ?
+				WHERE period_id = ?
 				AND room_id = ?";
+
+		if ( ! empty($data['date'])) {
+			$date_escaped = $this->db->escape($data['date']);
+			$sql .= " AND (`date` = {$date_escaped} OR (day_num = {$day_num} AND week_id = {$week_id}))";
+		} else {
+			$sql .= " AND (day_num = {$day_num} AND week_id = {$week_id}) ";
+		}
 
 		if ( ! empty($data['booking_id'])) {
 			$sql .= " AND booking_id != " . $this->db->escape($data['booking_id']);
 		}
 
 		$query = $this->db->query($sql, array(
-			$data['date'],
-			$day_num,
-			$week_id,
 			$data['period_id'],
 			$data['room_id'],
 		));
-		// echo $this->db->last_query();
 
 		return $query->result_array();
 	}

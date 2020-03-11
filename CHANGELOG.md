@@ -1,5 +1,11 @@
 # classroombookings Changelog
 
+## [2.1.3] 2020-03-11
+
+### Fixed
+- Fixed another situation where existing bookings were being detected incorrectly.
+
+
 ## [2.1.2] 2019-12-03
 
 ### Fixed
