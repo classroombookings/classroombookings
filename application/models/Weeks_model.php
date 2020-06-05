@@ -208,7 +208,7 @@ class Weeks_model extends CI_Model
 		$i=0;
 		while ($ay_start <= $ay_end) {
 
-			if (date("w", $ay_start) == 1) {
+			if (date("N", $ay_start) == 1) {
 				$nextdate = date("Y-m-d", $ay_start);
 			} else {
 				$nextdate = date("Y-m-d", strtotime("last Monday", $ay_start));

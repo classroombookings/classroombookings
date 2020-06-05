@@ -70,7 +70,7 @@ class Bookings extends MY_Controller
 				$this->school['chosen_date'] = $this->session->userdata('chosen_date');
 			}*/
 			// Day number of the chosen date
-			$day_num = date('w', strtotime($query['date']));
+			$day_num = date('N', strtotime($query['date']));
 			#$this->school['chosen_date'] = $chosen_date;
 			#$this->session->set_userdata('chosen_date', $this->school['chosen_date']);
 		}
@@ -205,7 +205,7 @@ class Bookings extends MY_Controller
 				$booking->week_id = isset($query['week']) ? $query['week'] : NULL;
 
 				if (empty($booking->day_num)) {
-					$booking->day_num = date('w', strtotime($query['date']));
+					$booking->day_num = date('N', strtotime($query['date']));
 				}
 			}
 

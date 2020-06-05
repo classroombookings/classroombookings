@@ -38,7 +38,7 @@ class Bookings_model extends CI_Model
 			$date = date("Y-m-d");
 		}
 
-		$day_num = date('w', strtotime($date));
+		$day_num = date('N', strtotime($date));
 		$query_str = "SELECT * FROM bookings WHERE (`date`='$date' OR day_num=$day_num)";
 		$query = $this->db->query($query_str);
 		$result = $query->result_array();
@@ -67,7 +67,7 @@ class Bookings_model extends CI_Model
 		}
 
 		if ( ! strlen($data['day_num'])) {
-			$day_num = date('w', strtotime($data['date']));
+			$day_num = date('N', strtotime($data['date']));
 		} else {
 			$day_num = $data['day_num'];
 		}
@@ -244,8 +244,7 @@ class Bookings_model extends CI_Model
 		}
 
 		// Today's weekday number
-		$day_num = date('w', $date);
-		$day_num = ($day_num == 0 ? 7 : $day_num);
+		$day_num = date('N', $date);
 
 		// Get info on the current week
 		$this_week = $this->WeekObj($date);
@@ -698,7 +697,7 @@ class Bookings_model extends CI_Model
 								foreach ($results as $row) {
 									if ( ! empty($row->date)) {
 										// Static booking on date
-										$this_daynum = date('w', strtotime($row->date));
+										$this_daynum = date('N', strtotime($row->date));
 										$bookings[$this_daynum] = $row;
 									} else {
 										// Recurring booking
@@ -1005,7 +1004,7 @@ class Bookings_model extends CI_Model
 	public function WeekObj($date)
 	{
 		// First find the monday date of the week that $date is in
-		if (date("w", $date) == 1) {
+		if (date("N", $date) == 1) {
 			$nextdate = date("Y-m-d", $date);
 		} else {
 			$nextdate = date("Y-m-d", strtotime("last Monday", $date));
