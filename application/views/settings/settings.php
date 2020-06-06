@@ -21,9 +21,26 @@ echo form_open('settings', array('id'=>'settings', 'class'=>'cssform'));
 			'value' => $value,
 		));
 		?>
-		<p class="hint">How many days in the future users can make their own bookings. Enter 0 for no restriction.</p>
+		<p class="hint">How many days in the future users can make their own bookings. Enter <span>0</span> for no restriction.</p>
 	</p>
 	<?php echo form_error('bia') ?>
+
+	<p>
+		<label for="num_max_bookings">Maximum active bookings</label>
+		<?php
+		$value = (int) set_value('num_max_bookings', element('num_max_bookings', $settings), FALSE);
+		echo form_input(array(
+			'name' => 'num_max_bookings',
+			'id' => 'num_max_bookings',
+			'size' => '5',
+			'tabindex' => tab_index(),
+			'value' => $value,
+		));
+		?>
+		<p class="hint">Maximum number of active single bookings for a user. Enter <span>0</span> for no limit.</p>
+		<p class="hint">'Active' is any single booking for a date and period start time in the future.</p>
+	</p>
+	<?php echo form_error('num_max_bookings') ?>
 
 	<hr size="1" />
 

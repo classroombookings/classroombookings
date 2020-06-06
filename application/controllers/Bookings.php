@@ -223,11 +223,9 @@ class Bookings extends MY_Controller
 			$this->data['users'] = $this->school['users'];
 		}
 
-		$query = $this->_get_query();
-		$this->data['query_string'] = http_build_query($query);
-
-		$this->data['cancel_uri'] = 'bookings?' . http_build_query($query);
-
+		$prev_query = $this->_get_query();
+		$this->data['query_string'] = http_build_query($prev_query);
+		$this->data['cancel_uri'] = 'bookings?' . http_build_query($prev_query);
 		$this->data['body'] = $this->load->view('bookings/bookings_book', $this->data, TRUE);
 
 		// If we have a date and the user is a teacher, do some extra checks
@@ -235,23 +233,30 @@ class Bookings extends MY_Controller
 
 		if (isset($query['date']) && $this->userauth->is_level(TEACHER)) {
 
-			// Check that the date selected is not in the past
-			//
-			$today = strtotime(date("Y-m-d"));
-			$thedate = strtotime($query['date']);
+			$booking_status = $this->userauth->can_create_booking($query['date']);
 
-			if ($thedate < $today) {
-				$this->data['body'] = msgbox('error', 'You cannot make a booking in the past.');
-			}
+			if ($booking_status->result === FALSE) {
 
-			// Now see if user is allowed to book in advance
-			//
-			$bia = (int) setting('bia');
-			if ($bia > 0) {
-				$date_forward = strtotime("+{$bia} days", $today);
-				if ($thedate > $date_forward) {
-					$this->data['body'] =  msgbox('error', sprintf('You can only book %d days in advance.', $bia));
+				$messages = [];
+
+				if ( ! $booking_status->in_quota) {
+					$msg = "You have reached the maximum number of active bookings (%d).";
+					$msg = sprintf($msg, setting('num_max_bookings'));
+					$messages[] = msgbox('error', $msg);
 				}
+
+				if ( ! $booking_status->is_future_date) {
+					$msg = "The chosen date is in the past.";
+					$messages[] = msgbox('error', $msg);
+				}
+
+				if ( ! $booking_status->date_in_range) {
+					$msg = "The chosen date must be less than %d days in the future.";
+					$msg = sprintf($msg, setting('bia'));
+					$messages[] = msgbox('error', $msg);
+				}
+
+				$this->data['body'] = implode("\n", $messages);
 			}
 
 		}

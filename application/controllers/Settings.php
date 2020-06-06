@@ -45,8 +45,10 @@ class Settings extends MY_Controller
 		$this->load->library('image_lib');
 
 		$this->load->library('form_validation');
-		$this->form_validation->set_rules('d_columns', 'Display columns', 'callback__valid_columns');
 		$this->form_validation->set_rules('bia', 'Booking in advance', 'max_length[3]|numeric');
+		$this->form_validation->set_rules('num_max_bookings', 'Maximum number of bookings', 'max_length[3]|numeric');
+		$this->form_validation->set_rules('displaytype', 'Display type', 'required');
+		$this->form_validation->set_rules('d_columns', 'Display columns', 'callback__valid_columns');
 		$this->form_validation->set_rules('date_format_long', 'Long date format', 'required|max_length[15]');
 		$this->form_validation->set_rules('date_format_weekday', 'Weekday date format', 'max_length[15]');
 		$this->form_validation->set_rules('time_format_period', 'Period time format', 'max_length[15]');
@@ -60,6 +62,7 @@ class Settings extends MY_Controller
 
 		$settings = array(
 			'bia' => (int) $this->input->post('bia'),
+			'num_max_bookings' => (int) $this->input->post('num_max_bookings'),
 			'displaytype' => $this->input->post('displaytype'),
 			'd_columns' => $this->input->post('d_columns'),
 			'date_format_long' => $this->input->post('date_format_long'),

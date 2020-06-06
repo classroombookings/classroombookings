@@ -199,12 +199,21 @@ class Bookings_model extends CI_Model
 		else
 		{
 			// No bookings
-			$book_url = site_url($url);	//site_url('bookings/book/'.$url);
 			$cell['class'] = 'free';
-			$cell['body'] = '<a href="'.$book_url.'"><img src="' . base_url('assets/images/ui/accept.png') . '" width="16" height="16" alt="Book" title="Book" hspace="4" align="absmiddle" />Book</a>';
-			if($this->userauth->is_level(ADMINISTRATOR)){
-				$cell['body'] .= '<input type="checkbox" name="recurring[]" value="'.$url.'" />';
+			$cell['body'] = '';
+
+			$booking_status = $this->userauth->can_create_booking($booking_date_ymd);
+			if ($booking_status->result === TRUE)
+			{
+				$book_url = site_url($url);
+				$cell['class'] = 'free';
+				$cell['body'] = '<a href="'.$book_url.'"><img src="' . base_url('assets/images/ui/accept.png') . '" width="16" height="16" alt="Book" title="Book" hspace="4" align="absmiddle" />Book</a>';
+				if ($booking_status->is_admin)
+				{
+					$cell['body'] .= '<input type="checkbox" name="recurring[]" value="'.$url.'" />';
+				}
 			}
+
 
 		}
 
@@ -1115,6 +1124,33 @@ class Bookings_model extends CI_Model
 	}
 
 
+	public function CountScheduledByUser($user_id)
+	{
+		$today = date("Y-m-d");
+		$time = date('H:i');
+
+		$sql = 'SELECT COUNT(booking_id) AS total
+				FROM bookings
+				JOIN periods ON periods.period_id = bookings.period_id
+				WHERE bookings.user_id = ?
+				AND bookings.cancelled = 0
+				AND bookings.date IS NOT NULL
+				AND (
+					(bookings.date > ?)	/* after today */
+					OR
+					(bookings.date = ? AND periods.time_start > ?) /* today, but after cur time */
+				)';
+
+		$query = $this->db->query($sql, [
+			$user_id,
+			$today,
+			$today,
+			$time
+		]);
+
+		$row = $query->row_array();
+		return (int) $row['total'];
+	}
 
 
 	function TotalNum($user_id = 0)
@@ -1122,26 +1158,32 @@ class Bookings_model extends CI_Model
 		$today = date("Y-m-d");
 
 		// All bookings by user, EVER!
-		$sql = "SELECT * FROM bookings WHERE user_id='$user_id'";
-		$query = $this->db->query($sql);
-		$total['all'] = $query->num_rows();
+		$sql = "SELECT COUNT(booking_id) AS total
+				FROM bookings
+				WHERE user_id = ?";
+		$query = $this->db->query($sql, [$user_id]);
+		$row = $query->row_array();
+		$total['all'] = $row['total'];
 
 		// All bookings by user, for this academic year, up to and including today
-		$sql = "SELECT * FROM bookings
+		$sql = "SELECT COUNT(booking_id) AS total
+				FROM bookings
 				JOIN academicyears ON bookings.date >= academicyears.date_start
-				WHERE user_id='$user_id' ";
-		$query = $this->db->query($sql);
-		$total['yeartodate'] = $query->num_rows();
+				WHERE bookings.user_id = ? ";
+		$query = $this->db->query($sql, [$user_id]);
+		$row = $query->row_array();
+		$total['yeartodate'] = $row['total'];
 
 		// All bookings up to and including today
-		$sql = "SELECT * FROM bookings WHERE user_id='$user_id' AND date <= '$today'";
-		$query = $this->db->query($sql);
-		$total['todate'] = $query->num_rows();
+		$sql = "SELECT COUNT(booking_id) AS total
+				FROM bookings
+				WHERE bookings.user_id = ?
+				AND bookings.date <= ?";
+		$query = $this->db->query($sql, [$user_id, $today]);
+		$row = $query->row_array();
+		$total['todate'] = $row['total'];
 
-		// All "active" bookings (today onwards)
-		$sql = "SELECT * FROM bookings WHERE user_id='$user_id' AND date >= '$today'";
-		$query = $this->db->query($sql);
-		$total['active'] = $query->num_rows();
+		$total['active'] = $this->CountScheduledByUser($user_id);
 
 		return $total;
 	}
