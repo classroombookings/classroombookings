@@ -80,12 +80,7 @@ class School extends MY_Controller
 		$this->load->library('form_validation');
 		$this->form_validation->set_rules('schoolname', 'School name', 'required|max_length[255]');
 		$this->form_validation->set_rules('website', 'Website address', 'prep_url|valid_url|max_length[255]');
-		$this->form_validation->set_rules('colour', 'Colour', 'max_length[7]|callback__is_valid_colour');
 		$this->form_validation->set_rules('userfile', 'Logo', '');
-		$this->form_validation->set_rules('d_columns', 'Display columns', 'callback__valid_columns');
-		$this->form_validation->set_rules('bia', 'Booking in advance', 'max_length[3]|numeric');
-		$this->form_validation->set_rules('maintenance_mode', 'Maintenance mode', 'is_natural');
-		$this->form_validation->set_rules('maintenance_mode_message', 'Maintenance mode message', 'max_length[1024]');
 
 		if ($this->form_validation->run() == FALSE) {
 			// Validation failed
@@ -149,12 +144,6 @@ class School extends MY_Controller
 		$settings = array(
 			'name' => $this->input->post('schoolname'),
 			'website' => $this->input->post('website'),
-			'colour' => $this->_makecol($this->input->post('colour')),
-			'bia' => (int) $this->input->post('bia'),
-			'displaytype' => $this->input->post('displaytype'),
-			'd_columns' => $this->input->post('d_columns'),
-			'maintenance_mode' => $this->input->post('maintenance_mode'),
-			'maintenance_mode_message' => $this->input->post('maintenance_mode_message'),
 		);
 
 		if ($upload == TRUE || $this->input->post('logo_delete')) {
@@ -169,88 +158,11 @@ class School extends MY_Controller
 			}
 		}
 
-		// If colour is empty then set the default so Gradient still works
-		if ( ! strlen($settings['colour'])) {
-			$settings['colour'] = '468ED8';
-		}
-
 		$this->settings_model->set($settings);
 
 		$this->session->set_flashdata('saved', msgbox('info', 'School Details have been updated.'));
 
 		redirect('school/details');
-	}
-
-
-	function _is_valid_colour($colour)
-	{
-		if ($colour == '' ) {
-			return true;
-		}
-
-		$hex = array('0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F');
-		#print_r($hex);
-		// Remove the hash
-		$colour = strtoupper(str_replace('#', '', $colour));
-		// Make sure we do have 6 digits
-		if (strlen($colour) == 6) {
-			$ret = true;
-			for ($i=0;$i<strlen($colour);$i++) {
-				#echo $colour{$i};
-				if ( ! in_array($colour{$i}, $hex)) {
-					$this->form_validation->set_message('_is_valid_colour', 'You entered an invalid colour value.');
-					return false;
-					$ret = false;
-				}
-			}
-		} else {
-			$this->form_validation->set_message('_is_valid_colour', 'You entered an invalid colour value.');
-			$ret = FALSE;
-		}
-
-		return $ret;
-	}
-
-
-	function _valid_columns($cols)
-	{
-		// Day: Periods / Rooms
-		// Room: Periods / Days
-		$valid['day'] = array('periods', 'rooms');
-		$valid['room'] = array('periods', 'days');
-
-		$displaytype = $this->input->post('displaytype');
-
-		switch ($displaytype) {
-
-			case 'day':
-				if (in_array($cols, $valid['day'])) {
-					$ret = TRUE;
-				} else {
-					$ret = FALSE;
-				}
-			break;
-
-			case 'room':
-				if (in_array($cols, $valid['room'])) {
-					$ret = TRUE;
-				} else {
-					$ret = FALSE;
-				}
-			break;
-		}
-
-		if ($ret == FALSE) {
-			$this->form_validation->set_message('_valid_columns', 'The column you selected is incompatible with the display type.');
-		}
-
-		return $ret;
-	}
-
-
-	function _makecol($colour)
-	{
-		return strtoupper(str_replace('#', '', $colour));
 	}
 
 
