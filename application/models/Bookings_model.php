@@ -350,7 +350,7 @@ class Bookings_model extends CI_Model
 					$week_bar['next_text'] = 'Next &rarr; ';
 				}
 
-				$week_bar['longdate'] = date("l jS F Y", $date);
+				$week_bar['longdate'] = date(setting('date_format_long'), $date);
 
 			break;
 		}
@@ -371,7 +371,7 @@ class Bookings_model extends CI_Model
 					$this_date = strtotime("+1 day", $this_date);
 				}
 
-				$week_bar['longdate'] = 'Week commencing '.date("l jS F Y", strtotime($this_week->date));
+				$week_bar['longdate'] = 'Week commencing '.date(setting('date_format_long'), strtotime($this_week->date));
 			}
 
 			$week_bar['style'] = sprintf('padding:6px 3px;font-weight:bold;background:#%s;color:#%s', $this_week->bgcol, $this_week->fgcol);
@@ -381,7 +381,7 @@ class Bookings_model extends CI_Model
 		} else {
 
 			// No week - change the properties to indicate no week available
-			$week_bar['longdate'] = 'Week of '.date("l jS F Y", $date);;
+			$week_bar['longdate'] = 'Week of '.date(setting('date_format_long'), $date);;
 			$week_bar['week_name'] = 'None';
 			$week_bar['style'] = sprintf('padding:6px 3px;font-weight:bold;background:#%s;color:#%s', 'dddddd', '000');
 			$html .= $this->load->view('bookings/week_bar', $week_bar, TRUE);
@@ -551,9 +551,10 @@ class Bookings_model extends CI_Model
 
 			case 'days':
 
-				foreach ($school['days_list'] as $dayofweek) {
+				foreach ($school['days_list'] as $day_num => $dayofweek) {
 					$day['width'] = $col_width;
 					$day['name'] = $dayofweek;
+					$day['date'] = $weekdates[$day_num];
 					$html .= $this->load->view('bookings/table/headings/days', $day, TRUE);
 				}
 

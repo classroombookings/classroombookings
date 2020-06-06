@@ -92,12 +92,13 @@ if (isset($booking) && ! empty($booking->date)) {
 	<p>
 		<label for="period_id" class="required">Period:</label>
 		<?php
+		$time_fmt = setting('time_format_period');
 		$period_options = array();
 		foreach ($periods as $period) {
 			$label = sprintf("%s (%s - %s)",
 				$period->name,
-				date('G:i', strtotime($period->time_start)),
-				date('G:i', strtotime($period->time_end)));
+				date($time_fmt, strtotime($period->time_start)),
+				date($time_fmt, strtotime($period->time_end)));
 			$period_options[ $period->period_id ] = html_escape($label);
 		}
 		$field = 'period_id';
