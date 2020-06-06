@@ -3,8 +3,8 @@
 echo $this->session->flashdata('saved');
 
 $iconbar = iconbar(array(
-	array('weeks/add', 'Add Week', 'add.gif'),
-	array('weeks/academicyear', 'Academic Year', 'school_manage_weeks_academicyear.gif'),
+	array('weeks/add', 'Add Week', 'add.png'),
+	array('weeks/academicyear', 'Academic Year', 'school_manage_weeks_academicyear.png'),
 ));
 
 echo $iconbar;

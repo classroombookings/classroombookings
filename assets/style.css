@@ -201,7 +201,7 @@ p.msgbox{
 }
 /* ERROR */
 p.msgbox.error{
-	background-image:url(i_error.gif);
+	background-image:url(i_error.png);
 	background-color:#FBE6F2;
 	border-color:#D893A1;
 }
@@ -212,19 +212,19 @@ p.msgbox.error{
 }*/
 /* INFORMATION */
 p.msgbox.info{
-	background-image:url(i_info.gif);
+	background-image:url(i_info.png);
 	background-color:#E6FBF2;
 	border-color:#93D8A1;
 }
 /* EXCLAMATION */
 p.msgbox.exclamation{
-	background-image:url(i_exclamation.gif);
+	background-image:url(i_exclamation.png);
 	background-color:#FBE6F2;
 	border-color:#D893A1;
 }
 /* QUESTION */
 p.msgbox.question{
-	background-image:url(i_help.gif);
+	background-image:url(i_help.png);
 	background-color:#E6FBF2;
 	border-color:#93D8A1;
 }

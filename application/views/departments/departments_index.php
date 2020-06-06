@@ -3,7 +3,7 @@
 echo $this->session->flashdata('saved');
 
 $iconbar = iconbar(array(
-	array('departments/add', 'Add Department', 'add.gif'),
+	array('departments/add', 'Add Department', 'add.png'),
 ));
 
 echo $iconbar;

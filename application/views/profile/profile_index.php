@@ -2,7 +2,7 @@
 echo $this->session->flashdata('saved');
 
 echo iconbar(array(
-	array('profile/edit', 'Edit my details', 'user_edit.gif'),
+	array('profile/edit', 'Edit my details', 'user_edit.png'),
 ));
 
 ?>
@@ -29,6 +29,7 @@ foreach($myroom as $booking){
 <?php
 foreach($mybookings as $booking){
 	$string = '<li>%s is booked on %s for %s. %s.</li>';
+	$notes = '';
 	if($booking->notes){ $notes = '('. $booking->notes.')'; }
 	echo sprintf($string, html_escape($booking->name), date("d/m/Y", strtotime($booking->date)), html_escape($booking->periodname), html_escape($notes));
 }

@@ -38,7 +38,7 @@ class Bookings_model extends CI_Model
 			$date = date("Y-m-d");
 		}
 
-		$day_num = date('w', strtotime($date));
+		$day_num = date('N', strtotime($date));
 		$query_str = "SELECT * FROM bookings WHERE (`date`='$date' OR day_num=$day_num)";
 		$query = $this->db->query($query_str);
 		$result = $query->result_array();
@@ -67,7 +67,7 @@ class Bookings_model extends CI_Model
 		}
 
 		if ( ! strlen($data['day_num'])) {
-			$day_num = date('w', strtotime($data['date']));
+			$day_num = date('N', strtotime($data['date']));
 		} else {
 			$day_num = $data['day_num'];
 		}
@@ -165,7 +165,7 @@ class Bookings_model extends CI_Model
 			// Edit if admin?
 			 if($this->userauth->is_level(ADMINISTRATOR)){
 				$edit_url = site_url('bookings/edit/'.$booking->booking_id);
-				$src = base_url('assets/images/ui/edit.gif');
+				$src = base_url('assets/images/ui/edit.png');
 				$cell['body'] .= '<br /><a class="booking-action" href="'.$edit_url.'" title="Edit this booking">';
 				// $cell['body'] .= '<img alt="edit" src="' . $src . '" width="16" height="16" alt="Book" title="Edit" hspace="4" align="absmiddle" >';
 				$cell['body'] .= ' edit </a>';
@@ -186,25 +186,34 @@ class Bookings_model extends CI_Model
 				$cancel_url = site_url('bookings/cancel/'.$booking->booking_id);
 				if(!isset($edit)){ $cell['body'] .= '<br />'; }
 
-				$src = base_url('assets/images/ui/delete.gif');
+				$src = base_url('assets/images/ui/delete.png');
 
 				$cell['body'] .= '<button class="button-empty booking-action" type="submit" name="cancel" value="' . $booking->booking_id . '" onclick="if(!confirm(\''.$cancel_msg.'\')){return false;}">';
 				$cell['body'] .= 'cancel';
 				// $cell['body'] .= '<img alt="cancel" src="' . $src . '">';
 				$cell['body'] .= '</button>';
-				// $cell['body'] .= '<a onclick="if(!confirm(\''.$cancel_msg.'\')){return false;}" href="'.$cancel_url.'" title="Cancel this booking"><img src="' . base_url('assets/images/ui/delete.gif') . '" width="16" height="16" alt="Cancel" title="Cancel this booking" hspace="8" /></a>';
+				// $cell['body'] .= '<a onclick="if(!confirm(\''.$cancel_msg.'\')){return false;}" href="'.$cancel_url.'" title="Cancel this booking"><img src="' . base_url('assets/images/ui/delete.png') . '" width="16" height="16" alt="Cancel" title="Cancel this booking" hspace="8" /></a>';
 			}
 
 		}
 		else
 		{
 			// No bookings
-			$book_url = site_url($url);	//site_url('bookings/book/'.$url);
 			$cell['class'] = 'free';
-			$cell['body'] = '<a href="'.$book_url.'"><img src="' . base_url('assets/images/ui/accept.gif') . '" width="16" height="16" alt="Book" title="Book" hspace="4" align="absmiddle" />Book</a>';
-			if($this->userauth->is_level(ADMINISTRATOR)){
-				$cell['body'] .= '<input type="checkbox" name="recurring[]" value="'.$url.'" />';
+			$cell['body'] = '';
+
+			$booking_status = $this->userauth->can_create_booking($booking_date_ymd);
+			if ($booking_status->result === TRUE)
+			{
+				$book_url = site_url($url);
+				$cell['class'] = 'free';
+				$cell['body'] = '<a href="'.$book_url.'"><img src="' . base_url('assets/images/ui/accept.png') . '" width="16" height="16" alt="Book" title="Book" hspace="4" align="absmiddle" />Book</a>';
+				if ($booking_status->is_admin)
+				{
+					$cell['body'] .= '<input type="checkbox" name="recurring[]" value="'.$url.'" />';
+				}
 			}
+
 
 		}
 
@@ -244,8 +253,7 @@ class Bookings_model extends CI_Model
 		}
 
 		// Today's weekday number
-		$day_num = date('w', $date);
-		$day_num = ($day_num == 0 ? 7 : $day_num);
+		$day_num = date('N', $date);
 
 		// Get info on the current week
 		$this_week = $this->WeekObj($date);
@@ -351,7 +359,7 @@ class Bookings_model extends CI_Model
 					$week_bar['next_text'] = 'Next &rarr; ';
 				}
 
-				$week_bar['longdate'] = date("l jS F Y", $date);
+				$week_bar['longdate'] = date(setting('date_format_long'), $date);
 
 			break;
 		}
@@ -372,7 +380,7 @@ class Bookings_model extends CI_Model
 					$this_date = strtotime("+1 day", $this_date);
 				}
 
-				$week_bar['longdate'] = 'Week commencing '.date("l jS F Y", strtotime($this_week->date));
+				$week_bar['longdate'] = 'Week commencing '.date(setting('date_format_long'), strtotime($this_week->date));
 			}
 
 			$week_bar['style'] = sprintf('padding:6px 3px;font-weight:bold;background:#%s;color:#%s', $this_week->bgcol, $this_week->fgcol);
@@ -382,7 +390,7 @@ class Bookings_model extends CI_Model
 		} else {
 
 			// No week - change the properties to indicate no week available
-			$week_bar['longdate'] = 'Week of '.date("l jS F Y", $date);;
+			$week_bar['longdate'] = 'Week of '.date(setting('date_format_long'), $date);;
 			$week_bar['week_name'] = 'None';
 			$week_bar['style'] = sprintf('padding:6px 3px;font-weight:bold;background:#%s;color:#%s', 'dddddd', '000');
 			$html .= $this->load->view('bookings/week_bar', $week_bar, TRUE);
@@ -552,9 +560,10 @@ class Bookings_model extends CI_Model
 
 			case 'days':
 
-				foreach ($school['days_list'] as $dayofweek) {
+				foreach ($school['days_list'] as $day_num => $dayofweek) {
 					$day['width'] = $col_width;
 					$day['name'] = $dayofweek;
+					$day['date'] = $weekdates[$day_num];
 					$html .= $this->load->view('bookings/table/headings/days', $day, TRUE);
 				}
 
@@ -698,7 +707,7 @@ class Bookings_model extends CI_Model
 								foreach ($results as $row) {
 									if ( ! empty($row->date)) {
 										// Static booking on date
-										$this_daynum = date('w', strtotime($row->date));
+										$this_daynum = date('N', strtotime($row->date));
 										$bookings[$this_daynum] = $row;
 									} else {
 										// Recurring booking
@@ -1005,7 +1014,7 @@ class Bookings_model extends CI_Model
 	public function WeekObj($date)
 	{
 		// First find the monday date of the week that $date is in
-		if (date("w", $date) == 1) {
+		if (date("N", $date) == 1) {
 			$nextdate = date("Y-m-d", $date);
 		} else {
 			$nextdate = date("Y-m-d", strtotime("last Monday", $date));
@@ -1115,6 +1124,33 @@ class Bookings_model extends CI_Model
 	}
 
 
+	public function CountScheduledByUser($user_id)
+	{
+		$today = date("Y-m-d");
+		$time = date('H:i');
+
+		$sql = 'SELECT COUNT(booking_id) AS total
+				FROM bookings
+				JOIN periods ON periods.period_id = bookings.period_id
+				WHERE bookings.user_id = ?
+				AND bookings.cancelled = 0
+				AND bookings.date IS NOT NULL
+				AND (
+					(bookings.date > ?)	/* after today */
+					OR
+					(bookings.date = ? AND periods.time_start > ?) /* today, but after cur time */
+				)';
+
+		$query = $this->db->query($sql, [
+			$user_id,
+			$today,
+			$today,
+			$time
+		]);
+
+		$row = $query->row_array();
+		return (int) $row['total'];
+	}
 
 
 	function TotalNum($user_id = 0)
@@ -1122,26 +1158,32 @@ class Bookings_model extends CI_Model
 		$today = date("Y-m-d");
 
 		// All bookings by user, EVER!
-		$sql = "SELECT * FROM bookings WHERE user_id='$user_id'";
-		$query = $this->db->query($sql);
-		$total['all'] = $query->num_rows();
+		$sql = "SELECT COUNT(booking_id) AS total
+				FROM bookings
+				WHERE user_id = ?";
+		$query = $this->db->query($sql, [$user_id]);
+		$row = $query->row_array();
+		$total['all'] = $row['total'];
 
 		// All bookings by user, for this academic year, up to and including today
-		$sql = "SELECT * FROM bookings
+		$sql = "SELECT COUNT(booking_id) AS total
+				FROM bookings
 				JOIN academicyears ON bookings.date >= academicyears.date_start
-				WHERE user_id='$user_id' ";
-		$query = $this->db->query($sql);
-		$total['yeartodate'] = $query->num_rows();
+				WHERE bookings.user_id = ? ";
+		$query = $this->db->query($sql, [$user_id]);
+		$row = $query->row_array();
+		$total['yeartodate'] = $row['total'];
 
 		// All bookings up to and including today
-		$sql = "SELECT * FROM bookings WHERE user_id='$user_id' AND date <= '$today'";
-		$query = $this->db->query($sql);
-		$total['todate'] = $query->num_rows();
+		$sql = "SELECT COUNT(booking_id) AS total
+				FROM bookings
+				WHERE bookings.user_id = ?
+				AND bookings.date <= ?";
+		$query = $this->db->query($sql, [$user_id, $today]);
+		$row = $query->row_array();
+		$total['todate'] = $row['total'];
 
-		// All "active" bookings (today onwards)
-		$sql = "SELECT * FROM bookings WHERE user_id='$user_id' AND date >= '$today'";
-		$query = $this->db->query($sql);
-		$total['active'] = $query->num_rows();
+		$total['active'] = $this->CountScheduledByUser($user_id);
 
 		return $total;
 	}

@@ -3,7 +3,7 @@
 echo $this->session->flashdata('saved');
 
 $iconbar = iconbar(array(
-	array('periods/add', 'Add Period', 'add.gif'),
+	array('periods/add', 'Add Period', 'add.png'),
 ));
 
 echo $iconbar;
@@ -41,7 +41,7 @@ echo $iconbar;
 		$key = "day_{$dayofweek}";
 
 		if ( ($now >= $time_start) && ($now < $time_end) && ($period->{$key} == '1') ) {
-			$now_img = img('assets/images/ui/school_manage_times.gif', 'width="16" height="16" alt="Now"');
+			$now_img = img('assets/images/ui/school_manage_times.png', 'width="16" height="16" alt="Now"');
 		} else {
 			$now_img = '';
 		}

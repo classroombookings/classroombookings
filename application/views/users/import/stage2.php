@@ -56,8 +56,8 @@ function import_status($key) {
 <?php
 
 $iconbar = iconbar(array(
-	array('users', 'All Users', 'school_manage_users.gif'),
-	array('users/import', 'Import More Users', 'user_import.gif'),
+	array('users', 'All Users', 'school_manage_users.png'),
+	array('users/import', 'Import More Users', 'user_import.png'),
 ));
 
 echo $iconbar;
