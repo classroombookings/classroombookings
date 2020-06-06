@@ -1,6 +1,6 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Migration_Add_setting_date_format extends CI_Migration
+class Migration_Add_setting_max_bookings extends CI_Migration
 {
 
 	public function up()
