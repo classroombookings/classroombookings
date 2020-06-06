@@ -2,7 +2,7 @@
 echo $this->session->flashdata('saved');
 
 echo iconbar(array(
-	array('profile/edit', 'Edit my details', 'user_edit.gif'),
+	array('profile/edit', 'Edit my details', 'user_edit.png'),
 ));
 
 ?>

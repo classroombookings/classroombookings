@@ -1,12 +1,12 @@
 <?php
 
 if ($this->userauth->loggedin()) {
-	$menu[1]['text'] = img('assets/images/ui/link_controlpanel.gif', FALSE, 'hspace="4" align="top" alt=" "') . 'Control Panel';
+	$menu[1]['text'] = img('assets/images/ui/link_controlpanel.png', FALSE, 'hspace="4" align="top" alt=" "') . 'Control Panel';
 	$menu[1]['href'] = site_url('controlpanel');
 	$menu[1]['title'] = 'Tasks';
 
-	if($this->userauth->is_level(ADMINISTRATOR)){ $icon = 'user_administrator.gif'; } else { $icon = 'user_teacher.gif'; }
-	$menu[3]['text'] = img('assets/images/ui/logout.gif', FALSE, 'hspace="4" align="top" alt=" "') . 'Logout';
+	if($this->userauth->is_level(ADMINISTRATOR)){ $icon = 'user_administrator.png'; } else { $icon = 'user_teacher.png'; }
+	$menu[3]['text'] = img('assets/images/ui/logout.png', FALSE, 'hspace="4" align="top" alt=" "') . 'Logout';
 	$menu[3]['href'] = site_url('logout');
 	$menu[3]['title'] = 'Log out of classroombookings';
 }

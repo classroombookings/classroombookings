@@ -15,7 +15,7 @@
 			<input type="text" name="chosen_date" id="chosen_date" size="10" maxlength="10" value="<?php echo date("d/m/Y", $chosen_date) ?>" onblur="this.form.submit()" />
 		</td>
 		<td valign="middle">
-			<img style="cursor:pointer" align="top" src="<?= base_url('assets/images/ui/cal_day.gif') ?>" width="16" height="16" title="Choose date" onclick="displayDatePicker('chosen_date', false);" />
+			<img style="cursor:pointer" align="top" src="<?= base_url('assets/images/ui/cal_day.png') ?>" width="16" height="16" title="Choose date" onclick="displayDatePicker('chosen_date', false);" />
 		</td>
 		<td> &nbsp; <input type="submit" value=" Load " /></td>
 	</tr>

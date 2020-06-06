@@ -8,5 +8,5 @@ echo form_input(array(
 		'tabindex' => $data['tabindex'],
 		'value' => $data['value'],
 	));
-	echo '<img onclick="showColorPicker(this,$(\''.$data['name'].'\'))" style="border:1px solid #ccc;cursor:pointer;" align="top" src="webroot/images/ui/coloursel.gif" width="16" height="16" />';
+	echo '<img onclick="showColorPicker(this,$(\''.$data['name'].'\'))" style="border:1px solid #ccc;cursor:pointer;" align="top" src="webroot/images/ui/coloursel.png" width="16" height="16" />';
 ?>

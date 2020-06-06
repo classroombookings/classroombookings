@@ -165,7 +165,7 @@ class Bookings_model extends CI_Model
 			// Edit if admin?
 			 if($this->userauth->is_level(ADMINISTRATOR)){
 				$edit_url = site_url('bookings/edit/'.$booking->booking_id);
-				$src = base_url('assets/images/ui/edit.gif');
+				$src = base_url('assets/images/ui/edit.png');
 				$cell['body'] .= '<br /><a class="booking-action" href="'.$edit_url.'" title="Edit this booking">';
 				// $cell['body'] .= '<img alt="edit" src="' . $src . '" width="16" height="16" alt="Book" title="Edit" hspace="4" align="absmiddle" >';
 				$cell['body'] .= ' edit </a>';
@@ -186,13 +186,13 @@ class Bookings_model extends CI_Model
 				$cancel_url = site_url('bookings/cancel/'.$booking->booking_id);
 				if(!isset($edit)){ $cell['body'] .= '<br />'; }
 
-				$src = base_url('assets/images/ui/delete.gif');
+				$src = base_url('assets/images/ui/delete.png');
 
 				$cell['body'] .= '<button class="button-empty booking-action" type="submit" name="cancel" value="' . $booking->booking_id . '" onclick="if(!confirm(\''.$cancel_msg.'\')){return false;}">';
 				$cell['body'] .= 'cancel';
 				// $cell['body'] .= '<img alt="cancel" src="' . $src . '">';
 				$cell['body'] .= '</button>';
-				// $cell['body'] .= '<a onclick="if(!confirm(\''.$cancel_msg.'\')){return false;}" href="'.$cancel_url.'" title="Cancel this booking"><img src="' . base_url('assets/images/ui/delete.gif') . '" width="16" height="16" alt="Cancel" title="Cancel this booking" hspace="8" /></a>';
+				// $cell['body'] .= '<a onclick="if(!confirm(\''.$cancel_msg.'\')){return false;}" href="'.$cancel_url.'" title="Cancel this booking"><img src="' . base_url('assets/images/ui/delete.png') . '" width="16" height="16" alt="Cancel" title="Cancel this booking" hspace="8" /></a>';
 			}
 
 		}
@@ -201,7 +201,7 @@ class Bookings_model extends CI_Model
 			// No bookings
 			$book_url = site_url($url);	//site_url('bookings/book/'.$url);
 			$cell['class'] = 'free';
-			$cell['body'] = '<a href="'.$book_url.'"><img src="' . base_url('assets/images/ui/accept.gif') . '" width="16" height="16" alt="Book" title="Book" hspace="4" align="absmiddle" />Book</a>';
+			$cell['body'] = '<a href="'.$book_url.'"><img src="' . base_url('assets/images/ui/accept.png') . '" width="16" height="16" alt="Book" title="Book" hspace="4" align="absmiddle" />Book</a>';
 			if($this->userauth->is_level(ADMINISTRATOR)){
 				$cell['body'] .= '<input type="checkbox" name="recurring[]" value="'.$url.'" />';
 			}

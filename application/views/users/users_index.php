@@ -3,8 +3,8 @@
 echo $this->session->flashdata('saved');
 
 $iconbar = iconbar(array(
-	array('users/add', 'Add User', 'add.gif'),
-	array('users/import', 'Import Users', 'user_import.gif'),
+	array('users/add', 'Add User', 'add.png'),
+	array('users/import', 'Import Users', 'user_import.png'),
 ));
 
 echo $iconbar;
@@ -30,8 +30,8 @@ echo $iconbar;
 	foreach ($users as $user) { ?>
 	<tr class="tr<?php echo ($i & 1) ?>">
 		<?php
-		$img_type = ($user->authlevel == ADMINISTRATOR ? 'user_administrator.gif' : 'user_teacher.gif');
-		$img_enabled = ($user->enabled == 1) ? 'enabled.gif' : 'no.gif';
+		$img_type = ($user->authlevel == ADMINISTRATOR ? 'user_administrator.png' : 'user_teacher.png');
+		$img_enabled = ($user->enabled == 1) ? 'enabled.png' : 'no.png';
 		?>
 		<td width="50" align="center"><img src="<?= base_url("assets/images/ui/{$img_type}") ?>" width="16" height="16"  alt="<?php echo $img_type ?>" /></td>
 		<td width="70" align="center"><img src="<?= base_url("assets/images/ui/{$img_enabled}") ?>" width="16" height="16"  alt="<?php echo $img_enabled ?>" /></td>

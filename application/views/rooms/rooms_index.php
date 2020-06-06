@@ -3,8 +3,8 @@
 echo $this->session->flashdata('saved');
 
 $iconbar = iconbar(array(
-	array('rooms/add', 'Add Room', 'add.gif'),
-	array('rooms/fields', 'Custom Fields', 'room_fields.gif'),
+	array('rooms/add', 'Add Room', 'add.png'),
+	array('rooms/fields', 'Custom Fields', 'room_fields.png'),
 ));
 
 echo $iconbar;
@@ -48,7 +48,7 @@ $jscript = 'var messages = [];';
 				if (file_exists(FCPATH . $photo_path)) {
 					$url = base_url($photo_path);
 					echo '<a href="'.$url.'" title="View Photo">';
-					echo '<img src="' . base_url('assets/images/ui/picture.gif') . '" width="16" height="16" alt="View Photo" />';
+					echo '<img src="' . base_url('assets/images/ui/picture.png') . '" width="16" height="16" alt="View Photo" />';
 					echo '</a>'."\n";
 				}
 			}
