@@ -1,5 +1,20 @@
 # classroombookings Changelog
 
+## [2.2.0] 2020-06-06
+
+### Added
+- New settings page for additional settings.
+- New setting for 'maximum active bookings': specify how many active bookings a user can have at one time.
+- Date and Time display formats on Bookings page can now be customised.
+- License details.
+
+### Changed
+- Updated icons to better quality PNG format.
+
+### Fixed
+- Issue where bookings on Sundays were not being displayed.
+
+
 ## [2.1.3] 2020-03-11
 
 ### Fixed
@@ -22,7 +37,7 @@
 
 Introducing the new 'Maintenance Mode' feature.
 
-When eabled, Maintenance Mode prevents Teacher user accounts from viewing and making changes to bookings. The message can be customised, and will be displayed at the top of all pages.
+When enabled, Maintenance Mode prevents Teacher user accounts from viewing and making changes to bookings. The message can be customised, and will be displayed at the top of all pages.
 
 
 ### Added
