@@ -1,5 +1,11 @@
 # classroombookings Changelog
 
+## [2.2.1] 2020-06-06
+
+### Fixed
+- Fix issue with duplicate migration class name.
+
+
 ## [2.2.0] 2020-06-06
 
 ### Added
