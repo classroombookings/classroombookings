@@ -7,7 +7,7 @@ By Craig A Rodway.
 
 This is a web-based room booking system for schools and is designed to be as easy to use as possible. Set up your bookable rooms, day schedule and timetable for the year. Add user accounts, and allow them to make and manage bookings from anywhere.
 
-It is available to [download install yourself](https://www.classroombookings.com/download/) or there is a great value [hosted service](https://www.classroombookings.com/pricing/).
+It is available to [download and install yourself](https://www.classroombookings.com/download/) or there is a great value [hosted service](https://www.classroombookings.com/pricing/).
 
 It is web-based - PHP and MySQL - and currently uses the [CodeIgniter 3](https://codeigniter.com/) framework.
 
