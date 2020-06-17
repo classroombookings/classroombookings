@@ -10,7 +10,7 @@ echo $iconbar;
 
 ?>
 
-<table width="100%" cellpadding="2" cellspacing="2" border="0" class="sort-table" id="jsst-periods">
+<table width="100%" cellpadding="2" cellspacing="2" border="0" class="zebra-table sort-table" id="jsst-periods">
 	<col /><col /><col /><col />
 	<thead>
 	<tr class="heading">
@@ -32,7 +32,7 @@ echo $iconbar;
 		$time_start = strtotime($period->time_start);
 		$time_end = strtotime($period->time_end);
 	?>
-	<tr class="tr<?php echo ($i & 1) ?>">
+	<tr>
 		<?php
 		// $now = timestamp to do calculations with for "current" period
 		$now = now();

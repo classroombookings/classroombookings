@@ -10,7 +10,7 @@ echo $iconbar;
 
 ?>
 
-<table width="100%" cellpadding="2" cellspacing="2" border="0" class="sort-table" id="jsst-holidays">
+<table width="100%" cellpadding="2" cellspacing="2" border="0" class="zebra-table sort-table" id="jsst-holidays">
 	<col /><col /><col /><col />
 	<thead>
 	<tr class="heading">
@@ -27,7 +27,7 @@ echo $iconbar;
 	if($holidays){
 	foreach( $holidays as $holiday ){
 	?>
-	<tr class="tr<?php echo ($i & 1) ?>">
+	<tr>
 		<td><?php echo html_escape($holiday->name) ?></td>
 		<td><?php echo date("d/m/Y", strtotime($holiday->date_start)); ?></td>
 		<td><?php echo date("d/m/Y", strtotime($holiday->date_end)) ?></td>

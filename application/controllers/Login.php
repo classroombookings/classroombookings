@@ -14,8 +14,8 @@ class Login extends MY_Controller
 
 	function index()
 	{
-		$layout['title'] = 'Login';
-		$layout['showtitle'] = $layout['title'];
+		$this->data['title'] = 'Login';
+		$this->data['showtitle'] = $this->data['title'];
 		$logo = 'uploads/' . setting('logo');
 
 		$columns = array(
@@ -35,10 +35,10 @@ class Login extends MY_Controller
 			$columns['c2']['content'] = '';
 		}
 
-		$layout['showtitle'] = 'Login to ' . setting('name');
-		$layout['body'] = $this->load->view('columns', $columns, TRUE);
+		$this->data['showtitle'] = 'Login to ' . setting('name');
+		$this->data['body'] = $this->load->view('columns', $columns, TRUE);
 
-		$this->load->view('layout', $layout);
+		return $this->render();
 	}
 
 

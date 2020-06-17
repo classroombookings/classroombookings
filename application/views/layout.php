@@ -2,7 +2,7 @@
 
 if ($this->userauth->loggedin()) {
 	$menu[1]['text'] = img('assets/images/ui/link_controlpanel.png', FALSE, 'hspace="4" align="top" alt=" "') . 'Control Panel';
-	$menu[1]['href'] = site_url('controlpanel');
+	$menu[1]['href'] = site_url('/');
 	$menu[1]['title'] = 'Tasks';
 
 	if($this->userauth->is_level(ADMINISTRATOR)){ $icon = 'user_administrator.png'; } else { $icon = 'user_teacher.png'; }
@@ -137,18 +137,10 @@ if ($this->userauth->loggedin()) {
 	<div id="tipDiv" style="position:absolute; visibility:hidden; z-index:100"></div>
 
 	<?php
-	$scripts = array();
-	$scripts[] = base_url('assets/js/prototype.lite.js');
-	$scripts[] = base_url('assets/js/util.js');
-	$scripts[] = base_url('assets/js/sorttable.js');
-	$scripts[] = base_url('assets/js/datepicker.js');
-	// $scripts[] = base_url('assets/js/imagepreview.js');
-
 	foreach ($scripts as $script)
 	{
 		echo "<script type='text/javascript' src='{$script}'></script>\n";
 	}
-
 	?>
 
 	<script>

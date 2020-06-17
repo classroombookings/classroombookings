@@ -11,7 +11,7 @@ echo $iconbar;
 
 ?>
 
-<table width="100%" cellpadding="2" cellspacing="2" border="0" class="sort-table" id="jsst-users">
+<table width="100%" cellpadding="2" cellspacing="2" border="0" class="zebra-table sort-table" id="jsst-users">
 	<col /><col /><col /><col />
 	<thead>
 	<tr class="heading">
@@ -28,7 +28,7 @@ echo $iconbar;
 	$i=0;
 	if ($users) {
 	foreach ($users as $user) { ?>
-	<tr class="tr<?php echo ($i & 1) ?>">
+	<tr>
 		<?php
 		$img_type = ($user->authlevel == ADMINISTRATOR ? 'user_administrator.png' : 'user_teacher.png');
 		$img_enabled = ($user->enabled == 1) ? 'enabled.png' : 'no.png';

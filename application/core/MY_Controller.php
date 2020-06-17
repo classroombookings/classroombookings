@@ -37,14 +37,21 @@ class MY_Controller extends CI_Controller
 
 		}
 
+		$this->data['scripts'] = array();
+		$this->data['scripts'][] = base_url('assets/js/lib/jquery-3.5.1.min.js');
+		$this->data['scripts'][] = base_url('assets/js/modules/RadioEnabler.js');
+		$this->data['scripts'][] = base_url('assets/js/lib/sorttable.js');
+		$this->data['scripts'][] = base_url('assets/js/lib/datepicker.js');
 	}
 
 
-	public function require_logged_in()
+	public function require_logged_in($msg = TRUE)
 	{
 		// Check loggedin status
 		if ( ! $this->userauth->loggedin()) {
-			$this->session->set_flashdata('auth', msgbox('error', $this->lang->line('crbs_mustbeloggedin')));
+			if ($msg) {
+				$this->session->set_flashdata('auth', msgbox('error', $this->lang->line('crbs_mustbeloggedin')));
+			}
 			redirect('login');
 		}
 	}
@@ -54,7 +61,7 @@ class MY_Controller extends CI_Controller
 	{
 		if ( ! $this->userauth->is_level($level)) {
 			$this->session->set_flashdata('auth', msgbox('error', $this->lang->line('crbs_mustbeadmin')));
-			redirect('controlpanel');
+			redirect(site_url());
 		}
 	}
 

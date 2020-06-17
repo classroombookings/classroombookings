@@ -13,7 +13,7 @@ $jscript = 'var messages = [];';
 
 ?>
 
-<table width="100%" cellpadding="2" cellspacing="2" border="0" class="sort-table" id="jsst-rooms">
+<table width="100%" cellpadding="2" cellspacing="2" border="0" class="zebra-table sort-table" id="jsst-rooms">
 	<col /><col /><col />
 	<thead>
 	<tr class="heading">
@@ -29,7 +29,7 @@ $jscript = 'var messages = [];';
 	$i=0;
 	if( $rooms ){
 	foreach( $rooms as $room ){ ?>
-	<tr class="tr<?php echo ($i & 1) ?>">
+	<tr>
 		<td><?php echo html_escape($room->name) ?></td>
 		<td><?php echo html_escape($room->location) ?></td>
 		<td>

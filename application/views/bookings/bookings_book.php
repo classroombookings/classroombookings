@@ -1,9 +1,8 @@
 <script type="text/javascript">
-function toggle_recurring(){
-	$recurring = $('recurring').checked;
-	$('week_id').disabled = !$recurring;
-	$('day_num').disabled = !$recurring;
-	//$('user_id').disabled = !$recurring;
+function toggle_recurring() {
+	var isRecurring = $('input[type="checkbox"][name="recurring"]')[0].checked;
+	$('#week_id').prop('disabled', !isRecurring);
+	$('#day_num').prop('disabled', !isRecurring);
 }
 </script>
 <?php
@@ -142,15 +141,14 @@ if (isset($booking) && ! empty($booking->date)) {
 		<label for="recurring">Recurring?</label>
 		<?php
 		$field = 'recurring';
-		$value = (isset($booking) && $booking->day_num) ? '1' : '0';
-		$checked = set_checkbox($field, '1', $value == '1');
+		$value = (isset($booking) && isset($booking->booking_id) && $booking->day_num) ? '1' : '0';
 		echo form_hidden($field, '0');
 		echo form_checkbox(array(
 			'name' => $field,
 			'id' => $field,
 			'value' => '1',
 			'tabindex' => tab_index(),
-			'checked' => $checked,
+			'checked' => ($value == 1),
 			'onchange' => 'toggle_recurring()',
 		));
 		?>
@@ -199,4 +197,8 @@ echo form_close();
 
 ?>
 
-<script type="text/javascript">Q.push(function() { toggle_recurring(); });</script>
+<script type="text/javascript">
+Q.push(function() {
+	toggle_recurring();
+});
+</script>

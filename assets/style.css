@@ -262,6 +262,13 @@ legend {color: #999; font-size: 14px; font-weight: bold; padding: 0 4px;}
 .tr0 td{ background:#F5F4EA; color:#000; }
 .tr1 td{ background:#ffffff; color:#000; }
 
+.zebra-table tbody tr:nth-child(odd) td {
+	background:#F5F4EA; color:#000;
+}
+.zebra-table tbody tr:nth-child(even) td {
+	background:#ffffff; color:#000;
+}
+
 
 
 
@@ -525,4 +532,9 @@ a.booking-action:hover {
 .maintenance-wrapper {
 	padding: 8px 0;
 	background: #ffffaa;
+}
+
+
+.hidden {
+	display: none;
 }

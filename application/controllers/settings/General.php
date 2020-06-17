@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Settings extends MY_Controller
+class General extends MY_Controller
 {
 
 
@@ -20,13 +20,13 @@ class Settings extends MY_Controller
 	{
 		$this->data['settings'] = $this->settings_model->get_all('crbs');
 
-		$this->data['title'] = 'Settings';
-		$this->data['showtitle'] = $this->data['title'];
-		$this->data['body'] = $this->load->view('settings/settings', $this->data, TRUE);
-
 		if ($this->input->post()) {
 			$this->save_settings();
 		}
+
+		$this->data['title'] = 'Settings';
+		$this->data['showtitle'] = $this->data['title'];
+		$this->data['body'] = $this->load->view('settings/general', $this->data, TRUE);
 
 		return $this->render();
 	}
@@ -56,7 +56,6 @@ class Settings extends MY_Controller
 		$this->form_validation->set_rules('maintenance_mode_message', 'Maintenance mode message', 'max_length[1024]');
 
 		if ($this->form_validation->run() == FALSE) {
-			echo validation_errors();
 			return FALSE;
 		}
 
@@ -84,7 +83,7 @@ class Settings extends MY_Controller
 
 		$this->session->set_flashdata('saved', msgbox('info', 'Settings have been updated.'));
 
-		redirect('settings');
+		redirect('settings/general');
 	}
 
 

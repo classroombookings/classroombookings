@@ -1,6 +1,6 @@
 <?php
 echo $this->session->flashdata('saved');
-echo form_open('settings', array('id'=>'settings', 'class'=>'cssform'));
+echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 ?>
 
 
@@ -44,21 +44,33 @@ echo form_open('settings', array('id'=>'settings', 'class'=>'cssform'));
 
 	<hr size="1" />
 
-	<p>
+	<p id="settings_displaytype">
 		<label for="displaytype">Bookings display type</label>
 		<?php
-		$displaytype = set_value('displaytype', element('displaytype', $settings), FALSE);
-		$options = array(
-			'day' => 'One day at a time',
-			'room' => 'One room at a time',
-		);
-		echo form_dropdown(
-			'displaytype',
-			$options,
-			$displaytype,
-			' id="displaytype" tabindex="' . tab_index() . '"'
-		);
+
+		$field = "displaytype";
+		$value = set_value($field, element($field, $settings), FALSE);
+
+		$options = [
+			['value' => 'day', 'label' => 'One day at a time', 'enable' => 'd_columns_rooms'],
+			['value' => 'room', 'label' => 'One room at a time', 'enable' => 'd_columns_days'],
+		];
+
+		foreach ($options as $opt) {
+			$id = "{$field}_{$opt['value']}";
+			echo form_radio(array(
+				'name' => $field,
+				'id' => $id,
+				'value' => $opt['value'],
+				'checked' => ($value == $opt['value']),
+				'tabindex' => tab_index(),
+				'data-enable' => isset($opt['enable']) ? $opt['enable'] : '',
+			));
+			echo '<label for="' . $id . '" class="ni">' . $opt['label'] . '</label><br/>';
+		}
+
 		?>
+		<br />
 		<p class="hint">Specify the main focus of the bookings page.<br />
 			<strong><span>One day at a time</span></strong> - all periods and rooms are shown for the selected date.<br />
 			<strong><span>One room at a time</span></strong> - all periods and days of the week are shown for the selected room.
@@ -66,16 +78,31 @@ echo form_open('settings', array('id'=>'settings', 'class'=>'cssform'));
 	</p>
 	<?php echo form_error('displaytype'); ?>
 
-	<p>
+	<p id="settings_columns">
 		<label for="columns">Bookings columns</label>
 		<?php
-		$columns = set_value('d_columns', element('d_columns', $settings), FALSE);
+
+		$field = 'd_columns';
+		$value = set_value($field, element($field, $settings), FALSE);
+
+		$options = [
+			['value' => 'periods', 'label' => 'Periods'],
+			['value' => 'rooms', 'label' => 'Rooms'],
+			['value' => 'days', 'label' => 'Days'],
+		];
+
+		foreach ($options as $opt) {
+			$id = "{$field}_{$opt['value']}";
+			echo form_radio(array(
+				'name' => $field,
+				'id' => $id,
+				'value' => $opt['value'],
+				'checked' => ($value == $opt['value']),
+				'tabindex' => tab_index(),
+			));
+			echo '<label for="' . $id . '" class="ni">' . $opt['label'] . '</label><br/>';
+		}
 		?>
-		<select name="d_columns" id="d_columns" tabindex="<?php echo tab_index() ?>">
-			<option value="periods" class="day room" <?= $columns == 'periods' ? 'selected="selected"' : '' ?>>Periods</option>
-			<option value="rooms" class="day" <?= $columns == 'rooms' ? 'selected="selected"' : '' ?>>Rooms</option>
-			<option value="days" class="room" <?= $columns == 'days' ? 'selected="selected"' : '' ?>>Days</option>
-		</select>
 		<p class="hint">Select which details you want to be displayed along the top of the bookings page.</p>
 	</p>
 	<?php echo form_error('d_columns') ?>
@@ -193,7 +220,7 @@ echo form_open('settings', array('id'=>'settings', 'class'=>'cssform'));
 
 <script type="text/javascript">
 Q.push(function() {
-	dynamicSelect('displaytype', 'd_columns');
+	new RadioEnabler($('#settings_displaytype'));
 });
 </script>
 

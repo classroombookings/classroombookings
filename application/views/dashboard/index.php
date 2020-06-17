@@ -26,7 +26,7 @@ $menu[$i]['href'] = '';
 $i = 0;
 $school[$i]['text'] = 'School Details';
 $school[$i]['icon'] = 'school_manage_details.png';
-$school[$i]['href'] = site_url('school/details');
+$school[$i]['href'] = site_url('school');
 
 $i++;
 $school[$i]['text'] = 'The School Day';
@@ -72,12 +72,12 @@ $admin[$i]['href'] = site_url('users');
 $i++;
 $admin[$i]['text'] = 'Settings';
 $admin[$i]['icon'] = 'school_manage_settings.png';
-$admin[$i]['href'] = site_url('settings');
+$admin[$i]['href'] = site_url('settings/general');
 
 $i++;
-$admin[$i]['text'] = '';
-$admin[$i]['icon'] = 'blank.png';
-$admin[$i]['href'] = '';
+$admin[$i]['text'] = 'Authentication';
+$admin[$i]['icon'] = 'lock.png';
+$admin[$i]['href'] = site_url('settings/authentication/ldap');
 
 
 
