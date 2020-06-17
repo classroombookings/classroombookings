@@ -8,9 +8,11 @@ $iconbar = iconbar(array(
 
 echo $iconbar;
 
+$sort_cols = ["Name", "Description", "None"];
+
 ?>
 
-<table width="100%" cellpadding="2" cellspacing="2" border="0" class="zebra-table sort-table" id="jsst-departments">
+<table width="100%" cellpadding="2" cellspacing="2" border="0" class="zebra-table sort-table" id="jsst-departments" up-data='<?= json_encode($sort_cols) ?>'>
 	<col /><col /><col />
 	<thead>
 	<tr class="heading">
@@ -43,10 +45,6 @@ echo $iconbar;
 	</tbody>
 </table>
 
-<?php echo $pagelinks ?>
-
 <?php
-$jsst['name'] = 'st1';
-$jsst['id'] = 'jsst-departments';
-$jsst['cols'] = array("Name", "Description", "None");
-$this->load->view('partials/js-sorttable', $jsst);
+
+echo $pagelinks;

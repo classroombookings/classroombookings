@@ -17,9 +17,9 @@ class Rooms_model extends CI_Model
 	{
 		parent::__construct();
 
+		$this->options[self::FIELD_TEXT] = 'Text';
 		$this->options[self::FIELD_CHECKBOX] = 'Checkbox';
 		$this->options[self::FIELD_SELECT] = 'Dropdown list';
-		$this->options[self::FIELD_TEXT] = 'Text';
 	}
 
 

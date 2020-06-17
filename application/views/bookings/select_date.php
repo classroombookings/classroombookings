@@ -1,11 +1,3 @@
-<script>Q.push(function() {
-	var input = document.getElementById("chosen_date"),
-		form = document.getElementById("bookings_date");
-	input.addEventListener("change", function(event) {
-		form.submit();
-	});
-});
-</script>
 
 <form action="<?php echo site_url('bookings/load') ?>" method="POST" name="bookings_book" id="bookings_date">
 <table>

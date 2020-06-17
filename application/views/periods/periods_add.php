@@ -74,14 +74,14 @@ echo form_open('periods/save', array('class' => 'cssform', 'id' => 'schoolday_ad
 		foreach ($days_list as $day_num => $day_name) {
 			$field = "day_{$day_num}";
 			echo form_hidden($field, '0');
-			echo form_checkbox(array(
+			$input = form_checkbox(array(
 				'name' => $field,
 				'id' => $field,
 				'value' => '1',
 				'checked' => set_value($field, isset($period) ? $period->$field : ($day_num < 6)),
 				'tabindex' => tab_index(),
 			));
-			echo '<label for="' . $field . '" class="ni">' . $day_name . '</label><br/>';
+			echo "<label for='{$field}' class='ni'>{$input}{$day_name}</label>";
 		}
 		?>
 	</p>

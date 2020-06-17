@@ -9,7 +9,7 @@ echo form_hidden('action', 'import');
 
 	<legend accesskey="I" tabindex="<?= tab_index() ?>">Import Source</legend>
 
-	<p>
+	<p class="input-group">
 		<label for="userfile" class="required">CSV File</label>
 		<?php
 		echo form_upload(array(
@@ -35,7 +35,7 @@ echo form_hidden('action', 'import');
 
 	<div>Enter the default values that will be applied to all users if not specified in the import file.</div>
 
-	<p>
+	<p class="input-group">
 		<label for="password">Password</label>
 		<?php
 		echo form_password(array(
@@ -49,7 +49,7 @@ echo form_hidden('action', 'import');
 		?>
 	</p>
 
-	<p>
+	<p class="input-group">
 		<label for="authlevel" class="required">Type</label>
 		<?php
 		$data = array('1' => 'Administrator', '2' => 'Teacher');
@@ -63,7 +63,7 @@ echo form_hidden('action', 'import');
 	</p>
 
 
-	<p>
+	<p class="input-group">
 		<label for="enabled">Enabled</label>
 		<?php
 		echo form_hidden('enabled', '0');

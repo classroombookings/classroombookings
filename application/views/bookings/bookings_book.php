@@ -1,10 +1,3 @@
-<script type="text/javascript">
-function toggle_recurring() {
-	var isRecurring = $('input[type="checkbox"][name="recurring"]')[0].checked;
-	$('#week_id').prop('disabled', !isRecurring);
-	$('#day_num').prop('disabled', !isRecurring);
-}
-</script>
 <?php
 
 $booking_id = NULL;
@@ -149,13 +142,13 @@ if (isset($booking) && ! empty($booking->date)) {
 			'value' => '1',
 			'tabindex' => tab_index(),
 			'checked' => ($value == 1),
-			'onchange' => 'toggle_recurring()',
+			'up-switch' => '.recurring_fields',
 		));
 		?>
 	</p>
 	<?php echo form_error($field) ?>
 
-	<p>
+	<p class="recurring_fields" up-show-for=":checked">
 		<label for="week_id">Week:</label>
 		<?php
 		$week_options = array('' => '(None)');
@@ -169,7 +162,7 @@ if (isset($booking) && ! empty($booking->date)) {
 	</p>
 	<?php echo form_error($field) ?>
 
-	<p>
+	<p class="recurring_fields" up-show-for=":checked">
 		<label for="day_num">Day:</label>
 		<?php
 		$day_options = array('' => '(None)');
@@ -194,11 +187,3 @@ $this->load->view('partials/submit', array(
 ));
 
 echo form_close();
-
-?>
-
-<script type="text/javascript">
-Q.push(function() {
-	toggle_recurring();
-});
-</script>

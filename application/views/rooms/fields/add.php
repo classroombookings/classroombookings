@@ -41,10 +41,22 @@ echo form_open('rooms/save_field', array('class' => 'cssform', 'id' => 'fields_a
 	<p>
 		<label for="type">Type</label>
 		<?php
+
 		$input_name = 'type';
 		$value = set_value($input_name, isset($field) ? $field->type : '', FALSE);
-		$dropdown = form_dropdown($input_name, $options_list, $value, 'id="' . $input_name .'" tabindex="' . tab_index() . '" onchange="toggleOptions()"');
-		echo $dropdown;
+
+		foreach ($options_list as $k => $v) {
+			$id = "{$input_name}_{$k}";
+			$input = form_radio(array(
+				'name' => $input_name,
+				'id' => $id,
+				'value' => $k,
+				'checked' => ($value == $k),
+				'tabindex' => tab_index(),
+				'up-switch' => '.dropdown_options',
+			));
+			echo "<label for='{$id}' class='ni'>{$input}{$v}</label>";
+		}
 	?>
 	</p>
 	<?php echo form_error($input_name); ?>
@@ -64,7 +76,16 @@ echo form_open('rooms/save_field', array('class' => 'cssform', 'id' => 'fields_a
 
 	<?php endif; ?>
 
-	<div id="fitems">
+	<?php
+	$options_attrs = '';
+	if ( ! isset($field)) {
+		$options_attrs .= ' up-show-for="SELECT" ';
+	} elseif (isset($field) && $field->type != 'SELECT') {
+		$options_attrs .= 'style="display:none"';
+	}
+	?>
+
+	<div class="dropdown_options" <?= $options_attrs ?>>
 		<p>
 			<label for="items">Items</label>
 			<?php
@@ -81,8 +102,8 @@ echo form_open('rooms/save_field', array('class' => 'cssform', 'id' => 'fields_a
 			echo form_textarea(array(
 				'name' => $input_name,
 				'id' => $input_name,
-				'rows' => '6',
-				'cols' => '20',
+				'rows' => '10',
+				'cols' => '40',
 				'tabindex' => tab_index(),
 				'value' => $options_str,
 			));
@@ -92,19 +113,6 @@ echo form_open('rooms/save_field', array('class' => 'cssform', 'id' => 'fields_a
 	</div>
 
 </fieldset>
-
-
-<script type="text/javascript">
-function toggleOptions() {
-	var typeEl = document.getElementById("type"),
-		target = document.getElementById("fitems");
-	target.style.display = (typeEl.value == "SELECT" ? "block" : "none");
-}
-
-Q.push(function() {
-	toggleOptions();
-});
-</script>
 
 
 <?php

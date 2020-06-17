@@ -11,9 +11,11 @@ echo $iconbar;
 
 $jscript = 'var messages = [];';
 
+$sort_cols = ["Name", "Location", "Teacher", "Notes", "Photo", "None"];
+
 ?>
 
-<table width="100%" cellpadding="2" cellspacing="2" border="0" class="zebra-table sort-table" id="jsst-rooms">
+<table width="100%" cellpadding="2" cellspacing="2" border="0" class="zebra-table sort-table" id="jsst-rooms" up-data='<?= json_encode($sort_cols) ?>'>
 	<col /><col /><col />
 	<thead>
 	<tr class="heading">
@@ -76,8 +78,3 @@ $jscript = 'var messages = [];';
 <?php
 
 echo $iconbar;
-
-$jsst['name'] = 'st1';
-$jsst['id'] = 'jsst-rooms';
-$jsst['cols'] = array("Name", "Location", "Teacher", "Notes", "Photo", "None");
-$this->load->view('partials/js-sorttable', $jsst);

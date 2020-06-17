@@ -58,15 +58,15 @@ echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 
 		foreach ($options as $opt) {
 			$id = "{$field}_{$opt['value']}";
-			echo form_radio(array(
+			$input = form_radio(array(
 				'name' => $field,
 				'id' => $id,
 				'value' => $opt['value'],
 				'checked' => ($value == $opt['value']),
 				'tabindex' => tab_index(),
-				'data-enable' => isset($opt['enable']) ? $opt['enable'] : '',
+				'up-switch' => '.d_columns_target',
 			));
-			echo '<label for="' . $id . '" class="ni">' . $opt['label'] . '</label><br/>';
+			echo "<label for='{$id}' class='ni'>{$input}{$opt['label']}</label>";
 		}
 
 		?>
@@ -86,21 +86,21 @@ echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 		$value = set_value($field, element($field, $settings), FALSE);
 
 		$options = [
-			['value' => 'periods', 'label' => 'Periods'],
-			['value' => 'rooms', 'label' => 'Rooms'],
-			['value' => 'days', 'label' => 'Days'],
+			['value' => 'periods', 'label' => 'Periods', 'for' => ''],
+			['value' => 'rooms', 'label' => 'Rooms', 'for' => 'day'],
+			['value' => 'days', 'label' => 'Days', 'for' => 'room'],
 		];
 
 		foreach ($options as $opt) {
 			$id = "{$field}_{$opt['value']}";
-			echo form_radio(array(
+			$input = form_radio(array(
 				'name' => $field,
 				'id' => $id,
 				'value' => $opt['value'],
 				'checked' => ($value == $opt['value']),
 				'tabindex' => tab_index(),
 			));
-			echo '<label for="' . $id . '" class="ni">' . $opt['label'] . '</label><br/>';
+			echo "<label for='{$id}' class='d_columns_target ni' up-show-for='{$opt['for']}'>{$input}{$opt['label']}</label>";
 		}
 		?>
 		<p class="hint">Select which details you want to be displayed along the top of the bookings page.</p>
@@ -217,12 +217,6 @@ echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 
 </fieldset>
 
-
-<script type="text/javascript">
-Q.push(function() {
-	new RadioEnabler($('#settings_displaytype'));
-});
-</script>
 
 
 <?php

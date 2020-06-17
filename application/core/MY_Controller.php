@@ -38,10 +38,11 @@ class MY_Controller extends CI_Controller
 		}
 
 		$this->data['scripts'] = array();
-		$this->data['scripts'][] = base_url('assets/js/lib/jquery-3.5.1.min.js');
-		$this->data['scripts'][] = base_url('assets/js/modules/RadioEnabler.js');
 		$this->data['scripts'][] = base_url('assets/js/lib/sorttable.js');
 		$this->data['scripts'][] = base_url('assets/js/lib/datepicker.js');
+		$this->data['scripts'][] = base_url('assets/js/lib/es6-promise.auto.min.js');
+		$this->data['scripts'][] = base_url('assets/js/lib/unpoly.min.js');
+		$this->data['scripts'][] = base_url('assets/js/main.js');
 	}
 
 

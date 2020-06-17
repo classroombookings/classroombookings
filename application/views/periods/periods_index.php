@@ -8,9 +8,11 @@ $iconbar = iconbar(array(
 
 echo $iconbar;
 
+$sort_cols = ["None", "Name", "TimeStart", "TimeEnd", "Duration", "Days", "None"];
+
 ?>
 
-<table width="100%" cellpadding="2" cellspacing="2" border="0" class="zebra-table sort-table" id="jsst-periods">
+<table width="100%" cellpadding="2" cellspacing="2" border="0" class="zebra-table sort-table" id="jsst-periods" up-data='<?= json_encode($sort_cols) ?>'>
 	<col /><col /><col /><col />
 	<thead>
 	<tr class="heading">
@@ -80,8 +82,3 @@ echo $iconbar;
 <?php
 
 echo $iconbar;
-
-$jsst['name'] = 'st1';
-$jsst['id'] = 'jsst-periods';
-$jsst['cols'] = array("None", "Name", "TimeStart", "TimeEnd", "Duration", "Days", "None");
-$this->load->view('partials/js-sorttable', $jsst);

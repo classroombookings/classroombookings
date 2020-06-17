@@ -353,8 +353,9 @@ tr.title td{ padding:4px;background:#D6DFF7; color:#000; font-size:10pt; letter-
 .cssform label.ni{
 	font-weight:normal;
 	width:auto;
-	margin:0;
+	margin:0 0 5px 0;
 	float:none;
+	display: block;
 }
 
 .cssform input[type="checkbox"]{

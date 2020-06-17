@@ -23,6 +23,7 @@ if ($this->userauth->loggedin()) {
 	<link rel="stylesheet" type="text/css" media="print" href="<?= base_url('assets/print.css') ?>">
 	<link rel="stylesheet" type="text/css" media="screen" href="<?= base_url('assets/sorttable.css') ?>">
 	<link rel="stylesheet" type="text/css" media="screen" href="<?= base_url('assets/datepicker.css') ?>">
+	<link rel="stylesheet" type="text/css" media="screen" href="<?= base_url('assets/unpoly.min.css') ?>">
 	<link rel="apple-touch-icon" sizes="180x180" href="<?= base_url('assets/brand/apple-touch-icon.png') ?>">
 	<link rel="icon" type="image/png" sizes="32x32" href="<?= base_url('assets/brand/favicon-32x32.png') ?>">
 	<link rel="icon" type="image/png" sizes="16x16" href="<?= base_url('assets/brand/favicon-16x16.png') ?>">
@@ -35,11 +36,10 @@ if ($this->userauth->loggedin()) {
 	<script>
 	var h = document.getElementsByTagName("html")[0];
 	(h ? h.classList.add('js') : h.className += ' ' + 'js');
-	var Q = [];
 	var BASE_URL = "<?= base_url() ?>";
 	</script>
 </head>
-<body style="background-image:url('<?= base_url('assets/images/bg/global.png') ?>')">
+<body>
 
 	<?php
 	if (setting('maintenance_mode') == 1) {
@@ -142,16 +142,6 @@ if ($this->userauth->loggedin()) {
 		echo "<script type='text/javascript' src='{$script}'></script>\n";
 	}
 	?>
-
-	<script>
-	(function() {
-		if (typeof(window['Q']) !== "undefined") {
-			for (var i = 0, len = Q.length; i < len; i++) {
-				Q[i]();
-			}
-		}
-	})();
-	</script>
 
 </body>
 </html>
