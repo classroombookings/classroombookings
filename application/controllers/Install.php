@@ -159,20 +159,13 @@ class Install extends MY_Controller
 				);
 
 				$db_config = array(
+					'dbdriver' => $data['driver'],
+					'hostname' => $data['hostname'],
+					'database' => $data['database'],
 					'username' => $data['username'],
 					'password' => $data['password'],
-					'dbdriver' => $data['driver'],
+					'subdriver' => ($data['driver'] == 'pdo' ? 'mysql' : ''),
 				);
-
-				switch ($data['driver']) {
-					case 'pdo':
-						$db_config['dsn'] = "mysql:host={$data['hostname']};dbname={$data['database']}";
-					break;
-					case 'mysqli':
-						$db_config['hostname'] = $data['hostname'];
-						$db_config['database'] = $data['database'];
-					break;
-				}
 
 				$_SESSION['db_config'] = $db_config;
 
@@ -345,7 +338,7 @@ class Install extends MY_Controller
 		// PHP version
 		//
 		$_SESSION['requirements']['php_version'] = array('message' => 'Your PHP version is ' . PHP_VERSION . '.');
-		$has_php = (version_compare(PHP_VERSION, '5.5.0') >= 0);
+		$has_php = (version_compare(PHP_VERSION, '5.5.0', '>='));
 		if ( ! $has_php) {
 			$_SESSION['requirements']['php_version']['status'] = 'err';
 		} else {
@@ -361,6 +354,16 @@ class Install extends MY_Controller
 			$message = "Please install and/or enable the 'php_gd' module in your PHP configuration.";
 		}
 		$_SESSION['requirements']['php_module_gd'] = array('status' => $gd_status, 'message' => $message);
+
+		// PHP LDAP module
+		//
+		$has_ldap = (extension_loaded('ldap'));
+		$message = '';
+		$ldap_status = ($has_ldap ? 'ok' : 'warn');
+		if ( ! $has_ldap) {
+			$message = "The 'php_ldap' module is only needed if you want to use LDAP authentication.";
+		}
+		$_SESSION['requirements']['php_module_ldap'] = array('status' => $ldap_status, 'message' => $message);
 
 		// 'local' folder
 		//
@@ -446,21 +449,14 @@ class Install extends MY_Controller
 		} else {
 
 			$db_config = array(
-				'username' => $_SESSION['data']['username'],
-				'password' => $_SESSION['data']['password'],
-				'dbdriver' => $_SESSION['data']['driver'],
+				'dbdriver' => $_SESSION['db_config']['dbdriver'],
+				'subdriver' => $_SESSION['db_config']['subdriver'],
+				'hostname' => $_SESSION['db_config']['hostname'],
+				'database' => $_SESSION['db_config']['database'],
+				'username' => $_SESSION['db_config']['username'],
+				'password' => $_SESSION['db_config']['password'],
 				'db_debug' => FALSE,
 			);
-
-			switch ($_SESSION['data']['driver']) {
-				case 'pdo':
-					$db_config['dsn'] = "mysql:host={$_SESSION['data']['hostname']};dbname={$_SESSION['data']['database']}";
-				break;
-				case 'mysqli':
-					$db_config['hostname'] = $_SESSION['data']['hostname'];
-					$db_config['database'] = $_SESSION['data']['database'];
-				break;
-			}
 
 		}
 
@@ -578,20 +574,13 @@ class Install extends MY_Controller
 		$data = array(
 			'base_url' => $_SESSION['data']['url'],
 			'db_dsn' => '',
-			'db_host' => '',
-			'db_user' => $_SESSION['data']['username'],
-			'db_pass' => $_SESSION['data']['password'],
-			'db_name' => '',
+			'db_host' => $_SESSION['db_config']['hostname'],
+			'db_name' => $_SESSION['db_config']['database'],
+			'db_user' => $_SESSION['db_config']['username'],
+			'db_pass' => $_SESSION['db_config']['password'],
+			'db_driver' => $_SESSION['db_config']['dbdriver'],
+			'db_subdriver' => $_SESSION['db_config']['subdriver'],
 		);
-
-		if ($_SESSION['data']['driver'] == 'pdo') {
-			$data['db_driver'] = 'pdo';
-			$data['db_dsn'] = "mysql:host={$_SESSION['data']['hostname']};dbname={$_SESSION['data']['database']}";
-		} else {
-			$data['db_driver'] = 'mysqli';
-			$data['db_host'] = $_SESSION['data']['hostname'];
-			$data['db_name'] = $_SESSION['data']['database'];
-		}
 
 		$this->load->library('parser');
 		$config_contents = $this->parser->parse_string($config_tpl, $data);
