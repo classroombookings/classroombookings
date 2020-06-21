@@ -9,8 +9,6 @@ $iconbar = iconbar(array(
 
 echo $iconbar;
 
-$jscript = 'var messages = [];';
-
 $sort_cols = ["Name", "Location", "Teacher", "Notes", "Photo", "None"];
 
 ?>
@@ -44,15 +42,12 @@ $sort_cols = ["Name", "Location", "Teacher", "Notes", "Photo", "None"];
 		</td>
 		<td width="60" align="center">
 			<?php
-			if ($room->photo != '' ) {
-				$photo_path = "uploads/{$room->photo}";
-				$jscript .= "messages[{$room->room_id}] = ['{$photo_path}', '{$room->name}'];\n";
-				if (file_exists(FCPATH . $photo_path)) {
-					$url = base_url($photo_path);
-					echo '<a href="'.$url.'" title="View Photo">';
-					echo '<img src="' . base_url('assets/images/ui/picture.png') . '" width="16" height="16" alt="View Photo" />';
-					echo '</a>'."\n";
-				}
+			$photo_path = "uploads/{$room->photo}";
+			if ($room->photo != '' && is_file(FCPATH . $photo_path)) {
+				$url = site_url("rooms/photo/{$room->room_id}");
+				$icon_src = base_url('assets/images/ui/picture.png');
+				$icon_el = "<img src='{$icon_src}' width='16' height='16' alt='View Photo'>";
+				echo "<a href='{$url}?' up-history='false' up-drawer='.room-photo' title='View Photo'>{$icon_el}</a>";
 			}
 			?>
 		</td>
@@ -70,10 +65,6 @@ $sort_cols = ["Name", "Location", "Teacher", "Notes", "Photo", "None"];
 	?>
 	</tbody>
 </table>
-
-<script type="text/javascript">
-<?php echo $jscript ?>
-</script>
 
 <?php
 

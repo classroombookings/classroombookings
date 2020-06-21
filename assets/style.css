@@ -565,3 +565,16 @@ a.booking-action:hover {
 .up-form.up-active .loading-notice {
 	display: block;
 }
+
+
+
+.room-photo {
+	max-width: 420px;
+}
+
+	.room-photo img {
+		display: block;
+		width: 100%;
+		max-width: 100%;
+		height: auto;
+	}

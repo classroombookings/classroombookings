@@ -47,6 +47,39 @@ class Rooms extends MY_Controller
 	}
 
 
+	public function photo($room_id = NULL)
+	{
+		if (empty($room_id)) {
+			show_error('No room to show');
+		}
+
+		$room = $this->rooms_model->Get($room_id);
+
+		if (empty($room)) {
+			show_error("The requested room could not be found.");
+		}
+
+		if ( ! strlen($room->photo)) {
+			show_error('No photo available.');
+		}
+
+		$photo_path = "uploads/{$room->photo}";
+
+		if ( ! is_file(FCPATH . $photo_path)) {
+			show_error('Photo file does not exist.');
+		}
+
+		$url = base_url($photo_path);
+
+		$img_el = img($url);
+
+		$room_name = html_escape($room->name);
+
+		$title = "<h4>{$room_name}</h4>";
+		echo "<div class='room-photo'>{$title}{$img_el}</div>";
+	}
+
+
 
 
 

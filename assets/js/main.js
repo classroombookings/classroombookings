@@ -1,3 +1,6 @@
+// up.motion.config.duration = 150;
+up.motion.config.enabled = false;
+
 up.compiler('.sort-table', function(element, cols) {
 	new SortableTable(element, cols);
 });
