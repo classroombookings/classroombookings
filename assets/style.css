@@ -198,6 +198,8 @@ p.msgbox{
 	border-width:1px;
 	border-style:solid;
 	font-size:8pt;
+	max-width: 100%;
+	box-sizing: border-box;
 }
 /* ERROR */
 p.msgbox.error{
@@ -331,7 +333,18 @@ tr.title td{ padding:4px;background:#D6DFF7; color:#000; font-size:10pt; letter-
 
 .input-focus{ background-color:#F5F4EA; }
 
+.cssform fieldset {
+	padding-bottom: 12px;
+}
 
+.cssform .fieldset-description {
+	margin-bottom: 12px;
+}
+.cssform .fieldset-description p {
+	padding-left: 0;
+	border: 0;
+	height: auto;
+}
 
 .cssform p{
 	/*width: 200px;*/
@@ -434,7 +447,7 @@ h5 {
 	width: auto;
 }
 
-.cssform-stacked p,
+.cssform-stacked .input-group,
 .cssform-stacked input,
 .cssform-stacked textarea,
 .cssform-stacked select {
@@ -442,6 +455,10 @@ h5 {
 	padding: 0;
 	float: none;
 	display: block;
+}
+
+.cssform-stacked .input-group {
+	margin-bottom: 12px;
 }
 
 
@@ -538,4 +555,13 @@ a.booking-action:hover {
 
 .hidden {
 	display: none;
+}
+
+
+.up-form .loading-notice {
+	display: none;
+}
+
+.up-form.up-active .loading-notice {
+	display: block;
 }
