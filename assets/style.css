@@ -567,6 +567,13 @@ a.booking-action:hover {
 }
 
 
+.room-info {
+	min-width: 300px;
+}
+
+.room-info .zebra-table {
+	margin-bottom: 30px;
+}
 
 .room-photo {
 	max-width: 420px;

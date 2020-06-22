@@ -64,6 +64,92 @@ class Rooms_model extends CI_Model
 	}
 
 
+	public function room_info($room)
+	{
+		if ( ! is_object($room)) {
+			$room = $this->Get( (int) $room);
+		}
+
+		$fields = $this->GetFields();
+		$field_values = $this->GetFieldValues($room->room_id);
+
+		$info = [];
+
+		if ($room->location) {
+			$info[] = [
+				'name' => 'location',
+				'label' => 'Location',
+				'value' => html_escape($room->location),
+			];
+		}
+
+		// User
+		if ($room->displayname == '' ) {
+			$room->displayname = $room->username;
+		}
+		if ($room->displayname) {
+			$info[] = [
+				'name' => 'teacher',
+				'label' => 'Teacher',
+				'value' => html_escape($room->displayname),
+			];
+		}
+
+		if ($room->notes) {
+			$info[] = [
+				'name' => 'notes',
+				'label' => 'Notes',
+				'value' => html_escape($room->notes),
+			];
+		}
+
+		if (empty($fields)) {
+			return $info;
+		}
+
+		foreach ($fields as $field) {
+
+			$field_value = NULL;
+
+			switch ($field->type) {
+				case 'TEXT':
+					$field_value = html_escape($field_values[$field->field_id]);
+				break;
+
+				case 'CHECKBOX':
+					$val = boolval($field_values[$field->field_id]);
+					if ($val) {
+						$img_src = base_url('assets/images/ui/enabled.png');
+						$alt = 'Yes';
+					} else {
+						$img_src = base_url('assets/images/ui/no.png');
+						$alt = 'No';
+					}
+					$field_value = "<img src='{$img_src}' alt='{$alt}' up-tooltip='{$alt}' width='16' height='16'>";
+				break;
+
+				case 'SELECT':
+					foreach ($field->options as $option) {
+						if ($option->option_id == $field_values[$field->field_id]) {
+							$field_value = html_escape($option->value);
+							break;
+						}
+					}
+				break;
+			}
+
+			$info[] = [
+				'name' => "field_{$field->name}",
+				'label' => $field->name,
+				'value' => $field_value,
+			];
+
+		}
+
+		return $info;
+	}
+
+
 
 
 	/**
