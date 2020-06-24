@@ -81,7 +81,7 @@ class Authentication extends MY_Controller
 		$username = $this->input->post('username');
 		$password = $this->input->post('password');
 
-		$user = $this->authldap->authenticate($username, $password);
+		$user = $this->authldap->verify($username, $password);
 
 		$this->data['user'] = $user;
 		$this->data['mapping'] = $this->authldap->map_user_attributes($user);
@@ -104,7 +104,7 @@ class Authentication extends MY_Controller
 	{
 		$this->load->library('form_validation');
 		$this->form_validation->set_rules('ldap_enabled', 'LDAP Enabled', 'required|is_natural');
-		$this->form_validation->set_rules('ldap_create_users', 'Create users', 'required|is_natural_no_zero');
+		$this->form_validation->set_rules('ldap_create_users', 'Create users', 'required|is_natural');
 		$this->form_validation->set_rules('ldap_server', 'Server', 'required|max_length[100]');
 		$this->form_validation->set_rules('ldap_port', 'Port', 'required|is_natural_no_zero');
 		$this->form_validation->set_rules('ldap_version', 'Version', 'required|is_natural');

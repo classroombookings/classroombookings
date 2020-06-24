@@ -1,6 +1,6 @@
 <?php
 
-if ($this->userauth->loggedin()) {
+if ($this->userauth->logged_in()) {
 	$menu[1]['text'] = img('assets/images/ui/link_controlpanel.png', FALSE, 'hspace="4" align="top" alt=" "') . 'Control Panel';
 	$menu[1]['href'] = site_url('/');
 	$menu[1]['title'] = 'Tasks';
@@ -59,7 +59,7 @@ if ($this->userauth->loggedin()) {
 		<div class="header">
 
 			<div class="nav-box">
-				<?php if( ! $this->userauth->loggedin()) { echo '<br /><br />'; } ?>
+				<?php if( ! $this->userauth->logged_in()) { echo '<br /><br />'; } ?>
 				<?php
 				$i=0;
 				if(isset($menu)){
@@ -71,7 +71,7 @@ if ($this->userauth->loggedin()) {
 				}
 				?><br />
 				<?php
-				if ($this->userauth->loggedin()) {
+				if ($this->userauth->logged_in()) {
 					$output = html_escape(strlen($this->userauth->user->displayname) > 1 ? $this->userauth->user->displayname : $this->userauth->user->username);
 					echo "<p class='normal'>Logged in as {$output}</p>";
 				}

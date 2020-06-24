@@ -14,8 +14,8 @@ class Logout extends MY_Controller
 
 	function index()
 	{
-		$this->userauth->logout();
-		redirect('/');
+		$this->userauth->log_out();
+		redirect('');
 	}
 
 

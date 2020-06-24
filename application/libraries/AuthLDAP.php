@@ -4,6 +4,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class AuthLDAP
 {
 
+	public $enabled = FALSE;
+	public $create_users = FALSE;
 
 	public $server = '';
 	public $port = 389;
@@ -31,12 +33,16 @@ class AuthLDAP
 	{
 		$this->CI =& get_instance();
 
+		$this->CI->load->model('users_model');
+
 		$this->init([
 			'timeout' => config_item('auth_ldap_timeout'),
 		]);
 
 		if ( ! empty($config)) {
 			$this->init($config);
+		} else {
+			$this->init_from_settings();
 		}
 	}
 
@@ -48,6 +54,8 @@ class AuthLDAP
 		foreach ($config as $key => $val) {
 			if (isset($this->$key)) {
 				switch ($key) {
+					case 'enabled':
+					case 'create_users':
 					case 'use_tls':
 					case 'ignore_cert':
 						$val = boolval($val);
@@ -62,6 +70,171 @@ class AuthLDAP
 		}
 
 		return $this;
+	}
+
+
+	public function init_from_settings()
+	{
+		$settings = $this->CI->settings_model->get_all('auth');
+
+		$this->server = element('ldap_server', $settings);
+		$this->port = intval(element('ldap_port', $settings));
+		$this->version = intval(element('ldap_version', $settings));
+		$this->use_tls = boolval(element('ldap_use_tls', $settings));
+		$this->ignore_cert = boolval(element('ldap_ignore_cert', $settings));
+		$this->base_dn = element('ldap_base_dn', $settings);
+		$this->user_attr = element('ldap_user_attr', $settings);
+		$this->search_filter = element('ldap_search_filter', $settings);
+
+		$this->attr_firstname = element('ldap_attr_firstname', $settings);
+		$this->attr_lastname = element('ldap_attr_lastname', $settings);
+		$this->attr_displayname = element('ldap_attr_displayname', $settings);
+		$this->attr_email = element('ldap_attr_email', $settings);
+
+		$this->enabled = boolval(element('ldap_enabled', $settings));
+		$this->create_users = boolval(element('ldap_create_users', $settings));
+
+		return $this;
+	}
+
+
+	/**
+	 * Check a given username and password against the LDAP server.
+	 * Return a DB User row if successful.
+	 *
+	 * @param string $username
+	 * @param string $password
+	 * @return mixed FALSE on failure or DB User row on success.
+	 *
+	 */
+	public function authenticate($username, $password)
+	{
+		$username = trim($username);
+		if ( ! strlen($username) || ! strlen($password)) {
+			$this->errors[] = 'no_username_or_password';
+			return FALSE;
+		}
+
+		if ( ! $this->enabled) {
+			// LDAP authentication isn't enabled.
+			$this->errors[] = 'ldap_not_enabled';
+			return FALSE;
+		}
+
+		// Get the user to see if they exist yet.
+		// Pass FALSE to 'require_enabled' so we can deny access to those who are disabled.
+		// Otherwise, it would seem like they don't exist, and would be (re-)created.
+		$db_user = $this->CI->users_model->get_by_username($username, FALSE);
+
+		if ($db_user && $db_user->enabled == 0) {
+			// User exists, but are not enabled. Consider this an auth failure.
+			$this->errors[] = 'user_not_enabled';
+			return FALSE;
+		}
+
+		if ( ! $db_user && ! $this->create_users) {
+			// User does not exist and they should not be created.
+			$this->errors[] = 'user_not_found_no_create';
+			return FALSE;
+		}
+
+		// Expect TRUE or an array of user attributes on success
+		$verified = $this->verify($username, $password);
+
+		if ($verified === FALSE) {
+			return FALSE;
+		}
+
+		// Got user - create or update
+		//
+
+		// Array for local user data
+		$user_data = [];
+
+		// Check for LDAP attriutes. Update user properties if present.
+		if (is_array($verified)) {
+			$crbs_props = $this->map_user_attributes($verified);
+			if (is_array($crbs_props)) {
+				$user_data = array_merge($user_data, $crbs_props);
+			}
+		}
+
+		if ($db_user) {
+
+			// Get ID for later
+			$user_id = $db_user->user_id;
+
+			// Update, if there are attributes
+			if ( ! empty($user_data)) {
+				$this->CI->users_model->update($user_data, $db_user->user_id);
+				log_message('info', "AuthLDAP: Updated profile details for {$username}.");
+			}
+
+		} else {
+
+			// Create user
+			$user_data['username'] = $username;
+			$user_data['created'] = date('Y-m-d H:i:s');
+			$user_data['authlevel'] = TEACHER;
+			$user_data['enabled'] = 1;
+
+			$user_id = $this->CI->users_model->insert($user_data);
+
+			log_message('info', "AuthLDAP: Created new user account for {$username}.");
+
+		}
+
+		// Update the local password to one supplied here.
+		// This keeps a copy locally so users can log in if LDAP can't be reached
+		$this->CI->users_model->set_password($user_id, $password);
+
+		return $this->CI->users_model->get_by_id($user_id);
+	}
+
+
+	/**
+	 * Verify a username and password against the configured LDAP server.
+	 *
+	 * @param string $username Username
+	 * @param string $password Password
+	 * @return mixed FALSE on failure; TRUE on success but no search performed; Array of user attributes on success if search performed.
+	 *
+	 */
+	public function verify($username, $password)
+	{
+		$connection = $this->get_connection();
+
+		if ( ! $connection) {
+			return FALSE;
+		}
+
+		$username = trim($username);
+		if ( ! strlen($username) || ! strlen($password)) {
+			$this->errors[] = 'no_username_or_password';
+			return FALSE;
+		}
+
+		// Generate bind DN: attr=username, [base_dn]
+		$bind_dn = sprintf('%s=%s,%s', $this->user_attr, $username, $this->base_dn);
+
+		if ( ! $bind = @ldap_bind($this->connection, $bind_dn, $password)) {
+			$this->errors[] = 'bind_error';
+			return FALSE;
+		}
+
+		// Successful bind: quick exit here if no query filter supplied.
+		if ( ! strlen($this->search_filter)) {
+			return TRUE;
+		}
+
+		// Get user details using query filter.
+		$user = $this->get_user_details($username);
+
+		if ($user === FALSE) {
+			return FALSE;
+		}
+
+		return $user;
 	}
 
 
@@ -105,52 +278,6 @@ class AuthLDAP
 		}
 
 		return $this;
-	}
-
-
-	/**
-	 * Check a given username and password against the LDAP server.
-	 *
-	 * @param string $username
-	 * @param string $password
-	 * @return mixed FALSE on failure or array of user details
-	 *
-	 */
-	public function authenticate($username = '', $password = '')
-	{
-		$connection = $this->get_connection();
-
-		if ( ! $connection) {
-			return FALSE;
-		}
-
-		$username = trim($username);
-		if ( ! strlen($username) || ! strlen($password)) {
-			$this->errors[] = 'no_username_or_password';
-			return FALSE;
-		}
-
-		// Generate bind DN: attr=username, [base_dn]
-		$bind_dn = sprintf('%s=%s,%s', $this->user_attr, $username, $this->base_dn);
-
-		if ( ! $bind = @ldap_bind($this->connection, $bind_dn, $password)) {
-			$this->errors[] = 'bind_error';
-			return FALSE;
-		}
-
-		// Successful bind: quick exit here if no query filter supplied.
-		if ( ! strlen($this->search_filter)) {
-			return TRUE;
-		}
-
-		// Get user details using query filter.
-		$user = $this->get_user_details($username);
-
-		if ($user === FALSE) {
-			return FALSE;
-		}
-
-		return $user;
 	}
 
 

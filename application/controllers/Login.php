@@ -62,9 +62,9 @@ class Login extends MY_Controller
 		$password = $this->input->post('password');
 
 		// Now see if we can login
-		if ($this->userauth->trylogin($username, $password)) {
+		if ($this->userauth->log_in($username, $password)) {
 			// Success! Redirect to control panel
-			redirect('controlpanel');
+			redirect('');
 		} else {
 			$this->session->set_flashdata('auth', msgbox('error', 'Incorrect username and/or password.'));
 			return $this->index();

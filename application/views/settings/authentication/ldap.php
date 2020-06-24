@@ -46,6 +46,8 @@ echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform
 		));
 		echo "<label for='{$field}' class='ni'>{$input} Automatically create user accounts on successful login.</label>";
 		?>
+		<p class="hint">When enabled, any valid credentials returned from an LDAP authentication attempt will automatically create a classroombookings 'Teacher' account.</p><br>
+		<p class="hint">When not enabled, only users who have a classroombookings account will be authenticated.</p>
 	</p>
 	<?php echo form_error($field) ?>
 

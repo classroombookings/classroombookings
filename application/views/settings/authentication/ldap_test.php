@@ -27,6 +27,12 @@ echo form_open('settings/authentication/ldap_test', $attrs, $hidden);
 
 <fieldset>
 
+	<div class="fieldset-description">
+		<p><small>Change settings on the left then enter a username and password here to test them. You don't need to click Save before testing the credentials.</small></p>
+		<p><small>These won't be stored on the server.</small></p>
+		<br>
+	</div>
+
 	<legend accesskey="T" tabindex="<?php echo tab_index() ?>">Test Settings</legend>
 
 	<p class="input-group">

@@ -49,7 +49,7 @@ class MY_Controller extends CI_Controller
 	public function require_logged_in($msg = TRUE)
 	{
 		// Check loggedin status
-		if ( ! $this->userauth->loggedin()) {
+		if ( ! $this->userauth->logged_in()) {
 			if ($msg) {
 				$this->session->set_flashdata('auth', msgbox('error', $this->lang->line('crbs_mustbeloggedin')));
 			}
