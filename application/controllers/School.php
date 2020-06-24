@@ -10,6 +10,7 @@ class School extends MY_Controller
 		parent::__construct();
 
 		$this->require_logged_in();
+		$this->require_auth_level(ADMINISTRATOR);
 
 		// Load models etc.
 		$this->load->helper('file');
@@ -17,60 +18,30 @@ class School extends MY_Controller
 
 
 	/**
-	* Page: index
-	*
-	* This function simply returns the manage() function
-	*
-	*/
-	function index()
+	 * School Details
+	 *
+	 */
+	public function index()
 	{
-		return $this->manage();
-	}
-
-
-
-	/**
-	* Page: home
-	*/
-	function manage()
-	{
-		$layout['showtitle'] = 'Tasks';
-		$layout['title'] = 'Manage ' . setting('name');
-
-		// Initialise with empty string
-		$layout['body'] = '';
-
-		$layout['body'] .= $this->session->flashdata('auth');
-		$layout['body'] .= $this->load->view('school/manage/school_manage_index', NULL, TRUE);
-
-		$this->load->view('layout', $layout);
-	}
-
-
-
-
-
-	function details()
-	{
-		$this->require_auth_level(ADMINISTRATOR);
-
 		$this->data['settings'] = $this->settings_model->get_all('crbs');
 
 		$this->data['title'] = 'School Information';
 		$this->data['showtitle'] = $this->data['title'];
-		$this->data['body'] = $this->load->view('school/details/school_details_edit', $this->data, TRUE);
+		$this->data['body'] = $this->load->view('school/index', $this->data, TRUE);
+
+		if ($this->input->post()) {
+			$this->save();
+		}
 
 		return $this->render();
 	}
-
-
 
 
 	/**
 	* Controller function to handle a submitted form
 	*
 	*/
-	function details_submit()
+	private function save()
 	{
 		// Parse data input from view and carry out appropriate action.
 
@@ -83,8 +54,7 @@ class School extends MY_Controller
 		$this->form_validation->set_rules('userfile', 'Logo', '');
 
 		if ($this->form_validation->run() == FALSE) {
-			// Validation failed
-			return $this->details();
+			return FALSE;
 		}
 
 		$upload = FALSE;
@@ -162,7 +132,7 @@ class School extends MY_Controller
 
 		$this->session->set_flashdata('saved', msgbox('info', 'School Details have been updated.'));
 
-		redirect('school/details');
+		redirect('school');
 	}
 
 

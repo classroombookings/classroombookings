@@ -104,3 +104,19 @@ if (is_file(FCPATH . 'local/config.php'))
 		$db['default'] = array_merge($db['default'], $local_config['database']);
 	}
 }
+
+// Fix for issue with CI 3.1.11.
+// list_tables() assumes 'database' property is present.
+// In default CRBS config, database is in the DSN string only (for PDO types).
+if (empty($db['default']['database']) && strtolower($db['default']['dbdriver']) == 'pdo') {
+	// Empty 'database' - find it from DSN
+	$parts = explode(':', $db['default']['dsn']);
+	if (count($parts) == 2) {
+		$config = str_replace(';', "\n", $parts[1]);
+		$ini = parse_ini_string($config);
+		$dbname = isset($ini['dbname']) ? trim($ini['dbname']) : FALSE;
+		if ($dbname && strlen($dbname)) {
+			$db['default']['database'] = $dbname;
+		}
+	}
+}

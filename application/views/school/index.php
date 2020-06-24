@@ -1,6 +1,6 @@
 <?php
 echo $this->session->flashdata('saved');
-echo form_open_multipart('school/details_submit', array('id'=>'schooldetails', 'class'=>'cssform'));
+echo form_open_multipart(current_url(), array('id'=>'schooldetails', 'class'=>'cssform'));
 ?>
 
 

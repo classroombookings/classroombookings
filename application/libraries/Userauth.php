@@ -32,19 +32,14 @@ class Userauth
 	{
 		if (isset($_SESSION['user_id']) && strlen($_SESSION['user_id'])) {
 
-			$this->CI->db->where(array(
-				'user_id' => $_SESSION['user_id'],
-				'enabled' => 1,
-			));
-			$query = $this->CI->db->get('users', 1);
+			$user = $this->CI->users_model->get_by_id($_SESSION['user_id']);
 
-			if ($query->num_rows() == 1) {
-				$this->user = $query->row();
+			if ($user) {
+				unset($this->user->password);
+				$this->user = $user;
 			} else {
-				unset($_SESSION['user_id']);
-				$this->user = NULL;
+				$this->log_out();
 			}
-
 		}
 	}
 
@@ -53,82 +48,130 @@ class Userauth
 	 * Logout user and reset session data
 	 *
 	 */
-	function logout()
+	public function log_out()
 	{
 		unset($_SESSION['user_id']);
+		session_destroy();
 		$this->user = NULL;
 		return TRUE;
 	}
 
 
 	/**
-	 * Try and validate a login and optionally set session data
+	 * Given a username and password, authenticate the credentials and log the user in.
 	 *
-	 * @param		string		$username					Username to login
-	 * @param		string		$password					Password to match user
-	 * @param		bool			$session (true)		Set session data here. False to set your own
+	 * @param string $username Username
+	 * @param string $password Password
+	 * @param bool $force Specify 'true' to force the session to be created for the user without a valid password.
+	 *
 	 */
-	function trylogin($username, $password)
+	public function log_in($username, $password, $force = false)
 	{
-		if (empty($username) || empty($password)) {
-			return FALSE;
+		// Valid user row
+		$valid_user = FALSE;
+
+		// Flag for which auth method was used to log them in.
+		$auth_method = 'local';
+
+		// Check settings
+		$use_ldap = (setting('ldap_enabled', 'auth') == '1');
+
+		// authenticate() on the local/LDAP libraries should return a valid DB User row on success.
+		//
+
+		if ($force === TRUE) {
+
+			$valid_user = $this->CI->users_model->get_by_username($username);
+			$auth_method = 'local';
+
+		} elseif ($use_ldap) {
+
+			log_message('info', "Trying LDAP authentication");
+
+			$this->CI->load->library('authldap');
+
+			$valid_user = $this->CI->authldap->authenticate($username, $password);
+			$ldap_errors = $this->CI->authldap->get_errors();
+			$connection_error = in_array('no_socket_connection', $ldap_errors);
+			$auth_method = 'ldap';
+
+			if ( ! $valid_user && $connection_error) {
+				// Try local instead
+				$this->CI->load->library('authlocal');
+				$valid_user = $this->CI->authlocal->authenticate($username, $password);
+				$local_errors = $this->CI->authldap->get_errors();
+				$auth_method = 'local';
+			}
+
 		}
 
-		// Get user
-		$this->CI->db->where(array(
-			'username' => $username,
-			'enabled' => 1,
-		));
-		$query = $this->CI->db->get('users', 1);
-		if ($query->num_rows() != 1) {
-			return FALSE;
+		if ( ! $valid_user && $force !== TRUE) {
+			$this->CI->load->library('authlocal');
+			$valid_user = $this->CI->authlocal->authenticate($username, $password);
+			$local_errors = $this->CI->authlocal->get_errors();
+			$auth_method = 'local';
 		}
 
-		// Flag to determine if password should be updated, if successful.
-		$upgrade_password = FALSE;
-
-		$user = $query->row();
-		$password_hash = $user->password;
-
-		// Check for old password format
-		if (substr($password_hash, 0, 5) === 'sha1:') {
-			// user password value is password_hash() of old sha1 value
-			$password_hash = substr($password_hash, 5);
-			$upgrade_password = TRUE;
-			$verified = password_verify(sha1($password), $password_hash);
-		} else {
-			// user password value is direct output of password_hash() of their password.
-			$verified = password_verify($password, $password_hash);
+		if ($valid_user) {
+			$this->setup_session($valid_user->user_id, $auth_method);
+			$this->touch_last_login($valid_user->user_id);
+			return TRUE;
 		}
 
-		if ( ! $verified) {
-			return FALSE;
-		}
+		$errors = [];
+		if (isset($ldap_errors)) $errors = array_merge($errors, $ldap_errors);
+		if (isset($local_errors)) $errors = array_merge($errors, $local_errors);
+		$errors = array_unique($errors);
 
-		// Update user
-		$user_data = array(
+		log_message('error', "Userauth: Unsuccessful login for {$username}. Reasons: " . json_encode($errors));
+
+		return FALSE;
+	}
+
+
+	/**
+	 * Update the last login timestamp for the given user.
+	 *
+	 */
+	private function touch_last_login($user_id)
+	{
+		$user_data = [
 			'lastlogin' => date('Y-m-d H:i:s'),
-		);
+		];
 
-		// If we need to upgrade their password to new storage without sha1, do it now
-		if ($upgrade_password) {
-			$user_data['password'] = password_hash($password, PASSWORD_DEFAULT);
-		}
+		$where = [
+			'user_id' => $user_id,
+		];
 
-		$this->CI->db->where('user_id', $user->user_id);
-		$this->CI->db->update('users', $user_data);
+		return $this->CI->db->update('users', $user_data, $where);
+	}
 
+
+	/**
+	 * Set up the session for the given user ID.
+	 *
+	 */
+	private function setup_session($user_id, $auth_method = 'local')
+	{
 		// Set up session
-		$_SESSION['user_id'] = $user->user_id;
 		$_SESSION['loggedin'] = TRUE;
+		$_SESSION['user_id'] = $user_id;
+		$_SESSION['auth_method'] = $auth_method;
 
 		return TRUE;
 	}
 
 
+	/**
+	 * Check to see if the user is the given authorisation level.
+	 *
+	 * @param string $level Authorisation level to check (admin or teacher)
+	 * @return bool
+	 *
+	 */
 	public function is_level($level)
 	{
-		if (empty($this->user) || empty($level)) {
+		if ( ! $this->logged_in() || ! strlen($level)) {
 			return FALSE;
 		}
 
@@ -136,9 +179,14 @@ class Userauth
 	}
 
 
-	public function loggedin()
+	/**
+	 * Check to see if a user is logged in.
+	 * Determined by presence of local user object and an ID.
+	 *
+	 */
+	public function logged_in()
 	{
-		return ($this->user !== NULL);
+		return (is_object($this->user) && isset($this->user->user_id));
 	}
 
 

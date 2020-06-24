@@ -9,11 +9,11 @@ $iconbar = iconbar(array(
 
 echo $iconbar;
 
-$jscript = 'var messages = [];';
+$sort_cols = ["Name", "Location", "Teacher", "Notes", "Photo", "None"];
 
 ?>
 
-<table width="100%" cellpadding="2" cellspacing="2" border="0" class="sort-table" id="jsst-rooms">
+<table width="100%" cellpadding="2" cellspacing="2" border="0" class="zebra-table sort-table" id="jsst-rooms" up-data='<?= json_encode($sort_cols) ?>'>
 	<col /><col /><col />
 	<thead>
 	<tr class="heading">
@@ -29,7 +29,7 @@ $jscript = 'var messages = [];';
 	$i=0;
 	if( $rooms ){
 	foreach( $rooms as $room ){ ?>
-	<tr class="tr<?php echo ($i & 1) ?>">
+	<tr>
 		<td><?php echo html_escape($room->name) ?></td>
 		<td><?php echo html_escape($room->location) ?></td>
 		<td>
@@ -42,15 +42,12 @@ $jscript = 'var messages = [];';
 		</td>
 		<td width="60" align="center">
 			<?php
-			if ($room->photo != '' ) {
-				$photo_path = "uploads/{$room->photo}";
-				$jscript .= "messages[{$room->room_id}] = ['{$photo_path}', '{$room->name}'];\n";
-				if (file_exists(FCPATH . $photo_path)) {
-					$url = base_url($photo_path);
-					echo '<a href="'.$url.'" title="View Photo">';
-					echo '<img src="' . base_url('assets/images/ui/picture.png') . '" width="16" height="16" alt="View Photo" />';
-					echo '</a>'."\n";
-				}
+			$photo_path = "uploads/{$room->photo}";
+			if ($room->photo != '' && is_file(FCPATH . $photo_path)) {
+				$url = site_url("rooms/photo/{$room->room_id}");
+				$icon_src = base_url('assets/images/ui/picture.png');
+				$icon_el = "<img src='{$icon_src}' width='16' height='16' alt='View Photo'>";
+				echo "<a href='{$url}' up-history='false' up-drawer='.room-photo' title='View Photo'>{$icon_el}</a>";
 			}
 			?>
 		</td>
@@ -69,15 +66,6 @@ $jscript = 'var messages = [];';
 	</tbody>
 </table>
 
-<script type="text/javascript">
-<?php echo $jscript ?>
-</script>
-
 <?php
 
 echo $iconbar;
-
-$jsst['name'] = 'st1';
-$jsst['id'] = 'jsst-rooms';
-$jsst['cols'] = array("Name", "Location", "Teacher", "Notes", "Photo", "None");
-$this->load->view('partials/js-sorttable', $jsst);

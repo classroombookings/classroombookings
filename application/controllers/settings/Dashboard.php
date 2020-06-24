@@ -1,22 +1,22 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-
-class Logout extends MY_Controller
+class Dashboard extends MY_Controller
 {
 
 
 	public function __construct()
 	{
 		parent::__construct();
+		$this->require_auth_level(ADMINISTRATOR);
+		redirect('settings/general');
 	}
 
 
-	function index()
+	public function index()
 	{
-		$this->userauth->log_out();
-		redirect('');
 	}
+
 
 
 }

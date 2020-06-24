@@ -1,18 +1,11 @@
 <?php
-
-if (isset($roomphoto)){
-	$width = 760;
-} else {
-	$width = 400;
-}
-
-$url = site_url('rooms/info/'.$room_id);
+$url = site_url("rooms/info/{$room_id}");
 $name = html_escape($name);
-$title = '<a onclick="window.open(\''.$url.'\',\'\',\'width='.$width.',height=360,scrollbars\');return false;" href="'.$url.'" title="View More Information">'.$name.'</a>'."\n";
+$link = "<a href='{$url}' up-position='left' up-drawer='.room-info' up-history='false' up-preload>{$name}</a>";
 ?>
 
 <td align="center" width="<?php echo $width ?>">
-	<strong><?php echo $title ?></strong><br />
+	<strong><?php echo $link ?></strong><br />
 	<span style="font-size:90%">
 		<?php echo html_escape(($displayname == '') ? $username : $displayname); ?> &nbsp;
 	</span>
