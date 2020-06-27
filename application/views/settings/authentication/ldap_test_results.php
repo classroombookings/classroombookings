@@ -1,10 +1,15 @@
-<div id="ldap_test_results">
+<div id="ldap_test_results" style="word-break: break-word;">
 
 <?php
 if ( ! empty($errors)) {
 	foreach ($errors as $err) {
 		$err_msg = $this->lang->line("auth_ldap_{$err}");
 		echo msgbox('error', $err_msg ? $err_msg : $err);
+	}
+
+	echo "<p><strong>Bind DN:</strong> " . html_escape($user_bind_dn) . "</p>";
+	if ( ! empty($config['search_filter'])) {
+		echo "<p><strong>Search filter:</strong> " . html_escape($user_search_filter) . "</p>";
 	}
 }
 

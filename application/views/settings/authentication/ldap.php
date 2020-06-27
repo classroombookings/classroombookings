@@ -160,31 +160,37 @@ echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform
 	</p>
 	<?php echo form_error($field) ?>
 
+
+	<?php
+	$field = 'ldap_bind_dn_format';
+	$value = set_value($field, element($field, $settings), FALSE);
+	?>
+	<p>
+		<label for="<?= $field ?>">Bind DN format</label>
+		<?php
+		echo form_textarea([
+			'name' => $field,
+			'id' => $field,
+			'rows' => '3',
+			'cols' => '60',
+			'tabindex' => tab_index(),
+			'value' => $value,
+		]);
+		?>
+		<p class="hint">This will vary depending on your server and configuration. The tag <span>:user</span> will be replaced with the authenticating user. Some common formats are:</p>
+		<ul class="hint">
+			<li>EXAMPLE.LOCAL\:user</li>
+			<li>:user@EXAMPLE.LOCAL</li>
+			<li>uid=:user,cn=users,dc=example,dc=com</li>
+		</ul>
+	</p>
+	<?php echo form_error($field) ?>
+
 </fieldset>
 
 <fieldset>
 
 	<legend accesskey="H" tabindex="<?php echo tab_index() ?>">Search</legend>
-
-	<?php
-	$field = 'ldap_user_attr';
-	$value = set_value($field, element($field, $settings), FALSE);
-	?>
-	<p>
-		<label for="<?= $field ?>">User attribute</label>
-		<?php
-		echo form_input(array(
-			'name' => $field,
-			'id' => $field,
-			'size' => '40',
-			'maxlength' => '100',
-			'tabindex' => tab_index(),
-			'value' => $value,
-		));
-		?>
-		<p class="hint">Typicall sAMAccountName or uid.</p>
-	</p>
-	<?php echo form_error($field) ?>
 
 	<?php
 	$field = 'ldap_base_dn';
@@ -222,9 +228,9 @@ echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform
 			'value' => $value,
 		));
 		?>
-		<p class="hint">Example: (&(&lt;attr&gt;=&lt;user&gt;))</p>
+		<p class="hint">Example: (&(:attr=:user))</p>
 		<br>
-		<p class="hint">The tags <span>&lt;attr&gt;</span> and <span>&lt;user&gt;</span> will be replaced by the User Attribute configured above and the supplied Username.</p>
+		<p class="hint">The tag <span>:user</span> will be replaced by the user logging in.</p>
 	</p>
 	<?php echo form_error($field) ?>
 

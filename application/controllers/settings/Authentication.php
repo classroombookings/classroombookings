@@ -67,8 +67,8 @@ class Authentication extends MY_Controller
 			'version' => $this->input->post('ldap_version'),
 			'use_tls' => $this->input->post('ldap_use_tls'),
 			'ignore_cert' => $this->input->post('ldap_ignore_cert'),
+			'bind_dn_format' => $this->input->post('ldap_bind_dn_format'),
 			'base_dn' => $this->input->post('ldap_base_dn'),
-			'user_attr' => $this->input->post('ldap_user_attr'),
 			'search_filter' => $this->input->post('ldap_search_filter'),
 			'attr_firstname' => $this->input->post('ldap_attr_firstname'),
 			'attr_lastname' => $this->input->post('ldap_attr_lastname'),
@@ -83,9 +83,12 @@ class Authentication extends MY_Controller
 
 		$user = $this->authldap->verify($username, $password);
 
+		$this->data['config'] = $config;
 		$this->data['user'] = $user;
 		$this->data['mapping'] = $this->authldap->map_user_attributes($user);
 		$this->data['errors'] = [];
+		$this->data['user_bind_dn'] = $this->authldap->get_user_bind_dn($username);
+		$this->data['user_search_filter'] = $this->authldap->get_user_search_filter($username);
 
 		if ($user === FALSE) {
 			$this->data['errors'] = $this->authldap->get_errors();
@@ -110,7 +113,7 @@ class Authentication extends MY_Controller
 		$this->form_validation->set_rules('ldap_version', 'Version', 'required|is_natural');
 		$this->form_validation->set_rules('ldap_use_tls', 'Use TLS', 'required|is_natural');
 		$this->form_validation->set_rules('ldap_ignore_cert', 'Ignore certiicate', 'required|is_natural');
-		$this->form_validation->set_rules('ldap_user_attr', 'User attribute', 'max_length[100]');
+		$this->form_validation->set_rules('ldap_bind_dn_format', 'Bind DN format', 'required|max_length[1024]');
 		$this->form_validation->set_rules('ldap_base_dn', 'Base DN', 'max_length[1024]');
 		$this->form_validation->set_rules('ldap_search_filter', 'Search filter', 'max_length[1024]');
 
@@ -131,7 +134,7 @@ class Authentication extends MY_Controller
 			'ldap_version',
 			'ldap_use_tls',
 			'ldap_ignore_cert',
-			'ldap_user_attr',
+			'ldap_bind_dn_format',
 			'ldap_base_dn',
 			'ldap_search_filter',
 			'ldap_attr_firstname',

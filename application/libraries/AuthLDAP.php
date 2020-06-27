@@ -12,8 +12,8 @@ class AuthLDAP
 	public $version = 3;
 	public $use_tls = FALSE;
 	public $ignore_cert = FALSE;
+	public $bind_dn_format = '';
 	public $base_dn = '';
-	public $user_attr = '';
 	public $search_filter = '';
 	public $timeout = 10;
 
@@ -82,8 +82,8 @@ class AuthLDAP
 		$this->version = intval(element('ldap_version', $settings));
 		$this->use_tls = boolval(element('ldap_use_tls', $settings));
 		$this->ignore_cert = boolval(element('ldap_ignore_cert', $settings));
+		$this->bind_dn_format = element('ldap_bind_dn_format', $settings);
 		$this->base_dn = element('ldap_base_dn', $settings);
-		$this->user_attr = element('ldap_user_attr', $settings);
 		$this->search_filter = element('ldap_search_filter', $settings);
 
 		$this->attr_firstname = element('ldap_attr_firstname', $settings);
@@ -214,11 +214,12 @@ class AuthLDAP
 			return FALSE;
 		}
 
-		// Generate bind DN: attr=username, [base_dn]
-		$bind_dn = sprintf('%s=%s,%s', $this->user_attr, $username, $this->base_dn);
+		$bind_dn = $this->get_user_bind_dn($username);
 
 		if ( ! $bind = @ldap_bind($this->connection, $bind_dn, $password)) {
-			$this->errors[] = 'bind_error';
+			$error_number = ldap_errno($this->connection);
+			$this->errors[] = "bind_error";
+			$this->errors[] = ldap_err2str($error_number);
 			return FALSE;
 		}
 
@@ -410,7 +411,6 @@ class AuthLDAP
 		// Fields to get
 		$default_fields = [
 			'dn',
-			$this->user_attr,
 		];
 
 		$mapping_fields = $this->get_mapping_attributes();
@@ -421,12 +421,7 @@ class AuthLDAP
 			$user_data[$field] = '';
 		}
 
-		$vars = [
-			':attr' => $this->user_attr,
-			':user' => $username,
-		];
-
-		$filter = strtr($this->search_filter, $vars);
+		$filter = $this->get_user_search_filter($username);
 
 		if ( ! $results = @ldap_search($connection, $this->base_dn, $filter, $fields)) {
 			$this->errors[] = 'search_error';
@@ -486,6 +481,26 @@ class AuthLDAP
 		$scheme = $this->use_tls ? 'ldaps' : 'ldap';
 		$uri = sprintf('%s://%s:%d', $scheme, $this->server, $this->port);
 		return $uri;
+	}
+
+
+	public function get_user_bind_dn($username)
+	{
+		$vars = [
+			':user' => $username,
+		];
+
+		return strtr($this->bind_dn_format, $vars);
+	}
+
+
+	public function get_user_search_filter($username)
+	{
+		$vars = [
+			':user' => $username,
+		];
+
+		return strtr($this->search_filter, $vars);
 	}
 
 

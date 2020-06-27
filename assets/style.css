@@ -346,7 +346,8 @@ tr.title td{ padding:4px;background:#D6DFF7; color:#000; font-size:10pt; letter-
 	height: auto;
 }
 
-.cssform p{
+.cssform p,
+.cssform .input-group {
 	/*width: 200px;*/
 	clear: left;
 	margin: 0;
@@ -410,11 +411,17 @@ to account for 3 pixel bug: http://www.positioniseverything.net/explorer/threepx
 margin-left: 3px;
 }
 
-.cssform p.hint{
+.cssform p.hint,
+.cssform ul.hint {
   padding-top:1px;
   background:#fff;
   font-size:85%;
   color:#777;
+  padding-left: 145px; /*width of left column containing the label elements*/
+}
+
+.cssform ul.hint {
+	margin-left: 15px;
 }
 
 .cssform div.formfield{margin-left:150px;}
