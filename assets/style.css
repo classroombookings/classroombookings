@@ -201,6 +201,10 @@ p.msgbox{
 	max-width: 100%;
 	box-sizing: border-box;
 }
+p.msgbox.large {
+	width: 100%;
+	max-width: 100%;
+}
 /* ERROR */
 p.msgbox.error{
 	background-image:url(i_error.png);
@@ -229,6 +233,12 @@ p.msgbox.question{
 	background-image:url(i_help.png);
 	background-color:#E6FBF2;
 	border-color:#93D8A1;
+}
+/* NOTICE */
+p.msgbox.notice{
+	background-image:url(i_info.png);
+	background-color:#ffffd5;
+	border-color:#d9d991;
 }
 
 
