@@ -88,27 +88,27 @@ class Userauth
 
 			log_message('info', "Trying LDAP authentication");
 
-			$this->CI->load->library('authldap');
+			$this->CI->load->library('auth_ldap');
 
-			$valid_user = $this->CI->authldap->authenticate($username, $password);
-			$ldap_errors = $this->CI->authldap->get_errors();
+			$valid_user = $this->CI->auth_ldap->authenticate($username, $password);
+			$ldap_errors = $this->CI->auth_ldap->get_errors();
 			$connection_error = in_array('no_socket_connection', $ldap_errors);
 			$auth_method = 'ldap';
 
 			if ( ! $valid_user && $connection_error) {
 				// Try local instead
-				$this->CI->load->library('authlocal');
-				$valid_user = $this->CI->authlocal->authenticate($username, $password);
-				$local_errors = $this->CI->authldap->get_errors();
+				$this->CI->load->library('auth_local');
+				$valid_user = $this->CI->auth_local->authenticate($username, $password);
+				$local_errors = $this->CI->auth_ldap->get_errors();
 				$auth_method = 'local';
 			}
 
 		}
 
 		if ( ! $valid_user && $force !== TRUE) {
-			$this->CI->load->library('authlocal');
-			$valid_user = $this->CI->authlocal->authenticate($username, $password);
-			$local_errors = $this->CI->authlocal->get_errors();
+			$this->CI->load->library('auth_local');
+			$valid_user = $this->CI->auth_local->authenticate($username, $password);
+			$local_errors = $this->CI->auth_local->get_errors();
 			$auth_method = 'local';
 		}
 

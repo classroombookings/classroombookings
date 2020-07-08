@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class AuthLDAP
+class Auth_ldap
 {
 
 	public $enabled = FALSE;

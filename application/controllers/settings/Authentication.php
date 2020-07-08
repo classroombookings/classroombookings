@@ -76,22 +76,22 @@ class Authentication extends MY_Controller
 			'attr_email' => $this->input->post('ldap_attr_email'),
 		];
 
-		$this->load->library('authldap', $config);
+		$this->load->library('auth_ldap', $config);
 
 		$username = $this->input->post('username');
 		$password = $this->input->post('password');
 
-		$user = $this->authldap->verify($username, $password);
+		$user = $this->auth_ldap->verify($username, $password);
 
 		$this->data['config'] = $config;
 		$this->data['user'] = $user;
-		$this->data['mapping'] = $this->authldap->map_user_attributes($user);
+		$this->data['mapping'] = $this->auth_ldap->map_user_attributes($user);
 		$this->data['errors'] = [];
-		$this->data['user_bind_dn'] = $this->authldap->get_user_bind_dn($username);
-		$this->data['user_search_filter'] = $this->authldap->get_user_search_filter($username);
+		$this->data['user_bind_dn'] = $this->auth_ldap->get_user_bind_dn($username);
+		$this->data['user_search_filter'] = $this->auth_ldap->get_user_search_filter($username);
 
 		if ($user === FALSE) {
-			$this->data['errors'] = $this->authldap->get_errors();
+			$this->data['errors'] = $this->auth_ldap->get_errors();
 		}
 
 		$this->load->view('settings/authentication/ldap_test_results', $this->data);
