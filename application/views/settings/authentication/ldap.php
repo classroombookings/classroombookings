@@ -1,5 +1,9 @@
 <?php
 
+if (DEMO_MODE) {
+	echo msgbox('notice large', "To prevent abuse and getting locked out, the authentication setting is disabled on the demo. You can still test the connection details and credentials.");
+}
+
 echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform', 'ldap-settings' => ''));
 
 ?>
@@ -17,13 +21,21 @@ echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform
 		<label for="<?= $field ?>">Enable</label>
 		<?php
 		echo form_hidden($field, '0');
-		$input = form_checkbox(array(
+		$input_options = [
 			'name' => $field,
 			'id' => $field,
 			'value' => '1',
 			'tabindex' => tab_index(),
-			'checked' => ($value == '1')
-		));
+		];
+
+		if (DEMO_MODE) {
+			$input_options['checked'] = FALSE;
+			$input_options['disabled'] = 'disabled';
+		} else {
+			$input_options['checked'] = ($value == '1');
+		}
+
+		$input = form_checkbox($input_options);
 		echo "<label for='{$field}' class='ni'>{$input} Use LDAP to authenticate users</label>";
 	?>
 	</p>

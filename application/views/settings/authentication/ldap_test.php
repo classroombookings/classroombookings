@@ -29,7 +29,7 @@ echo form_open('settings/authentication/ldap_test', $attrs, $hidden);
 
 	<div class="fieldset-description">
 		<p><small>Change settings on the left then enter a username and password here to test them. You don't need to click Save before testing the credentials.</small></p>
-		<p><small>These won't be stored on the server.</small></p>
+		<p><small>These credentials are only passed to the LDAP server and are never saved or stored.</small></p>
 		<br>
 	</div>
 

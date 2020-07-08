@@ -162,6 +162,10 @@ class Authentication extends MY_Controller
 			$settings[ $field ] = $value;
 		}
 
+		if (DEMO_MODE) {
+			$settings['ldap_enabled'] = 0;
+		}
+
 		$this->settings_model->set($settings, 'auth');
 
 		$this->session->set_flashdata('saved', msgbox('info', 'LDAP settings have been updated.'));
