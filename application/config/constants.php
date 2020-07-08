@@ -10,6 +10,9 @@ define('VERSION', '2.3.0-beta.2');
 define('ADMINISTRATOR', 1);
 define('TEACHER', 2) ;
 
+// Demo mode
+define('DEMO_MODE', is_file(FCPATH . 'local/.demo'));
+
 
 /*
 |--------------------------------------------------------------------------
