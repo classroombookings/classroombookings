@@ -44,7 +44,6 @@ class Weeks_model extends CI_Model
 	function Add($data)
 	{
 		$query = $this->db->insert('weeks', $data);
-		echo $this->db->last_query();
 		return ($query ? $this->db->insert_id() : $query);
 	}
 
