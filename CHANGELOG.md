@@ -1,6 +1,20 @@
 # classroombookings Changelog
 
 
+## [2.3.0] 2020-08-26
+
+### Added
+- Support for LDAP authentication.
+- Support for language line overrides in the database.
+
+### Changed
+- General javascript tidy-up and library updates.
+- New style of room information popup on Bookings pgae.
+
+### Fixed
+- Removed erroneous debugging output from Weeks model.
+
+
 ## [2.2.0] 2020-06-06
 
 ### Added
