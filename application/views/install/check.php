@@ -12,6 +12,7 @@ echo form_hidden('install', '1');
 $items = array(
 	'php_version' => 'PHP Version 5.5.0 or greater',
 	'php_module_gd' => "PHP module 'GD' is available",
+	'php_module_ldap' => "PHP module 'LDAP' is available",
 	'database' => 'Database connection',
 	'database_empty' => 'Database is empty',
 	'folder_local' => "'local' directory exists and wirtable",
@@ -45,6 +46,10 @@ $errors = 0;
 
 				if ($requirements[$name]['status'] == 'ok') {
 					$status = "<span class='line-status status-ok'>OK</span>";
+				}
+
+				if ($requirements[$name]['status'] == 'warn') {
+					$status = "<span class='line-status status-warn'>Warning</span>";
 				}
 
 				if ($requirements[$name]['status'] == 'err') {
@@ -117,6 +122,10 @@ echo form_close();
 
 .line-status.status-ok {
 	background: #3D9970;
+	color: #fff;
+}
+.line-status.status-warn {
+	background: #DDA458;
 	color: #fff;
 }
 .line-status.status-err {

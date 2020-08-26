@@ -117,8 +117,9 @@ echo form_open('weeks/save', array('class' => 'cssform', 'id' => 'week_add'), ar
 		$weekscount = ($weekscount == 0 ? 1 : $weekscount);
 
 		echo '<td style="'.$cell_style.'padding:4px;" width="'.round(100/$weekscount).'%">';
-		echo '<input type="checkbox" name="dates[]" value="'.$monday['date'].'" id="'.$monday['date'].'" '.$checkbox_disabled.' '.$checked.' /> ';
+		$input = '<input type="checkbox" name="dates[]" value="'.$monday['date'].'" id="'.$monday['date'].'" '.$checkbox_disabled.' '.$checked.' /> ';
 		echo '<label class="ni" for="'.$monday['date'].'" style="color:'.$fgcol.'">';
+		echo $input;
 		echo date("d M Y", strtotime($monday['date']));
 		echo '</label>';
 		echo '</td>';

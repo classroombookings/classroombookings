@@ -54,3 +54,10 @@ function setting($key, $group = 'crbs')
 	$CI =& get_instance();
 	return $CI->settings_model->get($key, $group);
 }
+
+
+
+function json_encode_html($value)
+{
+	return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS);
+}

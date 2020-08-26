@@ -9,9 +9,11 @@ $iconbar = iconbar(array(
 
 echo $iconbar;
 
+$sort_cols = ["Name", "Type", "Options", "None"];
+
 ?>
 
-<table width="100%" cellpadding="2" cellspacing="2" border="0" class="sort-table" id="jsst-roomfields">
+<table width="100%" cellpadding="2" cellspacing="2" border="0" class="zebra-table sort-table" id="jsst-roomfields" up-data='<?= json_encode($sort_cols) ?>'>
 	<col /><col /><col /><col />
 	<thead>
 	<tr class="heading">
@@ -26,7 +28,7 @@ echo $iconbar;
 	$i=0;
 	if ($fields) {
 	foreach ($fields as $field) { ?>
-	<tr class="tr<?php echo ($i & 1) ?>">
+	<tr>
 		<td><?php echo html_escape($field->name) ?></td>
 		<td><?php echo $options_list[$field->type] ?></td>
 		<td><?php
@@ -58,8 +60,3 @@ echo $iconbar;
 <?php
 
 echo $iconbar;
-
-$jsst['name'] = 'st1';
-$jsst['id'] = 'jsst-roomfields';
-$jsst['cols'] = array("Name", "Type", "Options", "None");
-$this->load->view('partials/js-sorttable', $jsst);

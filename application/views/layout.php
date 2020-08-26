@@ -1,8 +1,8 @@
 <?php
 
-if ($this->userauth->loggedin()) {
+if ($this->userauth->logged_in()) {
 	$menu[1]['text'] = img('assets/images/ui/link_controlpanel.png', FALSE, 'hspace="4" align="top" alt=" "') . 'Control Panel';
-	$menu[1]['href'] = site_url('controlpanel');
+	$menu[1]['href'] = site_url('/');
 	$menu[1]['title'] = 'Tasks';
 
 	if($this->userauth->is_level(ADMINISTRATOR)){ $icon = 'user_administrator.png'; } else { $icon = 'user_teacher.png'; }
@@ -23,6 +23,7 @@ if ($this->userauth->loggedin()) {
 	<link rel="stylesheet" type="text/css" media="print" href="<?= base_url('assets/print.css') ?>">
 	<link rel="stylesheet" type="text/css" media="screen" href="<?= base_url('assets/sorttable.css') ?>">
 	<link rel="stylesheet" type="text/css" media="screen" href="<?= base_url('assets/datepicker.css') ?>">
+	<link rel="stylesheet" type="text/css" media="screen" href="<?= base_url('assets/unpoly.min.css') ?>">
 	<link rel="apple-touch-icon" sizes="180x180" href="<?= base_url('assets/brand/apple-touch-icon.png') ?>">
 	<link rel="icon" type="image/png" sizes="32x32" href="<?= base_url('assets/brand/favicon-32x32.png') ?>">
 	<link rel="icon" type="image/png" sizes="16x16" href="<?= base_url('assets/brand/favicon-16x16.png') ?>">
@@ -35,11 +36,10 @@ if ($this->userauth->loggedin()) {
 	<script>
 	var h = document.getElementsByTagName("html")[0];
 	(h ? h.classList.add('js') : h.className += ' ' + 'js');
-	var Q = [];
 	var BASE_URL = "<?= base_url() ?>";
 	</script>
 </head>
-<body style="background-image:url('<?= base_url('assets/images/bg/global.png') ?>')">
+<body>
 
 	<?php
 	if (setting('maintenance_mode') == 1) {
@@ -59,7 +59,7 @@ if ($this->userauth->loggedin()) {
 		<div class="header">
 
 			<div class="nav-box">
-				<?php if( ! $this->userauth->loggedin()) { echo '<br /><br />'; } ?>
+				<?php if( ! $this->userauth->logged_in()) { echo '<br /><br />'; } ?>
 				<?php
 				$i=0;
 				if(isset($menu)){
@@ -71,7 +71,7 @@ if ($this->userauth->loggedin()) {
 				}
 				?><br />
 				<?php
-				if ($this->userauth->loggedin()) {
+				if ($this->userauth->logged_in()) {
 					$output = html_escape(strlen($this->userauth->user->displayname) > 1 ? $this->userauth->user->displayname : $this->userauth->user->username);
 					echo "<p class='normal'>Logged in as {$output}</p>";
 				}
@@ -137,29 +137,11 @@ if ($this->userauth->loggedin()) {
 	<div id="tipDiv" style="position:absolute; visibility:hidden; z-index:100"></div>
 
 	<?php
-	$scripts = array();
-	$scripts[] = base_url('assets/js/prototype.lite.js');
-	$scripts[] = base_url('assets/js/util.js');
-	$scripts[] = base_url('assets/js/sorttable.js');
-	$scripts[] = base_url('assets/js/datepicker.js');
-	// $scripts[] = base_url('assets/js/imagepreview.js');
-
 	foreach ($scripts as $script)
 	{
 		echo "<script type='text/javascript' src='{$script}'></script>\n";
 	}
-
 	?>
-
-	<script>
-	(function() {
-		if (typeof(window['Q']) !== "undefined") {
-			for (var i = 0, len = Q.length; i < len; i++) {
-				Q[i]();
-			}
-		}
-	})();
-	</script>
 
 </body>
 </html>

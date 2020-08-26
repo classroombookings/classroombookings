@@ -5,9 +5,8 @@
 	"keywords": ["roombooking", "booking", "scheduling", "education", "schools"],
 	"homepage": "https://classroombookings.com/",
 	"require": {
-		"php": ">=5.5.0",
-		"codeigniter/framework": "^3",
-		"pixelrobin/php-feather": "^1.0"
+		"php": ">=5.5",
+		"codeigniter/framework": "^3.1"
 	},
 	"license": "AGPLv3",
 	"authors": [

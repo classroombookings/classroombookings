@@ -17,6 +17,7 @@ return array(
 		'password' => '{db_pass}',
 		'database' => '{db_name}',
 		'dbdriver' => '{db_driver}',
+		'subdriver' => '{db_subdriver}',
 	),
 
 );

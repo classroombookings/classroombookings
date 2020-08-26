@@ -198,6 +198,12 @@ p.msgbox{
 	border-width:1px;
 	border-style:solid;
 	font-size:8pt;
+	max-width: 100%;
+	box-sizing: border-box;
+}
+p.msgbox.large {
+	width: 100%;
+	max-width: 100%;
 }
 /* ERROR */
 p.msgbox.error{
@@ -227,6 +233,12 @@ p.msgbox.question{
 	background-image:url(i_help.png);
 	background-color:#E6FBF2;
 	border-color:#93D8A1;
+}
+/* NOTICE */
+p.msgbox.notice{
+	background-image:url(i_info.png);
+	background-color:#ffffd5;
+	border-color:#d9d991;
 }
 
 
@@ -261,6 +273,13 @@ legend {color: #999; font-size: 14px; font-weight: bold; padding: 0 4px;}
  */
 .tr0 td{ background:#F5F4EA; color:#000; }
 .tr1 td{ background:#ffffff; color:#000; }
+
+.zebra-table tbody tr:nth-child(odd) td {
+	background:#F5F4EA; color:#000;
+}
+.zebra-table tbody tr:nth-child(even) td {
+	background:#ffffff; color:#000;
+}
 
 
 
@@ -324,9 +343,21 @@ tr.title td{ padding:4px;background:#D6DFF7; color:#000; font-size:10pt; letter-
 
 .input-focus{ background-color:#F5F4EA; }
 
+.cssform fieldset {
+	padding-bottom: 12px;
+}
 
+.cssform .fieldset-description {
+	margin-bottom: 12px;
+}
+.cssform .fieldset-description p {
+	padding-left: 0;
+	border: 0;
+	height: auto;
+}
 
-.cssform p{
+.cssform p,
+.cssform .input-group {
 	/*width: 200px;*/
 	clear: left;
 	margin: 0;
@@ -346,8 +377,9 @@ tr.title td{ padding:4px;background:#D6DFF7; color:#000; font-size:10pt; letter-
 .cssform label.ni{
 	font-weight:normal;
 	width:auto;
-	margin:0;
+	margin:0 0 5px 0;
 	float:none;
+	display: block;
 }
 
 .cssform input[type="checkbox"]{
@@ -389,11 +421,17 @@ to account for 3 pixel bug: http://www.positioniseverything.net/explorer/threepx
 margin-left: 3px;
 }
 
-.cssform p.hint{
+.cssform p.hint,
+.cssform ul.hint {
   padding-top:1px;
   background:#fff;
   font-size:85%;
   color:#777;
+  padding-left: 145px; /*width of left column containing the label elements*/
+}
+
+.cssform ul.hint {
+	margin-left: 15px;
 }
 
 .cssform div.formfield{margin-left:150px;}
@@ -426,7 +464,7 @@ h5 {
 	width: auto;
 }
 
-.cssform-stacked p,
+.cssform-stacked .input-group,
 .cssform-stacked input,
 .cssform-stacked textarea,
 .cssform-stacked select {
@@ -434,6 +472,10 @@ h5 {
 	padding: 0;
 	float: none;
 	display: block;
+}
+
+.cssform-stacked .input-group {
+	margin-bottom: 12px;
 }
 
 
@@ -526,3 +568,37 @@ a.booking-action:hover {
 	padding: 8px 0;
 	background: #ffffaa;
 }
+
+
+.hidden {
+	display: none;
+}
+
+
+.up-form .loading-notice {
+	display: none;
+}
+
+.up-form.up-active .loading-notice {
+	display: block;
+}
+
+
+.room-info {
+	min-width: 300px;
+}
+
+.room-info .zebra-table {
+	margin-bottom: 30px;
+}
+
+.room-photo {
+	max-width: 420px;
+}
+
+	.room-photo img {
+		display: block;
+		width: 100%;
+		max-width: 100%;
+		height: auto;
+	}

@@ -26,24 +26,62 @@ class Rooms extends MY_Controller
 
 	function info($room_id = NULL)
 	{
-		if (empty($room_id))
-		{
+		if (empty($room_id)) {
 			show_error('No room to show');
 		}
 
 		$this->data['room'] = $this->rooms_model->Get($room_id);
 
 		if (empty($this->data['room'])) {
-			show_error("The requested room could not be found.", 404, "Room Not Found");
+			show_error("The requested room could not be found.");
 		}
+
+		$this->load->library('table');
+
+		$photo_path = "uploads/{$this->data['room']->photo}";
+		$has_photo = (strlen($this->data['room']->photo) && is_file(FCPATH . $photo_path));
+		$this->data['photo_url'] = $has_photo ? base_url($photo_path) : FALSE;
+
+		// Get all info with formatted values
+		$this->data['room_info'] = $this->rooms_model->room_info($room_id);
 
 		$this->data['fields'] = $this->rooms_model->GetFields();
 		$this->data['fieldvalues'] = $this->rooms_model->GetFieldValues($room_id);
 
-		$this->data['body'] = $this->load->view('rooms/room_info', $this->data, TRUE);
-		$this->data['title'] = $this->data['room']->name;
+		$this->load->view('rooms/room_info', $this->data);
+	}
 
-		return $this->render('minilayout');
+
+	public function photo($room_id = NULL)
+	{
+		if (empty($room_id)) {
+			show_error('No room to show');
+		}
+
+		$room = $this->rooms_model->Get($room_id);
+
+		if (empty($room)) {
+			show_error("The requested room could not be found.");
+		}
+
+		if ( ! strlen($room->photo)) {
+			show_error('No photo available.');
+		}
+
+		$photo_path = "uploads/{$room->photo}";
+
+		if ( ! is_file(FCPATH . $photo_path)) {
+			show_error('Photo file does not exist.');
+		}
+
+		$url = base_url($photo_path);
+
+		$img_el = img($url);
+
+		$room_name = html_escape($room->name);
+
+		$title = "<h4>{$room_name}</h4>";
+		echo "<div class='room-photo'>{$title}{$img_el}</div>";
 	}
 
 

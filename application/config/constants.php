@@ -3,12 +3,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 // Classroombookings version
 //
-define('VERSION', '2.2.0');
+define('VERSION', '2.3.0');
 
 // User auth types
 //
 define('ADMINISTRATOR', 1);
 define('TEACHER', 2) ;
+
+// Demo mode
+define('DEMO_MODE', is_file(FCPATH . 'local/.demo'));
 
 
 /*

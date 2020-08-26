@@ -8,9 +8,11 @@ $iconbar = iconbar(array(
 
 echo $iconbar;
 
+$sort_cols = ["None", "Name", "TimeStart", "TimeEnd", "Duration", "Days", "None"];
+
 ?>
 
-<table width="100%" cellpadding="2" cellspacing="2" border="0" class="sort-table" id="jsst-periods">
+<table width="100%" cellpadding="2" cellspacing="2" border="0" class="zebra-table sort-table" id="jsst-periods" up-data='<?= json_encode($sort_cols) ?>'>
 	<col /><col /><col /><col />
 	<thead>
 	<tr class="heading">
@@ -32,7 +34,7 @@ echo $iconbar;
 		$time_start = strtotime($period->time_start);
 		$time_end = strtotime($period->time_end);
 	?>
-	<tr class="tr<?php echo ($i & 1) ?>">
+	<tr>
 		<?php
 		// $now = timestamp to do calculations with for "current" period
 		$now = now();
@@ -80,8 +82,3 @@ echo $iconbar;
 <?php
 
 echo $iconbar;
-
-$jsst['name'] = 'st1';
-$jsst['id'] = 'jsst-periods';
-$jsst['cols'] = array("None", "Name", "TimeStart", "TimeEnd", "Duration", "Days", "None");
-$this->load->view('partials/js-sorttable', $jsst);

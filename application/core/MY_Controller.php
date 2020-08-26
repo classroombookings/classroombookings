@@ -35,16 +35,26 @@ class MY_Controller extends CI_Controller
 			$this->load->library('migration');
 			$this->migration->latest();
 
+			$this->lang->load('crbs');
+			$this->load->helper('language');
 		}
 
+		$this->data['scripts'] = array();
+		$this->data['scripts'][] = base_url('assets/js/lib/sorttable.js');
+		$this->data['scripts'][] = base_url('assets/js/lib/datepicker.js');
+		$this->data['scripts'][] = base_url('assets/js/lib/es6-promise.auto.min.js');
+		$this->data['scripts'][] = base_url('assets/js/lib/unpoly.min.js');
+		$this->data['scripts'][] = base_url('assets/js/main.js');
 	}
 
 
-	public function require_logged_in()
+	public function require_logged_in($msg = TRUE)
 	{
 		// Check loggedin status
-		if ( ! $this->userauth->loggedin()) {
-			$this->session->set_flashdata('auth', msgbox('error', $this->lang->line('crbs_mustbeloggedin')));
+		if ( ! $this->userauth->logged_in()) {
+			if ($msg) {
+				$this->session->set_flashdata('auth', msgbox('error', $this->lang->line('crbs_mustbeloggedin')));
+			}
 			redirect('login');
 		}
 	}
@@ -54,7 +64,7 @@ class MY_Controller extends CI_Controller
 	{
 		if ( ! $this->userauth->is_level($level)) {
 			$this->session->set_flashdata('auth', msgbox('error', $this->lang->line('crbs_mustbeadmin')));
-			redirect('controlpanel');
+			redirect(site_url());
 		}
 	}
 

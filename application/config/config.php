@@ -530,6 +530,12 @@ $config['proxy_ips'] = '';
 // This is written to during installation process.
 $config['is_installed'] = is_file(FCPATH . 'local/installed') || is_file(FCPATH . 'local/.installed');
 
+// Set some other default values
+//
+
+// Timeout for LDAP connections, in seconds
+$config['auth_ldap_timeout'] = 3;
+
 
 if (is_file(FCPATH . 'local/config.php')) {
 	$local_config = include(FCPATH . 'local/config.php');

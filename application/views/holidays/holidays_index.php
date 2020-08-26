@@ -8,9 +8,11 @@ $iconbar = iconbar(array(
 
 echo $iconbar;
 
+$sort_cols = ["Name", "StartDate", "EndDate", "None"];
+
 ?>
 
-<table width="100%" cellpadding="2" cellspacing="2" border="0" class="sort-table" id="jsst-holidays">
+<table width="100%" cellpadding="2" cellspacing="2" border="0" class="zebra-table sort-table" id="jsst-holidays" up-data='<?= json_encode($sort_cols) ?>'>
 	<col /><col /><col /><col />
 	<thead>
 	<tr class="heading">
@@ -27,7 +29,7 @@ echo $iconbar;
 	if($holidays){
 	foreach( $holidays as $holiday ){
 	?>
-	<tr class="tr<?php echo ($i & 1) ?>">
+	<tr>
 		<td><?php echo html_escape($holiday->name) ?></td>
 		<td><?php echo date("d/m/Y", strtotime($holiday->date_start)); ?></td>
 		<td><?php echo date("d/m/Y", strtotime($holiday->date_end)) ?></td>
@@ -56,8 +58,3 @@ echo $iconbar;
 <?php
 
 echo $iconbar;
-
-$jsst['name'] = 'st1';
-$jsst['id'] = 'jsst-holidays';
-$jsst['cols'] = array("Name", "StartDate", "EndDate", "None");
-$this->load->view('partials/js-sorttable', $jsst);
