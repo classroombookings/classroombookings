@@ -11,6 +11,8 @@ class Bookings extends MY_Controller
 
 		$this->require_logged_in();
 
+		$this->lang->load('bookings');
+
 		$this->load->model(array(
 			'crud_model',
 			'rooms_model',
@@ -34,6 +36,7 @@ class Bookings extends MY_Controller
 			$this->output->_display();
 			exit();
 		}
+
 	}
 
 

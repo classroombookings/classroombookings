@@ -35,6 +35,8 @@ class MY_Controller extends CI_Controller
 			$this->load->library('migration');
 			$this->migration->latest();
 
+			$this->lang->load('crbs');
+			$this->load->helper('language');
 		}
 
 		$this->data['scripts'] = array();
