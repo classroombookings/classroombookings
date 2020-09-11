@@ -131,69 +131,95 @@ class Bookings_model extends CI_Model
 	{
 
 		// Check if there is a booking
-		if(isset($data[$key])){
+		if (isset($data[$key])) {
 
 			// There's a booking for this ID, set var
 			$booking = $data[$key];
 
-			if($booking->date == NULL){
+			// Get user ID of current user
+			$user_id = $this->userauth->user->user_id;
+
+			if ($booking->date == NULL) {
 			// If no date set, then it's a static/timetable/recurring booking
 				$cell['class'] = 'static';
 				$cell['body']= '';
+				$display_user_setting = setting('bookings_show_user_recurring');
 			} else {
 			// Date is set, it's a once off staff booking
 				$cell['class'] = 'staff';
 				$cell['body'] = '';
+				$display_user_setting = setting('bookings_show_user_single');
 			}
 
-		// Username info
-			if(isset($users[$booking->user_id])){
+			$template = "{user}{notes}{actions}";
+			$vars = [
+				'{user}' => '',
+				'{notes}' => '',
+				'{actions}' => '',
+			];
+
+			$actions = [];
+
+			// User info
+			//
+			$user_is_admin = $this->userauth->is_level(ADMINISTRATOR);
+			$user_is_booking_owner = ($booking->user_id && $booking->user_id == $user_id);
+
+			$show_user = ($user_is_admin || $user_is_booking_owner || $display_user_setting);
+			if (isset($users[$booking->user_id]) && $show_user) {
 				$username = $users[$booking->user_id]->username;
 				$displayname = trim($users[$booking->user_id]->displayname);
-				if(strlen($displayname) < 2){ $displayname = $username; }
-				$cell['body'] .= '<strong>'.html_escape($displayname).'</strong>';
-				$user = 1;
+				if (strlen($displayname) < 2) { $displayname = $username; }
+				$vars['{user}'] = '<div class="booking-cell-user">'.html_escape($displayname).'</div>';
 			}
 
-			// Any notes?
-			if($booking->notes){
-				if(isset($user)){ $cell['body'] .= '<br />'; }
+			// Notes
+			if ($booking->notes) {
 				$notes = html_escape($booking->notes);
-				$cell['body'] .= '<span title="'.$notes.'">'.character_limiter($notes, 15).'</span>';
+				$tooltip = '';
+				if (strlen($notes) > 15) {
+					$tooltip = 'up-tooltip="' . $notes . '"';
+				}
+				$vars['{notes}'] .= '<div class="booking-cell-notes" ' . $tooltip . '>'.character_limiter($notes, 15).'</div>';
 			}
 
 			// Edit if admin?
-			 if($this->userauth->is_level(ADMINISTRATOR)){
+			//
+			 if ($this->userauth->is_level(ADMINISTRATOR)) {
 				$edit_url = site_url('bookings/edit/'.$booking->booking_id);
-				$src = base_url('assets/images/ui/edit.png');
-				$cell['body'] .= '<br /><a class="booking-action" href="'.$edit_url.'" title="Edit this booking">';
-				// $cell['body'] .= '<img alt="edit" src="' . $src . '" width="16" height="16" alt="Book" title="Edit" hspace="4" align="absmiddle" >';
-				$cell['body'] .= ' edit </a>';
-				$edit = 1;
+				$actions[] = "<a class='booking-action' href='{$edit_url}' title='Edit this booking'>edit</a>";
 			}
 
-			// Cancel if user is an Admin, Room owner, or Booking owner
-			$user_id = $this->userauth->user->user_id;
-			if(
-				($this->userauth->is_level(ADMINISTRATOR)) OR
-				($user_id == $booking->user_id) OR
-				( ($user_id == $rooms[$room_id]->user_id) && ($booking->date != NULL) )
-			){
+			// 'Cancel' action if user is an Admin, Room owner, or Booking owner
+			//
+			if (
+				($this->userauth->is_level(ADMINISTRATOR))
+				OR ($user_id == $booking->user_id)
+				OR ( ($user_id == $rooms[$room_id]->user_id) && ($booking->date != NULL) )
+			) {
 				$cancel_msg = 'Are you sure you want to cancel this booking?';
-				if($user_id != $booking->user_id){
+				if ($user_id != $booking->user_id){
 					$cancel_msg = 'Are you sure you want to cancel this booking?\n\n(**) Please take caution, it is not your own.';
 				}
 				$cancel_url = site_url('bookings/cancel/'.$booking->booking_id);
-				if(!isset($edit)){ $cell['body'] .= '<br />'; }
 
-				$src = base_url('assets/images/ui/delete.png');
-
-				$cell['body'] .= '<button class="button-empty booking-action" type="submit" name="cancel" value="' . $booking->booking_id . '" onclick="if(!confirm(\''.$cancel_msg.'\')){return false;}">';
-				$cell['body'] .= 'cancel';
-				// $cell['body'] .= '<img alt="cancel" src="' . $src . '">';
-				$cell['body'] .= '</button>';
-				// $cell['body'] .= '<a onclick="if(!confirm(\''.$cancel_msg.'\')){return false;}" href="'.$cancel_url.'" title="Cancel this booking"><img src="' . base_url('assets/images/ui/delete.png') . '" width="16" height="16" alt="Cancel" title="Cancel this booking" hspace="8" /></a>';
+				$actions[] = "<button
+					class='button-empty booking-action'
+					type='submit'
+					name='cancel'
+					value='{$booking->booking_id}'
+					onclick='if(!confirm(\"{$cancel_msg}\")) return false'
+				>cancel</button>";
 			}
+
+			if ( ! empty($actions)) {
+				$vars['{actions}'] = '<div class="booking-cell-actions">' . implode(" ", $actions) . '</div>';
+			}
+
+			// Process template for items
+			$cell['body'] = strtr($template, $vars);
+			// Remove tags that don't have content
+			$cell['body'] = str_replace(array_keys($vars), '', $cell['body']);
 
 		}
 		else

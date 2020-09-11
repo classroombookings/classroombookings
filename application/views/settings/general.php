@@ -6,7 +6,7 @@ echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 
 <fieldset>
 
-	<legend accesskey="S" tabindex="<?php echo tab_index() ?>">Settings</legend>
+	<legend accesskey="S" tabindex="<?php echo tab_index() ?>">Bookings</legend>
 
 	<p>
 		<label for="bia">Booking in advance</label>
@@ -45,7 +45,7 @@ echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 	<hr size="1" />
 
 	<p id="settings_displaytype">
-		<label for="displaytype">Bookings display type</label>
+		<label for="displaytype">Display type</label>
 		<?php
 
 		$field = "displaytype";
@@ -79,7 +79,7 @@ echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 	<?php echo form_error('displaytype'); ?>
 
 	<p id="settings_columns">
-		<label for="columns">Bookings columns</label>
+		<label for="columns">Columns</label>
 		<?php
 
 		$field = 'd_columns';
@@ -106,6 +106,42 @@ echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 		<p class="hint">Select which details you want to be displayed along the top of the bookings page.</p>
 	</p>
 	<?php echo form_error('d_columns') ?>
+
+	<hr size="1" />
+
+	<p>
+		<label for="<?= $field ?>">User details</label>
+		<?php
+
+		$field = 'bookings_show_user_recurring';
+		$value = set_value($field, element($field, $settings, '0'), FALSE);
+		echo form_hidden($field, '0');
+		$input = form_checkbox(array(
+			'name' => $field,
+			'id' => $field,
+			'value' => '1',
+			'tabindex' => tab_index(),
+			'checked' => ($value == '1')
+		));
+		echo "<label for='{$field}' class='ni'>{$input} Show users of recurring bookings</label>";
+
+		$field = 'bookings_show_user_single';
+		$value = set_value($field, element($field, $settings, '0'), FALSE);
+		echo form_hidden($field, '0');
+		$input = form_checkbox(array(
+			'name' => $field,
+			'id' => $field,
+			'value' => '1',
+			'tabindex' => tab_index(),
+			'checked' => ($value == '1')
+		));
+		echo "<label for='{$field}' class='ni'>{$input} Show users of single bookings</label>";
+		?>
+
+		<p class="hint">This setting controls the visibility of a booking's user on the Bookings page.</p>
+		<p class="hint">User details are always displayed to administrators, and on user's own bookings.</p>
+
+	</p>
 
 </fieldset>
 
