@@ -213,6 +213,51 @@ echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 
 <fieldset>
 
+	<legend accesskey="L" tabindex="<?php echo tab_index() ?>">Login Message</legend>
+
+	<div>Display a custom message to users on the login page.</div>
+
+	<?php
+	$field = 'login_message_enabled';
+	$value = set_value($field, element($field, $settings, '0'), FALSE);
+	?>
+	<p>
+		<label for="<?= $field ?>">Enable</label>
+		<?php
+		echo form_hidden($field, '0');
+		echo form_checkbox(array(
+			'name' => $field,
+			'id' => $field,
+			'value' => '1',
+			'tabindex' => tab_index(),
+			'checked' => ($value == '1')
+		));
+		?>
+	</p>
+
+	<?php
+	$field = 'login_message_text';
+	$value = set_value($field, element($field, $settings, ''), FALSE);
+	?>
+	<p>
+		<label for="<?= $field ?>">Message</label>
+		<?php
+		echo form_textarea(array(
+			'name' => $field,
+			'id' => $field,
+			'rows' => '5',
+			'cols' => '60',
+			'tabindex' => tab_index(),
+			'value' => $value,
+		));
+		?>
+	</p>
+	<?php echo form_error($field) ?>
+
+</fieldset>
+
+<fieldset>
+
 	<legend accesskey="M" tabindex="<?php echo tab_index() ?>">Maintenance Mode</legend>
 
 	<div>Enabling Maintenance Mode prevents Teacher user accounts from viewing and making bookings. All users can still log in to make changes to their own account or change their password.</div>

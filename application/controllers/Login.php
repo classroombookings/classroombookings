@@ -14,14 +14,19 @@ class Login extends MY_Controller
 
 	function index()
 	{
-		$this->data['title'] = 'Login';
-		$this->data['showtitle'] = $this->data['title'];
+		$this->data['title'] = 'Log in';
+
+		$this->data['message'] = '';
+		if (setting('login_message_enabled')) {
+			$this->data['message'] = html_escape(setting('login_message_text'));
+		}
+
 		$logo = 'uploads/' . setting('logo');
 
 		$columns = array(
 			'c1' => array(
 				'width' => '60%',
-				'content' => $this->load->view('login/login_index', NULL, TRUE),
+				'content' => $this->load->view('login/login_index', $this->data, TRUE),
 			),
 			'c2' => array(
 				'width' => '40%',
@@ -30,12 +35,11 @@ class Login extends MY_Controller
 		);
 
 		if (strlen(setting('logo')) && file_exists(FCPATH . $logo)) {
-			$columns['c2']['content'] = img($logo, FALSE, 'style="max-width:100%;height:auto;display:block"');
+			$columns['c2']['content'] = img($logo, FALSE, 'style="max-width:100%;max-height:300px;width:auto;display:block"');
 		} else {
 			$columns['c2']['content'] = '';
 		}
 
-		$this->data['showtitle'] = 'Login to ' . setting('name');
 		$this->data['body'] = $this->load->view('columns', $columns, TRUE);
 
 		return $this->render();
