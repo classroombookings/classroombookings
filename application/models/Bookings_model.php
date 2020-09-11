@@ -7,6 +7,9 @@ class Bookings_model extends CI_Model
 	var $table_headings = '';
 	var $table_rows = array();
 
+	private $all_periods;
+	private $periods_by_day_num;
+
 
 	public function __construct()
 	{
@@ -122,6 +125,21 @@ class Bookings_model extends CI_Model
 			$table .= '<tr>' . $row . '</tr>';
 		} */
 		return $table;
+	}
+
+
+	public function populate_periods()
+	{
+		$this->all_periods = $this->periods_model->GetBookable();
+
+		foreach ($this->all_periods as $period) {
+			foreach ($this->periods_model->days as $num => $name) {
+				$field = "day_{$num}";
+				if ($period->$field == 1) {
+					$this->periods_by_day_num["{$num}"][] = $period;
+				}
+			}
+		}
 	}
 
 
@@ -256,11 +274,49 @@ class Bookings_model extends CI_Model
 	}
 
 
+	/**
+	 * Get the next date that has bookable periods based on the current date.
+	 * Used by html() function to work out which date for Prev/Back links.
+	 *
+	 * @param string $current_date Current date.
+	 * @param string $direction Either previous or next.
+	 *
+	 */
+	private function get_nav_date($current_date, $direction)
+	{
+		$dt = new DateTime($current_date);
+		$dt->setTime(0, 0, 0);
+
+		switch ($direction) {
+			case 'next': $modify_str = '+1 day'; break;
+			case 'previous': $modify_str = '-1 day'; break;
+		}
+
+		if (empty($this->all_periods)) {
+			return $dt->modify($modify_str)->format('Y-m-d');
+		}
+
+		$next_date = NULL;
+
+		while ($next_date === NULL) {
+			$dt->modify($modify_str);
+			$day_num = $dt->format('N');
+			if (array_key_exists("{$day_num}", $this->periods_by_day_num)) {
+				$next_date = $dt->format('Y-m-d');
+			}
+		}
+
+		return $next_date;
+	}
+
+
 
 
 
 	function html($params = array())
 	{
+		$this->populate_periods();
+
 		$defaults = array(
 			'school' => array(),		// data loaded in controller (users, days)
 			'query' => array(),		// input for where the user is/what should be loaded
@@ -365,25 +421,19 @@ class Bookings_model extends CI_Model
 
 			case 'day':
 
-				$week_bar['back_date'] = date("Y-m-d", strtotime("yesterday", $date));
+				$week_bar['back_text'] = '&larr; Back';
+				$week_bar['back_date'] = $this->get_nav_date($date_ymd, 'previous');
 				$week_bar['back_link'] = 'bookings?' . http_build_query(array(
 					'date' => $week_bar['back_date'],
 					'direction' => 'back',
 				));
 
-				$week_bar['next_date'] = date("Y-m-d", strtotime("tomorrow", $date));
+				$week_bar['next_text'] = 'Next &rarr; ';
+				$week_bar['next_date'] = $this->get_nav_date($date_ymd, 'next');
 				$week_bar['next_link'] = 'bookings?' . http_build_query(array(
 					'date' => $week_bar['next_date'],
 					'direction' => 'next',
 				));
-
-				if (date("Y-m-d") == date("Y-m-d", $date)) {
-					$week_bar['back_text'] = '&larr; Yesterday';
-					$week_bar['next_text'] = 'Tomorrow &rarr; ';
-				} else {
-					$week_bar['back_text'] = '&larr; Back';
-					$week_bar['next_text'] = 'Next &rarr; ';
-				}
 
 				$week_bar['longdate'] = date(setting('date_format_long'), $date);
 
@@ -536,12 +586,15 @@ class Bookings_model extends CI_Model
 			$err = TRUE;
 		}
 
-
 		// Get periods
 		if ($style['display'] == 'day') {
-			$periods = $this->periods_model->GetBookable($day_num);
+			if (array_key_exists($day_num, $this->periods_by_day_num)) {
+				$periods = $this->periods_by_day_num[$day_num];
+			} else {
+				$periods = [];
+			}
 		} else {
-			$periods = $this->periods_model->GetBookable();
+			$periods = $this->all_periods;
 		}
 
 		if (empty($periods)) {
@@ -556,7 +609,7 @@ class Bookings_model extends CI_Model
 		$count = array(
 			'periods' => count($periods),
 			'rooms' => count($rooms),
-			'days' => count($school['days_list']),
+			'days' => count(array_keys($this->periods_by_day_num)),	// count($school['days_list']),
 		);
 
 		$col_width = sprintf('%s%%', round(100/($count[$cols]+1)));
@@ -587,6 +640,10 @@ class Bookings_model extends CI_Model
 			case 'days':
 
 				foreach ($school['days_list'] as $day_num => $dayofweek) {
+					// Skip days without periods
+					if ( ! array_key_exists($day_num, $this->periods_by_day_num)) {
+						continue;
+					}
 					$day['width'] = $col_width;
 					$day['name'] = $dayofweek;
 					$day['date'] = $weekdates[$day_num];
@@ -629,6 +686,10 @@ class Bookings_model extends CI_Model
 						// Columns are periods, so each row is a day name
 
 						foreach ($school['days_list'] as $day_num => $day_name) {
+							// Skip days without periods
+							if ( ! array_key_exists($day_num, $this->periods_by_day_num)) {
+								continue;
+							}
 
 							// Get booking
 							// TODO: Need to get date("Y-m-d") of THIS weekday (Mon, Tue, Wed) for this week
