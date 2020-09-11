@@ -813,6 +813,10 @@ class Bookings_model extends CI_Model
 
 							foreach ($school['days_list'] as $day_num => $day_name) {
 
+								if ( ! array_key_exists($day_num, $this->periods_by_day_num)) {
+									continue;
+								}
+
 								$booking_date_ymd = $weekdates[$day_num];
 
 								// URL
