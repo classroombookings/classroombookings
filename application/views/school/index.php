@@ -78,7 +78,7 @@ echo form_open_multipart(current_url(), array('id'=>'schooldetails', 'class'=>'c
 	</p>
 
 	<?php
-	if ($this->session->flashdata('image_error') != '' ) {
+	if ($this->session->flashdata('image_error') != '') {
 		echo "<p class='hint error'><span>" . $this->session->flashdata('image_error') . "</span></p>";
 	}
 	?>

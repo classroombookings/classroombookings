@@ -24,14 +24,14 @@ class School extends MY_Controller
 	public function index()
 	{
 		$this->data['settings'] = $this->settings_model->get_all('crbs');
-
 		$this->data['title'] = 'School Information';
 		$this->data['showtitle'] = $this->data['title'];
-		$this->data['body'] = $this->load->view('school/index', $this->data, TRUE);
 
 		if ($this->input->post()) {
 			$this->save();
 		}
+
+		$this->data['body'] = $this->load->view('school/index', $this->data, TRUE);
 
 		return $this->render();
 	}
@@ -77,8 +77,7 @@ class School extends MY_Controller
 				$error = $this->upload->display_errors('','');
 				if ($error != 'You did not select a file to upload') {
 					$this->session->set_flashdata('image_error', $error);
-					$image_error = $error;
-					return $this->index();
+					return FALSE;
 				}
 
 			} else {
@@ -103,7 +102,7 @@ class School extends MY_Controller
 
 				if ( ! $res) {
 					$this->session->set_flashdata('image_error', $this->image_lib->display_errors());
-					return $this->index();
+					return FALSE;
 				}
 
 				$upload = TRUE;
