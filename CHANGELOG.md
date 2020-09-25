@@ -1,5 +1,10 @@
 # classroombookings Changelog
 
+## [2.3.1] 2020-09-25
+
+### Fixed
+- Issue when saving school details when an error occurs.
+
 
 ## [2.3.0] 2020-08-26
 

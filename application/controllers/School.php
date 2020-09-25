@@ -78,7 +78,7 @@ class School extends MY_Controller
 				if ($error != 'You did not select a file to upload') {
 					$this->session->set_flashdata('image_error', $error);
 					$image_error = $error;
-					return $this->details();
+					return $this->index();
 				}
 
 			} else {
@@ -103,7 +103,7 @@ class School extends MY_Controller
 
 				if ( ! $res) {
 					$this->session->set_flashdata('image_error', $this->image_lib->display_errors());
-					return $this->details();
+					return $this->index();
 				}
 
 				$upload = TRUE;
