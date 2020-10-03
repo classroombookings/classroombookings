@@ -1,13 +1,20 @@
-<?php echo $this->session->flashdata('auth') ?>
-
-<?= validation_errors() ?>
+<h2>Log in</h2>
 
 <?php
+if (strlen($message)) {
+	echo "<div>" . nl2br($message) . "</div><br><br>";
+}
+
+echo $this->session->flashdata('auth');
+
+echo validation_errors();
+
 echo form_open('login/submit', array('id'=>'login','class'=>'cssform'), array('page' => $this->uri->uri_string()) );
+
 ?>
 
 
-<fieldset style="width:336px;"><legend accesskey="L" tabindex="<?php echo tab_index() ?>">Login</legend>
+<fieldset style="width:336px;"><legend accesskey="L" tabindex="<?php echo tab_index() ?>">Log in</legend>
 
 	<p>
 	  <label for="username" class="required">Username</label>

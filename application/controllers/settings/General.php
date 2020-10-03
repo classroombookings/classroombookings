@@ -52,6 +52,10 @@ class General extends MY_Controller
 		$this->form_validation->set_rules('date_format_long', 'Long date format', 'required|max_length[15]');
 		$this->form_validation->set_rules('date_format_weekday', 'Weekday date format', 'max_length[15]');
 		$this->form_validation->set_rules('time_format_period', 'Period time format', 'max_length[15]');
+		$this->form_validation->set_rules('bookings_show_user_single', 'User display (single)', 'is_natural');
+		$this->form_validation->set_rules('bookings_show_user_recurring', 'User display (recurring)', 'is_natural');
+		$this->form_validation->set_rules('login_message_enabled', 'Login message', 'is_natural');
+		$this->form_validation->set_rules('login_message_text', 'Login message text', 'max_length[1024]');
 		$this->form_validation->set_rules('maintenance_mode', 'Maintenance mode', 'is_natural');
 		$this->form_validation->set_rules('maintenance_mode_message', 'Maintenance mode message', 'max_length[1024]');
 
@@ -67,6 +71,10 @@ class General extends MY_Controller
 			'date_format_long' => $this->input->post('date_format_long'),
 			'date_format_weekday' => $this->input->post('date_format_weekday'),
 			'time_format_period' => $this->input->post('time_format_period'),
+			'bookings_show_user_single' => $this->input->post('bookings_show_user_single'),
+			'bookings_show_user_recurring' => $this->input->post('bookings_show_user_recurring'),
+			'login_message_enabled' => $this->input->post('login_message_enabled'),
+			'login_message_text' => $this->input->post('login_message_text'),
 			'maintenance_mode' => $this->input->post('maintenance_mode'),
 			'maintenance_mode_message' => $this->input->post('maintenance_mode_message'),
 		);

@@ -7,6 +7,9 @@ class Bookings_model extends CI_Model
 	var $table_headings = '';
 	var $table_rows = array();
 
+	private $all_periods;
+	private $periods_by_day_num;
+
 
 	public function __construct()
 	{
@@ -125,75 +128,116 @@ class Bookings_model extends CI_Model
 	}
 
 
+	public function populate_periods()
+	{
+		$this->all_periods = $this->periods_model->GetBookable();
+
+		foreach ($this->all_periods as $period) {
+			foreach ($this->periods_model->days as $num => $name) {
+				$field = "day_{$num}";
+				if ($period->$field == 1) {
+					$this->periods_by_day_num["{$num}"][] = $period;
+				}
+			}
+		}
+	}
+
+
 
 
 	function BookingCell($data, $key, $rooms, $users, $room_id, $url, $booking_date_ymd = '', $holidays = array())
 	{
 
 		// Check if there is a booking
-		if(isset($data[$key])){
+		if (isset($data[$key])) {
 
 			// There's a booking for this ID, set var
 			$booking = $data[$key];
 
-			if($booking->date == NULL){
+			// Get user ID of current user
+			$user_id = $this->userauth->user->user_id;
+
+			if ($booking->date == NULL) {
 			// If no date set, then it's a static/timetable/recurring booking
 				$cell['class'] = 'static';
 				$cell['body']= '';
+				$display_user_setting = setting('bookings_show_user_recurring');
 			} else {
 			// Date is set, it's a once off staff booking
 				$cell['class'] = 'staff';
 				$cell['body'] = '';
+				$display_user_setting = setting('bookings_show_user_single');
 			}
 
-		// Username info
-			if(isset($users[$booking->user_id])){
+			$template = "{user}{notes}{actions}";
+			$vars = [
+				'{user}' => '',
+				'{notes}' => '',
+				'{actions}' => '',
+			];
+
+			$actions = [];
+
+			// User info
+			//
+			$user_is_admin = $this->userauth->is_level(ADMINISTRATOR);
+			$user_is_booking_owner = ($booking->user_id && $booking->user_id == $user_id);
+
+			$show_user = ($user_is_admin || $user_is_booking_owner || $display_user_setting);
+			if (isset($users[$booking->user_id]) && $show_user) {
 				$username = $users[$booking->user_id]->username;
 				$displayname = trim($users[$booking->user_id]->displayname);
-				if(strlen($displayname) < 2){ $displayname = $username; }
-				$cell['body'] .= '<strong>'.html_escape($displayname).'</strong>';
-				$user = 1;
+				if (strlen($displayname) < 2) { $displayname = $username; }
+				$vars['{user}'] = '<div class="booking-cell-user">'.html_escape($displayname).'</div>';
 			}
 
-			// Any notes?
-			if($booking->notes){
-				if(isset($user)){ $cell['body'] .= '<br />'; }
+			// Notes
+			if ($booking->notes) {
 				$notes = html_escape($booking->notes);
-				$cell['body'] .= '<span title="'.$notes.'">'.character_limiter($notes, 15).'</span>';
+				$tooltip = '';
+				if (strlen($notes) > 15) {
+					$tooltip = 'up-tooltip="' . $notes . '"';
+				}
+				$vars['{notes}'] .= '<div class="booking-cell-notes" ' . $tooltip . '>'.character_limiter($notes, 15).'</div>';
 			}
 
 			// Edit if admin?
-			 if($this->userauth->is_level(ADMINISTRATOR)){
+			//
+			 if ($this->userauth->is_level(ADMINISTRATOR)) {
 				$edit_url = site_url('bookings/edit/'.$booking->booking_id);
-				$src = base_url('assets/images/ui/edit.png');
-				$cell['body'] .= '<br /><a class="booking-action" href="'.$edit_url.'" title="Edit this booking">';
-				// $cell['body'] .= '<img alt="edit" src="' . $src . '" width="16" height="16" alt="Book" title="Edit" hspace="4" align="absmiddle" >';
-				$cell['body'] .= ' edit </a>';
-				$edit = 1;
+				$actions[] = "<a class='booking-action' href='{$edit_url}' title='Edit this booking'>edit</a>";
 			}
 
-			// Cancel if user is an Admin, Room owner, or Booking owner
-			$user_id = $this->userauth->user->user_id;
-			if(
-				($this->userauth->is_level(ADMINISTRATOR)) OR
-				($user_id == $booking->user_id) OR
-				( ($user_id == $rooms[$room_id]->user_id) && ($booking->date != NULL) )
-			){
+			// 'Cancel' action if user is an Admin, Room owner, or Booking owner
+			//
+			if (
+				($this->userauth->is_level(ADMINISTRATOR))
+				OR ($user_id == $booking->user_id)
+				OR ( ($user_id == $rooms[$room_id]->user_id) && ($booking->date != NULL) )
+			) {
 				$cancel_msg = 'Are you sure you want to cancel this booking?';
-				if($user_id != $booking->user_id){
+				if ($user_id != $booking->user_id){
 					$cancel_msg = 'Are you sure you want to cancel this booking?\n\n(**) Please take caution, it is not your own.';
 				}
 				$cancel_url = site_url('bookings/cancel/'.$booking->booking_id);
-				if(!isset($edit)){ $cell['body'] .= '<br />'; }
 
-				$src = base_url('assets/images/ui/delete.png');
-
-				$cell['body'] .= '<button class="button-empty booking-action" type="submit" name="cancel" value="' . $booking->booking_id . '" onclick="if(!confirm(\''.$cancel_msg.'\')){return false;}">';
-				$cell['body'] .= 'cancel';
-				// $cell['body'] .= '<img alt="cancel" src="' . $src . '">';
-				$cell['body'] .= '</button>';
-				// $cell['body'] .= '<a onclick="if(!confirm(\''.$cancel_msg.'\')){return false;}" href="'.$cancel_url.'" title="Cancel this booking"><img src="' . base_url('assets/images/ui/delete.png') . '" width="16" height="16" alt="Cancel" title="Cancel this booking" hspace="8" /></a>';
+				$actions[] = "<button
+					class='button-empty booking-action'
+					type='submit'
+					name='cancel'
+					value='{$booking->booking_id}'
+					onclick='if(!confirm(\"{$cancel_msg}\")) return false'
+				>cancel</button>";
 			}
+
+			if ( ! empty($actions)) {
+				$vars['{actions}'] = '<div class="booking-cell-actions">' . implode(" ", $actions) . '</div>';
+			}
+
+			// Process template for items
+			$cell['body'] = strtr($template, $vars);
+			// Remove tags that don't have content
+			$cell['body'] = str_replace(array_keys($vars), '', $cell['body']);
 
 		}
 		else
@@ -230,11 +274,49 @@ class Bookings_model extends CI_Model
 	}
 
 
+	/**
+	 * Get the next date that has bookable periods based on the current date.
+	 * Used by html() function to work out which date for Prev/Back links.
+	 *
+	 * @param string $current_date Current date.
+	 * @param string $direction Either previous or next.
+	 *
+	 */
+	private function get_nav_date($current_date, $direction)
+	{
+		$dt = new DateTime($current_date);
+		$dt->setTime(0, 0, 0);
+
+		switch ($direction) {
+			case 'next': $modify_str = '+1 day'; break;
+			case 'previous': $modify_str = '-1 day'; break;
+		}
+
+		if (empty($this->all_periods)) {
+			return $dt->modify($modify_str)->format('Y-m-d');
+		}
+
+		$next_date = NULL;
+
+		while ($next_date === NULL) {
+			$dt->modify($modify_str);
+			$day_num = $dt->format('N');
+			if (array_key_exists("{$day_num}", $this->periods_by_day_num)) {
+				$next_date = $dt->format('Y-m-d');
+			}
+		}
+
+		return $next_date;
+	}
+
+
 
 
 
 	function html($params = array())
 	{
+		$this->populate_periods();
+
 		$defaults = array(
 			'school' => array(),		// data loaded in controller (users, days)
 			'query' => array(),		// input for where the user is/what should be loaded
@@ -339,25 +421,19 @@ class Bookings_model extends CI_Model
 
 			case 'day':
 
-				$week_bar['back_date'] = date("Y-m-d", strtotime("yesterday", $date));
+				$week_bar['back_text'] = '&larr; Back';
+				$week_bar['back_date'] = $this->get_nav_date($date_ymd, 'previous');
 				$week_bar['back_link'] = 'bookings?' . http_build_query(array(
 					'date' => $week_bar['back_date'],
 					'direction' => 'back',
 				));
 
-				$week_bar['next_date'] = date("Y-m-d", strtotime("tomorrow", $date));
+				$week_bar['next_text'] = 'Next &rarr; ';
+				$week_bar['next_date'] = $this->get_nav_date($date_ymd, 'next');
 				$week_bar['next_link'] = 'bookings?' . http_build_query(array(
 					'date' => $week_bar['next_date'],
 					'direction' => 'next',
 				));
-
-				if (date("Y-m-d") == date("Y-m-d", $date)) {
-					$week_bar['back_text'] = '&larr; Yesterday';
-					$week_bar['next_text'] = 'Tomorrow &rarr; ';
-				} else {
-					$week_bar['back_text'] = '&larr; Back';
-					$week_bar['next_text'] = 'Next &rarr; ';
-				}
 
 				$week_bar['longdate'] = date(setting('date_format_long'), $date);
 
@@ -510,12 +586,15 @@ class Bookings_model extends CI_Model
 			$err = TRUE;
 		}
 
-
 		// Get periods
 		if ($style['display'] == 'day') {
-			$periods = $this->periods_model->GetBookable($day_num);
+			if (array_key_exists($day_num, $this->periods_by_day_num)) {
+				$periods = $this->periods_by_day_num[$day_num];
+			} else {
+				$periods = [];
+			}
 		} else {
-			$periods = $this->periods_model->GetBookable();
+			$periods = $this->all_periods;
 		}
 
 		if (empty($periods)) {
@@ -530,7 +609,7 @@ class Bookings_model extends CI_Model
 		$count = array(
 			'periods' => count($periods),
 			'rooms' => count($rooms),
-			'days' => count($school['days_list']),
+			'days' => count(array_keys($this->periods_by_day_num)),	// count($school['days_list']),
 		);
 
 		$col_width = sprintf('%s%%', round(100/($count[$cols]+1)));
@@ -561,6 +640,10 @@ class Bookings_model extends CI_Model
 			case 'days':
 
 				foreach ($school['days_list'] as $day_num => $dayofweek) {
+					// Skip days without periods
+					if ( ! array_key_exists($day_num, $this->periods_by_day_num)) {
+						continue;
+					}
 					$day['width'] = $col_width;
 					$day['name'] = $dayofweek;
 					$day['date'] = $weekdates[$day_num];
@@ -603,6 +686,10 @@ class Bookings_model extends CI_Model
 						// Columns are periods, so each row is a day name
 
 						foreach ($school['days_list'] as $day_num => $day_name) {
+							// Skip days without periods
+							if ( ! array_key_exists($day_num, $this->periods_by_day_num)) {
+								continue;
+							}
 
 							// Get booking
 							// TODO: Need to get date("Y-m-d") of THIS weekday (Mon, Tue, Wed) for this week
@@ -725,6 +812,10 @@ class Bookings_model extends CI_Model
 							$html .= $this->load->view('bookings/table/rows_periods', $period, TRUE);
 
 							foreach ($school['days_list'] as $day_num => $day_name) {
+
+								if ( ! array_key_exists($day_num, $this->periods_by_day_num)) {
+									continue;
+								}
 
 								$booking_date_ymd = $weekdates[$day_num];
 

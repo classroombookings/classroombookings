@@ -1,5 +1,16 @@
 # classroombookings Changelog
 
+
+## [2.4.0] 2020-03-10
+
+### Added
+- Support for setting a custom message to appear on the login page.
+- Support for controlling the visibility of booking user details to other users.
+
+### Changed
+- Improvements for back/next navigation between days; will now skip days that don't have any periods.
+
+
 ## [2.3.2] 2020-09-25
 
 ### Fixed

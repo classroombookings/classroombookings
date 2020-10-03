@@ -36,6 +36,24 @@ class Periods_model extends CI_Model
 	}
 
 
+	public function arrange_by_day_num()
+	{
+		$data = [];
+		$periods = $this->GetBookable();
+
+		foreach ($periods as $period) {
+			foreach ($this->days as $num => $name) {
+				$field = "day_{$num}";
+				if ($period->$field == 1) {
+					$data["{$num}"][] = $period;
+				}
+			}
+		}
+
+		return $data;
+	}
+
+
 	public function GetBookable($day_num = NULL)
 	{
 		$out = array();
