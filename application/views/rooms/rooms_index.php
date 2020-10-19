@@ -2,12 +2,9 @@
 
 echo $this->session->flashdata('saved');
 
-$iconbar = iconbar(array(
+echo iconbar(array(
 	array('rooms/add', 'Add Room', 'add.png'),
-	array('rooms/fields', 'Custom Fields', 'room_fields.png'),
 ));
-
-echo $iconbar;
 
 $sort_cols = ["Name", "Location", "Teacher", "Notes", "Photo", "None"];
 
@@ -66,6 +63,3 @@ $sort_cols = ["Name", "Location", "Teacher", "Notes", "Photo", "None"];
 	</tbody>
 </table>
 
-<?php
-
-echo $iconbar;

@@ -17,6 +17,8 @@ class Rooms_model extends CI_Model
 	{
 		parent::__construct();
 
+		$this->load->model('access_control_model');
+
 		$this->options[self::FIELD_TEXT] = 'Text';
 		$this->options[self::FIELD_CHECKBOX] = 'Checkbox';
 		$this->options[self::FIELD_SELECT] = 'Dropdown list';
@@ -236,10 +238,24 @@ class Rooms_model extends CI_Model
 	{
 		// Run query to insert blank row
 		$this->db->insert('rooms', array('room_id' => NULL));
+
 		// Get id of inserted record
 		$room_id = $this->db->insert_id();
+
 		// Now call the edit function to update the actual data for this new row now we have the ID
 		$this->edit($room_id, $data);
+
+		// Add initial access control
+		$access_control_data = array(
+			'target' => Access_control_model::TARGET_ROOM,
+			'target_id' => $room_id,
+			'actor' => Access_control_model::ACTOR_AUTHENTICATED,
+			'actor_id' => NULL,
+			'permission' => Access_control_model::ACCESS_VIEW,
+		);
+
+		$entry_id = $this->access_control_model->add_entry($access_control_data);
+
 		return $room_id;
 	}
 
@@ -270,6 +286,12 @@ class Rooms_model extends CI_Model
 	function delete($id)
 	{
 		$this->delete_photo($id);
+
+		$this->access_control_model->delete_where([
+			'target' => Access_control_model::TARGET_ROOM,
+			'target_id' => $id,
+		]);
+
 		$this->db->where('room_id', $id);
 		return $this->db->delete('rooms');
 	}
