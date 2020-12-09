@@ -137,7 +137,7 @@ class Users extends MY_Controller
 		$this->load->library('form_validation');
 
 		$this->form_validation->set_rules('user_id', 'ID', 'integer');
-		$this->form_validation->set_rules('username', 'Username', 'required|max_length[20]');
+		$this->form_validation->set_rules('username', 'Username', 'required|max_length[32]|regex_match[/^[A-Za-z0-9-_.@]+$/]');
 		$this->form_validation->set_rules('authlevel', 'Type', 'required|integer');
 		$this->form_validation->set_rules('enabled', 'Enabled', 'required|integer');
 		$this->form_validation->set_rules('email', 'Email address', 'valid_email|max_length[255]');
@@ -421,6 +421,46 @@ class Users extends MY_Controller
 	}
 
 
+	private function validate_import_user($user = array())
+	{
+		$this->load->library('form_validation');
+
+		$rules = [
+			[
+				'field' => 'username',
+				'label' => 'Username',
+				'rules' => 'trim|required|max_length[32]|regex_match[/^[A-Za-z0-9-_.@]+$/]',
+			],
+			[
+				'field' => 'firstname',
+				'label' => 'First name',
+				'rules' => 'trim|max_length[20]',
+			],
+			[
+				'field' => 'lastname',
+				'label' => 'Last name',
+				'rules' => 'trim|max_length[20]',
+			],
+			[
+				'field' => 'email',
+				'label' => 'Email address',
+				'rules' => 'valid_email|max_length[255]',
+			],
+			[
+				'field' => 'password',
+				'label' => 'Password',
+				'rules' => 'required',
+			],
+		];
+
+		$this->form_validation->reset_validation();
+		$this->form_validation->set_data($user);
+		$this->form_validation->set_rules($rules);
+
+		return $this->form_validation->run();
+	}
+
+
 
 
 	/**
@@ -437,6 +477,10 @@ class Users extends MY_Controller
 
 		if (empty($data['password'])) {
 			return 'password_empty';
+		}
+
+		if ( ! $this->validate_import_user($data)) {
+			return 'invalid';
 		}
 
 		if ($this->_userexists($data['username'])) {
@@ -475,8 +519,8 @@ class Users extends MY_Controller
 
 	private function _userexists($username)
 	{
-		$sql = "SELECT user_id FROM users WHERE username='$username' LIMIT 1";
-		$query = $this->db->query($sql);
+		$sql = "SELECT user_id FROM users WHERE username = ? LIMIT 1";
+		$query = $this->db->query($sql, $username);
 		if ($query->num_rows() == 1) {
 			return true;
 		} else {
