@@ -8,6 +8,7 @@ function import_status($key) {
 		'username_exists' => 'User exists',
 		'success' => 'Success',
 		'db_error' => 'Error',
+		'invalid' => 'Failed validation',
 	);
 
 	if (array_key_exists($key, $labels)) {
@@ -41,7 +42,7 @@ function import_status($key) {
 
 			echo '<tr>';
 			echo "<td>#{$row->line}</td>";
-			echo '<td>' . html_escape($row->user->username) . '</td>';
+			echo '<td style="width: 50%">' . html_escape($row->user->username) . '</td>';
 			echo '<td>' . ($row->status == 'success' ? 'Yes' : 'No') . '</td>';
 			echo "<td style='font-weight:bold;color:{$colour}'>" . import_status($row->status) . "</td>";
 			echo '</tr>';
