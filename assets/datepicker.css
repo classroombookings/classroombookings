@@ -1,8 +1,11 @@
 /* the div that holds the date picker calendar */
-.dpDiv{ }
+.dpDiv{
+	min-width: 170px;
+}
 
 /* the table (within the div) that holds the date picker calendar */
 .dpTable{
+	width: 100%;
 	font-family:Tahoma, Arial, Helvetica, sans-serif;
 	font-size:8pt;
 	text-align:center;
@@ -65,7 +68,7 @@
 	font-weight:bold;
 }
 
-/* additional style information for the cell that holds a highlighted day (usually either today's date or the current date field value) */ 
+/* additional style information for the cell that holds a highlighted day (usually either today's date or the current date field value) */
 .dpDayHighlight{
 	color:4060ff;
 	font-weight:bold;
@@ -78,7 +81,8 @@
 	color:gray;
 	background:#d8e8ff;
 	font-weight:bold;
-	padding:0px;
+	padding:2px;
+	width: 100%;
 }
 
 /* the "This Month" and "Close" buttons at the bottom */
