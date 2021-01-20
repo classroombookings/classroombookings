@@ -139,7 +139,8 @@ if ($this->userauth->logged_in()) {
 	<?php
 	foreach ($scripts as $script)
 	{
-		echo "<script type='text/javascript' src='{$script}'></script>\n";
+		$url = sprintf('%s?v=%s', base_url($script), VERSION);
+		echo "<script type='text/javascript' src='{$url}'></script>\n";
 	}
 	?>
 
