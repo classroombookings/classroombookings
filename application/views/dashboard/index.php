@@ -34,14 +34,19 @@ $school[$i]['icon'] = 'school_manage_times.png';
 $school[$i]['href'] = site_url('periods');
 
 $i++;
-$school[$i]['text'] = 'Week Cycle';
+$school[$i]['text'] = 'Timetable Weeks';
 $school[$i]['icon'] = 'school_manage_weeks.png';
 $school[$i]['href'] = site_url('weeks');
 
 $i++;
-$school[$i]['text'] = 'Holidays';
-$school[$i]['icon'] = 'school_manage_holidays.png';
-$school[$i]['href'] = site_url('holidays');
+$school[$i]['text'] = 'Sessions';
+$school[$i]['icon'] = 'calendar_view_month.png';
+$school[$i]['href'] = site_url('sessions');
+
+// $i++;
+// $school[$i]['text'] = 'Holidays';
+// $school[$i]['icon'] = 'school_manage_holidays.png';
+// $school[$i]['href'] = site_url('holidays');
 
 $i++;
 $school[$i]['text'] = 'Rooms';
@@ -93,7 +98,7 @@ dotable($menu);
 
 // Check if user is admin
 if ($this->userauth->is_level(ADMINISTRATOR)) {
-	echo '<h2>School-related</h2>';
+	echo '<h2>School setup</h2>';
 	dotable($school);
 	echo '<h2>Management</h2>';
 	dotable($admin);

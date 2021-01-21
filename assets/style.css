@@ -30,8 +30,13 @@
 .b-30 { width: 30%; }
 .b-35 { width: 35%; }
 .b-40 { width: 40%; }
+.b-50 { width: 50%; }
 .b-60 { width: 60%; }
 .b-70 { width: 70%; }
+
+.block.b-50:nth-child(2n+1) {
+    clear: left;
+}
 
 
 html{ overflow: -moz-scrollbars-vertical; }
@@ -277,9 +282,12 @@ dl {margin-top: 8px;}
 dt {font-size: 14px; font-weight: bold; margin-bottom: 2px;}
 dd {margin-bottom: 12px;}
 
-.column dt {color: #55B10A;}
-.column dt, .column dd {font-size: 12px; line-height: 1.4; margin:0;}
-.column dd {color: #333; font-size: 11px; margin:0 0 12px 0;}
+.column dt, .column dd {font-size: 12px; line-height: 1.5; margin:0;}
+.column dt {color: #55B10A; margin-bottom: 3px;}
+.column dd {color: #333; font-size: 11px; margin:0 0 24px 0;}
+/*.column dd + dt {
+	margin-top: 24px;
+}*/
 
 
 
@@ -426,7 +434,8 @@ tr.title td{ padding:4px;background:#D6DFF7; color:#000; font-size:10pt; letter-
 	display: block;
 }
 
-.cssform input[type="checkbox"]{
+.cssform input[type="radio"],
+.cssform input[type="checkbox"] {
 	margin:0;
 }
 
@@ -682,3 +691,212 @@ a.booking-action:hover {
 		max-width: 100%;
 		height: auto;
 	}
+
+
+
+
+.session-calendar {
+	border-collapse: collapse;
+	border-spacing: 0;
+	border: 1px solid #ccc;
+	margin-bottom: 64px;
+	min-width: 280px;		/* @todo remove? width on cells should take care of this */
+}
+
+	.session-calendar tr.header-row th,
+	.session-calendar tr.week-row td {
+		background: #F5F4EA;
+		text-align: center;
+	}
+	.session-calendar tr.header-row th {
+		font-size: 14px;
+		font-weight: normal;
+		padding: 12px 0;
+	}
+	.session-calendar tr.week-row td {
+		color: #666;
+		padding: 8px 0;
+		border-bottom: 1px solid #ccc;
+		/*height: 32px;*/
+	}
+
+	.session-calendar .date-cell {
+		border-bottom: 1px solid #ccc;
+		padding: 0;
+		position: relative;
+	}
+
+	.session-calendar .date-cell.has-holiday:after {
+		content: "";
+		position: absolute;
+		top: 6px;
+		right: 6px;
+		/*transform: translate(50%, -50%);*/
+		background: #000;
+		opacity: 0.2;
+		width: 6px;
+		height: 6px;
+		border-radius: 3px;
+	}
+
+	.session-calendar .date-cell-content {
+		position: relative;
+		display: block;
+		width: 42px;
+		padding: 15px 0;
+		text-align: center;
+	}
+
+	.session-calendar .date-cell-info {
+		position: absolute;
+		top: 50%;
+		left: 100%;
+		transform: translateY(-50%);
+		padding-left: 1px;
+		text-align: left;
+		min-width: 280px;
+		pointer-events: none;
+	}
+
+	.session-calendar .week-label {
+		position: relative;
+		display: inline-block;
+		padding: 4px 8px;
+		background: #ccc;
+		margin-left: 15px;
+	}
+
+		.session-calendar .week-label:before {
+			content: "";
+			position: absolute;
+			top: 50%;
+			left: -15px;
+			height: 2px;
+			background: #ccc;
+			width: 15px;
+		}
+		.session-calendar .week-label:after {
+			content: "";
+			position: absolute;
+			top: 0;
+			left: -15px;
+			height: 100%;
+			background: #ccc;
+			/*width: 2px;*/
+		}
+
+	.session-calendar .prev-month,
+	.session-calendar .next-month {
+		color: #ccc;
+	}
+
+	.session-calendar .date-btn {
+		border: 0;
+		background: transparent;
+		color: inherit;
+	}
+
+	.session-calendar .date-btn[disabled] {
+		pointer-events: none;
+		text-decoration: line-through;
+	}
+
+	.session-calendar .date-btn:hover {
+		/*background: #333;*/
+		outline: 2px solid #FFDC00;
+	}
+
+
+
+
+.dot {
+	position: relative;
+	display: inline-block;
+	background: #ccc;
+}
+	.dot-size-md {
+		width: 16px;
+		height: 16px;
+		border-radius: 8px;
+		-webkit-border-radius: 8px;
+		-moz-border-radius: 8px;
+	}
+
+
+.colour-picker {
+	position: relative;
+	display: inline-block;
+	max-width: 240px;
+	outline: none;
+}
+	label.colour-picker-item {
+		position: relative;
+		width: auto;
+		margin-left: 0;
+		float: none;
+		font-weight: normal;
+		border: 0;
+		display: inline-block;
+		margin: 0 6px 6px 0;
+		outline: none;
+	}
+
+		.colour-picker-item input[type=radio] {
+			clip: rect(0, 0, 0, 0);
+			height: 1px;
+			margin: -1px;
+			overflow: hidden;
+			position: absolute;
+			width: 1px;
+		}
+			.colour-picker-item input[type=radio]:focus + .colour-picker-icon span,
+			.colour-picker-item input[type=radio]:checked + .colour-picker-icon span {
+				visibility: visible;
+				/*display: block;*/
+			}
+
+		.colour-picker-item:hover .colour-picker-icon span {
+				visibility: visible;
+				/*display: block;*/
+		}
+
+		.colour-picker-icon {
+			display: block;
+			position: relative;
+			/*width: 20px;*/
+			/*height: 20px;*/
+			border-radius: 50%;
+			box-sizing: border-box;
+		}
+
+			.colour-picker-icon span {
+				display: block;
+				visibility: hidden;
+				box-sizing: border-box;
+				/*position: absolute;
+				background: inherit;
+				top: 0;
+				left: 0;
+				width: 0;
+				height: 0;*/
+				border-radius: 50%;
+				/*transform: translate(-50%, -50%);*/
+				/*background: #fff;*/
+				color: #fff;
+				/*content: "X";*/
+				padding-top: 15%;
+				background: transparent;
+				width: 24px;
+				height: 24px;
+				text-align: center;
+				/*border-width: 4px;*/
+				/*border-style: solid;*/
+				/*display: none;
+				box-sizing: border-box;
+				width: 100%;
+				height: 100%;
+				display: none;
+				background: #fff;	//2px solid #fff;
+				border-radius: 50%;*/
+			}
+
