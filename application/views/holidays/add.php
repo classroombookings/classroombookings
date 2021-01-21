@@ -1,15 +1,18 @@
 <?php
+
 $holiday_id = NULL;
+
 if (isset($holiday) && is_object($holiday)) {
 	$holiday_id = set_value('holiday_id', $holiday->holiday_id);
 }
 
-echo form_open('holidays/save', array('class' => 'cssform', 'id' => 'holiday_add'), array('holiday_id' => $holiday_id) );
+echo form_open(current_url(), ['class' => 'cssform', 'id' => 'holiday_add'], ['holiday_id' => $holiday_id, 'session_id' => $session->session_id] );
+
 ?>
 
 <fieldset>
 
-	<legend accesskey="H" tabindex="<?= tab_index() ?>">Holiday Information</legend>
+	<legend accesskey="H" tabindex="<?= tab_index() ?>">Holiday</legend>
 
 	<p>
 		<label for="name" class="required">Name</label>
@@ -19,8 +22,8 @@ echo form_open('holidays/save', array('class' => 'cssform', 'id' => 'holiday_add
 		echo form_input(array(
 			'name' => $field,
 			'id' => $field,
-			'size' => '30',
-			'maxlength' => '40',
+			'size' => '40',
+			'maxlength' => '50',
 			'tabindex' => tab_index(),
 			'value' => $value,
 		));
@@ -29,17 +32,13 @@ echo form_open('holidays/save', array('class' => 'cssform', 'id' => 'holiday_add
 	<?php echo form_error($field) ?>
 
 	<p>
-		<label for="date_start" class="required">Start Date</label>
+		<label for="date_start" class="required">Start date</label>
 		<?php
 		$field = 'date_start';
-		$default = (isset($holiday)
-		            ? date('d/m/Y', strtotime($holiday->date_start))
-		            : date('d/m/Y')
-		        );
-		$value = set_value($field, $default, FALSE);
+		$value = set_value('date_start', isset($holiday) ? $holiday->date_start->format('d/m/Y') : '', FALSE);
 		echo form_input(array(
-			'name' => $field,
-			'id' => $field,
+			'name' => 'date_start',
+			'id' => 'date_start',
 			'size' => '10',
 			'maxlength' => '10',
 			'tabindex' => tab_index(),
@@ -48,21 +47,16 @@ echo form_open('holidays/save', array('class' => 'cssform', 'id' => 'holiday_add
 		?>
 		<img style="cursor:pointer" align="top" src="<?= base_url('assets/images/ui/cal_day.png') ?>" width="16" height="16" title="Choose date" onclick="displayDatePicker('date_start', false);" />
 	</p>
-	<?php echo form_error($field) ?>
-
+	<?php echo form_error($field); ?>
 
 	<p>
-		<label for="date_start" class="required">End Date</label>
+		<label for="date_end" class="required">End date</label>
 		<?php
 		$field = 'date_end';
-		$default = (isset($holiday)
-		            ? date('d/m/Y', strtotime($holiday->date_end))
-		            : date('d/m/Y')
-		        );
-		$value = set_value($field, $default, FALSE);
+		$value = set_value('date_end', isset($holiday) ? $holiday->date_end->format('d/m/Y') : '', FALSE);
 		echo form_input(array(
-			'name' => $field,
-			'id' => $field,
+			'name' => 'date_end',
+			'id' => 'date_end',
 			'size' => '10',
 			'maxlength' => '10',
 			'tabindex' => tab_index(),
@@ -71,7 +65,7 @@ echo form_open('holidays/save', array('class' => 'cssform', 'id' => 'holiday_add
 		?>
 		<img style="cursor:pointer" align="top" src="<?= base_url('assets/images/ui/cal_day.png') ?>" width="16" height="16" title="Choose date" onclick="displayDatePicker('date_end', false);" />
 	</p>
-	<?php echo form_error($field) ?>
+	<?php echo form_error($field); ?>
 
 
 </fieldset>
@@ -80,7 +74,7 @@ echo form_open('holidays/save', array('class' => 'cssform', 'id' => 'holiday_add
 
 $this->load->view('partials/submit', array(
 	'submit' => array('Save', tab_index()),
-	'cancel' => array('Cancel', tab_index(), 'holidays'),
+	'cancel' => array('Cancel', tab_index(), 'holidays/session/' . $session->session_id),
 ));
 
 echo form_close();

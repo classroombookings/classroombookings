@@ -12,21 +12,46 @@ class Holidays extends MY_Controller
 		$this->require_logged_in();
 		$this->require_auth_level(ADMINISTRATOR);
 
+		$this->load->model('sessions_model');
 		$this->load->model('crud_model');
 		$this->load->model('weeks_model');
 		$this->load->model('holidays_model');
+
+		$this->data['showtitle'] = 'Holidays';
+	}
+
+
+	private function get_icons($session = NULL)
+	{
+		$items = [
+			['sessions', 'Sessions', 'calendar_view_month.png'],
+		];
+
+		if ($session) {
+			$items[] = ['sessions/view/' . $session->session_id, $session->name, 'calendar_view_day.png'];
+			$items[] = ['holidays/session/' . $session->session_id, 'Holidays', 'school_manage_holidays.png'];
+		}
+
+		return $items;
 	}
 
 
 
 
-	function index()
+	public function session($session_id)
 	{
-		$this->data['holidays'] = $this->holidays_model->Get();
+		$session = $this->find_session($session_id);
 
-		$this->data['title'] = 'School Holidays';
-		$this->data['showtitle'] = $this->data['title'];
-		$this->data['body'] = $this->load->view('holidays/holidays_index', $this->data, TRUE);
+		$this->data['session'] = $session;
+		$this->data['holidays'] = $this->holidays_model->get_by_session($session->session_id);
+		$this->data['title'] = $this->data['showtitle'] = 'Session: ' . $session->name . ': Holidays';
+
+		$icons = iconbar($this->get_icons($session), 'holidays/session/' . $session->session_id);
+
+		$body = $this->load->view('holidays/index', $this->data, TRUE);
+
+		$this->data['body'] = $icons . $body;
+
 		return $this->render();
 	}
 
@@ -34,26 +59,31 @@ class Holidays extends MY_Controller
 
 
 	/**
-	 * Handle the Add page
+	 * Add a new holiday
 	 *
 	 */
 	function add()
 	{
-		$this->data['title'] = 'Add Holiday';
-		$this->data['showtitle'] = $this->data['title'];
+		$session_id = $this->input->get_post('session_id');
+		$session = $this->find_session($session_id);
 
-		$columns = array(
-			'c1' => array(
-				'content' => $this->load->view('holidays/holidays_add', NULL, TRUE),
-				'width' => '70%',
-			),
-			'c2' => array(
-				'content' => $this->load->view('holidays/holidays_add_side', NULL, TRUE),
-				'width' => '30%',
-			),
-		);
+		$this->data['session'] = $session;
+		$this->data['title'] = $this->data['showtitle'] = 'Session: ' . $session->name . ': Add Holiday';
 
-		$this->data['body'] = $this->load->view('columns', $columns, TRUE);
+		if ($this->input->post()) {
+			$this->save_holiday();
+		}
+
+		$add = $this->load->view('holidays/add', $this->data, TRUE);
+		$side = $this->load->view('holidays/add_side', $this->data, TRUE);
+
+		$columns = [
+			'c1' => ['content' => $add, 'width' => '70%'],
+			'c2' => ['content' => $side, 'width' => '30%'],
+		];
+		$body = $this->load->view('columns', $columns, TRUE);
+		$icons = iconbar($this->get_icons($session), 'holidays/session/' . $session->session_id);
+		$this->data['body'] = $icons . $body;
 
 		return $this->render();
 	}
@@ -62,96 +92,86 @@ class Holidays extends MY_Controller
 
 
 	/**
-	 * Controller function to handle the Edit page
+	 * Edit a holiday
 	 *
 	 */
-	function edit($id = NULL)
+	function edit($id)
 	{
-		$this->data['holiday'] = $this->holidays_model->Get($id);
+		$this->data['holiday'] = $this->find_holiday($id);
 
-		if (empty($this->data['holiday'])) {
-			show_404();
+		$session = $this->sessions_model->get($this->data['holiday']->session_id);
+
+		$this->data['session'] = $session;
+		$this->data['title'] = $this->data['showtitle'] = 'Session: ' . $session->name . ': Edit Holiday';
+
+		if ($this->input->post()) {
+			$this->save_holiday($this->data['holiday']->holiday_id);
 		}
 
-		// Load view
-		$this->data['title'] = 'Edit Holiday';
-		$this->data['showtitle'] = $this->data['title'];
+		$add = $this->load->view('holidays/add', $this->data, TRUE);
+		$side = $this->load->view('holidays/add_side', $this->data, TRUE);
 
-		$columns = array(
-			'c1' => array(
-				'content' => $this->load->view('holidays/holidays_add', $this->data, TRUE),
-				'width' => '70%',
-			),
-			'c2' => array(
-				'content' => $this->load->view('holidays/holidays_add_side', $this->data, TRUE),
-				'width' => '30%',
-			),
-		);
-
-		$this->data['body'] = $this->load->view('columns', $columns, TRUE);
+		$columns = [
+			'c1' => ['content' => $add, 'width' => '70%'],
+			'c2' => ['content' => $side, 'width' => '30%'],
+		];
+		$body = $this->load->view('columns', $columns, TRUE);
+		$icons = iconbar($this->get_icons($session), 'holidays/session/' . $session->session_id);
+		$this->data['body'] = $icons . $body;
 
 		return $this->render();
 	}
 
 
 
-
-	function save()
+	/**
+	 * Add or edit a holiday
+	 *
+	 */
+	private function save_holiday($holiday_id = NULL)
 	{
-		// Get ID from form
-		$holiday_id = $this->input->post('holiday_id');
-
 		$this->load->library('form_validation');
 
-		$this->form_validation->set_rules('holiday_id', 'ID', 'integer');
-		$this->form_validation->set_rules('name', 'Name', 'required|min_length[1]|max_length[30]');
-		$this->form_validation->set_rules('date_start', 'Start date', 'required|min_length[8]|max_length[10]');
-		$this->form_validation->set_rules('date_end', 'End date', 'required|min_length[8]|max_length[10]');;
+		$this->form_validation->set_rules('name', 'Name', 'required|max_length[50]');
 
-		if ($this->form_validation->run() == FALSE) {
-			return (empty($holiday_id) ? $this->add() : $this->edit($holiday_id));
-		}
+		$callbackRule = sprintf('callback__date_check[%d]', $this->data['session']->session_id);
+		$this->form_validation->set_rules('date_start', 'Start date', "required|{$callbackRule}");
+		$this->form_validation->set_rules('date_end', 'End date', "required|{$callbackRule}");
 
-		$date_format = "Y-m-d";
-
-		$start_date = explode('/', $this->input->post('date_start'));
-		$end_date = explode('/', $this->input->post('date_end'));
-
-		$holiday_data = array(
-			'name'=> $this->input->post('name'),
-			'date_start'=>	sprintf("%s-%s-%s", $start_date[2], $start_date[1], $start_date[0]),
-			'date_end'=> sprintf("%s-%s-%s", $end_date[2], $end_date[1], $end_date[0]),
+		$data = array(
+			'session_id' => $this->data['session']->session_id,
+			'name' => $this->input->post('name'),
+			'date_start' => $this->input->post('date_start'),
+			'date_end' => $this->input->post('date_end'),
 		);
 
-		if (empty($holiday_id)) {
+		if ($this->form_validation->run() == FALSE) {
+			return FALSE;
+		}
 
-			$holiday_id = $this->holidays_model->Add($holiday_data);
+		$uri = 'holidays/session/' . $this->data['session']->session_id;
 
-			if ($holiday_id) {
-				$line = sprintf($this->lang->line('crbs_action_added'), $holiday_data['name']);
-				$flashmsg = msgbox('info', $line);
-			} else {
-				$line = sprintf($this->lang->line('crbs_action_dberror'), 'adding');
-				$flashmsg = msgbox('error', $line);
-			}
-
-		} else {
-
-			if ($this->holidays_model->Edit($holiday_id, $holiday_data)) {
-				$line = sprintf($this->lang->line('crbs_action_saved'), $holiday_data['name']);
+		if ($holiday_id) {
+			if ($this->holidays_model->update($holiday_id, $data)) {
+				$line = sprintf($this->lang->line('crbs_action_saved'), $data['name']);
 				$flashmsg = msgbox('info', $line);
 			} else {
 				$line = sprintf($this->lang->line('crbs_action_dberror'), 'editing');
 				$flashmsg = msgbox('error', $line);
 			}
-
+		} else {
+			if ($holiday_id = $this->holidays_model->insert($data)) {
+				$line = sprintf($this->lang->line('crbs_action_added'), 'Session');
+				$flashmsg = msgbox('info', $line);
+			} else {
+				$line = sprintf($this->lang->line('crbs_action_dberror'), 'adding');
+				$flashmsg = msgbox('error', $line);
+			}
 		}
 
 		$this->session->set_flashdata('saved', $flashmsg);
-		redirect('holidays');
+		redirect($uri);
 	}
-
-
 
 
 
@@ -159,28 +179,105 @@ class Holidays extends MY_Controller
 	 * Delete a holiday
 	 *
 	 */
-	function delete($id = NULL)
+	function delete($id)
 	{
-		// Check if a form has been submitted; if not - show it to ask user confirmation
+		$holiday = $this->find_holiday($id);
+
+		$session = $this->sessions_model->get($holiday->session_id);
+
+		$this->data['session'] = $session;
+		$this->data['title'] = $this->data['showtitle'] = 'Session: ' . $session->name . ': Delete Holiday';
+
 		if ($this->input->post('id')) {
-			$this->holidays_model->Delete($this->input->post('id'));
+			$this->holidays_model->delete($this->input->post('id'));
 			$flashmsg = msgbox('info', $this->lang->line('crbs_action_deleted'));
 			$this->session->set_flashdata('saved', $flashmsg);
-			redirect('holidays');
+			redirect('holidays/session/' . $session->session_id);
 		}
 
-		// Initialise page
-		$this->data['action'] = 'holidays/delete';
+		$this->data['action'] = current_url();
 		$this->data['id'] = $id;
-		$this->data['cancel'] = 'holidays';
+		$this->data['cancel'] = 'holidays/session/' . $session->session_id;
+		// $this->data['text'] = 'If you delete this holiday, <strong>all bookings</strong> and holidays during this session will be <strong>permanently deleted</strong> as well.';
 
-		$row = $this->holidays_model->Get($id);
-		$this->data['title'] = 'Delete Holiday (' . html_escape($row->name) . ')';
-		$this->data['showtitle'] = $this->data['title'];
-		$this->data['body'] = $this->load->view('partials/deleteconfirm', $this->data, TRUE);
+		$this->data['title'] = sprintf('Delete Holiday (%s)', html_escape($holiday->name));
+
+		$title = "<h2>{$this->data['title']}</h2>";
+		$body = $this->load->view('partials/deleteconfirm', $this->data, TRUE);
+		$icons = iconbar($this->get_icons($session), 'holidays/session/' . $session->session_id);
+
+		$this->data['body'] = $icons . $title . $body;
+
 		return $this->render();
 	}
 
+
+
+	/**
+	 * Validation: Ensure the date is valid and in range of the session
+	 *
+	 */
+	public function _date_check($value, $session_id = NULL)
+	{
+		$rule = '_date_check';
+		$session = $this->sessions_model->get($session_id);
+
+		if ( ! $session) {
+			$this->form_validation->set_message($rule, 'Session could not be loaded.');
+			return FALSE;
+		}
+
+		$dt = datetime_from_string($value);
+		if ( ! $dt) {
+			$msg = sprintf("The {field} value '%s' does not look like a valid date.", $value);
+			$this->form_validation->set_message($rule, $msg);
+			return FALSE;
+		}
+
+		if ($dt < $session->date_start || $dt > $session->date_end) {
+			$start_fmt = $session->date_start->format('d/m/Y');
+			$end_fmt = $session->date_end->format('d/m/Y');
+			$msg = sprintf("The {field} must be between %s and %s.", $start_fmt, $end_fmt);
+			$this->form_validation->set_message($rule, $msg);
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+
+
+	/**
+	 * Get and return a holiday by ID or show error page.
+	 *
+	 */
+	private function find_holiday($holiday_id)
+	{
+		$holiday = $this->holidays_model->get($holiday_id);
+
+		if (empty($holiday)) {
+			show_404();
+		}
+
+		return $holiday;
+	}
+
+
+
+	/**
+	 * Get and return a session by ID or show error page.
+	 *
+	 */
+	private function find_session($session_id)
+	{
+		$session = $this->sessions_model->get($session_id);
+
+		if (empty($session)) {
+			show_404();
+		}
+
+		return $session;
+	}
 
 
 
