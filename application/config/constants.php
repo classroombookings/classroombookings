@@ -14,6 +14,14 @@ define('TEACHER', 2) ;
 define('DEMO_MODE', is_file(FCPATH . 'local/.demo'));
 
 
+// Times
+define('TIME_MINUTE', 60);
+define('TIME_HOUR', 60 * TIME_MINUTE);
+define('TIME_DAY', 24 * TIME_HOUR);
+define('TIME_WEEK', 7 * TIME_DAY);
+define('TIME_MONTH', 4 * TIME_WEEK);
+
+
 /*
 |--------------------------------------------------------------------------
 | Display Debug backtrace
