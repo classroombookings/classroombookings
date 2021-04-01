@@ -10,6 +10,9 @@ class Rooms_model extends CI_Model
 	const FIELD_TEXT = 'TEXT';
 
 
+	protected $table = 'rooms';
+
+
 	public $options = array();
 
 
@@ -22,6 +25,62 @@ class Rooms_model extends CI_Model
 		$this->options[self::FIELD_TEXT] = 'Text';
 		$this->options[self::FIELD_CHECKBOX] = 'Checkbox';
 		$this->options[self::FIELD_SELECT] = 'Dropdown list';
+	}
+
+
+	/**
+	 * Get list of bookable rooms based on user's permissions.
+	 *
+	 * "Bookable" where:
+	 * - Room property "can be booked" = yes
+	 * - User has permission via Access Control entries.
+	 *
+	 */
+	public function get_bookable_rooms($for_user_id = NULL)
+	{
+		$out = [];
+
+		$this->db->reset_query();
+
+		$this->db->select('rooms.*');
+		$this->db->select([
+			'owner.user_id AS owner__user_id',
+			'owner.username AS owner__username',
+			'owner.displayname AS owner__displayname'
+		], FALSE);
+
+		$this->db->from($this->table);
+		$this->db->join('users AS owner', 'user_id', 'LEFT');
+		$this->db->join('users AS actor', sprintf('actor.user_id = %d', $for_user_id), 'INNER');
+
+		$permission = Access_control_model::ACCESS_VIEW;
+		$subquery = $this->access_control_model->get_rooms_subquery($for_user_id, $permission);
+		$this->db->join("({$subquery}) accessible_rooms", 'rooms.room_id = accessible_rooms.target_id', 'LEFT');
+
+		$this->db->where([
+			'bookable' => 1,
+		]);
+
+		$this->db->group_start()
+			->where(['actor.authlevel' => ADMINISTRATOR])
+			->or_where('accessible_rooms.target_id IS NOT NULL')
+			->group_end();
+
+		$this->db->order_by('name ASC');
+		$this->db->group_by('room_id');
+
+		$query = $this->db->get();
+
+		if ($query->num_rows() == 0) {
+			return $out;
+		}
+
+		$result = $query->result();
+		foreach ($result as &$row) {
+			$out[ $row->room_id] = nest_object_keys($row);
+		}
+
+		return $out;
 	}
 
 

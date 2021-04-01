@@ -8,6 +8,8 @@ class Dates_model extends CI_Model
 
 	protected $table = 'dates';
 
+	private $_inlcude_period_count = FALSE;
+
 
 	public function __construct()
 	{
@@ -15,24 +17,126 @@ class Dates_model extends CI_Model
 		$this->load->model('sessions_model');
 		$this->load->model('holidays_model');
 		$this->load->model('weeks_model');
+		$this->load->helper('date');
 	}
 
 
-	public function get($session_id)
+	public function with_period_count()
+	{
+		$this->_inlcude_period_count = TRUE;
+		return $this;
+	}
+
+
+	public function get_by_session($session_id)
 	{
 		$out = [];
 
-		$sql = "SELECT * FROM {$this->table} WHERE session_id = ?";
-		$query = $this->db->query($sql, [$session_id]);
+		$this->db->reset_query();
+		$this->db->select('dates.*');
+		$this->db->from($this->table);
+		$this->db->where(['session_id' => $session_id]);
+		$this->db->group_by('date');
+
+		if ($this->_inlcude_period_count) {
+			$subquery = $this->get_periods_subquery();
+			$this->db->select('COUNT(all_periods.period_id) AS period_count', FALSE);
+			$this->db->join("({$subquery}) all_periods", 'weekday', 'LEFT');
+			$this->_inlcude_period_count = FALSE;
+		}
+
+		$query = $this->db->get();
+
 		if ($query->num_rows() == 0) {
 			return $out;
 		}
 
-		foreach ($query->result() as $row) {
+		$result = $query->result();
+
+		foreach ($result as $row) {
 			$out[ $row->date ] = $row;
 		}
 
 		return $out;
+	}
+
+
+	/**
+	 * Get date info by start and end date range
+	 *
+	 */
+	public function get_by_range($date_start, $date_end)
+	{
+		$date_start = datetime_from_string($date_start);
+		$date_end = datetime_from_string($date_end);
+
+		if ( ! $date_start && ! $date_end) {
+			return FALSE;
+		}
+
+		$out = [];
+
+		$this->db->reset_query();
+		$this->db->select('dates.*');
+		$this->db->from($this->table);
+		$this->db->where([
+			'date >=' => $date_start->format('Y-m-d'),
+			'date <=' => $date_end->format('Y-m-d'),
+		]);
+		$this->db->group_by('date');
+
+		if ($this->_inlcude_period_count) {
+			$subquery = $this->get_periods_subquery();
+			$this->db->select('COUNT(all_periods.period_id) AS period_count', FALSE);
+			$this->db->join("({$subquery}) all_periods", 'weekday', 'LEFT');
+			$this->_inlcude_period_count = FALSE;
+		}
+
+		$query = $this->db->get();
+
+		if ($query->num_rows() == 0) {
+			return $out;
+		}
+
+		$result = $query->result();
+
+		foreach ($result as $row) {
+			$out[ $row->date ] = $row;
+		}
+
+		return $out;
+	}
+
+
+	/**
+	 * Get date records by single date.
+	 *
+	 */
+	public function get_by_date($date)
+	{
+		$date = datetime_from_string($date);
+
+		if ( ! $date) {
+			return FALSE;
+		}
+
+		$this->db->reset_query();
+		$this->db->select('dates.*');
+		$this->db->from($this->table);
+		$this->db->where(['date' => $date->format('Y-m-d')]);
+		$this->db->limit(1);
+		$this->db->group_by('date');
+
+		if ($this->_inlcude_period_count) {
+			$subquery = $this->get_periods_subquery();
+			$this->db->select('COUNT(all_periods.period_id) AS period_count', FALSE);
+			$this->db->join("({$subquery}) all_periods", 'weekday', 'LEFT');
+			$this->_inlcude_period_count = FALSE;
+		}
+
+		$query = $this->db->get();
+
+		return $query->num_rows() === 1 ? $query->row() : FALSE;
 	}
 
 
@@ -82,6 +186,36 @@ class Dates_model extends CI_Model
 		$sql = 'DELETE FROM dates WHERE session_id IS NULL';
 		$this->db->query($sql);
 	}
+
+
+	private function get_periods_subquery()
+	{
+		$sql = [];
+
+		foreach (range(1, 7) as $weekday) {
+			$sql[] = "SELECT period_id, {$weekday} AS weekday FROM periods WHERE day_{$weekday} = 1";
+		}
+		$sql_string = implode("\nUNION ALL\n", $sql);
+		return $sql_string;
+	}
+/*
+SELECT period_id, 1 AS weekday FROM periods WHERE day_1 = 1
+UNION ALL
+SELECT period_id, 2 AS weekday FROM periods WHERE day_2 = 1
+UNION ALL
+SELECT period_id, 3 AS weekday FROM periods WHERE day_3 = 1
+UNION ALL
+SELECT period_id, 4 AS weekday FROM periods WHERE day_4 = 1
+UNION ALL
+SELECT period_id, 5 AS weekday FROM periods WHERE day_5 = 1
+UNION ALL
+SELECT period_id, 6 AS weekday FROM periods WHERE day_6 = 1
+UNION ALL
+SELECT period_id, 7 AS weekday FROM periods WHERE day_7 = 1
+) all_p ON dates.weekday = all_p.weekday
+WHERE session_id = 2
+GROUP BY date
+	}*/
 
 
 	/**

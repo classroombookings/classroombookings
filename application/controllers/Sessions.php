@@ -78,7 +78,7 @@ class Sessions extends MY_Controller
 		$calendar = new Calendar([
 			'session' => $session,
 			'weeks' => $this->weeks_model->get_all(),
-			'dates' => $this->dates_model->get($session->session_id),
+			'dates' => $this->dates_model->get_by_session($session->session_id),
 			'mode' => Calendar::MODE_CONFIG,
 			'month_class' => 'session-calendar',
 		]);

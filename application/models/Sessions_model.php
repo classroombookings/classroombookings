@@ -22,7 +22,7 @@ class Sessions_model extends CI_Model
 
 	public function get_all_past($epoch = NULL)
 	{
-		$date = $epoch ?? date('Y-m-d');
+		$date = strlen($epoch) ? $epoch : date('Y-m-d');
 
 		$sql = "SELECT * FROM {$this->table}
 				WHERE date_end < ?
@@ -44,7 +44,7 @@ class Sessions_model extends CI_Model
 
 	public function get_all_active($epoch = NULL)
 	{
-		$date = $epoch ?? date('Y-m-d');
+		$date = strlen($epoch) ? $epoch : date('Y-m-d');
 
 		$sql = "SELECT * FROM {$this->table}
 				WHERE date_end >= ?
@@ -85,6 +85,20 @@ class Sessions_model extends CI_Model
 				LIMIT 1";
 
 		$query = $this->db->query($sql, [ $value, $value ]);
+		if ($query->num_rows() === 1) {
+			return $this->wake_value($query->row());
+		}
+
+		return FALSE;
+	}
+
+
+	public function get_current()
+	{
+		$where = [ 'is_current' => 1 ];
+
+		$query = $this->db->get_where($this->table, $where, 1);
+
 		if ($query->num_rows() === 1) {
 			return $this->wake_value($query->row());
 		}
