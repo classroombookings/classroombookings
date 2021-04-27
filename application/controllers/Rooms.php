@@ -20,6 +20,14 @@ class Rooms extends MY_Controller
 
 		$this->data['max_size_bytes'] = max_upload_file_size();
 		$this->data['max_size_human'] = byte_format(max_upload_file_size());
+
+		$this->data['showtitle'] = 'Rooms';
+
+		$this->data['rooms_icons'] = [
+			['rooms', 'Rooms', 'school_manage_rooms.png'],
+			['rooms/fields', 'Custom Fields', 'room_fields.png'],
+			['access_control', 'Access Control', 'key.png'],
+		];
 	}
 
 
@@ -95,8 +103,11 @@ class Rooms extends MY_Controller
 		$this->data['rooms'] = $this->rooms_model->Get();
 
 		$this->data['title'] = 'Rooms';
-		$this->data['showtitle'] = $this->data['title'];
-		$this->data['body'] = $this->load->view('rooms/rooms_index', $this->data, TRUE);
+
+		$icons = iconbar($this->data['rooms_icons'], 'rooms');
+		$body = $this->load->view('rooms/rooms_index', $this->data, TRUE);
+
+		$this->data['body'] = $icons . $body;
 
 		return $this->render();
 	}
@@ -118,7 +129,7 @@ class Rooms extends MY_Controller
 		$this->data['fieldvalues'] = array();
 
 		$this->data['title'] = 'Add Room';
-		$this->data['showtitle'] = $this->data['title'];
+		// $this->data['showtitle'] = $this->data['title'];
 
 		$columns = array(
 			'c1' => array(
@@ -131,7 +142,11 @@ class Rooms extends MY_Controller
 			),
 		);
 
-		$this->data['body'] = $this->load->view('columns', $columns, TRUE);
+		$icons = iconbar($this->data['rooms_icons'], 'rooms');
+		$title = "<h2>{$this->data['title']}</h2>";
+		$columns = $this->load->view('columns', $columns, TRUE);
+
+		$this->data['body'] = $icons . $title . $columns;
 
 		return $this->render();
 	}
@@ -158,7 +173,7 @@ class Rooms extends MY_Controller
 		$this->data['fieldvalues'] = $this->rooms_model->GetFieldValues($id);
 
 		$this->data['title'] = 'Edit Room';
-		$this->data['showtitle'] = $this->data['title'];
+		// $this->data['showtitle'] = $this->data['title'];
 
 		$columns = array(
 			'c1' => array(
@@ -171,7 +186,12 @@ class Rooms extends MY_Controller
 			),
 		);
 
-		$this->data['body'] = $this->load->view('columns', $columns, TRUE);
+
+		$icons = iconbar($this->data['rooms_icons'], 'rooms');
+		$title = "<h2>{$this->data['title']}</h2>";
+		$columns = $this->load->view('columns', $columns, TRUE);
+
+		$this->data['body'] = $icons . $title . $columns;
 
 		return $this->render();
 	}
@@ -380,8 +400,12 @@ class Rooms extends MY_Controller
 
 		$row = $this->rooms_model->Get($id);
 		$this->data['title'] = 'Delete Room ('.html_escape($row->name).')';
-		$this->data['showtitle'] = $this->data['title'];
-		$this->data['body'] = $this->load->view('partials/deleteconfirm', $this->data, TRUE);
+
+		$icons = iconbar($this->data['rooms_icons'], 'rooms');
+		$title = "<h2>{$this->data['title']}</h2>";
+		$body = $this->load->view('partials/deleteconfirm', $this->data, TRUE);
+
+		$this->data['body'] = $icons . $title . $body;
 
 		return $this->render();
 	}
@@ -404,9 +428,12 @@ class Rooms extends MY_Controller
 
 		$this->data['options_list'] = $this->rooms_model->options;
 		$this->data['fields'] = $this->rooms_model->GetFields();
-		$this->data['title'] = 'Room Fields';
-		$this->data['showtitle'] = 'Custom Fields';
-		$this->data['body'] = $this->load->view('rooms/fields/index', $this->data, TRUE);
+		$this->data['title'] = 'Custom Fields';
+		// $this->data['showtitle'] = 'Custom Fields';
+
+		$icons = iconbar($this->data['rooms_icons'], 'rooms/fields');
+		$body = $this->load->view('rooms/fields/index', $this->data, TRUE);
+		$this->data['body'] = $icons . $body;
 
 		return $this->render();
 	}
@@ -422,7 +449,7 @@ class Rooms extends MY_Controller
 		$this->data['options_list'] = $this->rooms_model->options;
 
 		$this->data['title'] = 'Add Field';
-		$this->data['showtitle'] = $this->data['title'];
+		// $this->data['showtitle'] = $this->data['title'];
 
 		$columns = array(
 			'c1' => array(
@@ -435,7 +462,11 @@ class Rooms extends MY_Controller
 			),
 		);
 
-		$this->data['body'] = $this->load->view('columns', $columns, TRUE);
+		$icons = iconbar($this->data['rooms_icons'], 'rooms/fields');
+		$title = "<h2>{$this->data['title']}</h2>";
+		$columns = $this->load->view('columns', $columns, TRUE);
+
+		$this->data['body'] = $icons . $title . $columns;
 
 		return $this->render();
 	}
@@ -455,7 +486,7 @@ class Rooms extends MY_Controller
 		$this->data['options_list'] = $this->rooms_model->options;
 
 		$this->data['title'] = 'Edit Field';
-		$this->data['showtitle'] = $this->data['title'];
+		// $this->data['showtitle'] = $this->data['title'];
 
 		$columns = array(
 			'c1' => array(
@@ -468,7 +499,11 @@ class Rooms extends MY_Controller
 			),
 		);
 
-		$this->data['body'] = $this->load->view('columns', $columns, TRUE);
+		$icons = iconbar($this->data['rooms_icons'], 'rooms/fields');
+		$title = "<h2>{$this->data['title']}</h2>";
+		$columns = $this->load->view('columns', $columns, TRUE);
+
+		$this->data['body'] = $icons . $title . $columns;
 
 		return $this->render();
 	}
@@ -536,8 +571,14 @@ class Rooms extends MY_Controller
 
 		$row = $this->rooms_model->GetFields($id);
 		$this->data['title'] = 'Delete Field ('.html_escape($row->name).')';
-		$this->data['showtitle'] = $this->data['title'];
+		// $this->data['showtitle'] = $this->data['title'];
 		$this->data['body'] = $this->load->view('partials/deleteconfirm', $this->data, TRUE);
+
+		$icons = iconbar($this->data['rooms_icons'], 'rooms/fields');
+		$title = "<h2>{$this->data['title']}</h2>";
+		$body = $this->load->view('partials/deleteconfirm', $this->data, TRUE);
+
+		$this->data['body'] = $icons . $title . $body;
 
 		return $this->render();
 	}

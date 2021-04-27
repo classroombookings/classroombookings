@@ -40,11 +40,11 @@ class MY_Controller extends CI_Controller
 		}
 
 		$this->data['scripts'] = array();
-		$this->data['scripts'][] = base_url('assets/js/lib/sorttable.js');
-		$this->data['scripts'][] = base_url('assets/js/lib/datepicker.js');
-		$this->data['scripts'][] = base_url('assets/js/lib/es6-promise.auto.min.js');
-		$this->data['scripts'][] = base_url('assets/js/lib/unpoly.min.js');
-		$this->data['scripts'][] = base_url('assets/js/main.js');
+		$this->data['scripts'][] = 'assets/js/lib/sorttable.js';
+		$this->data['scripts'][] = 'assets/js/lib/datepicker.js';
+		$this->data['scripts'][] = 'assets/js/lib/es6-promise.auto.min.js';
+		$this->data['scripts'][] = 'assets/js/lib/unpoly.min.js';
+		$this->data['scripts'][] = 'assets/js/main.js';
 	}
 
 

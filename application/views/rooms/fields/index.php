@@ -2,12 +2,9 @@
 
 echo $this->session->flashdata('saved');
 
-$iconbar = iconbar(array(
-	array('rooms/add_field', 'Add Field', 'add.png'),
-	array('rooms', 'Rooms', 'school_manage_rooms.png'),
-));
-
-echo $iconbar;
+echo iconbar([
+	['rooms/add_field', 'Add Field', 'add.png'],
+]);
 
 $sort_cols = ["Name", "Type", "Options", "None"];
 
@@ -59,4 +56,4 @@ $sort_cols = ["Name", "Type", "Options", "None"];
 
 <?php
 
-echo $iconbar;
+// echo $iconbar;

@@ -19,11 +19,11 @@ if ($this->userauth->logged_in()) {
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="author" content="Craig A Rodway">
 	<title><?= html_escape($title) ?> | classroombookings</title>
-	<link rel="stylesheet" type="text/css" media="screen" href="<?= base_url('assets/style.css') ?>">
-	<link rel="stylesheet" type="text/css" media="print" href="<?= base_url('assets/print.css') ?>">
-	<link rel="stylesheet" type="text/css" media="screen" href="<?= base_url('assets/sorttable.css') ?>">
-	<link rel="stylesheet" type="text/css" media="screen" href="<?= base_url('assets/datepicker.css') ?>">
-	<link rel="stylesheet" type="text/css" media="screen" href="<?= base_url('assets/unpoly.min.css') ?>">
+	<link rel="stylesheet" type="text/css" media="screen" href="<?= base_url('assets/style.css') ?>?v=<?= VERSION ?>">
+	<link rel="stylesheet" type="text/css" media="print" href="<?= base_url('assets/print.css') ?>?v=<?= VERSION ?>">
+	<link rel="stylesheet" type="text/css" media="screen" href="<?= base_url('assets/sorttable.css') ?>?v=<?= VERSION ?>">
+	<link rel="stylesheet" type="text/css" media="screen" href="<?= base_url('assets/datepicker.css') ?>?v=<?= VERSION ?>">
+	<link rel="stylesheet" type="text/css" media="screen" href="<?= base_url('assets/unpoly.min.css') ?>?v=<?= VERSION ?>">
 	<link rel="apple-touch-icon" sizes="180x180" href="<?= base_url('assets/brand/apple-touch-icon.png') ?>">
 	<link rel="icon" type="image/png" sizes="32x32" href="<?= base_url('assets/brand/favicon-32x32.png') ?>">
 	<link rel="icon" type="image/png" sizes="16x16" href="<?= base_url('assets/brand/favicon-16x16.png') ?>">
@@ -139,7 +139,8 @@ if ($this->userauth->logged_in()) {
 	<?php
 	foreach ($scripts as $script)
 	{
-		echo "<script type='text/javascript' src='{$script}'></script>\n";
+		$url = sprintf('%s?v=%s', base_url($script), VERSION);
+		echo "<script type='text/javascript' src='{$url}'></script>\n";
 	}
 	?>
 

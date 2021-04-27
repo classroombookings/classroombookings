@@ -368,6 +368,12 @@ class Bookings_model extends CI_Model
 		if ( ! isset($query['room'])) {
 			$room_c = current($rooms);
 			$query['room'] = $room_c->room_id;
+		} else {
+			// Check requested room is in the list of accessible rooms
+			if ( ! array_key_exists($query['room'], $rooms)) {
+				$html = msgbox('error', 'Selected room is not accessible.');
+				return $html;
+			}
 		}
 
 		// Load the appropriate select box depending on view style
@@ -1075,10 +1081,27 @@ class Bookings_model extends CI_Model
 	 */
 	function Rooms()
 	{
+		$room_filter = '';
+
+		if ($this->userauth->is_level(TEACHER)) {
+			$user_id = $this->userauth->user->user_id;
+			$view_permisson = Access_control_model::ACCESS_VIEW;
+			$room_ids = $this->access_control_model->get_accessible_rooms($user_id, $view_permisson);
+			if (empty($room_ids)) {
+				// Force non-match if no room IDs available
+				$room_filter = ' AND 1=2 ';
+			} else {
+				// Filter to only room IDs that are accessible
+				$id_string = implode(',', $room_ids);
+				$room_filter = "AND (room_id IN ({$id_string}))";
+			}
+		}
+
 		$sql = "SELECT rooms.*, users.user_id, users.username, users.displayname
 				FROM rooms
 				LEFT JOIN users ON users.user_id=rooms.user_id
-				WHERE rooms.bookable=1
+				WHERE rooms.bookable = 1
+				{$room_filter}
 				ORDER BY name asc";
 
 		$query = $this->db->query($sql);

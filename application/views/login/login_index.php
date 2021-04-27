@@ -1,5 +1,3 @@
-<h2>Log in</h2>
-
 <?php
 if (strlen($message)) {
 	echo "<div>" . nl2br($message) . "</div><br><br>";

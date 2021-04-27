@@ -21,6 +21,7 @@ class Bookings extends MY_Controller
 			'users_model',
 			'holidays_model',
 			'bookings_model',
+			'access_control_model',
 		));
 
 		$this->school = array(
@@ -64,6 +65,8 @@ class Bookings extends MY_Controller
 	{
 		$query = $this->input->get();
 
+		$user_id = $this->userauth->user->user_id;
+
 		// $this->session->set_userdata('uri', $this->uri->uri_string());
 
 		if ( ! isset($query['date']) ) {
@@ -78,7 +81,7 @@ class Bookings extends MY_Controller
 			#$this->session->set_userdata('chosen_date', $this->school['chosen_date']);
 		}
 
-		$room_of_user = $this->rooms_model->GetByUser($this->userauth->user->user_id);
+		$room_of_user = $this->rooms_model->GetByUser($user_id);
 
 		if ( ! isset($query['room'])) {
 			if ( ! empty($room_of_user)) {

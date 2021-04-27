@@ -9,6 +9,7 @@ class MY_Lang extends CI_Lang
 	protected $CI = NULL;
 
 	protected $db_loaded = array();
+	protected $db_lang_count = FALSE;
 
 
 	public function __construct()
@@ -42,10 +43,7 @@ class MY_Lang extends CI_Lang
 	public function load_from_db($set, $idiom)
 	{
 		$lang = [];
-
-		if (isset($this->db_loaded[$idiom]) && $this->db_loaded[$idiom] === $set) {
-			return $lang;
-		}
+		$table = 'lang';
 
 		$this->set_instance();
 
@@ -53,21 +51,41 @@ class MY_Lang extends CI_Lang
 			return $lang;
 		}
 
-		if ( ! $this->CI->db->table_exists('lang')) {
+		if ( ! $this->CI->db->table_exists($table)) {
 			return $lang;
 		}
 
-		$where = [
-			'language' => $idiom,
-			'set' => $set,
-		];
+		if ($this->db_lang_count === FALSE) {
+			$sql = "SELECT COUNT(id) AS `total` FROM {$table}";
+			$query = $this->CI->db->query($sql);
+			$row = $query->row();
+			$this->db_lang_count = $row->total;
+		}
 
-		$query = $this->CI->db->select('key,text')->where($where)->get('lang');
+		if ($this->db_lang_count == 0) {
+			return $lang;
+		}
+
+		if (isset($this->db_loaded[$idiom]) && $this->db_loaded[$idiom] === $set) {
+			return $lang;
+		}
+
+		$sql = "SELECT `key`, `text` FROM `{$table}`
+				WHERE `language` = ?
+				AND `set` = ?";
+
+		$query = $this->CI->db->query($sql, [ $idiom, $set ]);
+		if ($query->num_rows() === 0) {
+			return $lang;
+		}
+
 		$result = $query->result();
 
 		foreach ($result as $row) {
 			$lang[$row->key] = $row->text;
 		}
+
+		$this->db_loaded[$idiom] = $set;
 
 		return $lang;
 	}

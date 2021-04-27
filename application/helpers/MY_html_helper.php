@@ -10,7 +10,7 @@ function field($validation, $database = NULL, $last = ''){
 
 
 
-function iconbar($items = array()) {
+function iconbar($items = array(), $active = false) {
 
 	$html = "<p class='iconbar'>";
 	$i = 1;
@@ -18,10 +18,13 @@ function iconbar($items = array()) {
 
 	foreach ($items as $item) {
 		list($link, $name, $icon) = $item;
-		$html .= img("assets/images/ui/{$icon}", FALSE, "alt='{$name}' align='top' hspace='0' border='0'");
-		$html .= ' ' . anchor($link, $name);
+
+		$class = $link == $active ? 'active' : '';
+		$img = img("assets/images/ui/{$icon}", FALSE, "alt='{$name}' align='top' hspace='0' border='0'");
+		$label = anchor($link, "{$img} {$name}", "class='{$class}'");
+		$html .= $label;
 		if ($i < $max) {
-			$html .= img("assets/images/sep.gif", FALSE, "alt='|' align='top' hspace='0' border='0' style='margin:0px 6px;'");
+			$html .= img("assets/images/sep.gif", FALSE, "alt='|' align='top' hspace='0' border='0' style='margin:0px 3px;'");
 		}
 		$i++;
 	}
