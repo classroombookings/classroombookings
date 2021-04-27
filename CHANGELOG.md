@@ -1,5 +1,19 @@
 # classroombookings Changelog
 
+
+## [2.5.0] 2021-04-27
+
+### Added
+- Room Access Control feature - set visibility of each room to specific Users or Departments.
+
+### Changed
+- Updated sizing for Date Picker widget.
+- Added cache-busting query strings to JS/CSS assets.
+
+### Fixed
+- Issue with loading override language entries from database.
+
+
 ## [2.4.1] 2020-12-09
 
 ### Fixed
