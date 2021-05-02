@@ -86,9 +86,13 @@ class Dates_model extends CI_Model
 		$this->db->group_by('date');
 
 		if ($this->_inlcude_period_count) {
-			$subquery = $this->get_periods_subquery();
-			$this->db->select('COUNT(all_periods.period_id) AS period_count', FALSE);
-			$this->db->join("({$subquery}) all_periods", 'weekday', 'LEFT');
+			// $subquery = $this->get_periods_subquery();
+			// $this->db->select('COUNT(all_periods.period_id) AS period_count', FALSE);
+			// $this->db->join("({$subquery}) all_periods", 'weekday', 'LEFT');
+			$subquery = $this->get_period_count_subquery();
+			$this->db->select('pc.period_count AS period_count', FALSE);
+			$this->db->join("({$subquery}) pc", 'weekday', 'LEFT');
+
 			$this->_inlcude_period_count = FALSE;
 		}
 
@@ -128,15 +132,86 @@ class Dates_model extends CI_Model
 		$this->db->group_by('date');
 
 		if ($this->_inlcude_period_count) {
-			$subquery = $this->get_periods_subquery();
-			$this->db->select('COUNT(all_periods.period_id) AS period_count', FALSE);
-			$this->db->join("({$subquery}) all_periods", 'weekday', 'LEFT');
+			$subquery = $this->get_period_count_subquery();
+			$this->db->select('pc.period_count AS period_count', FALSE);
+			$this->db->join("({$subquery}) pc", 'weekday', 'LEFT');
 			$this->_inlcude_period_count = FALSE;
 		}
 
 		$query = $this->db->get();
 
 		return $query->num_rows() === 1 ? $query->row() : FALSE;
+	}
+
+
+	/**
+	 * Get the available dates either side of the given date.
+	 *
+	 */
+	public function get_prev_next($date, $range = 'day')
+	{
+		$date = datetime_from_string($date);
+
+		if ( ! $date) {
+			return FALSE;
+		}
+
+		$period_subquery = $this->get_period_count_subquery();
+
+		$queries = [
+			[
+				'name' => 'prev',
+				'where' => 'prev.date < m.date',
+				'order' => 'prev.date DESC',
+			],
+			[
+				'name' => 'next',
+				'where' => 'next.date > m.date',
+				'order' => 'next.date ASC',
+			],
+		];
+
+		$unions = [];
+
+		foreach ($queries as $q) {
+			extract($q);
+			$this->db->reset_query();
+			$this->db->select("{$name}.*");
+			$this->db->select("'{$name}' AS dir");
+			$this->db->select("pc.period_count");
+			$this->db->from("{$this->table} m");	// (m == 'main')
+			$this->db->join("dates {$name}", 'session_id', 'INNER');
+			$this->db->join("({$period_subquery}) pc", "{$name}.weekday = pc.weekday", 'INNER');
+			$this->db->where('m.date', $date->format('Y-m-d'));
+			$this->db->where($where);
+			$this->db->where("{$name}.holiday_id IS NULL");
+			$this->db->where("{$name}.week_id IS NOT NULL");
+
+			if ($range == 'week') {
+				$this->db->where("ABS(DATEDIFF({$name}.date, m.date)) >= 7");
+			}
+
+			$this->db->having('pc.period_count > 0');
+			$this->db->order_by($order);
+			$this->db->limit(1);
+
+			$unions[] = '(' . $this->db->get_compiled_select() . ')';
+		}
+
+		$sql = implode("\nUNION\n", $unions);
+
+		$query = $this->db->query($sql);
+		if ($query->num_rows() === 0) {
+			return [];
+		}
+
+		$out = [];
+
+		foreach ($query->result() as $row) {
+			$out[ $row->dir ] = $row;
+		}
+
+		return $out;
 	}
 
 
@@ -185,6 +260,25 @@ class Dates_model extends CI_Model
 
 		$sql = 'DELETE FROM dates WHERE session_id IS NULL';
 		$this->db->query($sql);
+	}
+
+
+	private function get_period_count_subquery()
+	{
+		$sql = [];
+
+		foreach (range(1, 7) as $weekday) {
+			$sql[] = "SELECT {$weekday} AS weekday, SUM(IF(period_id IS NULL, 0, 1)) AS period_count
+					FROM periods
+					WHERE day_{$weekday} = 1";
+		}
+
+		$unions = implode("\nUNION ALL\n", $sql);
+
+		$sql = "SELECT `weekday`, (IF(period_count IS NULL, 0, period_count)) AS period_count
+				FROM ({$unions}) period_counters";
+
+		return $sql;
 	}
 
 

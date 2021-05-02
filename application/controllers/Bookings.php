@@ -2,6 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 use app\components\bookings\Context;
+use app\components\bookings\Grid;
 
 
 class Bookings extends MY_Controller
@@ -30,16 +31,23 @@ class Bookings extends MY_Controller
 
 	public function index()
 	{
-		redirect('bookings/view');
-	}
-
-
-	public function view()
-	{
 		$context = new Context();
-		$context->autofill();
 
-		print_r($context->toArray());
+		$context->autofill([
+			'base_uri' => $this->uri->segment(1),
+		]);
+
+		$grid = new Grid($context);
+
+		$this->data['title'] = 'Bookings';
+		$this->data['showtitle'] = '';
+		$this->data['body'] = $grid->render();
+
+		$arr = $context->toArray();
+		$json = json_encode($arr, JSON_PRETTY_PRINT);
+		// $this->data['body'] .= "<pre>{$json}</pre>";
+
+		return $this->render();
 	}
 
 

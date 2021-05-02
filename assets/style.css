@@ -608,6 +608,26 @@ div.g p, div.g1 p {
 }
 
 
+.bookings-grid-header {
+	padding: 6px;
+	font-weight:bold;
+	border: 1px solid #999;
+	color: #666;
+}
+
+	.bookings-grid-header.has-week {
+		border-color: transparent;
+	}
+
+	.bookings-grid-header a {
+		color: inherit;
+	}
+
+	.bookings-grid-header a:hover {
+		color: inherit;
+		opacity: 0.8;
+	}
+
 
 table.bookings td{ font-size:90%;font-family:tahoma,verdana,sans-serif; padding:3px;}
 

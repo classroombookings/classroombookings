@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Bookings extends MY_Controller
+class Bookings_legacy extends MY_Controller
 {
 
 

@@ -24,7 +24,11 @@ function datetime_from_string($value) {
 			break;
 
 		case (strpos($value, '/') !== false && strlen($value) < 10):
-			list($dd, $mm, $yyyy) = explode('/', $value);
+			$parts = explode('/', $value);
+			if (count($parts) !== 3) return false;
+			list($dd, $mm, $yyyy) = $parts;
+			$is_numeric = (is_integer($dd) && is_inteer($mm) && is_integer($yyyy));
+			if ( ! $is_numeric) return false;
 			$dt = new DateTime();
 			$dt->setDate($yyyy, $mm, $dd);
 			break;

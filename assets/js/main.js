@@ -119,3 +119,34 @@ up.compiler('.session-calendars.mode-config', function(sessionEl, data) {
 	});
 
 });
+
+
+/**
+ * Bookings page: controls forms
+ *
+ */
+up.compiler('#bookings_controls_day', function(form) {
+
+	// Date picker and form submission
+
+	up.on(form, 'click', '.up-datepicker', function(evt, el, data) {
+		if ( ! data.input) return;
+		return displayDatePicker(data.input, false);
+	});
+
+	up.on(form, 'change', '.up-datepicker-input', function(evt, el, data) {
+		form.submit();
+		up.emit(form, 'submit');
+	});
+
+});
+
+up.compiler('#bookings_controls_room', function(form) {
+
+	// Room list
+
+	up.on(form, 'change', 'select[name=room]', function(evt, el, data) {
+		form.submit();
+	});
+
+});

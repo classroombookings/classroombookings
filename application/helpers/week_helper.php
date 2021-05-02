@@ -11,6 +11,13 @@ function week_dot($week, $size = 'md')
 }
 
 
+/**
+ * Generate CSS for a timetable week.
+ *
+ * @param $week DB row object for week entry.
+ * @return string Raw CSS to place inside <style> tag.
+ *
+ */
 function week_calendar_css($week)
 {
 	$CI =& get_instance();

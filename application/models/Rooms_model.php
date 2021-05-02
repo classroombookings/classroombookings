@@ -40,6 +40,8 @@ class Rooms_model extends CI_Model
 	{
 		$out = [];
 
+		$for_user_id = (int) $for_user_id;
+
 		$this->db->reset_query();
 
 		$this->db->select('rooms.*');
