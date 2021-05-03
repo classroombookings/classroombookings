@@ -1,14 +1,25 @@
 <?php
 
+use app\components\bookings\Context;
+use app\components\bookings\Slot;
+
+
 class Bookings_model extends CI_Model
 {
 
 
-	var $table_headings = '';
-	var $table_rows = array();
+	const STATUS_BOOKED = 10;
+	const STATUS_CANCELLED = 15;
+
+	protected $table = 'bookings';
 
 	private $all_periods;
 	private $periods_by_day_num;
+
+
+	// Legacy:
+	var $table_headings = '';
+	var $table_rows = array();
 
 
 	public function __construct()
@@ -17,9 +28,80 @@ class Bookings_model extends CI_Model
 	}
 
 
+	public function find_for_context(Context $context)
+	{
+		$this->db->reset_query();
+
+		$this->db->select([
+			'b.booking_id',
+			'b.repeat_id',
+			'b.period_id',
+			'b.room_id',
+			'b.user_id',
+			'b.date',
+			'b.status',
+			'b.notes',
+		]);
+
+		$this->db->select([
+			'u.user_id AS user__user_id',
+			'u.username AS user__username',
+			'u.displayname AS user__displayname'
+		], FALSE);
+
+		$this->db->select([
+			'r.week_id AS repeat__week_id',
+			'r.weekday AS repeat__weekday',
+		], FALSE);
+
+		$this->db->select([
+			'w.week_id AS repeat_week__week_id',
+			'w.name AS repeat_week__name',
+			'w.fgcol AS repeat_week__fgcol',
+			'w.bgcol AS repeat_week__bgcol',
+		], FALSE);
+
+		$this->db->from("{$this->table} AS b");
+		$this->db->join('users u', 'user_id', 'LEFT');
+		$this->db->join('bookings_repeat r', 'repeat_id', 'LEFT');
+		$this->db->join('weeks w', 'week_id', 'LEFT');
+
+		$this->db->where('b.status', self::STATUS_BOOKED);
+
+		switch ($context->display_type) {
+
+			case 'day':
+				$this->db->where('b.date', $context->datetime->format('Y-m-d'));
+				break;
+
+			case 'room':
+				$this->db->where([
+					'b.date >=' => $context->week_start->format('Y-m-d'),
+					'b.date <=' => $context->week_end->format('Y-m-d'),
+				]);
+				break;
+		}
+
+		$this->db->where('b.session_id', $context->session->session_id);
+
+		$query = $this->db->get();
+
+		$result = $query->result();
+
+		$out = [];
+
+		foreach ($result as &$row) {
+			$key = Slot::generate_key($row->date, $row->period_id, $row->room_id);
+			$out[ $key ] = nest_object_keys($row);
+		}
+
+		return $out;
+	}
 
 
-	function Get($booking_id)
+
+
+	public function Get($booking_id)
 	{
 		$this->db->from('bookings');
 		$this->db->where('booking_id', $booking_id);
@@ -1247,7 +1329,7 @@ class Bookings_model extends CI_Model
 				FROM bookings
 				JOIN periods ON periods.period_id = bookings.period_id
 				WHERE bookings.user_id = ?
-				AND bookings.cancelled = 0
+				AND bookings.status = 10
 				AND bookings.date IS NOT NULL
 				AND (
 					(bookings.date > ?)	/* after today */

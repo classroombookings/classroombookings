@@ -150,3 +150,39 @@ up.compiler('#bookings_controls_room', function(form) {
 	});
 
 });
+
+
+
+
+up.compiler('[data-up-popup]', function(slotEl, data) {
+
+	up.on(slotEl, 'click', function(evt, clickEl) {
+
+		evt.stopPropagation();
+
+		var opts = {
+			target: '[data-up-popup-content] .content',
+			position: getPopupAlignment(clickEl),
+			align: 'center',
+			html: slotEl.parentNode.innerHTML,
+		};
+
+		up.popup.attach(clickEl, opts);
+	});
+
+});
+
+
+function getPopupAlignment(el) {
+
+	var rect = el.getBoundingClientRect();
+	var posX = Math.ceil(rect.x);
+	var docWidth = document.documentElement.clientWidth;
+	var docHalf = Math.floor(docWidth / 2);
+
+	if (posX < docHalf) {
+		return 'right';
+	} else {
+		return 'left';
+	}
+}

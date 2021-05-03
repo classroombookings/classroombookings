@@ -27,6 +27,7 @@ class Context
 	 */
 	private $display_type = FALSE;
 	private $columns = FALSE;
+	private $rows = FALSE;
 	private $user_id = FALSE;
 	private $room_id = FALSE;
 	private $session_id = FALSE;
@@ -41,6 +42,12 @@ class Context
 	 */
 	private $session = FALSE;
 
+
+	/**
+	 * Holidays for the session, indexed by ID.
+	 *
+	 */
+	private $holidays = FALSE;
 
 	/**
 	 * User row object for current user
@@ -142,11 +149,26 @@ class Context
 	private $next_date = FALSE;
 
 
+	/**
+	 * The slots for the context's range.
+	 *
+	 */
+	private $slots;
+
+
+	/**
+	 * Bookings for the context's range, indeed by their corresponding slot key.
+	 *
+	 */
+	private $bookings = FALSE;
+
+
 	public function __construct()
 	{
 		$this->CI =& get_instance();
 
 		$this->CI->load->model([
+			'bookings_model',
 			'sessions_model',
 			'holidays_model',
 			'dates_model',
@@ -204,19 +226,43 @@ class Context
 		$data = array_merge($default, $config);
 		// $data = array_filter($data, 'strlen');
 
+		// Set object properties from config array
 		foreach ($data as $key => $val) {
 			if (isset($this->$key)) {
 				$this->$key = $val;
 			}
 		}
 
+		// Determine the rows on the grid, based on configured display_type and columns.
+		//
+
+		$rows = [
+			'room.periods' => 'days',
+			'room.days' => 'periods',
+			'day.periods' => 'rooms',
+			'day.rooms' => 'periods',
+		];
+
+		$key = sprintf('%s.%s', $this->display_type, $this->columns);
+
+		$this->rows = (array_key_exists($key, $rows))
+			? $rows[$key]
+			: FALSE;
+
+		// Initialise other section
+		//
 		$this->init_session();
 		$this->init_date_time();
 		$this->init_periods();
 		$this->init_user();
 		$this->init_rooms();
 		$this->init_navigation();
+		$this->find_bookings();
+		$this->init_slots();
 
+
+		// Validate the loaded data and set exceptions if found.
+		//
 		try {
 			$this->validate();
 		} catch (\Exception $e) {
@@ -226,15 +272,22 @@ class Context
 
 
 	/**
-	 * Get the requested session.
+	 * Load the requested session.
 	 *
 	 */
 	private function init_session()
 	{
-		// Load the session data
 		$this->session = ($this->session_id)
 			? $this->CI->sessions_model->get($this->session_id)
 			: $this->CI->sessions_model->get_current();
+
+
+		$holidays = $this->CI->holidays_model->get_by_session($this->session->session_id);
+
+		$this->holidays = [];
+		foreach ($holidays as $holiday) {
+			$this->holidays[ $holiday->holiday_id ] = $holiday;
+		}
 	}
 
 
@@ -301,7 +354,25 @@ class Context
 	 */
 	private function init_periods()
 	{
-		$this->periods = $this->CI->periods_model->arrange_by_day_num();
+		switch ($this->display_type) {
+
+			// Get periods for the current date only
+			case 'day':
+				$periods = $this->CI->periods_model->arrange_by_day_num();
+				$day_num = $this->datetime->format('N');
+				if (array_key_exists($day_num, $periods)) {
+					$this->periods = $periods["{$day_num}"];
+				}
+				break;
+
+			// Get all periods
+			case 'room':
+				$this->periods = $this->CI->periods_model->GetBookable();
+				break;
+
+			default:
+				// None
+		}
 	}
 
 
@@ -418,20 +489,54 @@ class Context
 
 
 	/**
-	 * Return the essential query params that will be used when navigating or loading data.
+	 * Get all slots for the current view
 	 *
 	 */
-	public function get_query_params()
+	public function init_slots()
 	{
-		$vars = [
-			'date' => $this->datetime ? $this->datetime->format('Y-m-d') : NULL,
-			'dir' => $this->direction,
-			'room' => $this->room ? $this->room->room_id : NULL,
-		];
+		$slots = [];
 
-		return array_filter($vars, 'strlen');
+		$rooms = ($this->display_type == 'room')
+			? [ $this->room ]
+			: $this->rooms;
+
+		$date_key = $this->datetime->format('Y-m-d');
+
+		$dates = ($this->display_type == 'room')
+			? $this->dates
+			: [ $date_key => $this->date_info ];
+
+		$periods = (is_array($this->periods))
+			? $this->periods
+			: [];
+
+		foreach ($dates as $date_info) {
+
+			foreach ($periods as $period) {
+
+				foreach ($rooms as $room) {
+
+					$slot = new Slot($this, $date_info, $period, $room);
+					$slots[ $slot->key ] = $slot;
+
+				}
+
+			}
+
+		}
+
+		$this->slots = $slots;
 	}
 
+
+	/**
+	 * Find the bookings that are relevant to the current view
+	 *
+	 */
+	private function find_bookings()
+	{
+		$this->bookings = $this->CI->bookings_model->find_for_context($this);
+	}
 
 	/**
 	 * Run some checks against the loaded context.
@@ -474,6 +579,22 @@ class Context
 			}
 
 		}
+	}
+
+
+	/**
+	 * Return the essential query params that will be used when navigating or loading data.
+	 *
+	 */
+	public function get_query_params()
+	{
+		$vars = [
+			'date' => $this->datetime ? $this->datetime->format('Y-m-d') : NULL,
+			'dir' => $this->direction,
+			'room' => $this->room ? $this->room->room_id : NULL,
+		];
+
+		return array_filter($vars, 'strlen');
 	}
 
 

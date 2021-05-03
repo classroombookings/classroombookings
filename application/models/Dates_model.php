@@ -184,11 +184,12 @@ class Dates_model extends CI_Model
 			$this->db->join("({$period_subquery}) pc", "{$name}.weekday = pc.weekday", 'INNER');
 			$this->db->where('m.date', $date->format('Y-m-d'));
 			$this->db->where($where);
-			$this->db->where("{$name}.holiday_id IS NULL");
 			$this->db->where("{$name}.week_id IS NOT NULL");
 
 			if ($range == 'week') {
 				$this->db->where("ABS(DATEDIFF({$name}.date, m.date)) >= 7");
+			} elseif ($range == 'day') {
+				$this->db->where("{$name}.holiday_id IS NULL");
 			}
 
 			$this->db->having('pc.period_count > 0');

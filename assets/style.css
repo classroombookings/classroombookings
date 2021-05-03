@@ -629,6 +629,77 @@ div.g p, div.g1 p {
 	}
 
 
+
+.bookings-grid {
+	width: 100%;
+}
+
+	.bookings-grid th,
+	.bookings-grid td {
+		font-size: 90%;
+		/*font-family: tahoma,verdana,sans-serif;*/
+		padding: 3px;
+	}
+
+	.bookings-grid-header-row .bookings-grid-header-cell {
+		text-align: center;
+		font-weight: normal;
+	}
+
+	.bookings-grid-content-row .bookings-grid-header-cell {
+		text-align: right;
+		vertical-align: middle;
+		font-weight: normal;
+	}
+
+	.bookings-grid-content-row .bookings-grid-header-cell {
+		width: 100px;
+		padding: 15px 5px;
+	}
+
+	.bookings-grid-slot {
+		text-align: center;
+		vertical-align: middle;
+		position: relative;
+	}
+		.bookings-grid-slot img[data-up-popup] {
+			cursor: pointer;
+			padding: 5px;
+		}
+
+		.bookings-grid-slot.booking-status-available {
+			background: #fff;
+			border: 1px solid #ddd;
+			color: #000;
+		}
+
+		.bookings-grid-slot.booking-status-booked-recurring {
+			background:#E68A73;
+			color:#fff;
+			border: 1px solid #E68A73;
+		}
+
+		.bookings-grid-slot.booking-status-booked-single {
+			background:#3082BF;
+			color:#fff;
+			border:1px solid #3082BF;
+		}
+
+		.bookings-grid-slot.booking-status-unavailable {
+			background: #fbfbfb;
+			border: 1px dashed #ccc;
+			/*cursor: not-allowed;*/
+		}
+		.bookings-grid-slot.booking-status-unavailable img {
+			filter: grayscale(50%);
+		}
+
+		.bookings-grid-slot.booking-status-unavailable-holiday {
+			background: #FFFFF7;
+		}
+
+
+
 table.bookings td{ font-size:90%;font-family:tahoma,verdana,sans-serif; padding:3px;}
 
 table.bookings td.free{ background:#fff;border:1px solid #ccc; /*#D3E6CF;  /*#C7F2BC;*/ color:#000; }   /* Free period */

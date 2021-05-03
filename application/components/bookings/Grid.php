@@ -10,6 +10,7 @@ use \DatePeriod;
 use app\components\Calendar;
 use app\components\bookings\grid\Controls;
 use app\components\bookings\grid\Header;
+use app\components\bookings\grid\Table;
 use app\components\bookings\exceptions\DateException;
 
 
@@ -44,19 +45,22 @@ class Grid
 
 		$this->controls = new Controls($context);
 		$this->header = new Header($context);
+		$this->table = new Table($context);
 	}
 
 
 	public function render()
 	{
-		$sections = [
-			$this->controls->render(),
-			$this->header->render(),
-			$this->render_body(),
-			$this->render_footer(),
-		];
+		$controls = $this->controls->render();
+		$header = $this->header->render();
 
-		return implode("\n\n", $sections);
+		$body = $this->render_body();
+		$footer = $this->render_footer();
+
+		// @TODO wrap body + footer in a <form> tag for admin recurring bookings.
+		// footer will include the inputs for that.
+
+		return $controls . $header . $body . $footer;
 	}
 
 
@@ -73,7 +77,7 @@ class Grid
 			return msgbox('error', $this->context->exception->getMessage());
 		}
 
-		return '';
+		return $this->table->render();
 	}
 
 

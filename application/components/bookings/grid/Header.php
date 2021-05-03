@@ -36,11 +36,6 @@ class Header
 	{
 		$data = $this->get_data();
 
-		// switch ($this->context->display_type) {
-		// 	case 'day': $data = $this->get_day_data(); break;
-		// 	case 'room': $data = $this->get_room_data(); break;
-		// }
-
 		if (empty($data)) {
 			return '';
 		}
@@ -57,7 +52,6 @@ class Header
 			'title' => '',
 			'week' => $this->context->timetable_week,
 		];
-
 
 		switch ($this->context->display_type) {
 
@@ -96,6 +90,8 @@ class Header
 
 		// Links
 		//
+
+		$params = $this->context->get_query_params();
 
 		if ($this->context->prev_date) {
 
