@@ -1,18 +1,22 @@
-<td class='<?= $class ?>'>
+<td class="<?= $class ?>" data-up-popup>
 
-	<?php
-	echo img([
-		'role' => 'button',
-		'src' => 'assets/images/ui/clock.png',
-		'data-up-popup' => '',
-		'alt' => 'Period not available',
-	]);
-	?>
+	<button class="bookings-grid-button" disabled>
 
-	<div data-up-popup-content hidden>
-		<div class='content'>
-			<?= html_escape($slot->label) ?>
+		<?php
+		echo img([
+			'role' => 'button',
+			'src' => 'assets/images/ui/clock.png',
+			// 'data-up-popup' => '',
+			'alt' => 'Period not available',
+		]);
+		?>
+
+		<div data-up-popup-content hidden>
+			<div class='content'>
+				<?= html_escape($slot->label) ?>
+			</div>
 		</div>
-	</div>
+
+	</button>
 
 </td>

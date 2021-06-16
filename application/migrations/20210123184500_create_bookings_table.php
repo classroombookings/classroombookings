@@ -62,7 +62,7 @@ class Migration_Create_bookings_table extends CI_Migration
 			],
 			'notes' => [
 				'type' => 'VARCHAR',
-				'constraint' => 100,
+				'constraint' => 255,
 				'null' => TRUE,
 			],
 			'cancel_reason' => [

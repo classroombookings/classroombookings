@@ -64,7 +64,7 @@ class Sessions_model extends CI_Model
 	}
 
 
-	public function get_by_date($date, $not_session_id)
+	public function get_by_date($date, $not_session_id = NULL)
 	{
 		$dt = datetime_from_string($date);
 

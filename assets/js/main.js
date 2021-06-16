@@ -164,7 +164,7 @@ up.compiler('[data-up-popup]', function(slotEl, data) {
 			target: '[data-up-popup-content] .content',
 			position: getPopupAlignment(clickEl),
 			align: 'center',
-			html: slotEl.parentNode.innerHTML,
+			html: slotEl.innerHTML,
 		};
 
 		up.popup.attach(clickEl, opts);

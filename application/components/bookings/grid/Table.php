@@ -117,6 +117,7 @@ class Table
 				$name => $col_item,
 				'width' => $this->col_width,
 				'day_names' => $day_names,
+				'today' => $this->context->today,
 			];
 
 			$view_name = sprintf('bookings_grid/table/col_%s', $name);
@@ -170,6 +171,7 @@ class Table
 		//
 		$header_view_data = $params;
 		$header_view_data['day_names'] = $day_names;
+		$header_view_data['today'] = $this->context->today;
 		$header_view_name = sprintf('bookings_grid/table/row_%s', $params['name']);
 		$cells[] = $this->CI->load->view($header_view_name, $header_view_data, TRUE);
 

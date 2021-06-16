@@ -18,15 +18,33 @@ function iconbar($items = array(), $active = false) {
 	$max = count($items);
 
 	foreach ($items as $item) {
-		list($link, $name, $icon) = $item;
 
-		$class = $link == $active ? 'active' : '';
+		$attrs = '';
+
+		if (isset($item['link'])) {
+			extract($item);
+		} else {
+			list($link, $name, $icon) = $item;
+		}
+
+		if (is_array($attrs)) {
+			$attrs = _stringify_attributes($attrs);
+		}
+
+		$class = ($link == $active)
+			? 'active'
+			: '';
+
 		$img = img("assets/images/ui/{$icon}", FALSE, "alt='{$name}' align='top' hspace='0' border='0'");
-		$label = anchor($link, "{$img} {$name}", "class='{$class}'");
+
+		$label = anchor($link, "{$img} {$name}", "class='{$class}' {$attrs}");
+
 		$html .= $label;
+
 		if ($i < $max) {
 			$html .= img("assets/images/sep.gif", FALSE, "alt='|' align='top' hspace='0' border='0' style='margin:0px 3px;'");
 		}
+
 		$i++;
 	}
 

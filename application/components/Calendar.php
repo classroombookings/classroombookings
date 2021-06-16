@@ -104,6 +104,12 @@ class Calendar
 	}
 
 
+	public static function get_day_name($weekday, $style = 'long')
+	{
+		return self::get_day_names($style)[$weekday];
+	}
+
+
 	/**
 	 * Week starts on.
 	 *

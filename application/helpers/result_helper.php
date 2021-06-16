@@ -34,3 +34,34 @@ function nest_object_keys($row)
 
 	return $row;
 }
+
+
+
+
+function results_to_assoc($results, $key_prop = '', $value_prop = '', $blank = NULL)
+{
+	$out = array();
+
+	if (strlen($blank)) {
+		$out[''] = $blank;
+	}
+
+	foreach ($results as $row) {
+
+		$key = (is_object($row))
+			? $row->$key_prop
+			: $row[$key_prop];
+
+		if (is_callable($value_prop)) {
+			$value = call_user_func($value_prop, $row);
+		} else {
+			$value = (is_object($row))
+				? $row->$value_prop
+				: $row[ $value_prop ];
+		}
+
+		$out[$key] = $value;
+	}
+
+	return $out;
+}

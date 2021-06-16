@@ -36,7 +36,7 @@ class Rooms_model extends CI_Model
 	 * - User has permission via Access Control entries.
 	 *
 	 */
-	public function get_bookable_rooms($for_user_id = NULL)
+	public function get_bookable_rooms($for_user_id = NULL, $room_id = NULL)
 	{
 		$out = [];
 
@@ -63,6 +63,12 @@ class Rooms_model extends CI_Model
 			'bookable' => 1,
 		]);
 
+		if (strlen($room_id)) {
+			$this->db->where([
+				'rooms.room_id' => (int) $room_id,
+			]);
+		}
+
 		$this->db->group_start()
 			->where(['actor.authlevel' => ADMINISTRATOR])
 			->or_where('accessible_rooms.target_id IS NOT NULL')
@@ -73,9 +79,17 @@ class Rooms_model extends CI_Model
 
 		$query = $this->db->get();
 
-		if ($query->num_rows() == 0) {
-			return $out;
+		// Return row for specific room
+		//
+		if (strlen($room_id)) {
+			if ($query->num_rows() == 0) return FALSE;
+			return nest_object_keys($query->row());
 		}
+
+		// Return for all rooms
+		//
+
+		if ($query->num_rows() == 0) return $out;
 
 		$result = $query->result();
 		foreach ($result as &$row) {

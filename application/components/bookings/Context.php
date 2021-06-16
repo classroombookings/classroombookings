@@ -37,6 +37,13 @@ class Context
 
 
 	/**
+	 * Date for today.
+	 *
+	 */
+	private $today = FALSE;
+
+
+	/**
 	 * Session row object
 	 *
 	 */
@@ -248,6 +255,8 @@ class Context
 		$this->rows = (array_key_exists($key, $rows))
 			? $rows[$key]
 			: FALSE;
+
+		$this->today = new DateTime();
 
 		// Initialise other section
 		//

@@ -145,7 +145,49 @@ class Dates_model extends CI_Model
 
 
 	/**
+	 * Get all the recurring dates for a given session, weekday and Week ID.
+	 *
+	 * This is mainly used when creating bookings, and offering the selection
+	 * of dates for when a recurring booking can begin or end on.
+	 *
+	 */
+	public function get_recurring_dates($session_id, $week_id, $weekday)
+	{
+		$this->db->reset_query();
+		$this->db->select('dates.*');
+		$this->db->from($this->table);
+		$this->db->where([
+			'session_id' => $session_id,
+			'week_id' => $week_id,
+			'weekday' => $weekday,
+		]);
+		$this->db->where('holiday_id IS NULL');
+		$this->db->group_by('date');
+
+		if ($this->_inlcude_period_count) {
+			$subquery = $this->get_period_count_subquery();
+			$this->db->select('pc.period_count AS period_count', FALSE);
+			$this->db->join("({$subquery}) pc", 'weekday', 'LEFT');
+			$this->_inlcude_period_count = FALSE;
+		}
+
+		$query = $this->db->get();
+
+		if ($query->num_rows() === 0) return FALSE;
+
+		$result = $query->result();
+		foreach ($result as &$row) {
+			$row->date = datetime_from_string($row->date);
+		}
+
+		return $result;
+	}
+
+
+	/**
 	 * Get the available dates either side of the given date.
+	 *
+	 * This is used for bookings grid navigation.
 	 *
 	 */
 	public function get_prev_next($date, $range = 'day')

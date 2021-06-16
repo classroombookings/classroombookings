@@ -57,7 +57,7 @@ class Migration_Create_bookings_repeat_table extends CI_Migration
 			],
 			'notes' => [
 				'type' => 'VARCHAR',
-				'constraint' => 100,
+				'constraint' => 255,
 				'null' => TRUE,
 			],
 			'created_at' => [

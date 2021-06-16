@@ -80,6 +80,16 @@ class Slot
 	}
 
 
+	/**
+	 * Check various pieces of data to determine if this slot is bookable or not.
+	 *
+	 * Uses various cues, including:
+	 * 	- holidays
+	 * 	- period time/day
+	 * 	- existing bookings
+	 * 	- user's permissions
+	 *
+	 */
 	private function set_status()
 	{
 		// Default
@@ -193,23 +203,6 @@ class Slot
 	{
 		return sprintf('%s.P%d.R%d', $date_ymd, $period_id, $room_id);
 	}
-
-
-	public function editable()
-	{
-		return ($this->booking && $this->CI->userauth->is_level(ADMINISTRATOR));
-	}
-
-
-	public function cancelable()
-	{
-		$is_admin = $this->CI->userauth->is_level(ADMINISTRATOR);
-		$is_booking_owner = ($this->context->user->user_id == $this->booking->user_id);
-		$is_room_owner = ($this->context->user->user_id == $this->room->user_id && ! $this->booking->repeat_id);
-
-		return $is_admin || $is_booking_owner || $is_room_owner;
-	}
-
 
 
 	public function __get($name)
