@@ -2,6 +2,7 @@
 
 use app\components\bookings\Context;
 use app\components\bookings\Slot;
+use app\components\bookings\exceptions\BookingValidationException;
 
 
 class Bookings_model extends CI_Model
@@ -16,6 +17,9 @@ class Bookings_model extends CI_Model
 	// Other objects to get/include with returned value
 	private $include = [];
 
+	// Error message
+	private $error = FALSE;
+
 	// private $all_periods;
 	// private $periods_by_day_num;
 
@@ -25,9 +29,16 @@ class Bookings_model extends CI_Model
 	var $table_rows = array();
 
 
+
 	public function __construct()
 	{
 		$this->load->helper('result');
+	}
+
+
+	public function get_error()
+	{
+		return $this->error;
 	}
 
 
@@ -251,8 +262,42 @@ class Bookings_model extends CI_Model
 	}
 
 
+	/**
+	 * Check various parameters of a booking creation request to ensure it can
+	 * be made, no conflicts will occur and all parameters are correct.
+	 *
+	 */
+	public function validate_booking($data)
+	{
+		$sql = 'SELECT booking_id
+				FROM bookings
+				WHERE `date` = ?
+				AND period_id = ?
+				AND room_id = ?
+				AND status = ?
+				LIMIT 1';
+
+		$query = $this->db->query($sql, [$data['date'], $data['period_id'], $data['room_id'], self::STATUS_BOOKED]);
+
+		$row = $query->row();
+
+		if ($query->num_rows() === 1 && $row->booking_id) {
+			throw BookingValidationException::forExistingBooking();
+		}
+
+		return TRUE;
+	}
+
+
 	public function create($data)
 	{
+		try {
+			$result = $this->validate_booking($data);
+		} catch (BookingValidationException $e) {
+			$this->error = $e->getMessage();
+			return FALSE;
+		}
+
 		$data = $this->sleep_values($data);
 
 		$data['created_at'] = date('Y-m-d H:i:s');

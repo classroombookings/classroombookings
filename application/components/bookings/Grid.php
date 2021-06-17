@@ -59,6 +59,17 @@ class Grid
 
 		// @TODO wrap body + footer in a <form> tag for admin recurring bookings.
 		// footer will include the inputs for that.
+		$form_attrs = [
+			'up-history' => 'false',
+			'up-modal' => '.bookings-create',
+		];
+		$form_hidden = [];
+		$form_open = form_open($this->context->base_uri . '/create/multi', $form_attrs, $form_hidden);
+		$form_close = form_close();
+
+		if ($this->CI->userauth->is_level(ADMINISTRATOR)) {
+			$body = $form_open . $body . $form_close;
+		}
 
 		return $controls . $header . $body . $footer;
 	}
@@ -87,7 +98,24 @@ class Grid
 	 */
 	public function render_footer()
 	{
-		return '';
+		if ( ! $this->CI->userauth->is_level(ADMINISTRATOR)) {
+			return '';
+		}
+
+		$input = form_checkbox([
+			'name' => 'multi_select',
+			'id' => 'multi_select',
+			'value' => '1',
+			'checked' => false,
+			'up-switch' => '.multi-select-content',
+		]);
+		$input_label = form_label($input . 'Enable multiple selection', 'multi_select', ['class' => 'ni', 'style' => 'display: inline-block']);
+
+		$submit_button = "<button type='submit' name='action' value='multi' style='margin-left:32px'>Create bookings...</button>";
+
+		$out = $input_label . $submit_button;
+
+		return "<div class='cssform' style='margin-top:32px; text-align: center'>{$out}</div>";
 	}
 
 

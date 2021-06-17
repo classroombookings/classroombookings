@@ -142,7 +142,7 @@ class Bookings extends MY_Controller
 	 *
 	 * 'Type' should be supplied as the first URI param, with other relevant data coming in via query string.
 	 *
-	 * @param string $type		Type of booking [single|multi|recurring]
+	 * @param string $type		Type of booking [single|multi]
 	 *
 	 */
 	public function create($type)

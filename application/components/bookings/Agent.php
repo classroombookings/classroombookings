@@ -322,7 +322,11 @@ class Agent
 			return TRUE;
 		}
 
-		$this->message = 'Could not create booking.';
+		$err = $this->CI->bookings_model->get_error();
+
+		$this->message = ($err)
+			? $err
+			: 'Could not create booking.';
 
 		return FALSE;
 	}
