@@ -38,7 +38,7 @@ echo form_open('login/submit', array('id'=>'login','class'=>'cssform'), array('p
 			'id' => 'password',
 			'size' => '20',
 			'tabindex' => tab_index(),
-			'maxlength' => '20',
+			'maxlength' => '50',
 		));
 		?>
 	</p>
