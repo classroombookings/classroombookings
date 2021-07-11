@@ -8,9 +8,14 @@ echo form_open($form_action, ['method' => 'get', 'id' => 'bookings_controls_room
 		<td valign="middle">
 			<label>
 				<?php
-				$url = site_url("rooms/info/{$room->room_id}");
+				$url = "rooms/info/{$room->room_id}";
 				$name = 'Room:';
-				$link = "<a href='{$url}' up-position='left' up-drawer='.room-info' up-history='false' up-preload>{$name}</a>";
+				$link = anchor($url, $name, [
+					'up-layer' => 'new drawer',
+					'up-position' => 'left',
+					'up-target' => '.room-info',
+					'up-preload',
+				]);
 				echo "<strong>{$link}</strong>";
 				?>
 			</label>

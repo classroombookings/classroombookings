@@ -57,21 +57,24 @@ class Grid
 		$body = $this->render_body();
 		$footer = $this->render_footer();
 
-		// @TODO wrap body + footer in a <form> tag for admin recurring bookings.
-		// footer will include the inputs for that.
+
 		$form_attrs = [
-			'up-history' => 'false',
-			'up-modal' => '.bookings-create',
+			'up-layer' => 'new modal',
+			'up-size' => 'large',
+			'up-target' => '.bookings-create',
+			'up-dismissable' => 'button key',
 		];
-		$form_hidden = [];
+		$form_hidden = ['step' => 'selection'];
 		$form_open = form_open($this->context->base_uri . '/create/multi', $form_attrs, $form_hidden);
 		$form_close = form_close();
 
 		if ($this->CI->userauth->is_level(ADMINISTRATOR)) {
-			$body = $form_open . $body . $form_close;
+			$out = "{$controls}\n{$header}\n{$form_open}\n{$body}\n{$footer}\n{$form_close}\n";
+		} else {
+			$out = "{$controls}\n{$header}\n{$body}\n{$footer}";
 		}
 
-		return $controls . $header . $body . $footer;
+		return $out;
 	}
 
 
@@ -102,6 +105,10 @@ class Grid
 			return '';
 		}
 
+		if ($this->context->exception) {
+			return '';
+		}
+
 		$input = form_checkbox([
 			'name' => 'multi_select',
 			'id' => 'multi_select',
@@ -109,13 +116,14 @@ class Grid
 			'checked' => false,
 			'up-switch' => '.multi-select-content',
 		]);
-		$input_label = form_label($input . 'Enable multiple selection', 'multi_select', ['class' => 'ni', 'style' => 'display: inline-block']);
+		$input_label = form_label($input . 'Enable multiple selection', 'multi_select', ['class' => 'ni', 'style' => 'display: inline-block;margin-bottom:8px']);
 
-		$submit_button = "<button type='submit' name='action' value='multi' style='margin-left:32px'>Create bookings...</button>";
+		$check_block = "<div class='block b-50' style='text-align:right'>{$input_label}</div>";
 
-		$out = $input_label . $submit_button;
+		$submit_button = "<button type='submit' style='margin-left:32px' class='multi-select-content'>Create bookings...</button>";
+		$button_block = "<div class='block b-50'>{$submit_button}</div>";
 
-		return "<div class='cssform' style='margin-top:32px; text-align: center'>{$out}</div>";
+		return "<div class='cssform block-group' style='margin-top:32px;'>{$check_block}{$button_block}</div>";
 	}
 
 

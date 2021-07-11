@@ -108,7 +108,7 @@ up.compiler('.session-calendars.mode-config', function(sessionEl, data) {
 			}
 
 			// Update value of hidden input
-			var input = up.element.first(cell, 'input[type=hidden]');
+			var input = up.element.get(cell, 'input[type=hidden]');
 			input.value = newWeekId;
 
 			// Update the data- attr with the new Week ID
@@ -152,27 +152,40 @@ up.compiler('#bookings_controls_room', function(form) {
 });
 
 
+up.compiler('[up-copy-to]', function(copyBtn) {
 
+	up.on(copyBtn, 'click', function(evt, el, data) {
 
-up.compiler('[data-up-popup]', function(slotEl, data) {
+		var group = el.getAttribute('up-copy-to');
 
-	up.on(slotEl, 'click', function(evt, clickEl) {
+		var srcEl = up.element.get('[up-copy-group="' + group + '"]');
+		var value = srcEl.value;
 
-		evt.stopPropagation();
+		var allItems = up.element.all('[up-copy-group="' + group + '"]');
+		up.util.each(allItems, function(item) {
+			item.value = value;
+		});
 
-		var opts = {
-			target: '[data-up-popup-content] .content',
-			position: getPopupAlignment(clickEl),
-			align: 'center',
-			html: slotEl.innerHTML,
-		};
-
-		up.popup.attach(clickEl, opts);
 	});
-
 });
 
 
+
+/**
+ * Unavailable slots: popup content: change position of popup based on X pos of element.
+ *
+ * This is used for unavailable slots - like holidays or period unavailability.
+ *
+ */
+up.macro('.bookings-grid-button[up-content]', function(el) {
+	el.setAttribute('up-position', getPopupAlignment(el));
+});
+
+
+/**
+ * Determine where to place the popup (attached via data-up-popup).
+ *
+ */
 function getPopupAlignment(el) {
 
 	var rect = el.getBoundingClientRect();

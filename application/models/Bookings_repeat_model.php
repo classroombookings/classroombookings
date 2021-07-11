@@ -40,6 +40,10 @@ class Bookings_repeat_model extends CI_Model
 
 
 
+	/**
+	 * Create a repeating booking entry aling with all its instances.
+	 *
+	 */
 	public function create($data)
 	{
 		$dates = isset($data['dates']) ? $data['dates'] : [];
@@ -57,6 +61,7 @@ class Bookings_repeat_model extends CI_Model
 
 		$repeat_id = $this->db->insert_id();
 
+		// Data for each booking instance
 		$booking_data = [
 			'repeat_id' => $repeat_id,
 			'session_id' => element('session_id', $data, NULL),
@@ -69,33 +74,31 @@ class Bookings_repeat_model extends CI_Model
 			'notes' => element('notes', $data, NULL),
 		];
 
+		$booking_ids = [];
+
 		foreach ($dates as $date => $info) {
 
 			$action = $info['action'];
 
-			$replace_booking_id = isset($info['replace_booking_id']) ? $info['replace_booking_id'] : NULL;
-
+			// Skip ones that shouldn't be booked
 			if ($action == 'do_not_book') continue;
 
+			// Cancel existing booking if requested
 			if ($action == 'replace') {
-				// Cancel existing booking
+				// Get ID of existing booking to replace
+				$replace_booking_id = isset($info['replace_booking_id']) ? $info['replace_booking_id'] : NULL;
 				$this->bookings_model->cancel_single($replace_booking_id);
+				$action = 'book';
 			}
 
-			// Create booking
+			if ($action !== 'book') continue;
+
+			// Add 'date' of instance and then create booking
 			$insert_data = array_merge($booking_data, ['date' => $date]);
-			$this->bookings_model->create($insert_data);
+			$booking_ids[] = $this->bookings_model->create($insert_data);
 		}
 
 		return $repeat_id;
-	}
-
-
-	public function create_instances($repeat_id, $dates)
-	{
-		foreach ($dates as $date => $data) {
-
-		}
 	}
 
 

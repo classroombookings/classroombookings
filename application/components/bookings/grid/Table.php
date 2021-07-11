@@ -250,6 +250,7 @@ class Table
 				'class' => $class_str,
 				'slot' => $slot,
 				'context' => $slot->context,
+				'extended' => FALSE,
 			];
 
 			$view_data = array_merge($view_data, $slot->view_data);

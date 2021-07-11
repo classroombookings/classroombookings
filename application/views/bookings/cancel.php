@@ -37,7 +37,7 @@ if ($booking->repeat_id) {
 		'content' => 'All bookings in series',
 	]);
 
-	$cancel = anchor('bookings/noop', 'No, keep it', ['up-target' => '.bookings-cancel', 'up-history' => 'false']);
+	$cancel = anchor('bookings/noop', 'No, keep it', ['up-target' => '.bookings-cancel', 'up-preload' => '']);
 
 	$content = implode("\n", $buttons) . $cancel;
 
@@ -50,9 +50,10 @@ if ($booking->repeat_id) {
 		'name' => 'cancel',
 		'value' => '1',
 		'content' => 'Yes, cancel booking',
+		'autofocus' => true,
 	]);
 
-	$cancel = anchor('bookings/noop', 'No, keep it', ['up-target' => '.bookings-cancel', 'up-history' => 'false']);
+	$cancel = anchor('bookings/noop', 'No, keep it', ['up-target' => '.bookings-cancel', 'up-preload' => '']);
 
 	$content = "{$submit} &nbsp; {$cancel}";
 }

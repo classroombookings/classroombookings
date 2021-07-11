@@ -88,9 +88,9 @@ $url = site_url($uri);
 	<button
 		class="bookings-grid-button"
 		up-href="<?= $url ?>"
-		up-history="false"
 		up-position="right"
-		up-drawer=".bookings-view"
+		up-target=".bookings-view"
+		up-mode="drawer"
 		up-preload
 	>
 		<?= $body ?>

@@ -1,7 +1,12 @@
 <?php
-$url = site_url("rooms/info/{$room->room_id}");
+$url = "rooms/info/{$room->room_id}";
 $name = html_escape($room->name);
-$link = "<a href='{$url}' up-drawer='.room-info' up-history='false' up-tooltip='View room details' up-preload>{$name}</a>";
+$link = anchor($url, $name, [
+	'up-layer' => 'new drawer',
+	'up-position' => 'left',
+	'up-target' => '.room-info',
+	'up-preload',
+]);
 ?>
 
 <th class="bookings-grid-header-cell bookings-grid-header-cell-room">

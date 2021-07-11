@@ -27,7 +27,7 @@ if ($booking->repeat_id) {
 		'icon' => 'calendar_view_month.png',
 		'attrs' => [
 			'up-target' => '.bookings-view',
-			'up-history' => 'false',
+			'up-preload' => '',
 		],
 	];
 }
@@ -48,7 +48,7 @@ if (booking_cancelable($booking)) {
 		'icon' => 'delete.png',
 		'attrs' => [
 			'up-target' => '.bookings-cancel',
-			'up-history' => 'false',
+			'up-preload' => '',
 		]
 	];
 }

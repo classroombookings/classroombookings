@@ -3,7 +3,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 use app\components\bookings\Context;
 use app\components\bookings\Grid;
-use app\components\bookings\Agent;
+use app\components\bookings\agent\SingleAgent;
+use app\components\bookings\agent\MultiAgent;
 use app\components\bookings\exceptions\AgentException;
 
 
@@ -29,6 +30,7 @@ class Bookings extends MY_Controller
 		}
 
 		$this->load->model('bookings_model');
+		$this->load->model('multi_booking_model');
 		$this->load->helper('booking');
 	}
 
@@ -110,23 +112,19 @@ class Bookings extends MY_Controller
 	 */
 	public function view_series($booking_id)
 	{
-
-		// Get booking to highlight it
-
-		$include = [
-			'period',
-		];
+		// Get booking to highlight it in the list
+		$include = [ 'period' ];
 		$booking = $this->bookings_model->include($include)->get($booking_id);
 
 		$this->data['booking'] = $booking;
 
-		if ($booking) {
+		if ($booking && $booking->repeat_id) {
 			$this->data['all_bookings'] = $this->bookings_model->find_by_repeat($booking->repeat_id);
 			$this->load->library('table');
 			$this->load->helper('room');
 			$body = $this->load->view('bookings/view_series', $this->data, TRUE);
 		} else {
-			$body = msgbox('error', 'Could not find requested booking details.');
+			$body = msgbox('error', 'Could not find requested booking details or is not recurring.');
 		}
 
 		$this->data['title'] = 'Bookings in series';
@@ -147,105 +145,61 @@ class Bookings extends MY_Controller
 	 */
 	public function create($type)
 	{
-		$this->load->library('table');
-
 		$this->data['title'] = 'Create booking';
-		$this->data['view'] = '';
 
 		if ($this->input->get('params')) {
 			$_SESSION['return_uri'] = 'bookings?' . $this->input->get('params');
 		}
 
+		$classes = [
+			'single' => SingleAgent::class,
+			'multi' => MultiAgent::class,
+		];
+
+		$class = array_key_exists($type, $classes)
+			? $classes[$type]
+			: NULL;
+
+
+		if ( ! $type) {
+			$this->data['view'] = msgbox('error', 'Unrecognised booking type.');
+			$this->data['body'] = $this->load->view('bookings/create', $this->data, TRUE);
+			return $this->render();
+		}
+
 		try {
-
-			$agent = Agent::create($type);
-			// $agent->set_return_uri('bookings?' . $this->input->get('params'));
+			$agent = $class::create();
 			$agent->load();
-
-			if ($agent->process() === TRUE) {
-
-				$this->session->set_flashdata('bookings', msgbox('info', $agent->message));
-
-				$uri = isset($_SESSION['return_uri'])
-					? $_SESSION['return_uri']
-					: 'bookings';
-
-				unset($_SESSION['return_uri']);
-				redirect($uri);
-				return;
-			}
-
+			$agent->process();
 			$this->data['view'] = $agent->render();
-
 		} catch (AgentException $e) {
 			$this->data['view'] = msgbox('error', $e->getMessage());
 		}
 
-		// Render the main view
+		// Finished - redirect back
+		//
+		if ($agent->is_success()) {
+
+			$this->session->set_flashdata('bookings', msgbox('info', $agent->message));
+
+			$uri = isset($_SESSION['return_uri'])
+				? $_SESSION['return_uri']
+				: 'bookings';
+
+			unset($_SESSION['return_uri']);
+			redirect($uri);
+			return;
+		}
+
+		if ($agent->title) {
+			$this->data['title'] = $agent->title;
+		}
+
 		$this->data['body'] = $this->load->view('bookings/create', $this->data, TRUE);
 
 		return $this->render();
 	}
 
-
-/*
-
-	private function create_single()
-	{
-		$period_id = $this->input->post_get('period');
-		$room_id = $this->input->post_get('room');
-		$date = $this->input->post_get('date');
-
-		$period = $this->periods_model->Get($period_id);
-		if ( ! $period) {
-			$this->data['view'] = msgbox('error', 'Requested period could not be found.');
-			return;
-		}
-
-		$room = $this->rooms_model->get_bookable_rooms($this->userauth->user->user_id, $room_id);
-		if ( ! $room) {
-			$this->data['view'] = msgbox('error', 'Requested room could not be found or is not bookable.');
-			return;
-		}
-
-		$date_info = $this->dates_model->get_by_date($date);
-		if ( ! $date_info) {
-			$this->data['view'] = msgbox('error', 'Requested date is not recognised or is not bookable.');
-			return;
-		}
-
-		$this->data['period'] = $period;
-		$this->data['room'] = $room;
-		$this->data['date_info'] = $date_info;
-		$this->data['datetime'] = datetime_from_string($date_info->date);
-		$this->data['params'] = $this->input->get('params');
-
-		if ($this->input->post('action')) {
-			$this->create_single_save();
-		}
-
-		$this->data['title'] = 'Create Booking';
-		$this->data['view'] = $this->load->view('bookings/create/single', $this->data, TRUE);
-	}*/
-
-/*
-	private function create_single_save()
-	{
-		$rules = [
-			['field' => 'date', 'label' => 'Date', 'rules' => 'required|valid_date'],
-			['field' => 'period', 'label' => 'Period', 'rules' => 'required|integer'],
-			['field' => 'room', 'label' => 'Room', 'rules' => 'required|integer'],
-			['field' => 'notes', 'label' => 'Notes', 'rules' => 'max_length[255]'],
-		];
-
-		$this->load->library('form_validation');
-		$this->form_validation->set_rules($rules);
-
-		if ($this->form_validation->run() == FALSE) {
-			return;
-		}
-	}
-*/
 
 	/**
 	 * Handle cancellation of existing booking.

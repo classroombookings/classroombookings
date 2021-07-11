@@ -47,8 +47,8 @@ $input_value = json_encode([
 		class="bookings-grid-button multi-select-content"
 		<?php if ($this->userauth->is_level(ADMINISTRATOR)): ?>up-show-for=":unchecked"<?php endif; ?>
 		up-href="<?= $url ?>"
-		up-modal=".bookings-create"
-		up-history="false"
+		up-target=".bookings-create"
+		up-layer="new"
 		up-preload
 	>&nbsp;
 	</button>

@@ -44,6 +44,7 @@ class MY_Controller extends CI_Controller
 		$this->data['scripts'][] = 'assets/js/lib/datepicker.js';
 		$this->data['scripts'][] = 'assets/js/lib/es6-promise.auto.min.js';
 		$this->data['scripts'][] = 'assets/js/lib/unpoly.min.js';
+		// $this->data['scripts'][] = 'assets/js/unpoly-migrate.js';
 		$this->data['scripts'][] = 'assets/js/main.js';
 	}
 

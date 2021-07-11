@@ -151,8 +151,9 @@ if ($conflict_count > 0) {
 $attrs = [
 	'id' => 'bookings_create_single',
 	'class' => '',
-	'up-history' => 'false',
+	'up-accept-location' => 'bookings/*',
 	'up-target' => '.bookings-create',
+	'up-layer' => 'any',
 ];
 
 $hidden = [
@@ -182,7 +183,7 @@ $submit = form_button([
 	'content' => 'Create bookings',
 ]);
 
-$cancel = anchor($return_uri, 'Cancel', ['up-close' => '']);
+$cancel = anchor($return_uri, 'Cancel', ['up-dismiss' => '']);
 
 echo "<div class='' style='border-top:0px;'>{$submit} &nbsp; {$cancel}</div>";
 

@@ -22,7 +22,8 @@ if ($is_admin) {
 $attrs = [
 	'id' => 'bookings_create_single',
 	'class' => 'cssform',
-	'up-history' => 'false',
+	'up-accept-location' => 'bookings',
+	'up-layer' => 'any',
 	'up-target' => '.bookings-create',
 ];
 
@@ -217,7 +218,7 @@ if ($is_admin) {
 	//
 	$field = 'recurring_end';
 	$label = form_label('Until...', 'recurring_end');
-	$value = set_value($field, 'recurring_end', FALSE);
+	$value = set_value($field, 'session', FALSE);
 	$options = ['session' => '(End of session)', 'Specific date...' => $recurring_date_options];
 	$input = form_dropdown([
 		'name' => 'recurring_end',
@@ -248,7 +249,7 @@ $submit_recurring = form_button([
 	'content' => 'Preview recurring bookings',
 ]);
 
-$cancel = anchor($return_uri, 'Cancel', ['up-close' => '']);
+$cancel = anchor($return_uri, 'Cancel', ['up-dismiss' => '']);
 
 if ($is_admin) {
 	echo "<div class='submit recurring-content' style='border-top:0px;' up-show-for=':unchecked'>{$submit_single} &nbsp; {$cancel}</div>";

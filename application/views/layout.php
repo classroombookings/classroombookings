@@ -54,7 +54,7 @@ if ($this->userauth->logged_in()) {
 		echo "</div>";
 	}
 	?>
-	<div class="outer">
+	<div class="outer" up-main>
 
 		<div class="header">
 

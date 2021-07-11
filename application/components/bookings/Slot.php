@@ -163,11 +163,12 @@ class Slot
 			$this->reason = self::UNAVAILABLE_LIMIT;
 			$this->extended = $booking_permitted;
 
-			switch (false) {
+			switch (FALSE) {
 
-				case $booking_permitted->in_quota:
-					$this->view_data = ['extended' => 'quota'];
-					$this->label = 'Quota exceeded.';
+				case $booking_permitted->date_in_range:
+					$advance = (int) abs(setting('bia'));
+					$this->view_data = ['extended' => 'future'];
+					$this->label = sprintf('You can only create bookings up to %d days in the future.', $advance);
 					break;
 
 				case $booking_permitted->is_future_date:
@@ -175,10 +176,9 @@ class Slot
 					$this->label = 'Date is in the past.';
 					break;
 
-				case $booking_permitted->date_in_range:
-					$advance = (int) abs(setting('bia'));
-					$this->view_data = ['extended' => 'future'];
-					$this->label = sprintf('You can only create bookings up to %d days in the future.', $advance);
+				case $booking_permitted->in_quota:
+					$this->view_data = ['extended' => 'quota'];
+					$this->label = 'Quota exceeded.';
 					break;
 
 				default:

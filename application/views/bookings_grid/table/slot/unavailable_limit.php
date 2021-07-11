@@ -1,12 +1,16 @@
-<td class="<?= $class ?>" data-up-popup>
-
-	<button class="bookings-grid-button" disabled>
-
+<td class="<?= $class ?>">
+	<a href="#"
+		class="bookings-grid-button"
+		up-layer="new popup"
+		up-align="top"
+		up-size="medium"
+		up-content="<p><?= html_escape($slot->label) ?></p><button up-dismiss>OK</button>"
+	>
 		<?php
 		$icon = 'error.png';
-		switch ($slot->extended) {
+		switch ($extended) {
 			case 'quota': $icon = 'stop.png'; break;
-			case 'past': $icon = 'no.png'; break;
+			case 'past': $icon = 'date_previous.png'; break;
 			case 'future': $icon = 'date_error.png'; break;
 		}
 		echo img([
@@ -15,13 +19,5 @@
 			'alt' => 'Limit',
 		]);
 		?>
-
-	</button>
-
-	<div data-up-popup-content hidden>
-		<div class='content'>
-			<?= html_escape($slot->label) ?>
-		</div>
-	</div>
-
+	</a>
 </td>

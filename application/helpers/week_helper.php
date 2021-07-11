@@ -6,7 +6,11 @@
  */
 function week_dot($week, $size = 'md')
 {
-	$out = "<span class='dot dot-week dot-size-{$size}' style='background-color:{$week->bgcol}'></span>";
+	$col = $week->bgcol;
+	$col = str_replace('#', '', $col);
+	$col = '#' . $col;
+
+	$out = "<span class='dot dot-week dot-size-{$size}' style='background-color:{$col}'></span>";
 	return $out;
 }
 
