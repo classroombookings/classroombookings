@@ -857,16 +857,24 @@ div.g p, div.g1 p {
 		}
 
 
-.bookings-cancel.with-content {
+/*.bookings-cancel.with-content {
 	padding: 16px;
 	border:2px solid #FF4136;
 	background:#f5f5f5;
 	margin: 8px 0 32px 0;
-}
+}*/
 	.bookings-cancel.is-repeat .submit button {
 		width: 100%;
 		margin-bottom: 8px;
 	}
+
+.booking-choices-cancel {
+	border:2px solid #FF4136;
+}
+.booking-choices button {
+	width: 100%;
+	margin-bottom: 8px;
+}
 
 
 table.bookings td{ font-size:90%;font-family:tahoma,verdana,sans-serif; padding:3px;}

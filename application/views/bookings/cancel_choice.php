@@ -27,7 +27,7 @@ if ($booking->repeat_id) {
 		'type' => 'submit',
 		'name' => 'cancel',
 		'value' => 'future',
-		'content' => 'This and following bookings in series',
+		'content' => 'This and future bookings in series',
 	]);
 
 	$buttons[] = form_button([
@@ -37,7 +37,8 @@ if ($booking->repeat_id) {
 		'content' => 'All bookings in series',
 	]);
 
-	$cancel = anchor('bookings/noop', 'No, keep it', ['up-target' => '.bookings-cancel', 'up-preload' => '']);
+	// $cancel = anchor('bookings/noop', 'No, keep it', ['up-target' => '.bookings-cancel', 'up-preload' => '']);
+	$cancel = "<a href='#' up-dismiss>No, keep it</a>";
 
 	$content = implode("\n", $buttons) . $cancel;
 
@@ -53,13 +54,15 @@ if ($booking->repeat_id) {
 		'autofocus' => true,
 	]);
 
-	$cancel = anchor('bookings/noop', 'No, keep it', ['up-target' => '.bookings-cancel', 'up-preload' => '']);
+	// $cancel = anchor('bookings/noop', 'No, keep it', ['up-target' => '.bookings-cancel', 'up-preload' => '']);
+	$cancel = "<a href='#' up-dismiss>No, keep it</a>";
 
 	$content = "{$submit} &nbsp; {$cancel}";
 }
 
 
-echo form_open(current_url());
+$uri = sprintf('bookings/cancel/%d?%s', $booking->booking_id, http_build_query(['params' => $params]));
+echo form_open($uri, ['class' => 'booking-choices']);
 echo $heading;
 echo "<div class='submit' style='border-top:0px;'>{$content}</div>";
 echo form_close();

@@ -20,7 +20,6 @@ $params = $this->input->get('params');
 
 if ($booking->repeat_id) {
 	$uri = sprintf('bookings/view_series/%d?%s', $booking->booking_id, http_build_query(['params' => $params]));
-
 	$links[] = [
 		'link' => $uri,
 		'name' => 'View all',
@@ -34,21 +33,47 @@ if ($booking->repeat_id) {
 
 
 if (booking_editable($booking)) {
-	// $edit_url = site_url('bookings/edit/' . $booking->booking_id);
-	// $actions[] = "<a class='booking-action' href='{$edit_url}' title='Edit this booking'>Edit</a>";
-	$links[] = ['bookings/edit/' . $booking->booking_id, 'Edit', 'edit.png'];
+
+	if ($booking->repeat_id) {
+		$edit_choices = $this->load->view('bookings/edit_choice', ['booking' => $booking, 'params' => $params], TRUE);
+		$links[] = [
+			'link' => '#',
+			'name' => 'Edit',
+			'icon' => 'edit.png',
+			'attrs' => [
+				'up-layer' => 'new popup',
+				'up-align' => 'right',
+				'up-size' => 'medium',
+				'up-content' => html_escape($edit_choices),
+			]
+		];
+	} else {
+		$uri = sprintf('bookings/edit/%d?%s', $booking->booking_id, http_build_query(['params' => $params]));
+		$links[] = [
+			'link' => $uri,
+			'name' => 'Edit',
+			'icon' => 'edit.png',
+			'attrs' => [
+				'up-layer' => 'new modal',
+				'up-preload' => '',
+			]
+		];
+	}
+
 }
 
 if (booking_cancelable($booking)) {
-
-	$uri = sprintf('bookings/cancel/%d?%s', $booking->booking_id, http_build_query(['params' => $params]));
+	$cancel_choices = $this->load->view('bookings/cancel_choice', ['booking' => $booking, 'params' => $params], TRUE);
 	$links[] = [
-		'link' => $uri,
+		'link' => '#',
 		'name' => 'Cancel booking',
 		'icon' => 'delete.png',
 		'attrs' => [
-			'up-target' => '.bookings-cancel',
-			'up-preload' => '',
+			'up-layer' => 'new popup',
+			'up-align' => 'right',
+			'up-size' => 'medium',
+			'up-content' => html_escape($cancel_choices),
+			'up-class' => 'booking-choices-cancel',
 		]
 	];
 }
@@ -57,7 +82,6 @@ $links_html = empty($links)
 	? ''
 	: iconbar($links);
 
-// echo json_encode($booking, JSON_PRETTY_PRINT);
 
 // Date
 //
@@ -174,6 +198,7 @@ echo "<div class='messages'>{$messages}</div>";
 
 echo "<h3>Booking</h3>";
 echo $links_html;
+echo "<div class='bookings-edit-choice'></div>";
 echo "<div class='bookings-cancel'></div>";
 echo $info_html;
 
@@ -200,12 +225,3 @@ if ($photo_url = room_photo_url($booking->room)) {
 
 echo $fields_html;
 echo $photo_html;
-
-// if ($photo_url) {
-// 	$img = img($photo_url);
-// 	$photo_html = "<div class='room-photo'>{$img}</div>";
-// }
-
-// echo $fields_html;
-// echo $photo_html;
-//

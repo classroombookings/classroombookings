@@ -38,6 +38,7 @@ function iconbar($items = array(), $active = false) {
 		$img = img("assets/images/ui/{$icon}", FALSE, "alt='{$name}' align='top' hspace='0' border='0'");
 
 		$label = anchor($link, "{$img} {$name}", "class='{$class}' {$attrs}");
+		$label = str_replace(site_url('#'), '#', $label);
 
 		$html .= $label;
 

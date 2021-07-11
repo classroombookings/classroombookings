@@ -99,7 +99,7 @@ class Bookings extends MY_Controller
 
 		$this->data['title'] = 'Booking details';
 		$this->data['showtitle'] = '';
-		$this->data['body'] = '<div class="bookings-view" style="min-width: 320px">' . $body . '</div>';
+		$this->data['body'] = '<div class="bookings-view">' . $body . '</div>';
 
 		return $this->render();
 	}
@@ -202,6 +202,66 @@ class Bookings extends MY_Controller
 
 
 	/**
+	 * Render the in-page element to present the recurring choices for editing a booking.
+	 *
+	 */
+	public function edit_choice($booking_id)
+	{
+		if ($this->input->get('params')) {
+			$return_uri = 'bookings?' . $this->input->get('params');
+			$_SESSION['return_uri'] = $return_uri;
+			$this->data['return_uri'] = $return_uri;
+		}
+
+		$booking = $this->bookings_model->include(['room'])->get($booking_id);
+
+		$this->data['booking'] = $booking;
+		$this->data['current_user'] = $this->userauth->user;
+
+		switch (TRUE) {
+
+			case ($booking === FALSE):
+				$body = msgbox('error', 'Could not find requested booking details.');
+				break;
+
+			case (booking_editable($booking) === FALSE):
+				$body = msgbox('error', 'Booking is not editable.');
+				break;
+
+			default:
+				$body = $this->load->view('bookings/edit_choice', $this->data, TRUE);
+		}
+
+
+		$cls = 'bookings-edit-choice with-content';
+		if ($booking->repeat_id) {
+			$cls .= ' is-repeat';
+		}
+
+		$this->data['title'] = 'Cancel booking';
+		$this->data['showtitle'] = '';
+		$this->data['body'] = "<div class='{$cls}'>{$body}</div>";
+
+		return $this->render();
+	}
+
+
+	public function edit($booking_id)
+	{
+		if ($this->input->get('params')) {
+			$return_uri = 'bookings?' . $this->input->get('params');
+			$_SESSION['return_uri'] = $return_uri;
+			$this->data['return_uri'] = $return_uri;
+		}
+
+		$booking = $this->bookings_model->include(['room'])->get($booking_id);
+
+		$this->data['booking'] = $booking;
+		$this->data['current_user'] = $this->userauth->user;
+	}
+
+
+	/**
 	 * Handle cancellation of existing booking.
 	 *
 	 * On viewing, shows different content depending on booking type (single / recurring).
@@ -234,8 +294,6 @@ class Bookings extends MY_Controller
 				$body = msgbox('error', 'Booking is not editable.');
 				break;
 
-			default:
-				$body = $this->load->view('bookings/cancel', $this->data, TRUE);
 		}
 
 		if ($cancel_type = $this->input->post('cancel')) {
@@ -274,17 +332,6 @@ class Bookings extends MY_Controller
 			unset($_SESSION['return_uri']);
 			return redirect($uri);
 		}
-
-		$cls = 'bookings-cancel with-content';
-		if ($booking->repeat_id) {
-			$cls .= ' is-repeat';
-		}
-
-		$this->data['title'] = 'Cancel booking';
-		$this->data['showtitle'] = '';
-		$this->data['body'] = "<div class='{$cls}'>{$body}</div>";
-
-		return $this->render();
 	}
 
 

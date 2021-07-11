@@ -5,7 +5,7 @@ $link = anchor($url, $name, [
 	'up-layer' => 'new drawer',
 	'up-position' => 'left',
 	'up-target' => '.room-info',
-	'up-preload',
+	'up-preload' => '',
 ]);
 ?>
 

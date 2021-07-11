@@ -1,5 +1,6 @@
 // up.motion.config.duration = 150;
 up.motion.config.enabled = false;
+// up.history.config.enabled = false;
 
 
 /**

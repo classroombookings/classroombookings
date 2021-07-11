@@ -85,14 +85,27 @@ $url = site_url($uri);
 ?>
 
 <td class='<?= $class ?>'>
-	<button
+	<!-- <button
 		class="bookings-grid-button"
 		up-href="<?= $url ?>"
 		up-position="right"
 		up-target=".bookings-view"
-		up-mode="drawer"
+		up-layer="new drawer"
+		up-history-visible="false"
+		up-navigate="false"
 		up-preload
 	>
 		<?= $body ?>
 	</button>
+	-->
+	<a
+		class="bookings-grid-button"
+		href="<?= $url ?>"
+		up-position="right"
+		up-target=".bookings-view"
+		up-layer="new drawer"
+		up-preload
+	>
+		<?= $body ?>
+	</a>
 </td>
