@@ -9,6 +9,7 @@ use \DatePeriod;
 
 use app\components\Calendar;
 use app\components\bookings\exceptions\DateException;
+use app\components\bookings\exceptions\SessionException;
 use app\components\bookings\exceptions\SettingsException;
 use app\components\bookings\exceptions\AvailabilityException;
 
@@ -290,6 +291,7 @@ class Context
 			? $this->CI->sessions_model->get($this->session_id)
 			: $this->CI->sessions_model->get_current();
 
+		if ( ! $this->session) return;
 
 		$holidays = $this->CI->holidays_model->get_by_session($this->session->session_id);
 
@@ -555,6 +557,10 @@ class Context
 	{
 		if ( ! $this->datetime) {
 			throw DateException::invalidDate($this->date_string);
+		}
+
+		if ( ! $this->session) {
+			throw SessionException::notSelected();
 		}
 
 		if ($this->datetime < $this->session->date_start || $this->datetime > $this->session->date_end) {

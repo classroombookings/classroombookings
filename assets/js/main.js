@@ -122,6 +122,14 @@ up.compiler('.session-calendars.mode-config', function(sessionEl, data) {
 });
 
 
+up.compiler('.up-datepicker', function(el) {
+	up.on(el, 'click', function(evt, el, data) {
+		if ( ! data.input) return;
+		return displayDatePicker(data.input, false);
+	});
+});
+
+
 /**
  * Bookings page: controls forms
  *
@@ -130,10 +138,10 @@ up.compiler('#bookings_controls_day', function(form) {
 
 	// Date picker and form submission
 
-	up.on(form, 'click', '.up-datepicker', function(evt, el, data) {
-		if ( ! data.input) return;
-		return displayDatePicker(data.input, false);
-	});
+	// up.on(form, 'click', '.up-datepicker', function(evt, el, data) {
+	// 	if ( ! data.input) return;
+	// 	return displayDatePicker(data.input, false);
+	// });
 
 	up.on(form, 'change', '.up-datepicker-input', function(evt, el, data) {
 		form.submit();

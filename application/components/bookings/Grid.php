@@ -74,7 +74,7 @@ class Grid
 			$out = "{$controls}\n{$header}\n{$body}\n{$footer}";
 		}
 
-		return $out;
+		return "<div id='bookings_grid' up-hungry>{$out}</div>";
 	}
 
 

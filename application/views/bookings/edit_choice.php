@@ -14,31 +14,35 @@ $cls = 'is-repeat';
 
 $buttons = [];
 
-$uri = sprintf('bookings/edit/%d?%s', $booking->booking_id, http_build_query(['params' => $params, 'cancel' => '1']));
+$uri = sprintf('bookings/edit/%d?%s', $booking->booking_id, http_build_query(['params' => $params, 'edit' => '1']));
 $buttons[] = form_button([
 	'type' => 'button',
 	'content' => 'This booking only',
 	'up-href' => site_url($uri),
 	'up-target' => '.bookings-edit',
-	'up-layer' => 'new-modal',
+	// 'up-layer' => 'new modal',
+	'up-mode' => 'modal',
 ]);
 
-$uri = sprintf('bookings/edit/%d?%s', $booking->booking_id, http_build_query(['params' => $params, 'cancel' => 'future']));
+$url = site_url($uri);
+$buttons[] = "<a href='{$url}' up-target='.bookings-edit' up-mode='modal' up-accept-location='*bookings* -*bookings/edit*'>Edit</a>";
+
+$uri = sprintf('bookings/edit/%d?%s', $booking->booking_id, http_build_query(['params' => $params, 'edit' => 'future']));
 $buttons[] = form_button([
 	'type' => 'button',
 	'content' => 'This and future bookings in series',
 	'up-href' => site_url($uri),
 	'up-target' => '.bookings-edit',
-	'up-layer' => 'new-modal',
+	'up-layer' => 'new modal',
 ]);
 
-$uri = sprintf('bookings/edit/%d?%s', $booking->booking_id, http_build_query(['params' => $params, 'cancel' => 'all']));
+$uri = sprintf('bookings/edit/%d?%s', $booking->booking_id, http_build_query(['params' => $params, 'edit' => 'all']));
 $buttons[] = form_button([
 	'type' => 'button',
 	'content' => 'All bookings in series',
 	'up-href' => site_url($uri),
 	'up-target' => '.bookings-edit',
-	'up-layer' => 'new-modal',
+	'up-layer' => 'new modal',
 ]);
 
 $cancel = "<a href='#' up-dismiss>Cancel</a>";

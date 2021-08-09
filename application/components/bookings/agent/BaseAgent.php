@@ -9,17 +9,13 @@ use \Bookings_model;
 
 
 /**
- * Booking Agent base class for handling creation of bookings.
+ * Booking Agent base class for handling creation and editing of bookings.
  *
  */
 abstract class BaseAgent
 {
 
 	const TYPE = null;
-
-	// Tpes of bookings
-	const TYPE_SINGLE = 'single';
-	const TYPE_MULTI = 'multi';
 
 
 	// CI instance

@@ -5,6 +5,7 @@ use app\components\bookings\Context;
 use app\components\bookings\Grid;
 use app\components\bookings\agent\SingleAgent;
 use app\components\bookings\agent\MultiAgent;
+use app\components\bookings\agent\UpdateAgent;
 use app\components\bookings\exceptions\AgentException;
 
 
@@ -89,10 +90,12 @@ class Bookings extends MY_Controller
 		$this->data['booking'] = $booking;
 		$this->data['current_user'] = $this->userauth->user;
 
+		$msg = $this->session->flashdata('bookings');
+
 		if ($booking) {
 			$this->load->library('table');
 			$this->load->helper('room');
-			$body = $this->load->view('bookings/view', $this->data, TRUE);
+			$body = $msg . $this->load->view('bookings/view', $this->data, TRUE);
 		} else {
 			$body = msgbox('error', 'Could not find requested booking details.');
 		}
@@ -100,6 +103,44 @@ class Bookings extends MY_Controller
 		$this->data['title'] = 'Booking details';
 		$this->data['showtitle'] = '';
 		$this->data['body'] = '<div class="bookings-view">' . $body . '</div>';
+
+		return $this->render();
+	}
+
+
+	/**
+	 * View details for single booking. Like /view/ but a smaller/more minimal view.
+	 *
+	 */
+	public function card($booking_id)
+	{
+		$include = [
+			'repeat',
+			'session',
+			'period',
+			'week',
+			'room',
+			'user',
+			'department',
+			'repeat',
+		];
+
+		$booking = $this->bookings_model->include($include)->get($booking_id);
+
+		$this->data['booking'] = $booking;
+		$this->data['current_user'] = $this->userauth->user;
+
+		if ($booking) {
+			$this->load->library('table');
+			$this->load->helper('room');
+			$body = $this->load->view('bookings/card', $this->data, TRUE);
+		} else {
+			$body = msgbox('error', 'Could not find requested booking details.');
+		}
+
+		$this->data['title'] = '';
+		$this->data['showtitle'] = '';
+		$this->data['body'] = '<div class="bookings-card">' . $body . '</div>';
 
 		return $this->render();
 	}
@@ -129,7 +170,7 @@ class Bookings extends MY_Controller
 
 		$this->data['title'] = 'Bookings in series';
 		$this->data['showtitle'] = '';
-		$this->data['body'] = '<div class="bookings-view" style="min-width: 320px">' . $body . '</div>';
+		$this->data['body'] = '<div class="bookings-view">' . $body . '</div>';
 
 		return $this->render();
 	}
@@ -159,7 +200,6 @@ class Bookings extends MY_Controller
 		$class = array_key_exists($type, $classes)
 			? $classes[$type]
 			: NULL;
-
 
 		if ( ! $type) {
 			$this->data['view'] = msgbox('error', 'Unrecognised booking type.');
@@ -202,16 +242,60 @@ class Bookings extends MY_Controller
 
 
 	/**
-	 * Render the in-page element to present the recurring choices for editing a booking.
+	 * Edit a booking.
+	 *
+	 * The fields that can be changed will  differ depending on some factors:
+	 *
+	 *  - single booking (period + room + department + user + notes)
+	 *  - recurring booking single instance (period + room + department + user + notes)
+	 *  - recurring booking single instance + others (department + user + notes)
+	 *  - recurring booking all instances (department + user + notes)
 	 *
 	 */
-	public function edit_choice($booking_id)
+	public function edit($booking_id)
 	{
+		$this->data['title'] = 'Edit booking';
+
 		if ($this->input->get('params')) {
-			$return_uri = 'bookings?' . $this->input->get('params');
-			$_SESSION['return_uri'] = $return_uri;
-			$this->data['return_uri'] = $return_uri;
+			$_SESSION['return_uri'] = 'bookings?' . $this->input->get('params');
 		}
+
+		$_GET['booking_id'] = $booking_id;
+
+		try {
+			$agent = UpdateAgent::create();
+			$agent->load();
+			$agent->process();
+			$this->data['view'] = $agent->render();
+		} catch (AgentException $e) {
+			$this->data['view'] = msgbox('error', $e->getMessage());
+		}
+
+		// Finished - redirect back
+		//
+		if ($agent->is_success()) {
+
+			$this->session->set_flashdata('bookings', msgbox('info', $agent->message));
+
+			$uri = isset($_SESSION['return_uri'])
+				? $_SESSION['return_uri']
+				: 'bookings';
+
+			unset($_SESSION['return_uri']);
+			redirect($uri);
+			return;
+		}
+
+		if ($agent->title) {
+			$this->data['title'] = $agent->title;
+		}
+
+		$this->data['body'] = $this->load->view('bookings/edit', $this->data, TRUE);
+
+		return $this->render();
+
+		//
+		/*
 
 		$booking = $this->bookings_model->include(['room'])->get($booking_id);
 
@@ -229,35 +313,13 @@ class Bookings extends MY_Controller
 				break;
 
 			default:
-				$body = $this->load->view('bookings/edit_choice', $this->data, TRUE);
+				$body = $this->load->view('bookings/edit', $this->data, TRUE);
 		}
 
-
-		$cls = 'bookings-edit-choice with-content';
-		if ($booking->repeat_id) {
-			$cls .= ' is-repeat';
-		}
-
-		$this->data['title'] = 'Cancel booking';
-		$this->data['showtitle'] = '';
-		$this->data['body'] = "<div class='{$cls}'>{$body}</div>";
+		$this->data['body'] = '<div class="bookings-edit">' . $body . '</div>';
 
 		return $this->render();
-	}
-
-
-	public function edit($booking_id)
-	{
-		if ($this->input->get('params')) {
-			$return_uri = 'bookings?' . $this->input->get('params');
-			$_SESSION['return_uri'] = $return_uri;
-			$this->data['return_uri'] = $return_uri;
-		}
-
-		$booking = $this->bookings_model->include(['room'])->get($booking_id);
-
-		$this->data['booking'] = $booking;
-		$this->data['current_user'] = $this->userauth->user;
+		*/
 	}
 
 
@@ -334,36 +396,6 @@ class Bookings extends MY_Controller
 		}
 	}
 
-
-	/**
-	 * An endpoint for Unpoly that returns an empty element.
-	 *
-	 * This allows certain responses that are loaded into the page to have a
-	 * cancel or close action (pointing to /noop/) that will "remove" the
-	 * previously-loaded content.
-	 *
-	 * An empty element with class or ID matching X-Up-Target will be returned.
-	 *
-	 */
-	public function noop()
-	{
-		$target = $this->input->get_request_header('x-up-target');
-
-		$attr = false;
-		$out = '';
-
-		switch (substr($target, 0, 1)) {
-			case '.': $attr = 'class'; break;
-			case '#': $attr = 'id'; break;
-		}
-
-		if ($attr) {
-			$target = substr($target, 1);
-			$out = "<div {$attr}='{$target}'></div>";
-		}
-
-		$this->output->set_output($out);
-	}
 
 
 }

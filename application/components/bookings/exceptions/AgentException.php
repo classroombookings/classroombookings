@@ -42,4 +42,10 @@ class AgentException extends \RuntimeException
 	}
 
 
+	public static function forNoBooking()
+	{
+		return new static('Requested booking could not be found.');
+	}
+
+
 }

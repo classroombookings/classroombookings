@@ -8,11 +8,15 @@ function booking_editable($booking)
 {
 	$CI =& get_instance();
 
-	return (
-		$booking
-		&& $booking->booking_id
-		&& $CI->userauth->is_level(ADMINISTRATOR)
-	);
+	if ( ! $booking) return FALSE;
+
+	$is_admin = $CI->userauth->is_level(ADMINISTRATOR);
+	if ($is_admin) return TRUE;
+
+	$is_booking_owner = ($CI->userauth->user->user_id == $booking->user_id);
+	if ($is_booking_owner) return TRUE;
+
+	return FALSE;
 }
 
 

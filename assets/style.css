@@ -337,6 +337,20 @@ legend {color: #999; font-size: 14px; font-weight: bold; padding: 0 4px;}
 
 
 
+.border-table .heading th,
+.border-table .heading td {
+	padding: 6px;
+	vertical-align: top;
+	border: 0;
+}
+
+.border-table td {
+	padding: 6px;
+	vertical-align: top;
+	border-bottom: 1px solid #ccc;
+}
+
+
 /**
  * Alternating table row colours (zebra tables)
  */
@@ -875,6 +889,22 @@ div.g p, div.g1 p {
 	width: 100%;
 	margin-bottom: 8px;
 }
+
+
+
+.popup-menu {
+	padding: 8px 0;
+}
+	.popup-menu-item {
+		background: transparent;
+		margin: 0;
+		padding: 8px;
+		display: block;
+		color: inherit;
+	}
+	.popup-menu-item:hover {
+		background: #F5F4EA;
+	}
 
 
 table.bookings td{ font-size:90%;font-family:tahoma,verdana,sans-serif; padding:3px;}

@@ -3,6 +3,7 @@
 use app\components\bookings\Context;
 use app\components\bookings\Slot;
 use app\components\bookings\exceptions\BookingValidationException;
+use app\components\bookings\agent\UpdateAgent;
 
 
 class Bookings_model extends CI_Model
@@ -229,7 +230,11 @@ class Bookings_model extends CI_Model
 		$this->db->join('weeks w', 'week_id', 'LEFT');
 
 		$this->db->where('b.status', self::STATUS_BOOKED);
-		$this->db->where('b.session_id', $context->session->session_id);
+		if ($context->session) {
+			$this->db->where('b.session_id', $context->session->session_id);
+		} else {
+			$this->db->where('b.session_id', -1);
+		}
 
 		switch ($context->display_type) {
 
@@ -308,6 +313,76 @@ class Bookings_model extends CI_Model
 		return ($ins && $id = $this->db->insert_id())
 			? $id
 			: FALSE;
+	}
+
+
+	public function update($booking_id, $data, $edit_mode = UpdateAgent::EDIT_ONE)
+	{
+		$data = $this->sleep_values($data);
+
+		$data['updated_at'] = date('Y-m-d H:i:s');
+		$data['updated_by'] = $this->userauth->user->user_id;
+
+		switch ($edit_mode) {
+
+			case UpdateAgent::EDIT_ONE:
+
+				$where = [
+					'booking_id' => $booking_id,
+				];
+
+				return $this->db->update($this->table, $data, $where, 1);
+
+				break;
+
+			case UpdateAgent::EDIT_FUTURE:
+
+				$booking = $this->get($booking_id);
+
+				$where = [
+					'repeat_id' => $booking->repeat_id,
+					'session_id' => $booking->session_id,
+					'date >=' => $booking->date,
+				];
+
+				return $this->db->update($this->table, $data, $where);
+
+				break;
+
+			case UpdateAgent::EDIT_ALL:
+
+				$booking = $this->get($booking_id);
+
+				$where = [
+					'repeat_id' => $booking->repeat_id,
+					'session_id' => $booking->session_id,
+				];
+
+				$update_bk = $this->db->update($this->table, $data, $where);
+
+				// Update repeat table with data
+				$repeat_keys = [
+					'user_id',
+					'department_id',
+					'notes',
+					'updated_at',
+					'updated_by',
+				];
+
+				// Ensure we only send valid data to repeat table
+				$repeat_data = [];
+				foreach ($repeat_keys as $k) {
+					$repeat_data[$k] = isset($booking_data[$k]) ? $booking_data[$k] : NULL;
+				}
+
+				$update_rep = $this->db->update('bookings_repeat', $repeat_data, $where);
+
+				return ($update_bk && $update_rep);
+
+				break;
+		}
+
+		return FALSE;
 	}
 
 
@@ -407,7 +482,7 @@ class Bookings_model extends CI_Model
 
 				case 'department':
 					$this->load->model('departments_model');
-					$row->department = ($row->department_id)
+					$row->department = isset($row->department_id)
 						? $this->departments_model->Get($row->department_id)
 						: false;
 					break;
@@ -452,18 +527,35 @@ class Bookings_model extends CI_Model
 
 	public function sleep_values($data)
 	{
-		if (array_key_exists('user_id', $data)) {
+		if (isset($data['user_id'])) {
 			$data['user_id'] = (strlen($data['user_id']))
 				? (int) $data['user_id']
 				: NULL;
 		}
 
-		if (array_key_exists('date', $data)) {
+		if (isset($data['department_id'])) {
+			$data['department_id'] = (strlen($data['department_id']))
+				? (int) $data['department_id']
+				: NULL;
+		}
+
+		if (isset($data['date'])) {
 			$dt = datetime_from_string($data['date']);
 			$data['date'] = $dt ? $dt->format('Y-m-d') : NULL;
 		}
 
 		return $data;
+	}
+
+
+	/**
+	 * Delete entries for a given session.
+	 *
+	 */
+	public function delete_by_session($session_id)
+	{
+		return $this->db->delete($this->table, ['session_id' => $session_id]);
+		return $this->db->delete('bookings_repeat', ['session_id' => $session_id]);
 	}
 
 

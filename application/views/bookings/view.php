@@ -45,7 +45,7 @@ if (booking_editable($booking)) {
 				'up-align' => 'right',
 				'up-size' => 'medium',
 				'up-content' => html_escape($edit_choices),
-			]
+			],
 		];
 	} else {
 		$uri = sprintf('bookings/edit/%d?%s', $booking->booking_id, http_build_query(['params' => $params]));
@@ -55,6 +55,7 @@ if (booking_editable($booking)) {
 			'icon' => 'edit.png',
 			'attrs' => [
 				'up-layer' => 'new modal',
+				'up-target' => '.bookings-edit',
 				'up-preload' => '',
 			]
 		];

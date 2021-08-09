@@ -15,6 +15,7 @@ class Sessions_model extends CI_Model
 
 		$this->load->model('dates_model');
 		$this->load->model('holidays_model');
+		$this->load->model('bookings_model');
 
 		$this->check_current();
 	}
@@ -93,9 +94,16 @@ class Sessions_model extends CI_Model
 	}
 
 
+	/**
+	 * Get the session marked as 'current' and is selectable.
+	 *
+	 */
 	public function get_current()
 	{
-		$where = [ 'is_current' => 1 ];
+		$where = [
+			'is_current' => 1,
+			'is_selectable' => 1,
+		];
 
 		$query = $this->db->get_where($this->table, $where, 1);
 
@@ -108,7 +116,30 @@ class Sessions_model extends CI_Model
 
 
 	/**
-	 * Get Session by ID
+	 * Get all selectable sessions.
+	 *
+	 */
+	public function get_selectable()
+	{
+		$query = $this->db->from($this->table)
+			->where('is_selectable', 1)
+			->order_by('date_start', 'ASC')
+			->get();
+
+		if ($query->num_rows() > 0) {
+			$result = $query->result();
+			foreach ($result as &$row) {
+				$row = $this->wake_value($row);
+			}
+			return $result;
+		}
+
+		return FALSE;
+	}
+
+
+	/**
+	 * Get one Session by ID
 	 *
 	 */
 	public function get($session_id)
@@ -175,6 +206,7 @@ class Sessions_model extends CI_Model
 		$delete = $this->db->delete($this->table, ['session_id' => $id]);
 
 		if ($delete) {
+			$this->bookings_model->delete_by_session($id);
 			$this->holidays_model->delete_by_session($id);
 			$this->dates_model->delete_by_session($id);
 		}

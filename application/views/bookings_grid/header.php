@@ -18,7 +18,7 @@ if ($week) {
 			<td width="20%" align="left">
 				<?php
 				if ($prev) {
-					echo anchor($prev['url'], $prev['label']);
+					echo anchor($prev['url'], $prev['label'], ['up-follow' => '', 'up-instant' => '']);
 				}
 				?>
 			</td>
@@ -30,7 +30,7 @@ if ($week) {
 			<td width="20%" align="right">
 				<?php
 				if ($next) {
-					echo anchor($next['url'], $next['label']);
+					echo anchor($next['url'], $next['label'], ['up-follow' => '', 'up-instant' => '']);
 				}
 				?>
 			</td>
