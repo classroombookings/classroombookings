@@ -104,6 +104,7 @@ $url = site_url($uri);
 		up-position="right"
 		up-target=".bookings-view"
 		up-layer="new drawer"
+		up-history="false"
 		up-preload
 	>
 		<?= $body ?>

@@ -46,6 +46,8 @@ function results_to_assoc($results, $key_prop = '', $value_prop = '', $blank = N
 		$out[''] = $blank;
 	}
 
+	if ( ! is_array($results)) return $out;
+
 	foreach ($results as $row) {
 
 		$key = (is_object($row))

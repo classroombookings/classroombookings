@@ -8,7 +8,7 @@ echo iconbar([
 ]);
 
 
-$sort_cols = ["Name", "Start date", "End date", "Current?"];
+$sort_cols = ["Name", "Start date", "End date", "Current?", "Selectable?"];
 
 echo "<h3>Current and future sessions</h3>";
 $this->load->view('sessions/table', ['items' => $active, 'id' => 'sessions_active', 'sort_cols' => $sort_cols]);

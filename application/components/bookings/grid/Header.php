@@ -34,6 +34,10 @@ class Header
 	 */
 	public function render()
 	{
+		if ( ! $this->context->datetime) {
+			return '';
+		}
+
 		$data = $this->get_data();
 
 		if (empty($data)) {

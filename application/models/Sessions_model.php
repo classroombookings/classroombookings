@@ -107,11 +107,9 @@ class Sessions_model extends CI_Model
 
 		$query = $this->db->get_where($this->table, $where, 1);
 
-		if ($query->num_rows() === 1) {
-			return $this->wake_value($query->row());
-		}
-
-		return FALSE;
+		return ($query->num_rows() === 1)
+			? $this->wake_value($query->row())
+			: FALSE;
 	}
 
 
@@ -148,11 +146,27 @@ class Sessions_model extends CI_Model
 
 		$query = $this->db->get_where($this->table, $where, 1);
 
-		if ($query->num_rows() === 1) {
-			return $this->wake_value($query->row());
-		}
+		return ($query->num_rows() === 1)
+			? $this->wake_value($query->row())
+			: FALSE;
+	}
 
-		return FALSE;
+	/**
+	 * Get available Session by ID
+	 *
+	 */
+	public function get_available_session($session_id)
+	{
+		$where = [
+			'session_id' => $session_id,
+			'is_selectable' => 1,
+		];
+
+		$query = $this->db->get_where($this->table, $where, 1);
+
+		return ($query->num_rows() === 1)
+			? $this->wake_value($query->row())
+			: FALSE;
 	}
 
 

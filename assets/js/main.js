@@ -161,6 +161,17 @@ up.compiler('#bookings_controls_room', function(form) {
 });
 
 
+up.compiler('#bookings_controls_session', function(form) {
+
+	// Session list
+
+	up.on(form, 'change', 'select[name=session_id]', function(evt, el, data) {
+		form.submit();
+	});
+
+});
+
+
 up.compiler('[up-copy-to]', function(copyBtn) {
 
 	up.on(copyBtn, 'click', function(evt, el, data) {

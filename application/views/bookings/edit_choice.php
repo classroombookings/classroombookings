@@ -20,12 +20,9 @@ $buttons[] = form_button([
 	'content' => 'This booking only',
 	'up-href' => site_url($uri),
 	'up-target' => '.bookings-edit',
-	// 'up-layer' => 'new modal',
+	'up-layer' => 'new modal',
 	'up-mode' => 'modal',
 ]);
-
-$url = site_url($uri);
-$buttons[] = "<a href='{$url}' up-target='.bookings-edit' up-mode='modal' up-accept-location='*bookings* -*bookings/edit*'>Edit</a>";
 
 $uri = sprintf('bookings/edit/%d?%s', $booking->booking_id, http_build_query(['params' => $params, 'edit' => 'future']));
 $buttons[] = form_button([

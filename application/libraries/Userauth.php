@@ -193,9 +193,16 @@ class Userauth
 	/**
 	 * Check if the logged in user can create a booking.
 	 *
+	 * @param string $on_date Date of the requested booking (Y-m-d).
+	 * @param string $start_from Date used as the anchor to check $on_date against for booking in advance. Default to today.
+	 *
 	 */
-	public function can_create_booking($on_date = '')
+	public function can_create_booking($on_date = '', $start_from = NULL)
 	{
+		$start_from = ($start_from === NULL)
+			? strtotime(date('Y-m-d'))
+			: strtotime($start_from);
+
 		$status = new StdClass();
 
 		$status->is_admin = ($this->is_level(ADMINISTRATOR));
@@ -228,14 +235,13 @@ class Userauth
 
 			// Check date boundaries
 
-			$today = strtotime(date("Y-m-d"));
 			$booking_date = strtotime($on_date);
 
-			$status->is_future_date = ($booking_date >= $today);
+			$status->is_future_date = ($booking_date >= $start_from);
 
 			$advance = (int) abs(setting('bia'));
 			if ($advance > 0) {
-				$max_date = strtotime("+{$advance} days", $today);
+				$max_date = strtotime("+{$advance} days", $start_from);
 				$status->date_in_range = ($booking_date <= $max_date);
 			}
 		}

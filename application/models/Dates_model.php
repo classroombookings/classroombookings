@@ -301,8 +301,23 @@ class Dates_model extends CI_Model
 
 		$this->db->query($sql);
 
-		$sql = 'DELETE FROM dates WHERE session_id IS NULL';
+		$sql = "DELETE FROM {$this->table} WHERE session_id IS NULL";
 		$this->db->query($sql);
+	}
+
+
+	public function first_bookable_date($session_id)
+	{
+		$sql = "SELECT `date`
+				FROM {$this->table}
+				WHERE session_id = ?
+				AND week_id IS NOT NULL
+				AND holiday_id IS NULL
+				ORDER BY `date` ASC
+				LIMIT 1";
+
+		$query = $this->db->query($sql, [$session_id]);
+		return ($query->num_rows() == 1 ? $query->row()->date : FALSE);
 	}
 
 

@@ -7,6 +7,12 @@ class AvailabilityException extends \RuntimeException
 {
 
 
+	public static function forNoWeek()
+	{
+		return new static("The selected date is not assigned to a timetable week.");
+	}
+
+
 	public static function forNoPeriods()
 	{
 		return new static("There are no periods available for the selected date.");

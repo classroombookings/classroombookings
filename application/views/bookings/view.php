@@ -45,6 +45,7 @@ if (booking_editable($booking)) {
 				'up-align' => 'right',
 				'up-size' => 'medium',
 				'up-content' => html_escape($edit_choices),
+				'up-history' => 'false',
 			],
 		];
 	} else {

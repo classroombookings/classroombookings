@@ -111,7 +111,7 @@ class Slot
 			$date_fmt = 'd/m/Y';
 
 			$this->label = $holiday
-				? sprintf("Holiday: %s (%s - %s)",
+				? sprintf("Holiday: %s<br>(%s - %s)",
 		          	$holiday->name,
 		          	$holiday->date_start->format($date_fmt),
 		          	$holiday->date_end->format($date_fmt)
@@ -155,7 +155,10 @@ class Slot
 		}
 
 		// Check permissions/quotas
-		$booking_permitted = $this->CI->userauth->can_create_booking($this->date->date);
+		$start_date = ($this->context->session->is_current == '1')
+			? date('Y-m-d')
+			: $this->context->session->date_start->format('Y-m-d');
+		$booking_permitted = $this->CI->userauth->can_create_booking($this->date->date, $start_date);
 
 		if ($booking_permitted->result === FALSE) {
 
@@ -173,12 +176,13 @@ class Slot
 
 				case $booking_permitted->is_future_date:
 					$this->view_data = ['extended' => 'past'];
-					$this->label = 'Date is in the past.';
+					$this->label = 'Booking date is in the past.';
 					break;
 
 				case $booking_permitted->in_quota:
+					$max = (int) abs(setting('num_max_bookings'));
 					$this->view_data = ['extended' => 'quota'];
-					$this->label = 'Quota exceeded.';
+					$this->label = sprintf('You currently have the maximum number of active bookings (%d).', $max);
 					break;
 
 				default:

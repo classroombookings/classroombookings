@@ -293,33 +293,6 @@ class Bookings extends MY_Controller
 		$this->data['body'] = $this->load->view('bookings/edit', $this->data, TRUE);
 
 		return $this->render();
-
-		//
-		/*
-
-		$booking = $this->bookings_model->include(['room'])->get($booking_id);
-
-		$this->data['booking'] = $booking;
-		$this->data['current_user'] = $this->userauth->user;
-
-		switch (TRUE) {
-
-			case ($booking === FALSE):
-				$body = msgbox('error', 'Could not find requested booking details.');
-				break;
-
-			case (booking_editable($booking) === FALSE):
-				$body = msgbox('error', 'Booking is not editable.');
-				break;
-
-			default:
-				$body = $this->load->view('bookings/edit', $this->data, TRUE);
-		}
-
-		$this->data['body'] = '<div class="bookings-edit">' . $body . '</div>';
-
-		return $this->render();
-		*/
 	}
 
 
@@ -394,6 +367,36 @@ class Bookings extends MY_Controller
 			unset($_SESSION['return_uri']);
 			return redirect($uri);
 		}
+	}
+
+
+	public function change_session()
+	{
+		$session_id = $this->input->post('session_id');
+
+		$params_str = $this->input->post('params');
+		parse_str($params_str, $params_data);
+
+		if ( ! $session_id) {
+
+			unset($params_data['date']);
+			unset($_SESSION['current_session_id']);
+
+		} else {
+
+			$this->load->model('sessions_model');
+			$session = $this->sessions_model->get_available_session($session_id);
+
+			if ($session) {
+				$_SESSION['current_session_id'] = $session->session_id;
+			} else {
+				$this->session->set_flashdata('bookings', msgbox('error', 'Requested session is not available.'));
+			}
+		}
+
+		$params = http_build_query($params_data);
+		$return_uri = 'bookings?' . $params;
+		return redirect($return_uri);
 	}
 
 

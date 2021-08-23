@@ -52,6 +52,13 @@ class Context
 
 
 	/**
+	 * All selectable sessions
+	 *
+	 */
+	private $available_sessions = FALSE;
+
+
+	/**
 	 * Holidays for the session, indexed by ID.
 	 *
 	 */
@@ -200,8 +207,8 @@ class Context
 			'columns' => $this->CI->settings_model->get('d_columns'),
 			'user_id' => $this->CI->userauth->user->user_id,
 			'room_id' => $this->CI->input->get('room'),
-			'session_id' => isset($_SESSION['working_session_id'])
-				? $_SESSION['working_session_id']
+			'session_id' => isset($_SESSION['current_session_id'])
+				? $_SESSION['current_session_id']
 				: NULL,
 			'date_string' => $this->CI->input->get('date')
 				? $this->CI->input->get('date')
@@ -287,15 +294,46 @@ class Context
 	 */
 	private function init_session()
 	{
+		// Load list of selectable sessions
+		$this->available_sessions = $this->CI->sessions_model->get_selectable();
+
+		// Load the requsted session
 		$this->session = ($this->session_id)
-			? $this->CI->sessions_model->get($this->session_id)
+			? $this->CI->sessions_model->get_available_session($this->session_id)
 			: $this->CI->sessions_model->get_current();
 
 		if ( ! $this->session) return;
 
+		// Selected session is not the current one.
+		// Need to check if requested date is within it or not.
+		if ($this->session->is_current == 0) {
+
+			$first_bookable_date = $this->CI->dates_model->first_bookable_date($this->session->session_id);
+
+			if ( ! $first_bookable_date) {
+				// Can't do anything else here.
+				// Likely that no weeks are set up in the session
+				return;
+			}
+
+			// No date at all? Get first bookable date in session
+			if ( ! $this->date_string) {
+				$this->date_string = $first_bookable_date;
+			}
+
+			// Check the date we have is within range of the session.
+			$datetime = datetime_from_string($this->date_string);
+			if ($datetime < $this->session->date_start || $datetime > $this->session->date_end) {
+				$this->date_string = $first_bookable_date;
+			}
+		}
+
 		$holidays = $this->CI->holidays_model->get_by_session($this->session->session_id);
 
 		$this->holidays = [];
+
+		if (empty($holidays)) return;
+
 		foreach ($holidays as $holiday) {
 			$this->holidays[ $holiday->holiday_id ] = $holiday;
 		}
@@ -310,23 +348,27 @@ class Context
 	 */
 	private function init_date_time()
 	{
-		if ( ! $this->date_string) {
-			return;
-		}
+		if ( ! $this->date_string) return;
 
 		$this->datetime = datetime_from_string($this->date_string);
 
-		if ( ! $this->datetime) {
-			return;
-		}
+		if ( ! $this->datetime) return;
 
 		// Get week boundaries
 		$week_starts_day_name = Calendar::get_day_names()[ Calendar::get_first_day_of_week() ];
 		$week_start = clone $this->datetime;
 		$week_start->modify('+1 day');
 		$week_start->modify("last {$week_starts_day_name}");
+
+		// If the start of this week is before the session, move it.
+		if ($this->session && $week_start < $this->session->date_start) {
+			$week_start = clone $this->session->date_start;
+		}
+
 		$week_end = clone $week_start;
-		$week_end->modify('+6 days');
+		while ($week_end->format('N') < 7) {
+			$week_end->modify('+1 days');
+		}
 
 		$this->week_start = $week_start;
 		$this->week_end = $week_end;
@@ -365,6 +407,8 @@ class Context
 	 */
 	private function init_periods()
 	{
+		if ( ! $this->datetime) return;
+
 		switch ($this->display_type) {
 
 			// Get periods for the current date only
@@ -458,7 +502,7 @@ class Context
 				break;
 
 			case 'room':
-				$dates = $this->CI->dates_model->get_prev_next($this->week_start, 'week');
+				$dates = $this->CI->dates_model->get_prev_next($this->datetime, 'week');
 				break;
 
 			default:
@@ -505,6 +549,9 @@ class Context
 	 */
 	public function init_slots()
 	{
+		if ( ! $this->session) return;
+		if ( ! $this->datetime) return;
+
 		$slots = [];
 
 		$rooms = ($this->display_type == 'room')
@@ -546,7 +593,11 @@ class Context
 	 */
 	private function find_bookings()
 	{
-		$this->bookings = $this->CI->bookings_model->find_for_context($this);
+		if ( ! $this->datetime) return;
+
+		if ($this->session) {
+			$this->bookings = $this->CI->bookings_model->find_for_context($this);
+		}
 	}
 
 	/**
@@ -579,10 +630,11 @@ class Context
 			throw SettingsException::forNoRooms();
 		}
 
-		if ($this->display_type == 'day' && $this->date_info) {
+		if ( ! $this->timetable_week) {
+			throw AvailabilityException::forNoWeek();
+		}
 
-			// @TODO for week view, should we check all dates for periods / holidays here?
-			// Or, leave it to the table to show?
+		if ($this->display_type == 'day' && $this->date_info) {
 
 			if ($this->date_info->period_count == 0) {
 				throw AvailabilityException::forNoPeriods();

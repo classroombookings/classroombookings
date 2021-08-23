@@ -342,7 +342,7 @@ class Bookings_model extends CI_Model
 				$where = [
 					'repeat_id' => $booking->repeat_id,
 					'session_id' => $booking->session_id,
-					'date >=' => $booking->date,
+					'date >=' => $booking->date->format('Y-m-d'),
 				];
 
 				return $this->db->update($this->table, $data, $where);
@@ -1734,7 +1734,7 @@ class Bookings_model extends CI_Model
 				JOIN rooms ON rooms.room_id=bookings.room_id
 				JOIN users ON users.user_id=bookings.user_id
 				JOIN periods ON periods.period_id=bookings.period_id
-				WHERE rooms.user_id='$user_id' AND bookings.cancelled=0
+				WHERE rooms.user_id='$user_id' AND bookings.status=10
 				AND bookings.date IS NOT NULL
 				AND bookings.date <= '$maxdate'
 				AND bookings.date >= '$today'
@@ -1762,7 +1762,7 @@ class Bookings_model extends CI_Model
 				FROM bookings
 				JOIN rooms ON rooms.room_id=bookings.room_id
 				JOIN periods ON periods.period_id=bookings.period_id
-				WHERE bookings.user_id='$user_id' AND bookings.cancelled=0
+				WHERE bookings.user_id='$user_id' AND bookings.status=10
 				AND bookings.date IS NOT NULL
 				AND bookings.date <= '$maxdate'
 				AND bookings.date >= '$today'

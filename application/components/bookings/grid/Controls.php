@@ -31,6 +31,19 @@ class Controls
 	 */
 	public function render()
 	{
+		$display_view = $this->render_display_view();
+		$session_view = $this->render_session_view();
+
+		$row = "<div class='block b-50'>{$display_view}</div><div class='block b-50' style='text-align:right'>{$session_view}</div>";
+		$group = "<div class='block-group'>{$row}</div>";
+		return $group;
+	}
+
+
+	private function render_display_view()
+	{
+		if ( ! $this->context->session) return '&nbsp;';
+
 		$view = FALSE;
 
 		switch ($this->context->display_type) {
@@ -78,6 +91,34 @@ class Controls
 		}
 
 		return '';
+	}
+
+
+	private function render_session_view()
+	{
+		// No available sessions: skip.
+		if ( ! is_array($this->context->available_sessions)) {
+			return '';
+		}
+
+		// Only 1 session *and* is current: skip.
+		$num_sessions = count($this->context->available_sessions);
+		$selected_is_current = ($this->context->session && $this->context->session->is_current == '1');
+
+		if ($selected_is_current && $num_sessions == 1) {
+			return '';
+		}
+
+		$query_params = $this->context->get_query_params();
+
+		$data = [
+			'available_sessions' => $this->context->available_sessions,
+			'selected_session_id' => $this->context->session_id,
+			'form_action' => site_url('bookings/change_session'),
+			'query_params' => $query_params,
+		];
+
+		return $this->CI->load->view('bookings_grid/controls/session', $data, TRUE);
 	}
 
 

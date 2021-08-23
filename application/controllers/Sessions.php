@@ -169,6 +169,7 @@ class Sessions extends MY_Controller
 		$this->load->library('form_validation');
 
 		$this->form_validation->set_rules('name', 'Name', 'required|max_length[50]');
+		$this->form_validation->set_rules('is_selectable', 'User-selectable', 'required|in_list[0,1]');
 
 		$callbackRule = strlen($session_id)
 		                 	? sprintf('callback__date_check[%d]', $session_id)
@@ -179,6 +180,7 @@ class Sessions extends MY_Controller
 
 		$data = array(
 			'name' => $this->input->post('name'),
+			'is_selectable' => $this->input->post('is_selectable'),
 			'date_start' => $this->input->post('date_start'),
 			'date_end' => $this->input->post('date_end'),
 		);

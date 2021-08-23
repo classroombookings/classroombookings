@@ -67,6 +67,26 @@ echo form_open(current_url(), ['class' => 'cssform', 'id' => 'session_add'], ['s
 	</p>
 	<?php echo form_error($field); ?>
 
+	<p>
+		<label for="is_selectable">User-selectable?</label>
+		<?php
+		$field = 'is_selectable';
+		$value = isset($session) ? $session->is_selectable : '0';
+		$checked = set_checkbox($field, '1', $value == '1');
+		echo form_hidden($field, '0');
+		echo form_checkbox(array(
+			'name' => $field,
+			'id' => $field,
+			'value' => '1',
+			'tabindex' => tab_index(),
+			'checked' => $checked,
+		));
+		?>
+		<p class="hint">Allow users to select this session when viewing and making bookings.</p>
+	</p>
+	<?php echo form_error($field); ?>
+
+
 </fieldset>
 
 
