@@ -6,8 +6,7 @@ class Migration_Populate_dates_holidays extends CI_Migration
 
 	public function up()
 	{
-		// Get all weekdates that have a valid week
-		$sql = 'SELECT * FROM holidays
+		$sql = 'SELECT holidays.* FROM holidays
 				INNER JOIN sessions USING (session_id)';
 		$query = $this->db->query($sql);
 
@@ -23,7 +22,7 @@ class Migration_Populate_dates_holidays extends CI_Migration
 		foreach ($rows as $row) {
 
 			$start = DateTime::createFromFormat('!Y-m-d', $row->date_start);
-			$end = DateTime::createFromFormat('!Y-m-d', $row->date_start);
+			$end = DateTime::createFromFormat('!Y-m-d', $row->date_end);
 			$end->modify('+1 day');
 			$period = new DatePeriod($start, $interval, $end);
 

@@ -9,24 +9,32 @@ class Migration_Migrate_repeat_bookings extends CI_Migration
 		$sql = "INSERT INTO `bookings_repeat`
 					(`period_id`, `room_id`, `user_id`, `department_id`, `week_id`, `weekday`, `notes`)
 				SELECT
-					`period_id`,
-					`room_id`,
-					`user_id`,
-					IF(department_id = 0, NULL, department_id),
-					`week_id`,
-					`day_num`,
-					`notes`
+					leg.period_id,
+					leg.room_id,
+					leg.user_id,
+					IF(u.department_id = 0, NULL, u.department_id),
+					leg.week_id,
+					leg.day_num,
+					leg.notes
 				FROM
-					bookings_legacy legacy
-				LEFT JOIN users USING (`user_id`)
-				INNER JOIN weeks USING (`week_id`)
-				WHERE `legacy`.`date` IS NULL
-				AND `legacy`.`day_num` IS NOT NULL";
+					bookings_legacy leg
+				LEFT JOIN users u ON leg.user_id = u.user_id
+				INNER JOIN weeks w ON leg.week_id = w.week_id
+				INNER JOIN rooms r ON leg.room_id = r.room_id
+				INNER JOIN periods p ON leg.period_id = p.period_id
+				WHERE leg.date IS NULL
+				AND leg.day_num IS NOT NULL";
 
 		$this->db->query($sql);
 
 		$sql = "UPDATE `bookings_repeat`
-				SET `session_id` = (SELECT `session_id` FROM `sessions` WHERE is_current = 1 LIMIT 1)";
+				SET `session_id` = (
+					SELECT session_id
+					FROM dates d
+					INNER JOIN weekdates wd ON d.date = wd.date
+					WHERE wd.week_id = bookings_repeat.week_id
+					LIMIT 1
+				)";
 
 		$this->db->query($sql);
 

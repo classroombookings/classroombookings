@@ -10,16 +10,24 @@ class Migration_Populate_holiday_sessions extends CI_Migration
 				SET session_id = (
 					SELECT session_id
 					FROM sessions s
-					WHERE (
+					WHERE
+					(
 						h.date_start >= s.date_start
 						AND h.date_end >= s.date_start
 						AND h.date_start <= s.date_end
 						AND h.date_end <= s.date_end
 					)
+					OR
+					(
+						h.date_start >= s.date_start
+						OR
+						h.date_end >= s.date_start
+					)
 					LIMIT 1
 				) WHERE session_id IS NULL';
 
 		$this->db->query($sql);
+		return true;
 	}
 
 
