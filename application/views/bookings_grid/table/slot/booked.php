@@ -43,31 +43,6 @@ if ($booking->notes) {
 	$vars['{notes}'] .= '<div class="booking-cell-notes" ' . $tooltip . '>'.character_limiter($notes, 15).'</div>';
 }
 
-// // Edit if admin?
-// //
-// if ($slot->editable()) {
-// 	$edit_url = site_url('bookings/edit/' . $booking->booking_id);
-// 	$actions[] = "<a class='booking-action' href='{$edit_url}' title='Edit this booking'>edit</a>";
-// }
-
-// // 'Cancel' action if user is an Admin, Room owner, or Booking owner
-// //
-// if ($slot->cancelable()) {
-// 	$cancel_msg = 'Are you sure you want to cancel this booking?';
-// 	if ($context->user->user_id != $booking->user->user_id){
-// 		$cancel_msg = 'Are you sure you want to cancel this booking?\n\n(**) Please take caution, it is not your own.';
-// 	}
-// 	$cancel_url = site_url('bookings/cancel/'.$booking->booking_id);
-
-// 	$actions[] = "<button
-// 		class='button-empty booking-action'
-// 		type='submit'
-// 		name='cancel'
-// 		value='{$booking->booking_id}'
-// 		onclick='if(!confirm(\"{$cancel_msg}\")) return false'
-// 	>cancel</button>";
-// }
-
 if ( ! empty($actions)) {
 	$vars['{actions}'] = '';	//'<div class="booking-cell-actions">' . implode(" ", $actions) . '</div>';
 }
@@ -86,19 +61,6 @@ $url = site_url($uri);
 ?>
 
 <td class='<?= $class ?>'>
-	<!-- <button
-		class="bookings-grid-button"
-		up-href="<?= $url ?>"
-		up-position="right"
-		up-target=".bookings-view"
-		up-layer="new drawer"
-		up-history-visible="false"
-		up-navigate="false"
-		up-preload
-	>
-		<?= $body ?>
-	</button>
-	-->
 	<a
 		class="bookings-grid-button"
 		href="<?= $url ?>"
