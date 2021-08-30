@@ -1,7 +1,8 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
 
 namespace app\components\bookings\grid;
+
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 use app\components\bookings\Context;
 

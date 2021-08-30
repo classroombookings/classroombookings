@@ -1,7 +1,9 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
 
 namespace app\components;
+
+defined('BASEPATH') OR exit('No direct script access allowed');
+
 
 class TabPane
 {

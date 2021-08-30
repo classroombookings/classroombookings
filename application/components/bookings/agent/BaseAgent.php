@@ -1,7 +1,9 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
 
 namespace app\components\bookings\agent;
+
+defined('BASEPATH') OR exit('No direct script access allowed');
+
 
 use app\components\bookings\exceptions\AgentException;
 use app\components\bookings\Slot;
