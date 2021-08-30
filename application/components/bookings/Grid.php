@@ -56,7 +56,7 @@ class Grid
 
 		$body = $this->render_body();
 		$footer = $this->render_footer();
-
+		$legend = $this->render_legend();
 
 		$form_attrs = [
 			'up-layer' => 'new modal',
@@ -69,9 +69,9 @@ class Grid
 		$form_close = form_close();
 
 		if ($this->CI->userauth->is_level(ADMINISTRATOR)) {
-			$out = "{$controls}\n{$header}\n{$form_open}\n{$body}\n{$footer}\n{$form_close}\n";
+			$out = "{$controls}\n{$header}\n{$form_open}\n{$body}\n{$footer}\n{$form_close}\n{$legend}\n";
 		} else {
-			$out = "{$controls}\n{$header}\n{$body}\n{$footer}";
+			$out = "{$controls}\n{$header}\n{$body}\n{$footer}\n{$legend}\n";
 		}
 
 		return "<div id='bookings_grid' up-hungry>{$out}</div>";
@@ -124,6 +124,37 @@ class Grid
 		$button_block = "<div class='block b-50'>{$submit_button}</div>";
 
 		return "<div class='cssform block-group' style='margin-top:32px;'>{$check_block}{$button_block}</div>";
+	}
+
+
+	/**
+	 * Render table legend.
+	 *
+	 */
+	public function render_legend()
+	{
+		$cells = [];
+
+		$legend = lang('bookings_legend_legend');
+		$cells[] = "<td width='25%' align='right' valign='middle'><strong>{$legend}:</strong></td>";
+
+		$label = lang('bookings_legend_free');
+		$class = 'bookings-grid-slot booking-status-available';
+		$cells[] = "<td class='{$class}' width='25%' align='center'><span class='bookings-grid-button'>{$label}</div></td>";
+
+		$label = lang('bookings_legend_static');
+		$class = 'bookings-grid-slot booking-status-booked booking-status-booked-recurring';
+		$cells[] = "<td class='{$class}' width='25%' align='center'><span class='bookings-grid-button'>{$label}</div></td>";
+
+		$label = lang('bookings_legend_staff');
+		$class = 'bookings-grid-slot booking-status-booked booking-status-booked-single';
+		$cells[] = "<td class='{$class}' width='25%' align='center'><span class='bookings-grid-button'>{$label}</div></td>";
+
+		$cells_str = implode("\n", $cells);
+
+		$table = "<table border='0' cellpadding='4' cellspacing='4' class='bookings-grid is-legend' align='center' style='border:1px solid #000;border-width:0px 0px;margin:16px auto;'><tr>{$cells_str}</tr></table>";
+
+		return $table;
 	}
 
 
