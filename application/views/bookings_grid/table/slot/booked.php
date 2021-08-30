@@ -27,8 +27,9 @@ if ($show_user && ! empty($booking->user)) {
 	$user_label = strlen($booking->user->displayname)
 			? $booking->user->displayname
 			: $booking->user->username;
-
-	$vars['{user}'] = '<div class="booking-cell-user">' . html_escape($user_label) . '</div>';
+	if (strlen($user_label)) {
+		$vars['{user}'] = '<div class="booking-cell-user">' . html_escape($user_label) . '</div>';
+	}
 }
 
 // Notes
