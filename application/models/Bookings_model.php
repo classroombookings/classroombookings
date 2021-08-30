@@ -34,6 +34,7 @@ class Bookings_model extends CI_Model
 	public function __construct()
 	{
 		$this->load->helper('result');
+		$this->load->model('sessions_model');
 	}
 
 
@@ -297,7 +298,7 @@ class Bookings_model extends CI_Model
 	public function create($data)
 	{
 		try {
-			$result = $this->validate_booking($data);
+			$this->validate_booking($data);
 		} catch (BookingValidationException $e) {
 			$this->error = $e->getMessage();
 			return FALSE;
@@ -545,6 +546,29 @@ class Bookings_model extends CI_Model
 		}
 
 		return $data;
+	}
+
+
+	/**
+	 * Given a session ID, delete any existing bookings that fall outside of its date range.
+	 *
+	 */
+	public function check_session_dates($session_id)
+	{
+		$session = $this->sessions_model->get($session_id);
+		if ( ! $session) return FALSE;
+
+		$sql = "DELETE FROM {$this->table}
+				WHERE session_id = ?
+				AND (`date` < ? OR `date` > ?)";
+
+		$this->db->query($sql, [
+			$session->session_id,
+			$session->date_start->format('Y-m-d'),
+			$session->date_end->format('Y-m-d'),
+		]);
+
+		return $this->db->affected_rows();
 	}
 
 

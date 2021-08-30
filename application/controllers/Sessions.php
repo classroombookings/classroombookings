@@ -130,9 +130,16 @@ class Sessions extends MY_Controller
 			$this->save_session();
 		}
 
-		$add = $this->load->view("sessions/add", $this->data, TRUE);
-		$columns = ['c1' => ['content' => $add, 'width' => '70%']];
+		$add = $this->load->view('sessions/add', $this->data, TRUE);
+		$side = $this->load->view('sessions/add_side', $this->data, TRUE);
+
+		$columns = [
+			'c1' => ['content' => $add, 'width' => '70%'],
+			'c2' => ['content' => $side, 'width' => '30%'],
+		];
+
 		$body = $this->load->view('columns', $columns, TRUE);
+
 		$icons = iconbar($this->get_icons(), 'sessions');
 		$this->data['body'] = $icons . $body;
 
@@ -150,9 +157,16 @@ class Sessions extends MY_Controller
 			$this->save_session($session_id);
 		}
 
-		$edit = $this->load->view("sessions/add", $this->data, TRUE);
-		$columns = ['c1' => ['content' => $edit, 'width' => '70%']];
+		$edit = $this->load->view('sessions/add', $this->data, TRUE);
+		$side = $this->load->view('sessions/add_side', $this->data, TRUE);
+
+		$columns = [
+			'c1' => ['content' => $edit, 'width' => '70%'],
+			'c2' => ['content' => $side, 'width' => '30%'],
+		];
+
 		$body = $this->load->view('columns', $columns, TRUE);
+
 		$icons = iconbar($this->get_icons(), 'sessions');
 		$this->data['body'] = $icons . $body;
 
@@ -175,8 +189,8 @@ class Sessions extends MY_Controller
 		                 	? sprintf('callback__date_check[%d]', $session_id)
 		                 	: 'callback__date_check';
 
-		$this->form_validation->set_rules('date_start', 'Start date', "required|{$callbackRule}");
-		$this->form_validation->set_rules('date_end', 'End date', "required|{$callbackRule}");
+		$this->form_validation->set_rules('date_start', 'Start date', "required|valid_date|{$callbackRule}");
+		$this->form_validation->set_rules('date_end', 'End date', "required|valid_date|{$callbackRule}");
 
 		$data = array(
 			'name' => $this->input->post('name'),
@@ -211,7 +225,7 @@ class Sessions extends MY_Controller
 		}
 
 		$this->session->set_flashdata('saved', $flashmsg);
-		redirect($uri);
+		// redirect($uri);
 	}
 
 

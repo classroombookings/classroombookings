@@ -208,6 +208,7 @@ class Sessions_model extends CI_Model
 			$this->auto_set_current();
 			$this->dates_model->refresh_session($session_id);
 			$this->dates_model->refresh_holidays($session_id);
+			$this->bookings_model->check_session_dates($session_id);
 		}
 
 		return $update;
@@ -264,13 +265,6 @@ class Sessions_model extends CI_Model
 			$this->auto_set_current();
 		}
 	}
-
-
-	// public function get_date_range($session)
-	// {
-	// 	$interval = new DateInterval('P1M');
-	// 	return new DatePeriod($session->date_start, $interval, $session->date_end);
-	// }
 
 
 	public function wake_value($row)
