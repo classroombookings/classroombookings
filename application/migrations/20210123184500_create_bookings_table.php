@@ -105,6 +105,9 @@ class Migration_Create_bookings_table extends CI_Migration
 		$this->dbforge->add_key('booking_id', TRUE);
 
 		$this->dbforge->create_table('bookings', TRUE, array('ENGINE' => 'InnoDB'));
+
+		$sql = "ALTER TABLE `bookings` ADD INDEX `idx_bookings_date` (`date`)";
+		$this->db->query($sql);
 	}
 
 

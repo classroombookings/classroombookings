@@ -12,7 +12,7 @@ class Migration_Migrate_static_bookings extends CI_Migration
 					d.session_id,
 					leg.period_id,
 					leg.room_id,
-					leg.user_id,
+					IF(leg.user_id = 0, NULL, leg.user_id),
 					IF(u.department_id = 0, NULL, u.department_id),
 					10 AS status,
 					leg.date,
