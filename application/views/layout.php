@@ -54,7 +54,7 @@ if ($this->userauth->logged_in()) {
 		echo "</div>";
 	}
 	?>
-	<div class="outer">
+	<div class="outer" up-main>
 
 		<div class="header">
 
@@ -139,7 +139,8 @@ if ($this->userauth->logged_in()) {
 	<?php
 	foreach ($scripts as $script)
 	{
-		$url = sprintf('%s?v=%s', base_url($script), VERSION);
+		$ver = VERSION . (ENVIRONMENT === 'development' ? '-' . time() : '');
+		$url = sprintf('%s?v=%s', base_url($script), $ver);
 		echo "<script type='text/javascript' src='{$url}'></script>\n";
 	}
 	?>

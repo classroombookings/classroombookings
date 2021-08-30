@@ -43,6 +43,9 @@ class Settings_model extends CI_Model
 
 		if (  ! isset($this->_cache[$group])) {
 			$this->_cache[$group] = array();
+		}
+
+		if ( ! isset($this->_cache[$group][$name])) {
 			$this->_cache[$group][$name] = $value;
 		}
 

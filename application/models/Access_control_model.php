@@ -144,6 +144,29 @@ class Access_control_model extends CI_Model
 	}
 
 
+	public function get_rooms_subquery($user_id, $permission)
+	{
+		$user_id = $this->db->escape($user_id);
+		$permission = $this->db->escape($permission);
+
+		$sql = "SELECT target_id
+				FROM {$this->table}
+				LEFT JOIN users u ON user_id = {$user_id}
+				WHERE target = 'R'
+				AND permission = {$permission}
+				AND
+				(
+					(actor = 'A')
+					OR
+					(u.user_id IS NOT NULL AND actor = 'U' AND actor_id = u.user_id)
+					OR
+					(u.department_id IS NOT NULL AND actor = 'D' AND actor_id = u.department_id)
+				)";
+
+		return $sql;
+	}
+
+
 	/**
 	 * Get the rooms accessible to $user_id with the given $permission.
 	 * Returns the Room IDs only.

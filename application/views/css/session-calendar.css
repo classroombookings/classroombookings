@@ -1,0 +1,65 @@
+
+/**
+ * CSS for Week ID #{week_id}
+ *
+ */
+
+
+/**
+ * Generic elements
+ *
+ */
+	.week{week_id}-bg {
+		background-color: {bg_col};
+	}
+
+	.week{week_id}-fg {
+		color: {fg_col};
+	}
+
+
+/**
+ * Calendars
+ *
+ */
+
+	.session-calendar .week-{week_id} {
+		background-color: {range_bg};
+	}
+
+		.session-calendar.mode-config .week-{week_id}:last-child {
+			border-right: 2px solid {bg_col};
+		}
+
+	.session-calendar .current-month.week-{week_id} {
+		color: {range_fg};
+	}
+
+	.session-calendar .week-label-{week_id} {
+		color: {fg_col};
+		background-color: {bg_col};
+	}
+
+	.session-calendar .week-label-{week_id}:before {
+		background-color: {bg_col};
+	}
+
+	.session-calendar .week-label-{week_id}:after {
+		background-color: {bg_col};
+	}
+
+	.session-calendar .week-label {
+		display: none;
+	}
+
+	.session-calendar .week-{week_id} .week-label.week-label-{week_id} {
+		display: inline-block;
+	}
+
+	/*.calendar .range-start.week-{week_id} .date-item {
+		border-left: 4px solid {boundary_bg};
+	}
+
+	.calendar .range-end.week-{week_id} .date-item {
+		border-right: 4px solid {boundary_bg};
+	}*/

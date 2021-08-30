@@ -12,6 +12,8 @@ class Periods_model extends CI_Model
 	{
 		parent::__construct();
 
+		$this->load->model('crud_model');
+
 		$this->days[1] = 'Monday';
 		$this->days[2] = 'Tuesday';
 		$this->days[3] = 'Wednesday';
