@@ -670,6 +670,10 @@ h5 {
 	padding: 4px;
 }
 
+	.filter-form.add-bottom {
+		margin-bottom: 16px;
+	}
+
 	.filter-form + table {
 		margin-top: 16px;
 	}
