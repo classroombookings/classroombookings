@@ -99,6 +99,7 @@ $autoload['helper'] = array(
 	'html',
 	'array',
 	'crbs',
+	'unpoly',
 );
 
 /*

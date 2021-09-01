@@ -81,4 +81,10 @@ class MY_Controller extends CI_Controller
 	}
 
 
+	public function render_up()
+	{
+		$this->load->view('unpoly', $this->data);
+	}
+
+
 }
