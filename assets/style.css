@@ -1117,85 +1117,6 @@ a.booking-action:hover {
 	}
 
 
-.colour-picker {
-	position: relative;
-	display: inline-block;
-	max-width: 240px;
-	outline: none;
-}
-	label.colour-picker-item {
-		position: relative;
-		width: auto;
-		margin-left: 0;
-		float: none;
-		font-weight: normal;
-		border: 0;
-		display: inline-block;
-		margin: 0 6px 6px 0;
-		outline: none;
-	}
-
-		.colour-picker-item input[type=radio] {
-			clip: rect(0, 0, 0, 0);
-			height: 1px;
-			margin: -1px;
-			overflow: hidden;
-			position: absolute;
-			width: 1px;
-		}
-			.colour-picker-item input[type=radio]:focus + .colour-picker-icon span,
-			.colour-picker-item input[type=radio]:checked + .colour-picker-icon span {
-				visibility: visible;
-				/*display: block;*/
-			}
-
-		.colour-picker-item:hover .colour-picker-icon span {
-				visibility: visible;
-				/*display: block;*/
-		}
-
-		.colour-picker-icon {
-			display: block;
-			position: relative;
-			/*width: 20px;*/
-			/*height: 20px;*/
-			border-radius: 50%;
-			box-sizing: border-box;
-		}
-
-			.colour-picker-icon span {
-				display: block;
-				visibility: hidden;
-				box-sizing: border-box;
-				/*position: absolute;
-				background: inherit;
-				top: 0;
-				left: 0;
-				width: 0;
-				height: 0;*/
-				border-radius: 50%;
-				/*transform: translate(-50%, -50%);*/
-				/*background: #fff;*/
-				color: #fff;
-				/*content: "X";*/
-				padding-top: 15%;
-				background: transparent;
-				width: 24px;
-				height: 24px;
-				text-align: center;
-				/*border-width: 4px;*/
-				/*border-style: solid;*/
-				/*display: none;
-				box-sizing: border-box;
-				width: 100%;
-				height: 100%;
-				display: none;
-				background: #fff;	//2px solid #fff;
-				border-radius: 50%;*/
-			}
-
-
-
 
 
 .tab-pane {
@@ -1412,4 +1333,92 @@ ul li.autocomplete__option {
 		/*font-size: 19px;*/
 		/*line-height: 1.31579;*/
 	}
+}
+
+
+
+
+
+/*! Huebee v2.1.1
+https://huebee.buzz
+---------------------------------------------- */
+
+.huebee {
+	position: absolute;
+	z-index: 1;
+	transform: translateY(0px);
+	transition: opacity 0.15s, transform 0.15s;
+}
+
+.huebee.is-hidden {
+	opacity: 0;
+	transform: translateY(10px);
+}
+
+.huebee.is-static-open {
+	position: relative;
+	z-index: auto;
+}
+
+.huebee__container {
+	position: absolute;
+	left: 0;
+	top: 5px;
+	padding: 10px;
+	background: #EEE;
+	border-radius: 5px;
+	box-shadow: 0 5px 10px hsla(0, 0%, 0%, 0.3);
+}
+
+.huebee.is-static-open .huebee__container {
+	position: relative;
+	display: inline-block;
+	left: auto;
+	top: auto;
+	box-shadow: none;
+}
+
+.huebee__canvas {
+	display: block;
+	cursor: pointer;
+}
+
+.huebee__cursor {
+	width: 15px;
+	height: 15px;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	box-sizing: content-box;
+	border: 3px solid white;
+	border-radius: 5px;
+	pointer-events: none;
+}
+
+.huebee__cursor.is-hidden { opacity: 0; }
+
+.huebee__close-button {
+	display: block;
+	position: absolute;
+	width: 24px;
+	height: 24px;
+	top: -9px;
+	right: -9px;
+	border-radius: 12px;
+	background: #222;
+}
+
+.huebee__close-button__x {
+	stroke: white;
+	stroke-width: 3;
+	stroke-linecap: round;
+}
+
+.huebee__close-button:hover {
+	background: white;
+	cursor: pointer;
+}
+
+.huebee__close-button:hover .huebee__close-button__x {
+	stroke: #222;
 }

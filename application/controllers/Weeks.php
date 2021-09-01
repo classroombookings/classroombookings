@@ -19,6 +19,8 @@ class Weeks extends MY_Controller
 		$this->load->model('holidays_model');
 		$this->load->model('weeks_model');
 		$this->load->helper('week');
+
+		$this->data['scripts'][] = 'assets/js/lib/huebee.pkgd.min.js';
 	}
 
 
@@ -112,7 +114,7 @@ class Weeks extends MY_Controller
 		$this->load->library('form_validation');
 
 		$this->form_validation->set_rules('name', 'Name', 'required|max_length[20]');
-		$this->form_validation->set_rules('bgcol', 'Colour', "required|max_length[6]");
+		$this->form_validation->set_rules('bgcol', 'Colour', "required|min_length[6]|max_length[7]");
 
 		$data = array(
 			'name' => $this->input->post('name'),
