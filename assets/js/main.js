@@ -190,6 +190,14 @@ up.compiler('[up-copy-to]', function(copyBtn) {
 });
 
 
+up.compiler('select[up-autocomplete]', function(selectEl) {
+	accessibleAutocomplete.enhanceSelectElement({
+		selectElement: selectEl,
+		displayMenu: 'overlay',
+	});
+});
+
+
 
 /**
  * Unavailable slots: popup content: change position of popup based on X pos of element.

@@ -150,11 +150,30 @@ echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 
 <fieldset>
 
-	<legend accesskey="D" tabindex="<?php echo tab_index() ?>">Date formats</legend>
+	<legend accesskey="D" tabindex="<?php echo tab_index() ?>">Date/Time</legend>
 
-	<div>
+
+	<div style="padding: 16px 0;">
 		Dates follow the PHP format - <a href="https://www.php.net/manual/en/function.date.php#refsect1-function.date-parameters" target="_blank">view reference</a>.
 	</div>
+
+	<p>
+		<label for="timezone">Timezone</label>
+		<?php
+		$value = set_value('timezone', element('timezone', $settings, date_default_timezone_get()), FALSE);
+		$input = form_dropdown([
+			'name' => 'timezone',
+			'id' => 'timezone',
+			'options' => $timezones,
+			'selected' => $value,
+			'tabindex' => tab_index(),
+			'up-autocomplete' => '',
+		]);
+		echo "<span style='display:inline-block;width:100%;max-width:320px;position:relative;background:transparent'>{$input}</span>";
+		?>
+		<p></p>
+	</p>
+	<?php echo form_error('timezone') ?>
 
 	<p>
 		<label for="date_format_long">Long date format</label>

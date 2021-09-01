@@ -5,10 +5,15 @@ class General extends MY_Controller
 {
 
 
+	private $tzlist;
+
+
 	public function __construct()
 	{
 		parent::__construct();
 		$this->require_auth_level(ADMINISTRATOR);
+
+		$this->tzlist = DateTimeZone::listIdentifiers(DateTimeZone::ALL);
 	}
 
 
@@ -23,6 +28,13 @@ class General extends MY_Controller
 		if ($this->input->post()) {
 			$this->save_settings();
 		}
+
+
+		$zones = [];
+		foreach ($this->tzlist as $tz) {
+			$zones[$tz] = $tz;
+		}
+		$this->data['timezones'] = $zones;
 
 		$this->data['title'] = 'Settings';
 		$this->data['showtitle'] = $this->data['title'];
@@ -49,6 +61,7 @@ class General extends MY_Controller
 		$this->form_validation->set_rules('num_max_bookings', 'Maximum number of bookings', 'max_length[3]|numeric');
 		$this->form_validation->set_rules('displaytype', 'Display type', 'required');
 		$this->form_validation->set_rules('d_columns', 'Display columns', 'callback__valid_columns');
+		$this->form_validation->set_rules('timezone', 'Timezone', 'required');
 		$this->form_validation->set_rules('date_format_long', 'Long date format', 'required|max_length[15]');
 		$this->form_validation->set_rules('date_format_weekday', 'Weekday date format', 'max_length[15]');
 		$this->form_validation->set_rules('time_format_period', 'Period time format', 'max_length[15]');
@@ -68,6 +81,7 @@ class General extends MY_Controller
 			'num_max_bookings' => (int) $this->input->post('num_max_bookings'),
 			'displaytype' => $this->input->post('displaytype'),
 			'd_columns' => $this->input->post('d_columns'),
+			'timezone' => $this->input->post('timezone'),
 			'date_format_long' => $this->input->post('date_format_long'),
 			'date_format_weekday' => $this->input->post('date_format_weekday'),
 			'time_format_period' => $this->input->post('time_format_period'),
