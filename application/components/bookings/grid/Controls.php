@@ -97,17 +97,47 @@ class Controls
 
 	private function render_session_view()
 	{
-		// No available sessions: skip.
-		if ( ! is_array($this->context->available_sessions)) {
-			return '';
-		}
+		$show_all = ($this->context->user && $this->context->user->authlevel == ADMINISTRATOR)
+			? TRUE
+			: FALSE;
 
-		// Only 1 session *and* is current: skip.
-		$num_sessions = count($this->context->available_sessions);
-		$selected_is_current = ($this->context->session && $this->context->session->is_current == '1');
 
-		if ($selected_is_current && $num_sessions == 1) {
-			return '';
+		if ($show_all) {
+
+			$session_options = [];
+
+			if ($this->context->active_sessions) {
+				foreach ($this->context->active_sessions as $session) {
+					$session_options['Current and future'][$session->session_id] = $session->name;
+				}
+			}
+
+			if ($this->context->past_sessions) {
+				foreach ($this->context->past_sessions as $session) {
+					$session_options['Past'][$session->session_id] = $session->name;
+				}
+			}
+
+		} else {
+
+			// No available sessions: skip.
+			if ( ! is_array($this->context->available_sessions)) {
+				return '';
+			}
+
+			// Only 1 session *and* is current: skip.
+			$num_sessions = count($this->context->available_sessions);
+			$selected_is_current = ($this->context->session && $this->context->session->is_current == '1');
+
+			if ($selected_is_current && $num_sessions == 1) {
+				return '';
+			}
+
+			$session_options = ['' => ''];
+			foreach ($this->context->available_sessions as $session) {
+				$session_options[$session->session_id] = $session->name;
+			}
+
 		}
 
 		$query_params = $this->context->get_query_params();
@@ -117,6 +147,7 @@ class Controls
 			'selected_session_id' => $this->context->session_id,
 			'form_action' => site_url('bookings/change_session'),
 			'query_params' => $query_params,
+			'session_options' => $session_options,
 		];
 
 		return $this->CI->load->view('bookings_grid/controls/session', $data, TRUE);

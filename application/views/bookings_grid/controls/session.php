@@ -1,10 +1,5 @@
 <?php
 
-$session_options = ['' => ''];
-foreach ($available_sessions as $session) {
-	$session_options[$session->session_id] = $session->name;
-}
-
 $attrs = [
 	'method' => 'post',
 	'id' => 'bookings_controls_session',

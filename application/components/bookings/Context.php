@@ -54,10 +54,12 @@ class Context
 
 
 	/**
-	 * All selectable sessions
+	 * Lists of sessions
 	 *
 	 */
 	private $available_sessions = FALSE;
+	private $past_sessions = FALSE;
+	private $active_sessions = FALSE;
 
 
 	/**
@@ -270,10 +272,10 @@ class Context
 
 		// Initialise other section
 		//
+		$this->init_user();
 		$this->init_session();
 		$this->init_date_time();
 		$this->init_periods();
-		$this->init_user();
 		$this->init_rooms();
 		$this->init_navigation();
 		$this->find_bookings();
@@ -296,13 +298,25 @@ class Context
 	 */
 	private function init_session()
 	{
+		$allow_any = FALSE;
+
 		// Load list of selectable sessions
 		$this->available_sessions = $this->CI->sessions_model->get_selectable();
 
+		if ($this->user && $this->user->authlevel == ADMINISTRATOR) {
+			$this->past_sessions = $this->CI->sessions_model->get_all_past();
+			$this->active_sessions = $this->CI->sessions_model->get_all_active();
+			$allow_any = TRUE;
+		}
+
 		// Load the requsted session
-		$this->session = ($this->session_id)
-			? $this->CI->sessions_model->get_available_session($this->session_id)
-			: $this->CI->sessions_model->get_current();
+		if ($this->session_id) {
+			$this->session = ($allow_any)
+				? $this->CI->sessions_model->get($this->session_id)
+				: $this->CI->sessions_model->get_available_session($this->session_id);
+		} else {
+			$this->session = $this->CI->sessions_model->get_current();
+		}
 
 		if ( ! $this->session) return;
 

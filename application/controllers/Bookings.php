@@ -385,13 +385,21 @@ class Bookings extends MY_Controller
 		} else {
 
 			$this->load->model('sessions_model');
-			$session = $this->sessions_model->get_available_session($session_id);
+			if ($this->userauth->is_level(ADMINISTRATOR)) {
+				$session = $this->sessions_model->get($session_id);
+			} else {
+				$session = $this->sessions_model->get_available_session($session_id);
+			}
 
 			if ($session) {
 				$_SESSION['current_session_id'] = $session->session_id;
 			} else {
 				$this->session->set_flashdata('bookings', msgbox('error', 'Requested session is not available.'));
 			}
+		}
+
+		if (isset($params_data['date'])) {
+			unset($params_data['date']);
 		}
 
 		$params = http_build_query($params_data);

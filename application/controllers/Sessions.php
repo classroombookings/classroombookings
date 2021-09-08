@@ -225,7 +225,7 @@ class Sessions extends MY_Controller
 		}
 
 		$this->session->set_flashdata('saved', $flashmsg);
-		// redirect($uri);
+		redirect($uri);
 	}
 
 
