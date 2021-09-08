@@ -494,4 +494,16 @@ GROUP BY date
 	}
 
 
+	public function apply_week($session_id, $week_id)
+	{
+		$session = $this->sessions_model->get($session_id);
+		if ( ! $session) {
+			return FALSE;
+		}
+
+		$sql = "UPDATE {$this->table} SET week_id = ? WHERE session_id = ?";
+		return $this->db->query($sql, [$week_id, $session_id]);
+	}
+
+
 }

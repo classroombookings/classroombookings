@@ -75,14 +75,17 @@ class Sessions extends MY_Controller
 			$this->save_dates($session->session_id);
 		}
 
+		$weeks = $this->weeks_model->get_all();
+
 		$calendar = new Calendar([
 			'session' => $session,
-			'weeks' => $this->weeks_model->get_all(),
+			'weeks' => $weeks,
 			'dates' => $this->dates_model->get_by_session($session->session_id),
 			'mode' => Calendar::MODE_CONFIG,
 			'month_class' => 'session-calendar',
 		]);
 
+		$this->data['weeks'] = $weeks;
 		$this->data['calendar'] = $calendar;
 		$this->data['session'] = $session;
 		$this->data['title'] = $this->data['showtitle'] = 'Session: ' . $session->name;
@@ -115,6 +118,32 @@ class Sessions extends MY_Controller
 		// echo "done";
 		$this->session->set_flashdata('saved', $flashmsg);
 		redirect(current_url());
+	}
+
+
+	public function apply_week()
+	{
+		$session_id = $this->input->post('session_id');
+
+		if (empty($session_id)) {
+			redirect('sessions');
+		}
+
+		$week_id = $this->input->post('week_id');
+		$week = $this->weeks_model->get($week_id);
+
+		if (empty($week)) {
+			$flashmsg = msgbox('error', 'No week selected.');
+			$this->session->set_flashdata('saved', $flashmsg);
+			redirect("sessions/view/{$session_id}");
+		}
+
+		$this->dates_model->apply_week($session_id, $week_id);
+
+		$flashmsg = msgbox('info', sprintf("%s has been applied to every week in the session.", html_escape($week->name)));
+		$this->session->set_flashdata('saved', $flashmsg);
+
+		redirect("sessions/view/{$session_id}");
 	}
 
 
