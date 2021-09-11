@@ -29,7 +29,7 @@ $school[$i]['icon'] = 'school_manage_details.png';
 $school[$i]['href'] = site_url('school');
 
 $i++;
-$school[$i]['text'] = 'The School Day';
+$school[$i]['text'] = 'Periods';
 $school[$i]['icon'] = 'school_manage_times.png';
 $school[$i]['href'] = site_url('periods');
 
@@ -42,11 +42,6 @@ $i++;
 $school[$i]['text'] = 'Sessions';
 $school[$i]['icon'] = 'calendar_view_month.png';
 $school[$i]['href'] = site_url('sessions');
-
-// $i++;
-// $school[$i]['text'] = 'Holidays';
-// $school[$i]['icon'] = 'school_manage_holidays.png';
-// $school[$i]['href'] = site_url('holidays');
 
 $i++;
 $school[$i]['text'] = 'Rooms';
