@@ -12,10 +12,12 @@ $end = $session->date_end ? $session->date_end->format($dateFormat) : '';
 echo "<p><strong>Start date: </strong>{$start}</p>";
 echo "<p><strong>End date:</strong> {$end}</p>";
 
-$this->load->view('sessions/view_apply_week', [
-	'weeks' => $weeks,
-	'session' => $session,
-]);
+if ( ! empty($weeks)) {
+	$this->load->view('sessions/view_apply_week', [
+		'weeks' => $weeks,
+		'session' => $session,
+	]);
+}
 
 echo "<br><p>Click on the dates in each calendar to toggle the Timetable Week for that week.</p><br>";
 

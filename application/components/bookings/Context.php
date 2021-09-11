@@ -309,13 +309,23 @@ class Context
 			$allow_any = TRUE;
 		}
 
-		// Load the requsted session
-		if ($this->session_id) {
-			$this->session = ($allow_any)
-				? $this->CI->sessions_model->get($this->session_id)
-				: $this->CI->sessions_model->get_available_session($this->session_id);
-		} else {
-			$this->session = $this->CI->sessions_model->get_current();
+		switch (true) {
+
+			case ($allow_any && strlen($this->session_id)):
+				$this->session = $this->CI->sessions_model->get($this->session_id);
+				break;
+
+			case ($allow_any && ! empty($this->active_sessions)):
+				$this->session = current($this->active_sessions);
+				break;
+
+			case ( ! $allow_any && strlen($this->session_id)):
+				$this->session = $this->CI->sessions_model->get_available_session($this->session_id);
+				break;
+
+			default:
+				$this->session = $this->CI->sessions_model->get_current();
+
 		}
 
 		if ( ! $this->session) return;

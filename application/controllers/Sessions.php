@@ -94,6 +94,10 @@ class Sessions extends MY_Controller
 
 		$body = $this->load->view('sessions/view', $this->data, TRUE);
 
+		if (empty($weeks)) {
+			$body = msgbox('error', 'Please add at least one Timetable Week.');
+		}
+
 		$this->data['body'] = $icons . $body;
 
 		return $this->render();

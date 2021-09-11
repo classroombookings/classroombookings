@@ -70,6 +70,10 @@ class Calendar
 			}
 		}
 
+		if (empty($this->weeks)) {
+			$this->weeks = [];
+		}
+
 		$this->first_day = self::get_first_day_of_week();
 		$this->last_day = self::get_last_day_of_week();
 	}
@@ -502,6 +506,8 @@ class Calendar
 	public function get_css()
 	{
 		$css = '';
+
+		if (empty($this->weeks)) return '';
 
 		foreach ($this->weeks as $week) {
 			$css .= week_calendar_css($week);

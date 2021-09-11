@@ -68,7 +68,7 @@ echo form_open(current_url(), ['class' => 'cssform', 'id' => 'session_add'], ['s
 	<?php echo form_error($field); ?>
 
 	<p>
-		<label for="is_selectable">User-selectable?</label>
+		<label for="is_selectable">Available</label>
 		<?php
 		$field = 'is_selectable';
 		$value = isset($session) ? $session->is_selectable : '0';
@@ -82,7 +82,7 @@ echo form_open(current_url(), ['class' => 'cssform', 'id' => 'session_add'], ['s
 			'checked' => $checked,
 		));
 		?>
-		<p class="hint">Allow users to select this session when viewing and making bookings.</p>
+		<p class="hint">Allow users to view and make bookings in this session.</p>
 	</p>
 	<?php echo form_error($field); ?>
 

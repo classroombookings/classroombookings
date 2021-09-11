@@ -13,7 +13,7 @@
 		<tr class="heading">
 			<td class="h" width="20%" title="Name">Name</td>
 			<td class="h" width="10%" title="Current?">Current?</td>
-			<td class="h" width="10%" title="Selectable?">Selectable?</td>
+			<td class="h" width="10%" title="Available?">Available?</td>
 			<td class="h" width="25%" title="Start date">Start date</td>
 			<td class="h" width="25%" title="End date">End date</td>
 			<td class="h" width="10%" title="Actions"></td>
@@ -24,7 +24,7 @@
 
 	<tbody>
 		<tr>
-			<td colspan="5" align="center" style="padding:16px 0; color: #666">No sessions.</td>
+			<td colspan="6" align="center" style="padding:16px 0; color: #666">No sessions.</td>
 		</tr>
 	</tbody>
 
