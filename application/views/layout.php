@@ -111,30 +111,34 @@ if ($this->userauth->logged_in()) {
 		</div>
 
 		<div class="footer">
-			<br />
-
 			<div id="footer">
-				<?php
-				if (isset($menu)) {
-					foreach( $menu as $link ) {
-						echo "\n".'<a href="'.$link['href'].'" title="'.$link['title'].'">'.$link['text'].'</a>'."\n";
-						echo img('assets/images/blank.png', FALSE, 'width="16" height="10" alt=" "');
-					}
-				}
-				?>
-				<br /><br />
-				<span style="font-size:90%;color:#678; line-height: 2">
-					<a href="https://www.classroombookings.com/" target="_blank">classroombookings</a> version <?= VERSION ?>.
-					&copy; <?= date('Y') ?> Craig A Rodway.
-					<br />
-					Load time: <?php echo $this->benchmark->elapsed_time() ?> seconds.
-				</span>
-				<br /><br />
+				<br>
+				<div class="block-group">
+					<div class="block b-50">
+						<div id="footer_links">
+						<?php
+						if (isset($menu)) {
+							foreach( $menu as $link ) {
+								echo "\n".'<a href="'.$link['href'].'" title="'.$link['title'].'">'.$link['text'].'</a>'."\n";
+							}
+						} else {
+							echo "&nbsp;";
+						}
+						?>
+						</div>
+					</div>
+					<div class="block b-50">
+						<div style="font-size:90%;color:#678; line-height: 2; text-align:right">
+							<span><a href="https://www.classroombookings.com/" target="_blank">classroombookings</a> version <?= VERSION ?>.
+							&copy; <?= date('Y') ?> Craig A Rodway.</span>
+							<br />
+							Load time: <?php echo $this->benchmark->elapsed_time() ?> seconds.
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
-
-	<div id="tipDiv" style="position:absolute; visibility:hidden; z-index:100"></div>
 
 	<?php
 	foreach ($scripts as $script)
@@ -144,6 +148,18 @@ if ($this->userauth->logged_in()) {
 		echo "<script type='text/javascript' src='{$url}'></script>\n";
 	}
 	?>
+
+	<?php if ($show_headway_widget): ?>
+	<script>
+	var HW_config = {
+		selector: "#footer_links",
+		account:  "yp6mN7",
+		readMore: 'readmore',
+		footer: 'footer',
+	}
+	</script>
+	<script async src="https://cdn.headwayapp.co/widget.js"></script>
+	<?php endif; ?>
 
 </body>
 </html>

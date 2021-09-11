@@ -143,9 +143,9 @@ img{ border:0; }
 .small{ font-size:90%; }
 
 .footer{
-  text-align:center;
   font-size:12px;
   padding-top:10px;
+  margin-bottom: 30px;
   clear:both;
 }
 
@@ -153,6 +153,26 @@ img{ border:0; }
   border-top:1px solid #ff6400;
   margin-top:24px;
   padding-top:10px;
+}
+
+#footer_links {
+	height: 32px;
+}
+#footer_links a,
+#footer_links #headway {
+	margin-right: 10px;
+	display: inline-block;
+	height: 32px;
+	line-height: 32px;
+}
+
+#footer_links img {
+	vertical-align: middle;
+}
+
+#footer_links .HW_badge_cont {
+	display: inline-block;
+	vertical-align: middle;
 }
 
 a{

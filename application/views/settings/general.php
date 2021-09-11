@@ -282,7 +282,7 @@ echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 	<div>Enabling Maintenance Mode prevents Teacher user accounts from viewing and making bookings. All users can still log in to make changes to their own account or change their password.</div>
 
 	<p>
-		<label for="maintenance_mode">Maintenance Mode</label>
+		<label for="maintenance_mode">Enable</label>
 		<?php
 		$value = set_value('maintenance_mode', element('maintenance_mode', $settings, '0'), FALSE);
 		echo form_hidden('maintenance_mode', '0');
@@ -316,6 +316,33 @@ echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 	<?php echo form_error($field) ?>
 
 </fieldset>
+
+
+<fieldset>
+
+	<legend accesskey="O" tabindex="<?php echo tab_index() ?>">Other</legend>
+
+	<p>
+		<label for="headway_widget_enabled">Updates widget</label>
+		<?php
+		$field = 'headway_widget_enabled';
+		$value = set_value($field, element($field, $settings, '0'), FALSE);
+		echo form_hidden($field, '0');
+		$input = form_checkbox(array(
+			'name' => $field,
+			'id' => $field,
+			'value' => '1',
+			'tabindex' => tab_index(),
+			'checked' => ($value == '1')
+		));
+		echo "<label for='{$field}' class='ni'>{$input} Show updates widget in footer (for admin users only)</label>";
+		?>
+	</p>
+
+	<br>
+
+</fieldset>
+
 
 
 
