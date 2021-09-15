@@ -114,7 +114,7 @@ abstract class BaseAgent
 
 		$this->all_periods = $this->CI->periods_model->GetBookable();
 		$this->all_rooms = $this->CI->rooms_model->get_bookable_rooms($this->user->user_id);
-		$this->all_departments = $this->CI->departments_model->Get();
+		$this->all_departments = $this->CI->departments_model->Get(NULL, NULL, NULL);
 		$this->all_users = $this->CI->users_model->Get(NULL, NULL, NULL);
 	}
 
