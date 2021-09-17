@@ -45,8 +45,11 @@ if ($show_room_col) {
 	$cols[] = ['data' => 'Room'];
 }
 
-$cols[] = ['data' => 'Department'];
-$cols[] = ['data' => 'User'];
+if ($is_admin) {
+	$cols[] = ['data' => 'Department'];
+	$cols[] = ['data' => 'User'];
+}
+
 $cols[] = ['data' => 'Notes'];
 
 $this->table->set_heading($cols);
@@ -146,8 +149,10 @@ foreach ($multibooking->slots as $key => $slot) {
 	$row[] = $check_col;
 	$row[] = $date_col;
 	if ($show_room_col) $row[] = $slot->room->name;
-	$row[] = $department_col;
-	$row[] = $user_col;
+	if ($is_admin) {
+		$row[] = $department_col;
+		$row[] = $user_col;
+	}
 	$row[] = $notes_col;
 
 	$this->table->add_row($row);

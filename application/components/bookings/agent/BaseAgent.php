@@ -138,6 +138,8 @@ abstract class BaseAgent
 			'return_uri' => isset($_SESSION['return_uri']) ? $_SESSION['return_uri'] : '',
 			'user' => $this->user,
 			'is_admin' => $this->is_admin,
+			'allow_single' => TRUE,
+			'allow_recurring' => ($this->is_admin ? TRUE : FALSE),
 
 			'all_periods' => $this->all_periods,
 			'all_rooms' => $this->all_rooms,

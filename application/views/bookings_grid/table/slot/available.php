@@ -24,7 +24,7 @@ $input_value = json_encode([
 
 <td class='<?= $class ?>'>
 
-	<?php if ($this->userauth->is_level(ADMINISTRATOR)): ?>
+
 
 	<label
 		style="display: none"
@@ -41,11 +41,11 @@ $input_value = json_encode([
 		?>
 	</label>
 
-	<?php endif; ?>
+
 
 	<button
 		class="bookings-grid-button multi-select-content"
-		<?php if ($this->userauth->is_level(ADMINISTRATOR)): ?>up-show-for=":unchecked"<?php endif; ?>
+		up-show-for=":unchecked"
 		up-href="<?= $url ?>"
 		up-target=".bookings-create"
 		up-layer="new"

@@ -25,6 +25,7 @@ class MultiAgent extends BaseAgent
 
 	private $selected_slots;
 	private $multibooking;
+	private $max_allowed_bookings = NULL;
 
 
 	public function get_view_data()
@@ -50,6 +51,15 @@ class MultiAgent extends BaseAgent
 
 		if (strlen($department_id)) {
 			$this->department = $this->CI->departments_model->Get($department_id);
+		}
+
+		// Check if the number of bookings selected is within the user's quote
+		if ( ! $this->admin) {
+			$max_active_bookings = (int) abs(setting('num_max_bookings'));
+			if ($max_active_bookings > 0) {
+				$user_active_booking_count = $this->CI->bookings_model->CountScheduledByUser($this->user->user_id);
+				$this->max_allowed_bookings = ($max_active_bookings - $user_active_booking_count);
+			}
 		}
 
 		$this->view = 'bookings/create/multi';
@@ -247,6 +257,14 @@ class MultiAgent extends BaseAgent
 			throw new AgentException("You did not select any free slots to book.");
 		}
 
+
+		if ( ! $this->is_admin && is_numeric($this->max_allowed_bookings)) {
+			if (count($slots) > $this->max_allowed_bookings) {
+				$msg = "You can only create %d more booking(s), please select fewer slots.";
+				throw new AgentException(sprintf($msg, $this->max_allowed_bookings));
+			}
+		}
+
 		// Rows of data for multibooking.
 		$rows = [];
 
@@ -354,16 +372,33 @@ class MultiAgent extends BaseAgent
 			// Not in form
 			if ( ! isset($form_slots[$mbs_id])) continue;
 			$form_slot = $form_slots[$mbs_id];
+
 			// Not selected for creation
 			if ($form_slot['create'] == 0) continue;
+
+			$department_id = NULL;
+			if (isset($form_slot['department_id'])) {
+				$department_id = $form_slot['department_id'];
+			}
+
+			$user_id = NULL;
+			if (isset($form_slot['user_id'])) {
+				$user_id = $form_slot['user_id'];
+			}
+
+			// Force logged-in user details for non-admins
+			if ( ! $this->is_admin) {
+				$user_id = $this->user->user_id;
+				$department_id = $this->user->department_id;
+			}
 
 			$booking_data = [
 				'date' => $slot_data->date,
 				'session_id' => $multibooking->session_id,
 				'period_id' => $slot_data->period_id,
 				'room_id' => $slot_data->room_id,
-				'department_id' => strlen($form_slot['department_id']) ? $form_slot['department_id'] : NULL,
-				'user_id' => strlen($form_slot['user_id']) ? $form_slot['user_id'] : NULL,
+				'department_id' => strlen($department_id) ? $department_id : NULL,
+				'user_id' => strlen($user_id) ? $user_id : NULL,
 				'notes' => strlen($form_slot['notes']) ? $form_slot['notes'] : NULL,
 			];
 

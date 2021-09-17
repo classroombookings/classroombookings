@@ -71,10 +71,10 @@ class Grid
 		$form_close = form_close();
 
 		if ($this->CI->userauth->is_level(ADMINISTRATOR)) {
-			$out = "{$controls}\n{$header}\n{$form_open}\n{$body}\n{$footer}\n{$form_close}\n{$legend}\n";
 		} else {
 			$out = "{$controls}\n{$header}\n{$body}\n{$footer}\n{$legend}\n";
 		}
+			$out = "{$controls}\n{$header}\n{$form_open}\n{$body}\n{$footer}\n{$form_close}\n{$legend}\n";
 
 		return "<div id='bookings_grid' up-hungry>{$out}</div>";
 	}
@@ -103,9 +103,9 @@ class Grid
 	 */
 	public function render_footer()
 	{
-		if ( ! $this->CI->userauth->is_level(ADMINISTRATOR)) {
-			return '';
-		}
+		// if ( ! $this->CI->userauth->is_level(ADMINISTRATOR)) {
+		// 	return '';
+		// }
 
 		if ($this->context->exception) {
 			return '';

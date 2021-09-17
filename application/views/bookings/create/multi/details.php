@@ -27,48 +27,59 @@ echo form_open(current_url(), $attrs, $hidden);
 
 echo "<fieldset class='cssform-stacked' style='border:0;padding:0;margin-bottom:0;'>";
 
-// Type
-//
-$week = week_dot($multibooking->week, 'sm') . ' ' . $multibooking->week->name;
+if ($allow_recurring) {
 
-$options = [
-	['value' => 'single', 'label' => 'Single bookings on the selected dates'],
-	['value' => 'recurring', 'label' => sprintf('Recurring bookings every week <small>(%s)</small>', $week)],
-];
-$field = 'type';
-$label = form_label('Type');
-$value = set_value($field);
+	// Allow selection of single/recurring
+	//
 
-$inputs_html = '';
-foreach ($options as $opt) {
-	$id = sprintf('type_%s', $opt['value']);
-	$input = form_radio([
-		'name' => $field,
-		'id' => $id,
-		'value' => $opt['value'],
-		'checked' => ($value == $opt['value']),
-		'up-switch' => '.booking-type-content',
-	]);
-	$radio_label = "<label for='{$id}' class='ni'>{$input}{$opt['label']}</label>";
-	$inputs_html .= $radio_label;
+	// Type
+	//
+	$week = week_dot($multibooking->week, 'sm') . ' ' . $multibooking->week->name;
+
+	$options = [
+		['value' => 'single', 'label' => 'Single bookings on the selected dates'],
+		['value' => 'recurring', 'label' => sprintf('Recurring bookings every week <small>(%s)</small>', $week)],
+	];
+	$field = 'type';
+	$label = form_label('Type');
+	$value = set_value($field);
+
+	$inputs_html = '';
+	foreach ($options as $opt) {
+		$id = sprintf('type_%s', $opt['value']);
+		$input = form_radio([
+			'name' => $field,
+			'id' => $id,
+			'value' => $opt['value'],
+			'checked' => ($value == $opt['value']),
+			'up-switch' => '.booking-type-content',
+		]);
+		$radio_label = "<label for='{$id}' class='ni'>{$input}{$opt['label']}</label>";
+		$inputs_html .= $radio_label;
+	}
+
+	echo sprintf("<p class='input-group'>%s%s</p>%s", $label, $inputs_html, form_error($field));
+
+	echo "</fieldset>";
+
+
+	// Recurring info (different views depending on single or recurring)
+	//
+
+	echo "<div class='booking-type-content' up-show-for='single'>";
+	$this->load->view('bookings/create/multi/details_single');
+	echo "</div>";
+
+	echo "<div class='booking-type-content' up-show-for='recurring'>";
+	$this->load->view('bookings/create/multi/details_recurring');
+	echo "</div>";
+
+} else {
+
+	echo form_hidden('type', 'single');
+	$this->load->view('bookings/create/multi/details_single');
+
 }
-
-echo sprintf("<p class='input-group'>%s%s</p>%s", $label, $inputs_html, form_error($field));
-
-echo "</fieldset>";
-
-
-// Recurring info (different views depending on single or recurring)
-//
-
-echo "<div class='booking-type-content' up-show-for='single'>";
-$this->load->view('bookings/create/multi/details_single');
-echo "</div>";
-
-echo "<div class='booking-type-content' up-show-for='recurring'>";
-$this->load->view('bookings/create/multi/details_recurring');
-echo "</div>";
-
 
 
 // Footer (submit or canceL)
@@ -86,7 +97,11 @@ $submit_recurring = form_button([
 	'content' => 'Next &rarr;',
 ]);
 
-echo "<div class='booking-type-content' style='border-top:0px;' up-show-for='single'>{$submit_single} &nbsp; {$cancel}</div>";
-echo "<div class='booking-type-content' style='border-top:0px;' up-show-for='recurring'>{$submit_recurring} &nbsp; {$cancel}</div>";
+if ($allow_recurring) {
+	echo "<div class='booking-type-content' style='border-top:0px;' up-show-for='single'>{$submit_single} &nbsp; {$cancel}</div>";
+	echo "<div class='booking-type-content' style='border-top:0px;' up-show-for='recurring'>{$submit_recurring} &nbsp; {$cancel}</div>";
+} else {
+	echo "<div class='booking-type-content' style='border-top:0px;'>{$submit_single} &nbsp; {$cancel}</div>";
+}
 
 echo form_close();
