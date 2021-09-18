@@ -53,7 +53,7 @@ class MultiAgent extends BaseAgent
 			$this->department = $this->CI->departments_model->Get($department_id);
 		}
 
-		// Check if the number of bookings selected is within the user's quote
+		// Check if the number of bookings selected is within the user's quota
 		if ( ! $this->admin) {
 			$max_active_bookings = (int) abs(setting('num_max_bookings'));
 			if ($max_active_bookings > 0) {
@@ -260,7 +260,7 @@ class MultiAgent extends BaseAgent
 
 		if ( ! $this->is_admin && is_numeric($this->max_allowed_bookings)) {
 			if (count($slots) > $this->max_allowed_bookings) {
-				$msg = "You can only create %d more booking(s), please select fewer slots.";
+				$msg = "You can only create %d more booking(s), please select fewer periods.";
 				throw new AgentException(sprintf($msg, $this->max_allowed_bookings));
 			}
 		}
