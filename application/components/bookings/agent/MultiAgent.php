@@ -260,7 +260,7 @@ class MultiAgent extends BaseAgent
 
 		if ( ! $this->is_admin && is_numeric($this->max_allowed_bookings)) {
 			if (count($slots) > $this->max_allowed_bookings) {
-				$msg = "You can only create %d more booking(s), please select fewer periods.";
+				$msg = "You can only create a maximum of %d booking(s), please select fewer periods.";
 				throw new AgentException(sprintf($msg, $this->max_allowed_bookings));
 			}
 		}

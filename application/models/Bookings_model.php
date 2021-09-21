@@ -460,8 +460,15 @@ class Bookings_model extends CI_Model
 
 		$row->date = datetime_from_string($row->date);
 		if (is_object($row->date)) {
-			$row->time_start = datetime_from_string(sprintf('%s %s', $row->date->format('Y-m-d'), $row->time_start));
-			$row->time_end = datetime_from_string(sprintf('%s %s', $row->date->format('Y-m-d'), $row->time_end));
+			if (isset($row->period) && is_object($row->period)) {
+				$time_start = $row->period->time_start;
+				$time_end = $row->period->time_end;
+			} else {
+				$time_start = $row->time_start;
+				$time_end = $row->time_end;
+			}
+			$row->time_start = datetime_from_string(sprintf('%s %s', $row->date->format('Y-m-d'), $time_start));
+			$row->time_end = datetime_from_string(sprintf('%s %s', $row->date->format('Y-m-d'), $time_end));
 		}
 
 		foreach ($this->include as $include) {
@@ -583,29 +590,62 @@ class Bookings_model extends CI_Model
 	}
 
 
-	function ByRoomOwner($user_id = 0)
+	function ByRoomOwner($user_id)
 	{
-		$maxdate = date("Y-m-d", strtotime("+14 days", Now()));
-		$today = date("Y-m-d");
-		$sql = "SELECT rooms.*, bookings.*, users.username, users.displayname, users.user_id, periods.name as periodname
-				FROM bookings
-				JOIN rooms ON rooms.room_id=bookings.room_id
-				JOIN users ON users.user_id=bookings.user_id
-				JOIN periods ON periods.period_id=bookings.period_id
-				WHERE rooms.user_id='$user_id' AND bookings.status=10
-				AND bookings.date IS NOT NULL
-				AND bookings.date <= '$maxdate'
-				AND bookings.date >= '$today'
-				ORDER BY bookings.date, rooms.name ";
+		$date = new \DateTime();
+		$start = $date->format('Y-m-d');
+		$date->modify('+14 days');
+		$end = $date->format('Y-m-d');
 
-		$query = $this->db->query($sql);
+		$this->db->reset_query();
 
-		if ($query->num_rows() > 0) {
-			// We have some bookings
-			return $query->result();
+		$this->db->select([
+			'b.date',
+			'b.notes',
+		]);
+
+		$this->db->select([
+			'p.name AS period__name',
+			'p.time_start AS period__time_start',
+			'p.time_end AS period__time_end',
+		], FALSE);
+
+		$this->db->select([
+			'r.room_id AS room__room_id',
+			'r.name AS room__name',
+		], FALSE);
+
+		$this->db->select([
+			'u.user_id AS user__user_id',
+			'u.username AS user__username',
+			'u.displayname AS user__displayname'
+		], FALSE);
+
+		$this->db->from("{$this->table} AS b");
+		$this->db->join('periods p', 'period_id', 'INNER');
+		$this->db->join('rooms r', 'room_id', 'INNER');
+		$this->db->join('users u', 'b.user_id = u.user_id', 'INNER');
+
+		$this->db->where('r.user_id', $user_id);
+		$this->db->where('b.user_id!=', $user_id);
+		$this->db->where('b.repeat_id IS NULL');
+		$this->db->where('b.status', self::STATUS_BOOKED);
+		$this->db->where('b.date>=', $start);
+		$this->db->where('b.date<=', $end);
+
+		$this->db->order_by('b.date', 'ASC');
+		$this->db->order_by('p.time_start', 'ASC');
+
+		$query = $this->db->get();
+		$result = $query->result();
+
+		if ($query->num_rows() == 0) return FALSE;
+
+		foreach ($result as &$row) {
+			$row = $this->wake_value($row);
 		}
 
-		return FALSE;
+		return $result;
 	}
 
 
@@ -613,36 +653,69 @@ class Bookings_model extends CI_Model
 
 	function ByUser($user_id)
 	{
-		$maxdate = date("Y-m-d", strtotime("+14 days", Now()));
-		$today = date("Y-m-d");
-		// All current bookings for this user between today and 2 weeks' time
-		$sql = "SELECT rooms.*, bookings.*, periods.name as periodname, periods.time_start, periods.time_end
-				FROM bookings
-				JOIN rooms ON rooms.room_id=bookings.room_id
-				JOIN periods ON periods.period_id=bookings.period_id
-				WHERE bookings.user_id='$user_id' AND bookings.status=10
-				AND bookings.date IS NOT NULL
-				AND bookings.date <= '$maxdate'
-				AND bookings.date >= '$today'
-				ORDER BY bookings.date asc, periods.time_start asc";
+		$date = new \DateTime();
+		$start = $date->format('Y-m-d');
+		$time = $date->format('H:i') . ':00';
+		$date->modify('+14 days');
+		$end = $date->format('Y-m-d');
 
-		$query = $this->db->query($sql);
-		if ($query->num_rows() > 0) {
-			return $query->result();
-		} else {
-			return false;
+		$this->db->reset_query();
+
+		$this->db->select([
+			'b.date',
+			'b.notes',
+		]);
+
+		$this->db->select([
+			'p.name AS period__name',
+			'p.time_start AS period__time_start',
+			'p.time_end AS period__time_end',
+		], FALSE);
+
+		$this->db->select([
+			'r.room_id AS room__room_id',
+			'r.name AS room__name',
+		], FALSE);
+
+		$this->db->from("{$this->table} AS b");
+		$this->db->join('periods p', 'period_id', 'INNER');
+		$this->db->join('rooms r', 'room_id', 'INNER');
+
+		$this->db->where('b.user_id', $user_id);
+		$this->db->where('b.repeat_id IS NULL');
+		$this->db->where('b.status', self::STATUS_BOOKED);
+
+		$this->db->where('b.date<=', $end);
+
+		$start = $this->db->escape($start);
+		$end = $this->db->escape($end);
+		$time = $this->db->escape($time);
+		$this->db->where("( (b.date > {$start}) OR (b.date = {$start} AND p.time_start > {$time}) )");
+
+		$this->db->order_by('b.date', 'ASC');
+		$this->db->order_by('p.time_start', 'ASC');
+
+		$query = $this->db->get();
+		$result = $query->result();
+
+		if ($query->num_rows() == 0) return FALSE;
+
+		foreach ($result as &$row) {
+			$row = $this->wake_value($row);
 		}
+
+		return $result;
 	}
 
 
 	public function CountScheduledByUser($user_id)
 	{
 		$today = date("Y-m-d");
-		$time = date('H:i');
+		$time = date('H:i') . ':00';
 
 		$sql = 'SELECT COUNT(booking_id) AS total
 				FROM bookings
-				JOIN periods ON periods.period_id = bookings.period_id
+				INNER JOIN periods USING (period_id)
 				WHERE bookings.user_id = ?
 				AND bookings.status = 10
 				AND bookings.date IS NOT NULL
@@ -666,7 +739,7 @@ class Bookings_model extends CI_Model
 
 	function TotalNum($user_id = 0)
 	{
-		$today = date("Y-m-d");
+		$total = [];
 
 		// All bookings by user, EVER!
 		$sql = "SELECT COUNT(booking_id) AS total
@@ -674,25 +747,26 @@ class Bookings_model extends CI_Model
 				WHERE user_id = ?";
 		$query = $this->db->query($sql, [$user_id]);
 		$row = $query->row_array();
-		$total['all'] = $row['total'];
+		$total['all'] = (int) $row['total'];
 
-		// All bookings by user, for this academic year, up to and including today
-		$sql = "SELECT COUNT(booking_id) AS total
-				FROM bookings
-				JOIN academicyears ON bookings.date >= academicyears.date_start
-				WHERE bookings.user_id = ? ";
+		// All bookings by user, for the current session
+		$sql = "SELECT COUNT(b.booking_id) AS total
+				FROM bookings b
+				JOIN sessions s USING (session_id)
+				WHERE b.user_id = ?
+				AND s.is_current = 1";
 		$query = $this->db->query($sql, [$user_id]);
 		$row = $query->row_array();
-		$total['yeartodate'] = $row['total'];
+		$total['session'] = (int) $row['total'];
 
 		// All bookings up to and including today
-		$sql = "SELECT COUNT(booking_id) AS total
-				FROM bookings
-				WHERE bookings.user_id = ?
-				AND bookings.date <= ?";
-		$query = $this->db->query($sql, [$user_id, $today]);
-		$row = $query->row_array();
-		$total['todate'] = $row['total'];
+		// $sql = "SELECT COUNT(booking_id) AS total
+		// 		FROM bookings
+		// 		WHERE bookings.user_id = ?
+		// 		AND bookings.date <= ?";
+		// $query = $this->db->query($sql, [$user_id, $today]);
+		// $row = $query->row_array();
+		// $total['todate'] = $row['total'];
 
 		$total['active'] = $this->CountScheduledByUser($user_id);
 

@@ -145,4 +145,5 @@ $autoload['language'] = array();
 */
 $autoload['model'] = array(
 	'settings_model',
+	'menu_model',
 );

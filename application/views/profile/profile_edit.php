@@ -1,5 +1,7 @@
 <?php
 
+echo $this->session->flashdata('saved');
+
 echo form_open('profile/save', array('class' => 'cssform', 'id' => 'profile_edit'));
 
 ?>
@@ -138,8 +140,6 @@ echo form_open('profile/save', array('class' => 'cssform', 'id' => 'profile_edit
 <?php
 $this->load->view('partials/submit', array(
 	'submit' => array('Save', tab_index()),
-	'cancel' => array('Cancel', tab_index(), 'profile'),
 ));
 
 echo form_close();
-?>
