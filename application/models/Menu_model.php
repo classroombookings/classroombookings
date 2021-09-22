@@ -87,12 +87,6 @@ class Menu_model extends CI_Model
 		];
 
 		$items[] = [
-			'label' => 'Rooms',
-			'icon' => 'school_manage_rooms.png',
-			'url' => site_url('rooms'),
-		];
-
-		$items[] = [
 			'label' => 'Departments',
 			'icon' => 'school_manage_departments.png',
 			'url' => site_url('departments'),
