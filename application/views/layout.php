@@ -119,11 +119,23 @@ $global_menu = $this->menu_model->global();
 					<div class="block b-50">
 						<div id="footer_links">
 							<?php
+							if ($this->userauth->is_level(ADMINISTRATOR)) {
+								$global_menu[] = [
+									'label' => 'Updates',
+									'url' => 'https://headwayapp.co/classroombookings-updates',
+									'ext' => true,
+									'icon' => 'feed.png',
+								];
+							}
 							if ( ! empty($global_menu)) {
 								foreach ($global_menu as $idx => $item) {
+									$attrs = '';
+									if (isset($item['ext']) && $item['ext']) {
+										$attrs .= " target='_blank' rel='noopener' ";
+									}
 									$icon = img('assets/images/ui/' . $item['icon'], FALSE, "align='top' alt='{$item['label']}'");
 									$label = $icon . $item['label'];
-									echo anchor($item['url'], $label);
+									echo anchor($item['url'], $label, $attrs);
 								}
 							} else {
 								echo "&nbsp;";
@@ -152,19 +164,6 @@ $global_menu = $this->menu_model->global();
 		echo "<script type='text/javascript' src='{$url}'></script>\n";
 	}
 	?>
-
-	<?php if ($show_headway_widget): ?>
-	<script>
-	var HW_config = {
-		selector: "#footer_links",
-		account:  "yp6mN7",
-		readMore: 'readmore',
-		footer: 'footer',
-		position: { y: 'top' },
-	}
-	</script>
-	<script async src="https://cdn.headwayapp.co/widget.js"></script>
-	<?php endif; ?>
 
 </body>
 </html>

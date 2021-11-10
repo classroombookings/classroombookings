@@ -71,7 +71,6 @@ class General extends MY_Controller
 		$this->form_validation->set_rules('login_message_text', 'Login message text', 'max_length[1024]');
 		$this->form_validation->set_rules('maintenance_mode', 'Maintenance mode', 'is_natural');
 		$this->form_validation->set_rules('maintenance_mode_message', 'Maintenance mode message', 'max_length[1024]');
-		$this->form_validation->set_rules('headway_widget_enabled', 'Updates widget', 'is_natural');
 
 		if ($this->form_validation->run() == FALSE) {
 			return FALSE;
@@ -92,7 +91,6 @@ class General extends MY_Controller
 			'login_message_text' => $this->input->post('login_message_text'),
 			'maintenance_mode' => $this->input->post('maintenance_mode'),
 			'maintenance_mode_message' => $this->input->post('maintenance_mode_message'),
-			'headway_widget_enabled' => $this->input->post('headway_widget_enabled'),
 		);
 
 		$settings['colour'] = '468ED8';

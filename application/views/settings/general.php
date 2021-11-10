@@ -318,33 +318,6 @@ echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 </fieldset>
 
 
-<fieldset>
-
-	<legend accesskey="O" tabindex="<?php echo tab_index() ?>">Other</legend>
-
-	<p>
-		<label for="headway_widget_enabled">Updates widget</label>
-		<?php
-		$field = 'headway_widget_enabled';
-		$value = set_value($field, element($field, $settings, '0'), FALSE);
-		echo form_hidden($field, '0');
-		$input = form_checkbox(array(
-			'name' => $field,
-			'id' => $field,
-			'value' => '1',
-			'tabindex' => tab_index(),
-			'checked' => ($value == '1')
-		));
-		echo "<label for='{$field}' class='ni'>{$input} Show updates widget in footer (for admin users only)</label>";
-		?>
-	</p>
-
-	<br>
-
-</fieldset>
-
-
-
 
 <?php
 

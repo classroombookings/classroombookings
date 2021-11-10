@@ -23,8 +23,6 @@ class MY_Controller extends CI_Controller
 		$this->load->library('session');
 		$this->load->library('form_validation');
 
-		$this->data['show_headway_widget'] = FALSE;
-
 		if (get_class($this) !== 'Install' && get_class($this) !== 'Upgrade') {
 
 			if ( ! config_item('is_installed')) {
@@ -43,10 +41,6 @@ class MY_Controller extends CI_Controller
 			$tz = setting('timezone');
 			if (strlen($tz)) {
 				date_default_timezone_set($tz);
-			}
-
-			if ($this->userauth->is_level(ADMINISTRATOR) && setting('headway_widget_enabled')) {
-				$this->data['show_headway_widget'] = TRUE;
 			}
 		}
 

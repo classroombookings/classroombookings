@@ -180,18 +180,17 @@ img{ border:0; }
 #footer_links {
 	height: 32px;
 }
-#footer_links a,
-#footer_links #headway {
+#footer_links a {
 	margin-right: 16px;
 	display: inline-block;
 	height: 32px;
 	line-height: 32px;
-	font-size: 11px;
+	font-size: 10px;
 	font-weight: bold;
 }
 
 #footer_links a img {
-	vertical-align: -10%;
+	vertical-align: -11%;
 	margin-right: 4px;
 }
 
