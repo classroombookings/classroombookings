@@ -3,7 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 // Classroombookings version
 //
-define('VERSION', '2.6.0-beta5');
+define('VERSION', '2.6.0-beta6');
 
 // User auth types
 //
