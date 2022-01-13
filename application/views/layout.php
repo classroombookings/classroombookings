@@ -122,7 +122,7 @@ $global_menu = $this->menu_model->global();
 							if ($this->userauth->is_level(ADMINISTRATOR)) {
 								$global_menu[] = [
 									'label' => 'Updates',
-									'url' => 'https://headwayapp.co/classroombookings-updates',
+									'url' => 'https://www.classroombookings.com/news/',
 									'ext' => true,
 									'icon' => 'feed.png',
 								];
