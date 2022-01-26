@@ -273,6 +273,8 @@ class SingleAgent extends BaseAgent
 				$actions['do_not_book'] = 'Do not book';
 			}
 
+			$slots[$key]['actions'] = $actions;
+
 		}
 
 		$this->view_data['slots'] = $slots;

@@ -1129,6 +1129,8 @@ a.booking-action:hover {
 	.session-calendar .date-btn:hover {
 		/*background: #333;*/
 		outline: 2px solid #FFDC00;
+		z-index: 100;
+		position: relative;
 	}
 
 
