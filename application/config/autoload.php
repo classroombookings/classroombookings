@@ -99,6 +99,7 @@ $autoload['helper'] = array(
 	'html',
 	'array',
 	'crbs',
+	'unpoly',
 );
 
 /*
@@ -144,4 +145,5 @@ $autoload['language'] = array();
 */
 $autoload['model'] = array(
 	'settings_model',
+	'menu_model',
 );

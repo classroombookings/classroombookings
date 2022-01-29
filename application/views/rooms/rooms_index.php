@@ -44,7 +44,7 @@ $sort_cols = ["Name", "Location", "Teacher", "Notes", "Photo", "None"];
 				$url = site_url("rooms/photo/{$room->room_id}");
 				$icon_src = base_url('assets/images/ui/picture.png');
 				$icon_el = "<img src='{$icon_src}' width='16' height='16' alt='View Photo'>";
-				echo "<a href='{$url}' up-history='false' up-drawer='.room-photo' title='View Photo'>{$icon_el}</a>";
+				echo "<a href='{$url}' up-history='false' up-layer='new drawer' up-target='.room-photo' title='View Photo'>{$icon_el}</a>";
 			}
 			?>
 		</td>

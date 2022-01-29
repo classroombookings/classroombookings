@@ -3,7 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 // Classroombookings version
 //
-define('VERSION', '2.5.0');
+define('VERSION', '2.6.0');
 
 // User auth types
 //
@@ -12,6 +12,14 @@ define('TEACHER', 2) ;
 
 // Demo mode
 define('DEMO_MODE', is_file(FCPATH . 'local/.demo'));
+
+
+// Times
+define('TIME_MINUTE', 60);
+define('TIME_HOUR', 60 * TIME_MINUTE);
+define('TIME_DAY', 24 * TIME_HOUR);
+define('TIME_WEEK', 7 * TIME_DAY);
+define('TIME_MONTH', 4 * TIME_WEEK);
 
 
 /*

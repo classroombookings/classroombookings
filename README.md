@@ -19,3 +19,11 @@ Please check out [GitHub Issues](https://github.com/craigrodway/classroombooking
 
 ## Security
 To report any security issues, please email craig@classroombookings.com instead of using the issue tracker.
+
+## Credits
+
+This project makes use of several third parties, some of which are listed below.
+
+- [CodeIgniter](https://codeigniter.com/) (MIT)
+- [Unpoly](https://unpoly.com/) (MIT)
+- [FamFamFam Silk Icons](http://www.famfamfam.com/lab/icons/silk/) ([CC BY 3.0](https://creativecommons.org/licenses/by/3.0/), Unmodified)

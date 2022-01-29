@@ -21,7 +21,12 @@
 		$photo_html = "<div class='room-photo'>{$img}</div>";
 	}
 
-	echo $fields_html;
+	if ( ! empty($room_info)) {
+		echo $fields_html;
+	} else {
+		echo "<p><em>No details available.</em></p>";
+	}
+
 	echo $photo_html;
 
 	?>

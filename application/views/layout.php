@@ -1,15 +1,5 @@
 <?php
-
-if ($this->userauth->logged_in()) {
-	$menu[1]['text'] = img('assets/images/ui/link_controlpanel.png', FALSE, 'hspace="4" align="top" alt=" "') . 'Control Panel';
-	$menu[1]['href'] = site_url('/');
-	$menu[1]['title'] = 'Tasks';
-
-	if($this->userauth->is_level(ADMINISTRATOR)){ $icon = 'user_administrator.png'; } else { $icon = 'user_teacher.png'; }
-	$menu[3]['text'] = img('assets/images/ui/logout.png', FALSE, 'hspace="4" align="top" alt=" "') . 'Logout';
-	$menu[3]['href'] = site_url('logout');
-	$menu[3]['title'] = 'Log out of classroombookings';
-}
+$global_menu = $this->menu_model->global();
 ?>
 
 <!DOCTYPE html>
@@ -54,48 +44,56 @@ if ($this->userauth->logged_in()) {
 		echo "</div>";
 	}
 	?>
-	<div class="outer">
+	<div class="outer" up-main>
 
 		<div class="header">
 
-			<div class="nav-box">
-				<?php if( ! $this->userauth->logged_in()) { echo '<br /><br />'; } ?>
-				<?php
-				$i=0;
-				if(isset($menu)){
-					foreach( $menu as $link ){
-						echo "\n".'<a href="'.$link['href'].'" title="'.$link['title'].'">'.$link['text'].'</a>'."\n";
-						if( $i < count($menu)-1 ){ echo img('assets/images/blank.png', FALSE, 'width="16" height="16"'); }
-						$i++;
+			<div class="block-group">
+
+				<div class="block b-50 header-title">
+					<div class="title">
+						<?php
+						$name = '';
+						$output = '';
+						$attrs = '';
+						if (config_item('is_installed')) {
+							$name = setting('name');
+						}
+						if (strlen($name)) {
+							$name = html_escape($name);
+						} else {
+							$attrs = "title='classroombookings' style='font-weight:normal;color:#0081C2;letter-spacing:-2px'";
+							$name = "classroom";
+							$name .= "<span style='color:#ff6400;font-weight:bold'>bookings</span>";
+						}
+						echo anchor('/', $name, $attrs);
+						?>
+					</div>
+				</div>
+
+				<div class="block b-50 header-meta">
+					<?php
+					if ( ! empty($global_menu)) {
+						echo "<p class='iconbar'>";
+						foreach ($global_menu as $idx => $item) {
+							$icon = img('assets/images/ui/' . $item['icon'], FALSE, "align='top' alt='{$item['label']}'");
+							$label = $icon . $item['label'];
+							echo anchor($item['url'], $label);
+						}
+						echo "</p>";
 					}
-				}
-				?><br />
-				<?php
-				if ($this->userauth->logged_in()) {
-					$output = html_escape(strlen($this->userauth->user->displayname) > 1 ? $this->userauth->user->displayname : $this->userauth->user->username);
-					echo "<p class='normal'>Logged in as {$output}</p>";
-				}
-				?>
+
+					if ($this->userauth->logged_in()) {
+						$label = strlen($this->userauth->user->displayname) > 1
+							? $this->userauth->user->displayname
+							: $this->userauth->user->username;
+						echo sprintf('<p class="normal">Logged in as %s</p>', html_escape($label));
+					}
+
+					?>
+				</div>
+
 			</div>
-
-			<br />
-
-			<span class="title">
-				<?php
-				$name = '';
-				if (config_item('is_installed')) {
-					$name = setting('name');
-				}
-				if (strlen($name)) {
-					echo anchor('/', html_escape($name));
-				} else {
-					$attrs = "title='classroombookings' style='font-weight:normal;color:#0081C2;letter-spacing:-2px'";
-					$output = "classroom";
-					$output .= "<span style='color:#ff6400;font-weight:bold'>bookings</span>";
-					echo anchor('/', $output, $attrs);
-				}
-				?>
-			</span>
 
 		</div>
 
@@ -106,40 +104,63 @@ if ($this->userauth->logged_in()) {
 		<?php endif; ?>
 
 		<div class="content_area">
-			<?php if(isset($showtitle)){ echo '<h2>'.html_escape($showtitle).'</h2>'; } ?>
-			<?php echo $body ?>
+			<?php
+			if (isset($showtitle) && strlen($showtitle)) {
+				echo '<h2>'.html_escape($showtitle).'</h2>';
+			}
+			echo $body;
+			?>
 		</div>
 
 		<div class="footer">
-			<br />
-
 			<div id="footer">
-				<?php
-				if (isset($menu)) {
-					foreach( $menu as $link ) {
-						echo "\n".'<a href="'.$link['href'].'" title="'.$link['title'].'">'.$link['text'].'</a>'."\n";
-						echo img('assets/images/blank.png', FALSE, 'width="16" height="10" alt=" "');
-					}
-				}
-				?>
-				<br /><br />
-				<span style="font-size:90%;color:#678; line-height: 2">
-					<a href="https://www.classroombookings.com/" target="_blank">classroombookings</a> version <?= VERSION ?>.
-					&copy; <?= date('Y') ?> Craig A Rodway.
-					<br />
-					Load time: <?php echo $this->benchmark->elapsed_time() ?> seconds.
-				</span>
-				<br /><br />
+				<br>
+				<div class="block-group">
+					<div class="block b-50">
+						<div id="footer_links">
+							<?php
+							if ($this->userauth->is_level(ADMINISTRATOR)) {
+								$global_menu[] = [
+									'label' => 'Updates',
+									'url' => 'https://www.classroombookings.com/news/',
+									'ext' => true,
+									'icon' => 'feed.png',
+								];
+							}
+							if ( ! empty($global_menu)) {
+								foreach ($global_menu as $idx => $item) {
+									$attrs = '';
+									if (isset($item['ext']) && $item['ext']) {
+										$attrs .= " target='_blank' rel='noopener' ";
+									}
+									$icon = img('assets/images/ui/' . $item['icon'], FALSE, "align='top' alt='{$item['label']}'");
+									$label = $icon . $item['label'];
+									echo anchor($item['url'], $label, $attrs);
+								}
+							} else {
+								echo "&nbsp;";
+							}
+							?>
+						</div>
+					</div>
+					<div class="block b-50">
+						<div style="font-size:90%;color:#678; line-height: 2; text-align:right">
+							<span><a href="https://www.classroombookings.com/" target="_blank">classroombookings</a> version <?= VERSION ?>.
+							&copy; <?= date('Y') ?> Craig A Rodway.</span>
+							<br />
+							Load time: <?php echo $this->benchmark->elapsed_time() ?> seconds.
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
 
-	<div id="tipDiv" style="position:absolute; visibility:hidden; z-index:100"></div>
-
 	<?php
 	foreach ($scripts as $script)
 	{
-		$url = sprintf('%s?v=%s', base_url($script), VERSION);
+		$ver = VERSION . (ENVIRONMENT === 'development' ? '-' . time() : '');
+		$url = sprintf('%s?v=%s', base_url($script), $ver);
 		echo "<script type='text/javascript' src='{$url}'></script>\n";
 	}
 	?>

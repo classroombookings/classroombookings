@@ -35,10 +35,22 @@ class Users extends MY_Controller
 		// Cleanup import-related files if necessary
 		$this->cleanup_import();
 
+		$pp = 25;
+
+		$q = $this->input->get('q');
+
+		if (strlen($q)) {
+			$users = $this->users_model->search($q);
+			$user_count = $this->users_model->search($q, 'count');
+		} else {
+			$users = $this->users_model->Get(NULL, $pp, $page);
+			$user_count = $this->crud_model->Count('users');
+		}
+
 		$pagination_config = array(
 			'base_url' => site_url('users/index'),
-			'total_rows' => $this->crud_model->Count('users'),
-			'per_page' => 25,
+			'total_rows' => $user_count,
+			'per_page' => $pp,
 			'full_tag_open' => '<p class="pagination">',
 			'full_tag_close' => '</p>',
 		);
@@ -47,13 +59,13 @@ class Users extends MY_Controller
 		$this->pagination->initialize($pagination_config);
 
 		$this->data['pagelinks'] = $this->pagination->create_links();
-		$this->data['users'] = $this->users_model->Get(NULL, $pagination_config['per_page'], $page);
 
+		$this->data['users'] = $users;
 		$this->data['title'] = 'Manage Users';
 		$this->data['showtitle'] = $this->data['title'];
 		$this->data['body'] = $this->load->view('users/users_index', $this->data, TRUE);
 
-		return $this->render();
+		return up_target() ? $this->render_up() : $this->render();
 	}
 
 

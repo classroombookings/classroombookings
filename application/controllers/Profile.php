@@ -12,31 +12,8 @@ class Profile extends MY_Controller
 
 		$this->require_logged_in();
 
-		// Required libraries, models etc
-		$this->load->library('email');
 		$this->load->model('crud_model');
-		$this->load->model('bookings_model');
 		$this->load->model('users_model');
-	}
-
-
-	function index()
-	{
-		// Get User ID
-		$user_id = $this->userauth->user->user_id;
-
-		// Get bookings for a room if this user owns one
-		$this->data['myroom'] = $this->bookings_model->ByRoomOwner($user_id);
-		// Get all bookings made by this user (only staff ones)
-		$this->data['mybookings'] = $this->bookings_model->ByUser($user_id);
-		// Get totals
-		$this->data['total'] = $this->bookings_model->TotalNum($user_id);
-
-		$this->data['title'] = 'My Profile';
-		$this->data['showtitle'] = $this->data['title'];
-		$this->data['body'] = $this->load->view('profile/profile_index', $this->data, TRUE);
-
-		return $this->render();
 	}
 
 
@@ -111,7 +88,7 @@ class Profile extends MY_Controller
 
 		// Go back to index
 		$this->session->set_flashdata('saved', $flashmsg);
-		redirect('profile');
+		redirect('profile/edit');
 	}
 
 

@@ -1,8 +1,12 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+
 class Holidays_model extends CI_Model
 {
+
+
+	protected $table = 'holidays';
 
 
 	public function __construct()
@@ -11,39 +15,133 @@ class Holidays_model extends CI_Model
 	}
 
 
-	function Get($holiday_id = NULL)
+	public function get_by_session($session_id)
 	{
-		if ($holiday_id == NULL) {
-			return $this->crud_model->Get('holidays', NULL, NULL, NULL, 'date_start asc, date_end asc');
-		} else {
-			return $this->crud_model->Get('holidays', 'holiday_id', $holiday_id);
+		$where = [ 'session_id' => $session_id ];
+
+		$query = $this->db->from($this->table)
+			->where($where)
+			->order_by('date_start', 'ASC')
+			->get();
+
+		if ($query->num_rows() > 0) {
+			$result = $query->result();
+			foreach ($result as &$row) {
+				$row = $this->wake_value($row);
+			}
+			return $result;
 		}
+
+		return FALSE;
 	}
 
 
-	function Add($data)
+	public function get($holiday_id)
 	{
-		return $this->crud_model->Add('holidays', 'holiday_id', $data);
+		$where = [ 'holiday_id' => $holiday_id ];
+
+		$query = $this->db->get_where($this->table, $where, 1);
+
+		if ($query->num_rows() === 1) {
+			return $this->wake_value($query->row());
+		}
+
+		return FALSE;
 	}
 
 
-	function Edit($holiday_id, $data)
+
+	/**
+	 * Add a new holiday.
+	 *
+	 */
+	public function insert($data)
 	{
-		return $this->crud_model->Edit('holidays', 'holiday_id', $holiday_id, $data);
+		$data = $this->sleep_values($data);
+
+		$insert = $this->db->insert($this->table, $data);
+
+		if ($insert) {
+			$id = $this->db->insert_id();
+			$this->dates_model->refresh_holidays($data['session_id']);
+			return $id;
+		}
+
+		return FALSE;
 	}
 
 
 	/**
-	 * Deletes a week with the given ID
-	 *
-	 * @param   int   $id   ID of week to delete
+	 * Update a holiday with given data.
 	 *
 	 */
-	function delete($id)
+	public function update($holiday_id, $data)
 	{
-		$this->db->where('holiday_id', $id);
-		$this->db->delete('holidays');
+		$data = $this->sleep_values($data);
+
+		$where = ['holiday_id' => $holiday_id];
+
+		$update = $this->db->update($this->table, $data, $where, 1);
+
+		if ($update) {
+			$this->dates_model->refresh_holidays($data['session_id']);
+		}
+
+		return $update;
 	}
+
+
+
+	/**
+	 * Delete a single holiday
+	 *
+	 */
+	public function delete($id)
+	{
+		$delete = $this->db->delete($this->table, ['holiday_id' => $id]);
+
+		if ($delete) {
+			$this->dates_model->clear('holiday_id', $id);
+		}
+
+		return $delete;
+	}
+
+
+	/**
+	 * Delete entries for a given session.
+	 *
+	 */
+	public function delete_by_session($session_id)
+	{
+		return $this->db->delete($this->table, ['session_id' => $session_id]);
+	}
+
+
+	public function wake_value($row)
+	{
+		$row->date_start = datetime_from_string($row->date_start);
+		$row->date_end = datetime_from_string($row->date_end);
+
+		return $row;
+	}
+
+
+	public function sleep_values($data)
+	{
+		if (array_key_exists('date_start', $data)) {
+			$dt = datetime_from_string($data['date_start']);
+			$data['date_start'] = $dt ? $dt->format('Y-m-d') : NULL;
+		}
+
+		if (array_key_exists('date_end', $data)) {
+			$dt = datetime_from_string($data['date_end']);
+			$data['date_end'] = $dt ? $dt->format('Y-m-d') : NULL;
+		}
+
+		return $data;
+	}
+
 
 
 }

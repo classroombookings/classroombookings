@@ -37,6 +37,11 @@ class MY_Controller extends CI_Controller
 
 			$this->lang->load('crbs');
 			$this->load->helper('language');
+
+			$tz = setting('timezone');
+			if (strlen($tz)) {
+				date_default_timezone_set($tz);
+			}
 		}
 
 		$this->data['scripts'] = array();
@@ -44,6 +49,7 @@ class MY_Controller extends CI_Controller
 		$this->data['scripts'][] = 'assets/js/lib/datepicker.js';
 		$this->data['scripts'][] = 'assets/js/lib/es6-promise.auto.min.js';
 		$this->data['scripts'][] = 'assets/js/lib/unpoly.min.js';
+		$this->data['scripts'][] = 'assets/js/lib/accessible-autocomplete.min.js';
 		$this->data['scripts'][] = 'assets/js/main.js';
 	}
 
@@ -72,6 +78,12 @@ class MY_Controller extends CI_Controller
 	public function render($view_name = 'layout')
 	{
 		$this->load->view($view_name, $this->data);
+	}
+
+
+	public function render_up()
+	{
+		$this->load->view('unpoly', $this->data);
 	}
 
 

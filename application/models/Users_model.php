@@ -6,6 +6,25 @@ class Users_model extends CI_Model
 {
 
 
+	protected $fields = [
+		'user_id',
+		'department_id',
+		'username',
+		'firstname',
+		'lastname',
+		'email',
+		'authlevel',
+		'displayname',
+		'ext',
+		'lastlogin',
+		'enabled',
+		'created',
+	];
+
+
+	protected $table = 'users';
+
+
 	public function __construct()
 	{
 		parent::__construct();
@@ -110,6 +129,30 @@ class Users_model extends CI_Model
 		}
 
 		return $this->db->update('users', $user_data, $where);
+	}
+
+
+	public function search($query = '', $mode = 'results')
+	{
+		if ( ! strlen($query)) return FALSE;
+
+		$this->db->reset_query();
+		$this->db->select($this->fields);
+		$this->db->from($this->table);
+		$this->db->or_like('email', $query);
+		$this->db->or_like('username', $query);
+		$this->db->or_like('firstname', $query);
+		$this->db->or_like('lastname', $query);
+		$this->db->or_like('displayname', $query);
+
+		if ($mode === 'count') {
+			return $this->db->count_all_results();
+		}
+
+		$query = $this->db->get();
+		$result = $query->result();
+
+		return $result;
 	}
 
 
