@@ -1,6 +1,30 @@
 # classroombookings Changelog
 
 
+## [2.6.0] 2022-01-29
+
+### Added
+- Sessions feature, to replace Academic Years. Create as many as you need and switch between them.
+- Settings: Option to set timezone.
+- Users page: Search filter.
+- Dashboard: improved interface for teacher users.
+- Bookings: Multiple selection mode.
+- Bookings: Preview recurring bookings.
+- Bookings: View detailed information for bookings.
+- Bookings: View reasons when rooms/periods are unavailable.
+- Bookings: Edit or Cancel individual instances of recurring bookings.
+- Bookings: Ability for users to switch between Sessions.
+
+### Changed
+- Bookings section overhauled with many new features.
+- Timetable Weeks: these are now configured within each Session.
+- Holidays: These are now configured within each Session.
+- Timetable Weeks: improved colour picker widget.
+
+### Fixed
+- Timetable weeks: now have a default colour, instead of none at all.
+
+
 ## [2.5.0] 2021-04-27
 
 ### Added
