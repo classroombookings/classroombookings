@@ -1,6 +1,12 @@
 # classroombookings Changelog
 
 
+## [2.6.1] 2022-03-02
+
+### Fixed
+- Issue when creating a recurring booking with no user selected.
+
+
 ## [2.6.0] 2022-01-29
 
 ### Added

@@ -152,13 +152,16 @@ class SingleAgent extends BaseAgent
 			'notes' => $this->CI->input->post('notes'),
 			'period_id' => $this->period->period_id,
 			'room_id' => $this->room->room_id,
-			'department_id' => $this->department ? $this->department->department_id : NULL,
+			'department_id' => $this->department ? $this->department->department_id : null,
 			'session_id' => $this->session->session_id,
 			'user_id' => $this->user->user_id,
 		];
 
+
 		if ($this->is_admin) {
-			$booking_data['user_id'] = $this->CI->input->post('user_id');
+			// Allow user to be changed
+			$post_user_id = $this->CI->input->post('user_id');
+			$booking_data['user_id'] = strlen($post_user_id) ? $post_user_id : null;
 		}
 
 		$booking_id = $this->CI->bookings_model->create($booking_data);
@@ -223,8 +226,8 @@ class SingleAgent extends BaseAgent
 			$recurring_end = $this->CI->input->post('recurring_end');
 		}
 
-		$this->data['recurring_start'] = $recurring_start;
-		$this->data['recurring_end'] = $recurring_end;
+		// $this->data['recurring_start'] = $recurring_start;
+		// $this->data['recurring_end'] = $recurring_end;
 
 		$this->CI->load->library('form_validation');
 		$this->CI->form_validation->set_rules($rules);
@@ -302,7 +305,7 @@ class SingleAgent extends BaseAgent
 			'session_id' => $this->session->session_id,
 			'period_id' => $this->period->period_id,
 			'room_id' => $this->room->room_id,
-			'user_id' => $this->CI->input->post('user_id'),
+			'user_id' => $this->user->user_id,
 			'department_id' => $this->department ? $this->department->department_id : NULL,
 			'week_id' => $this->date_info->week_id,
 			'weekday' => $this->date_info->weekday,
@@ -310,6 +313,12 @@ class SingleAgent extends BaseAgent
 			'notes' => $this->CI->input->post('notes'),
 			'dates' => $dates,
 		];
+
+		if ($this->is_admin) {
+			// Allow user to be changed
+			$post_user_id = $this->CI->input->post('user_id');
+			$repeat_data['user_id'] = strlen($post_user_id) ? $post_user_id : null;
+		}
 
 		// bookings_repeat_model will also handle creation of individual bookings.
 		$repeat_id = $this->CI->bookings_repeat_model->create($repeat_data);
