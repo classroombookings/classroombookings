@@ -812,6 +812,8 @@ button.link-md {
 	.bookings-grid th,
 	.bookings-grid td {
 		font-size: 90%;
+		display: table-cell;
+		height: 100%;
 		/*font-family: tahoma,verdana,sans-serif;*/
 		/*padding: 3px;*/
 	}
