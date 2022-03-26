@@ -1,5 +1,10 @@
 # classroombookings Changelog
 
+## [2.6.2] 2022-03-26
+
+### Fixed
+- Bookings Grid display issues in Firefox - cells should now all be the same size.
+
 
 ## [2.6.1] 2022-03-02
 
