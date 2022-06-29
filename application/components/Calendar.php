@@ -216,7 +216,9 @@ class Calendar
 	public function generate_all_months()
 	{
 		$interval = new DateInterval('P1M');
-		$period = new DatePeriod($this->session->date_start, $interval, $this->session->date_end);
+		$start = DateTime::createFromFormat("!Y-m-d", $this->session->date_start->format('Y-m-01'));
+		$end = DateTime::createFromFormat("!Y-m-d", $this->session->date_end->format('Y-m-t'));
+		$period = new DatePeriod($start, $interval, $end);
 
 		$out = [];
 		foreach ($period as $k => $v) {
