@@ -1,5 +1,12 @@
 # classroombookings Changelog
 
+
+## [2.6.3] 2022-06-29
+
+### Fixed
+- Issue where Session calendar might not display the last month, depending on start/end date of Session.
+
+
 ## [2.6.2] 2022-03-26
 
 ### Fixed
