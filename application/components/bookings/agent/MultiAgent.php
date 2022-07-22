@@ -54,7 +54,7 @@ class MultiAgent extends BaseAgent
 		}
 
 		// Check if the number of bookings selected is within the user's quota
-		if ( ! $this->admin) {
+		if ( ! $this->is_admin) {
 			$max_active_bookings = (int) abs(setting('num_max_bookings'));
 			if ($max_active_bookings > 0) {
 				$user_active_booking_count = $this->CI->bookings_model->CountScheduledByUser($this->user->user_id);
@@ -392,12 +392,16 @@ class MultiAgent extends BaseAgent
 				$department_id = $this->user->department_id;
 			}
 
+			if ($department_id == 0 || strlen($department_id) == 0) {
+				$department_id = NULL;
+			}
+
 			$booking_data = [
 				'date' => $slot_data->date,
 				'session_id' => $multibooking->session_id,
 				'period_id' => $slot_data->period_id,
 				'room_id' => $slot_data->room_id,
-				'department_id' => strlen($department_id) ? $department_id : NULL,
+				'department_id' => $department_id,
 				'user_id' => strlen($user_id) ? $user_id : NULL,
 				'notes' => strlen($form_slot['notes']) ? $form_slot['notes'] : NULL,
 			];
