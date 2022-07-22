@@ -1,6 +1,12 @@
 # classroombookings Changelog
 
 
+## [2.6.3] 2022-07-22
+
+### Fixed
+- Issue where a user with no department creating multiple single bookings would result in no bookings being created.
+
+
 ## [2.6.3] 2022-06-29
 
 ### Fixed
