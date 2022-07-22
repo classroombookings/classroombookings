@@ -174,6 +174,10 @@ class Users extends MY_Controller
 			return (empty($user_id) ? $this->add() : $this->edit($user_id));
 		}
 
+		$department_id = $this->input->post('department_id')
+			? $this->input->post('department_id')
+			: NULL;
+
 		$user_data = array(
 			'username' => $this->input->post('username'),
 			'authlevel' => $this->input->post('authlevel'),
@@ -182,7 +186,7 @@ class Users extends MY_Controller
 			'firstname' => $this->input->post('firstname'),
 			'lastname' => $this->input->post('lastname'),
 			'displayname' => $this->input->post('displayname'),
-			'department_id' => $this->input->post('department_id'),
+			'department_id' => $department_id,
 			'ext' => $this->input->post('ext'),
 		);
 
