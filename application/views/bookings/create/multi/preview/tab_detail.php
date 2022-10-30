@@ -17,7 +17,7 @@ $this->table->set_template([
 $this->table->set_heading([
 	['data' => 'Date', 'width' => '33%'],
 	['data' => 'Action', 'width' => '33%'],
-	['data' => 'Exising booking', 'width' => '33%'],
+	['data' => 'Existing booking', 'width' => '33%'],
 ]);
 
 

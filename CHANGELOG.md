@@ -1,6 +1,18 @@
 # classroombookings Changelog
 
 
+## [2.6.5] 2022-10-31
+
+### Fixed
+- Typo in Bookings process.
+- Redirection issues in bookings process when running under IIS.
+- Several PHP warnings.
+
+### Changed
+- Extra checks for https scheme detection.
+
+
+
 ## [2.6.4] 2022-07-22
 
 ### Fixed

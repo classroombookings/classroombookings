@@ -99,7 +99,7 @@ class Weeks_model extends CI_Model
 	public function sleep_values($data)
 	{
 		$data['bgcol'] = ltrim($data['bgcol'], '#');
-		$data['fgcol'] = ltrim($data['fgcol'], '#');
+		$data['fgcol'] = ltrim($data['fgcol'] ?? '', '#');
 		return $data;
 	}
 

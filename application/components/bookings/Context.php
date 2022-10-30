@@ -596,6 +596,8 @@ class Context
 
 		foreach ($dates as $date_info) {
 
+			if ($date_info === FALSE) continue;
+
 			foreach ($periods as $period) {
 
 				foreach ($rooms as $room) {
