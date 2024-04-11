@@ -166,7 +166,7 @@ class Weeks extends MY_Controller
 		$this->data['action'] = current_url();
 		$this->data['id'] = $id;
 		$this->data['cancel'] = 'weeks';
-		$this->data['text'] = 'If you delete this week, <strong>all reurring bookings</strong> that take place on this week will be permanently deleted.';
+		$this->data['text'] = 'If you delete this week, <strong>all recurring bookings</strong> that take place on this week will be permanently deleted.';
 
 		$this->data['title'] = sprintf('Delete %s', html_escape($week->name));
 
