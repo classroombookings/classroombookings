@@ -1,5 +1,10 @@
 # classroombookings Changelog
 
+## [2.8.7] 2024-04-11
+
+### Fixed:
+- Typo in recurring booking cancellation process.
+
 ## [2.8.0] 2023-09-15
 
 ### Added:
