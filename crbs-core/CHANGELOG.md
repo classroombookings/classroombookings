@@ -1,5 +1,11 @@
 # classroombookings Changelog
 
+## [2.8.7] 2024-10-05
+
+### Security
+- Escape room field names on room add/edit page.
+
+
 ## [2.8.0] 2023-09-15
 
 ### Added:
