@@ -208,7 +208,7 @@ echo form_open_multipart('rooms/save', array('class' => 'cssform', 'id' => 'room
 	foreach ($fields as $field) {
 
 		echo '<p>';
-		echo '<label>' . $field->name . '</label>';
+		echo '<label>' . html_escape($field->name) . '</label>';
 
 		switch ($field->type) {
 
