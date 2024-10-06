@@ -1,5 +1,11 @@
 # classroombookings Changelog
 
+## [2.8.8] 2024-10-06
+
+### Security
+- Escape session name on Bookings page.
+
+
 ## [2.8.7] 2024-10-05
 
 ### Security
