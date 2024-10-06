@@ -16,7 +16,7 @@ echo "<label for='session_id'>Session: </label>";
 echo form_dropdown([
 	'name' => 'session_id',
 	'id' => 'session_id',
-	'options' => $session_options,
+	'options' => html_escape($session_options),
 	'selected' => $selected_session_id,
 ]);
 
