@@ -87,14 +87,14 @@ class Auth_local
 		$password_hash = $user->password;
 
 		// Check for old password format
-		if (substr($password_hash, 0, 5) === 'sha1:') {
+		if (str_starts_with((string) $password_hash, 'sha1:')) {
 			// user password value is password_hash() of old sha1 value
-			$password_hash = substr($password_hash, 5);
+			$password_hash = substr((string) $password_hash, 5);
 			$upgrade_password = TRUE;
 			$verified = password_verify(sha1($password), $password_hash);
 		} else {
 			// user password value is direct output of password_hash() of their password.
-			$verified = password_verify($password, $password_hash);
+			$verified = password_verify($password, (string) $password_hash);
 		}
 
 		if ( ! $verified) {

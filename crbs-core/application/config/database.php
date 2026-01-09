@@ -104,26 +104,27 @@ if ( ! CRBS_MANAGED && is_file(ROOTPATH . 'local/config.php')) {
 }
 
 
-if (CRBS_MANAGED) {
+if (CRBS_MANAGED && function_exists('config_ini')) {
 
-	$managed_config = (is_file(ROOTPATH . 'crbs-managed/config/database.php'))
-		? include(ROOTPATH . 'crbs-managed/config/database.php')
-		: [];
+	$ini =& config_ini();
+	$section = 'database:default';
 
-	// Get default config from above, and merge in the `control` values.
-	// $db_ctrl = $managed_config['control'] ?? [];
-	// $db['control'] = array_merge($db['default'], $db_ctrl);
+	// Set the default connection details, copying from base defaults
+	$db_config = $db['default'];
+	if (array_key_exists($section, $ini)) {
+		foreach ($ini[$section] as $key => $value) {
+			$db_config[$key] = $value;
+		}
+	}
 
-	// Set the default connection details
-	$db_default = $managed_config['default'] ?? [];
-	$db_default['db_debug'] = true;		// so we can display error messages
-	$db_default['database'] = $_SERVER['DB_NAME'] ?? '';
-	$db_default['username'] = $_SERVER['DB_USER'] ?? '';
-	$db_default['password'] = $_SERVER['DB_PASS'] ?? '';
+	$db_config['database'] = $_SERVER['DB_NAME'] ?? '';
+	$db_config['username'] = $_SERVER['DB_USER'] ?? '';
+	$db_config['password'] = $_SERVER['DB_PASS'] ?? '';
 
-	$db['default'] = array_merge($db['default'], $db_default);
+	$db['default'] = array_merge($db['default'], $db_config);
 
 }
+
 
 // Fix for issue with CI 3.1.11.
 // list_tables() assumes 'database' property is present.

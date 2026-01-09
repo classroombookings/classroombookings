@@ -12,10 +12,10 @@ echo form_open(current_url(), ['class' => 'cssform', 'id' => 'holiday_add'], ['h
 
 <fieldset>
 
-	<legend accesskey="H" tabindex="<?= tab_index() ?>">Holiday</legend>
+	<legend accesskey="H" tabindex="<?= tab_index() ?>"><?= lang('holiday.holiday') ?></legend>
 
 	<p>
-		<label for="name" class="required">Name</label>
+		<label for="name" class="required"><?= lang('holiday.field.name') ?></label>
 		<?php
 		$field = 'name';
 		$value = set_value($field, isset($holiday) ? $holiday->name : '', FALSE);
@@ -32,7 +32,7 @@ echo form_open(current_url(), ['class' => 'cssform', 'id' => 'holiday_add'], ['h
 	<?php echo form_error($field) ?>
 
 	<p>
-		<label for="date_start" class="required">Start date</label>
+		<label for="date_start" class="required"><?= lang('holiday.field.date_start') ?></label>
 		<?php
 		$field = 'date_start';
 		$value = set_value('date_start', isset($holiday) ? $holiday->date_start->format('d/m/Y') : '', FALSE);
@@ -44,13 +44,13 @@ echo form_open(current_url(), ['class' => 'cssform', 'id' => 'holiday_add'], ['h
 			'tabindex' => tab_index(),
 			'value' => $value,
 		));
+		echo date_picker_img('date_start');
 		?>
-		<img style="cursor:pointer" align="top" src="<?= base_url('assets/images/ui/cal_day.png') ?>" width="16" height="16" title="Choose date" onclick="displayDatePicker('date_start', false);" />
 	</p>
 	<?php echo form_error($field); ?>
 
 	<p>
-		<label for="date_end" class="required">End date</label>
+		<label for="date_end" class="required"><?= lang('holiday.field.date_end') ?></label>
 		<?php
 		$field = 'date_end';
 		$value = set_value('date_end', isset($holiday) ? $holiday->date_end->format('d/m/Y') : '', FALSE);
@@ -62,19 +62,18 @@ echo form_open(current_url(), ['class' => 'cssform', 'id' => 'holiday_add'], ['h
 			'tabindex' => tab_index(),
 			'value' => $value,
 		));
+		echo date_picker_img('date_end');
 		?>
-		<img style="cursor:pointer" align="top" src="<?= base_url('assets/images/ui/cal_day.png') ?>" width="16" height="16" title="Choose date" onclick="displayDatePicker('date_end', false);" />
 	</p>
 	<?php echo form_error($field); ?>
-
 
 </fieldset>
 
 <?php
 
 $this->load->view('partials/submit', array(
-	'submit' => array('Save', tab_index()),
-	'cancel' => array('Cancel', tab_index(), 'holidays/session/' . $session->session_id),
+	'submit' => array(isset($holiday) ? lang('app.action.save') : lang('app.action.create'), tab_index()),
+	'cancel' => array(lang('app.action.cancel'), tab_index(), 'holidays/session/' . $session->session_id),
 ));
 
 echo form_close();

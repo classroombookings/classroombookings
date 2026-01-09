@@ -6,8 +6,6 @@
 		'class' => 'cssform-stacked',
 		'id' => 'users_filter',
 		'method' => 'GET',
-		'up-autosubmit' => '',
-		'up-target' => '#users_list',
 	];
 
 	echo form_open('users', $attrs);
@@ -19,11 +17,43 @@
 		<div class="block b-20">
 			<p class="input-group">
 				<?php
-				echo form_label('Search', 'q');
-				$value = set_value('q');
+				echo form_label(lang('app.search'), 'q');
 				echo form_input([
 					'name' => 'q',
 					'id' => 'q',
+					'value' => $filter['search'] ?? '',
+				]);
+			?>
+			</p>
+		</div>
+
+		<div class="block b-20">
+			<p class="input-group">
+				<?php
+				echo form_label(lang('role.role'), 'role_id');
+				$options = array('' => '(Any)');
+				$value = element('role_id', $filter);
+				echo form_dropdown([
+					'name' => 'role_id',
+					'id' => 'role_id',
+					'options' => $role_options,
+					'selected' => $filter['role_id'] ?? '',
+				]);
+			?>
+			</p>
+		</div>
+
+		<div class="block b-20">
+			<p class="input-group">
+				<?php
+				echo form_label(lang('department.department'), 'department_id');
+				$options = array('' => '(Any)');
+				$value = element('department_id', $filter);
+				echo form_dropdown([
+					'name' => 'department_id',
+					'id' => 'department_id',
+					'options' => $department_options,
+					'selected' => $filter['department_id'] ?? '',
 				]);
 			?>
 			</p>
@@ -34,7 +64,12 @@
 				<?php
 				echo form_label('&nbsp;');
 
-				echo anchor('users', 'Clear', ['class' => 'button']);
+				echo form_button([
+					'type' => 'submit',
+					'content' => lang('app.filter'),
+				]);
+
+				echo anchor('users', lang('app.clear'), ['class' => 'button']);
 			?>
 			</p>
 		</div>

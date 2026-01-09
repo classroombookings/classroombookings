@@ -24,7 +24,7 @@ $total = array_sum($sizes);
 			<?php
 			$bookable_img = ($period->bookable == 1) ? 'enabled.png' : 'no.png';
 			echo img([
-				'src' => base_url("assets/images/ui/{$bookable_img}"),
+				'src' => asset_url("assets/images/ui/{$bookable_img}"),
 				'width' => 16,
 				'height' => 16,
 				'alt' => $bookable_img,
@@ -72,13 +72,13 @@ $total = array_sum($sizes);
 			<?php
 			$uri = site_url(sprintf('periods/edit/%d/%d', $schedule->schedule_id, $period->period_id));
 			$img = img([
-				'src' => base_url('assets/images/ui/edit.png'),
+				'src' => asset_url('assets/images/ui/edit.png'),
 				'hspace' => 6,
 				'border' => 0,
-				'alt' => 'Edit',
+				'alt' => lang('app.action.edit'),
 			]);
 			echo anchor($uri, $img, [
-				'title' => 'Edit',
+				'title' => lang('app.action.edit'),
 				'hx-get' => $uri,
 				'hx-target' => 'closest .box-period',
 				'hx-swap' => 'outerHTML',

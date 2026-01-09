@@ -27,4 +27,6 @@ return array(
     'app\\components\\bookings\\grid\\Controls' => $baseDir . '/crbs-core/application/components/bookings/grid/Controls.php',
     'app\\components\\bookings\\grid\\Header' => $baseDir . '/crbs-core/application/components/bookings/grid/Header.php',
     'app\\components\\bookings\\grid\\Table' => $baseDir . '/crbs-core/application/components/bookings/grid/Table.php',
+    'app\\permissions\\BookingPermissions' => $baseDir . '/crbs-core/application/permissions/BookingPermissions.php',
+    'app\\permissions\\SystemPermissions' => $baseDir . '/crbs-core/application/permissions/SystemPermissions.php',
 );

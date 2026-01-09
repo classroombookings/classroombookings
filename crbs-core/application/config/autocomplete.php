@@ -10,12 +10,12 @@
  * @property CI_Exceptions $exceptions            Exceptions Class
  * @property CI_Hooks $hooks                      Provides a mechanism to extend the base system
  * @property CI_Input $input                      Pre-processes global input data for security
- * @property CI_Lang $lang                        Language Class
- * @property CI_Loader $load                      Loads views and files
- * @property CI_Log $log                          Logging Class
+ * @property MY_Lang $lang                        Language Class
+ * @property MY_Loader $load                      Loads views and files
+ * @property MY_Log $log                          Logging Class
  * @property CI_Output $output                    Responsible for sending final output to browser
  * @property CI_Profiler $profiler                Display benchmark results, queries you have run, etc
- * @property CI_Router $router                    Parses URIs and determines routing
+ * @property MY_Router $router                    Parses URIs and determines routing
  * @property CI_URI $uri                          Retrieve information from URI strings
  * @property CI_Utf8 $utf8                        Provides support for UTF-8 environments
  *
@@ -65,7 +65,7 @@
  *
  * Models:
  *
- * @property Access_control_model access_control_model
+ * @property Auth_model auth_model
  * @property Bookings_model bookings_model
  * @property Bookings_repeat_model bookings_repeat_model
  * @property Crud_model crud_model
@@ -75,6 +75,8 @@
  * @property Menu_model menu_model
  * @property Multi_booking_model multi_booking_model
  * @property Periods_model periods_model
+ * @property Permissions_model permissions_model
+ * @property Roles_model roles_model
  * @property Room_groups_model room_groups_model
  * @property Rooms_model rooms_model
  * @property Schedules_model schedules_model
@@ -91,13 +93,15 @@
  * @property Events $events
  * @property Gradient $gradient
  * @property MY_Form_validation $form_validation
+ * @property Permission $permission
  * @property Userauth $userauth
  * @property Airbrake $airbrake
  * @property Bunny $bunny
  * @property BunnyCDNStorage $bunnycdnstorage
- * @property Instances $instances
  * @property Panel $panel
  * @property Startup $startup
+ * @property Stats $stats
+ * @property Tenant $tenant
  *
  * @property CI_Controller $CI
  *
@@ -118,12 +122,12 @@ class MY_Controller extends CI_Controller {}
  * @property CI_Exceptions $exceptions            Exceptions Class
  * @property CI_Hooks $hooks                      Provides a mechanism to extend the base system
  * @property CI_Input $input                      Pre-processes global input data for security
- * @property CI_Lang $lang                        Language Class
- * @property CI_Loader $load                      Loads views and files
- * @property CI_Log $log                          Logging Class
+ * @property MY_Lang $lang                        Language Class
+ * @property MY_Loader $load                      Loads views and files
+ * @property MY_Log $log                          Logging Class
  * @property CI_Output $output                    Responsible for sending final output to browser
  * @property CI_Profiler $profiler                Display benchmark results, queries you have run, etc
- * @property CI_Router $router                    Parses URIs and determines routing
+ * @property MY_Router $router                    Parses URIs and determines routing
  * @property CI_URI $uri                          Retrieve information from URI strings
  * @property CI_Utf8 $utf8                        Provides support for UTF-8 environments
  *
@@ -168,7 +172,7 @@ class MY_Controller extends CI_Controller {}
  *
  *                            *============ Codeigniter Project Models ================
  *
- * @property Access_control_model access_control_model
+ * @property Auth_model auth_model
  * @property Bookings_model bookings_model
  * @property Bookings_repeat_model bookings_repeat_model
  * @property Crud_model crud_model
@@ -178,6 +182,8 @@ class MY_Controller extends CI_Controller {}
  * @property Menu_model menu_model
  * @property Multi_booking_model multi_booking_model
  * @property Periods_model periods_model
+ * @property Permissions_model permissions_model
+ * @property Roles_model roles_model
  * @property Room_groups_model room_groups_model
  * @property Rooms_model rooms_model
  * @property Schedules_model schedules_model
@@ -194,13 +200,15 @@ class MY_Controller extends CI_Controller {}
  * @property Events $events
  * @property Gradient $gradient
  * @property MY_Form_validation $form_validation
+ * @property Permission $permission
  * @property Userauth $userauth
  * @property Airbrake $airbrake
  * @property Bunny $bunny
  * @property BunnyCDNStorage $bunnycdnstorage
- * @property Instances $instances
  * @property Panel $panel
  * @property Startup $startup
+ * @property Stats $stats
+ * @property Tenant $tenant
  *
  */
 class CI_Model {}

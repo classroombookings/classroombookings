@@ -1,0 +1,32 @@
+<?php
+
+$lang["form_validation_alpha"] = "Dim ond cymeriadau llythrennol all fod ym maes {field}.";
+$lang["form_validation_alpha_dash"] = "Dim ond cymeriadau alffa-rifol, tanlinellu, a dashis a ganiateir yn y maes {field}.";
+$lang["form_validation_alpha_numeric"] = "Efallai mai dim ond cymeriadau alffa-rhifol y caniateir yn y maes {field}.";
+$lang["form_validation_alpha_numeric_spaces"] = "Mae'r maes {field} ond yn gallu cynnwys nodau alffa-rifol a bylchau.";
+$lang["form_validation_decimal"] = "Rhaid i'r maes {field} gynnwys rhif degol.";
+$lang["form_validation_differs"] = "Rhaid i'r maes {field} wahaniaethu oddi wrth y maes {param}.";
+$lang["form_validation_error_message_not_set"] = "Methu cyrchu neges gwall sy'n cyfateb i'ch enw maes {field}.";
+$lang["form_validation_exact_length"] = "Rhaid i'r maes {field} fod yn union {param} nod o hyd.";
+$lang["form_validation_greater_than"] = "Rhaid i'r maes {field} gynnwys rhif sy'n fwy na {param}.";
+$lang["form_validation_greater_than_equal_to"] = "Rhaid i'r maes {field} gynnwys rhif sy'n fwy na neu'n hafal i {param}.";
+$lang["form_validation_in_list"] = "Rhaid i'r maes {field} fod yn un o'r canlynol: {param}.";
+$lang["form_validation_integer"] = "Rhaid i'r maes {field} gynnwys cyfanrif.";
+$lang["form_validation_is_natural"] = "Rhaid i'r maes {field} gynnwys digidau yn unig.";
+$lang["form_validation_is_natural_no_zero"] = "Rhaid i'r maes {field} gynnwys digidau yn unig a rhaid iddo fod yn fwy na sero.";
+$lang["form_validation_is_numeric"] = "Rhaid i'r maes {field} gynnwys nodau rhifol yn unig.";
+$lang["form_validation_is_unique"] = "Rhaid i'r maes {field} gynnwys gwerth unigryw.";
+$lang["form_validation_isset"] = "Rhaid i'r maes {field} gael gwerth.";
+$lang["form_validation_less_than"] = "Rhaid i'r maes {field} gynnwys rhif sy'n llai na {param}.";
+$lang["form_validation_less_than_equal_to"] = "Rhaid i'r maes {field} gynnwys rhif sy'n llai na neu'n hafal i {param}.";
+$lang["form_validation_matches"] = "Nid yw'r maes {field} yn cyfateb i'r maes {param}.";
+$lang["form_validation_max_length"] = "Ni all y maes {field} fod yn fwy na {param} nod o hyd.";
+$lang["form_validation_min_length"] = "Rhaid i'r maes {field} fod o leiaf {param} nod o hyd.";
+$lang["form_validation_numeric"] = "Rhaid i'r maes {field} gynnwys rhifau yn unig.";
+$lang["form_validation_regex_match"] = "Nid yw'r maes {field} yn y fformat cywir.";
+$lang["form_validation_required"] = "Mae'r maes {field} yn ofynnol.";
+$lang["form_validation_valid_base64"] = "Rhaid i'r maes {field} gynnwys llinyn Base64 dilys.";
+$lang["form_validation_valid_email"] = "Rhaid i'r maes {field} gynnwys cyfeiriad e-bost dilys.";
+$lang["form_validation_valid_emails"] = "Rhaid i'r maes {field} gynnwys pob cyfeiriad e-bost dilys.";
+$lang["form_validation_valid_ip"] = "Rhaid i'r maes {field} gynnwys IP dilys.";
+$lang["form_validation_valid_url"] = "Rhaid i'r maes {field} gynnwys URL dilys.";

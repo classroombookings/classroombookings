@@ -55,7 +55,7 @@ class Events
 		// self::$_listeners[$event][$key] = $callback;
 		self::$_listeners[$event][] = $callback;
 		if (is_array($callback)) {
-			$key = get_class($callback[0]).'::'.$callback[1];
+			$key = $callback[0]::class.'::'.$callback[1];
 			self::log_message('debug', 'Events::register() - Registered "'.$key.' for event "'.$event.'"');
 		} else {
 			self::log_message('debug', 'Events::register() - Registered callback function for event "'.$event.'"');

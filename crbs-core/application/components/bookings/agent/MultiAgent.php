@@ -8,6 +8,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 use app\components\bookings\exceptions\AgentException;
 use app\components\bookings\Slot;
 use \Bookings_model;
+use Permission;
 
 
 /**
@@ -19,13 +20,11 @@ class MultiAgent extends BaseAgent
 
 
 	// Agent type
-	const TYPE = 'multi';
+	const AGENT_MODE = 'multi';
 
 	protected $department;
 
-	private $selected_slots;
 	private $multibooking;
-	private $max_allowed_bookings = NULL;
 
 
 	public function get_view_data()
@@ -44,31 +43,22 @@ class MultiAgent extends BaseAgent
 	 */
 	public function load()
 	{
-		$department_id = $this->user->department_id;
-		if ($this->is_admin && $this->CI->input->post('department_id')) {
-			$department_id = $this->CI->input->post('department_id');
-		}
-
-		if (!empty($department_id)) {
-			$this->department = $this->CI->departments_model->Get($department_id);
-		}
-
-		// Check if the number of bookings selected is within the user's quota
-		if ( ! $this->is_admin) {
-			$max_active_bookings = (int) abs(setting('num_max_bookings'));
-			if ($max_active_bookings > 0) {
-				$user_active_booking_count = $this->CI->bookings_model->CountScheduledByUser($this->user->user_id);
-				$this->max_allowed_bookings = ($max_active_bookings - $user_active_booking_count);
-			}
-		}
-
 		$this->view = 'bookings/create/multi';
-		$this->title = 'Create multiple bookings';
+		$this->title = lang('booking.create_multiple_bookings');
 
 		$mb_id = (int) $this->CI->input->post_get('mb_id');
 		$step = $this->CI->input->post_get('step');
+		$this->view_data['step'] = $step;
+
+		$this->view_data['mb_id'] = $mb_id;
+
+		// Set some initial flags.
+		// Update these if the MultiBooking data contains the capabilities
+		$this->view_data['can_book_single'] = false;
+		$this->view_data['can_book_recur'] = false;
 
 		// Load the multibooking data from the DB if ID is provided.
+		// If not provided, it will be created on the first step - 'selection'.
 		//
 		if ($mb_id) {
 
@@ -77,12 +67,68 @@ class MultiAgent extends BaseAgent
 			$multibooking = $this->CI->multi_booking_model->get($mb_id, $this->user->user_id);
 
 			if ( ! $multibooking) {
-				throw new AgentException('Could not load booking data.');
+				$line = lang('booking.error.not_found');
+				throw new AgentException($line);
 			}
 
 			$this->multibooking = $multibooking;
 			$this->session = $this->CI->sessions_model->get($multibooking->session_id);
 			$this->view_data['multibooking'] = $multibooking;
+
+			// Determine capabilities from the slot data
+			//
+			$capabilities = array_column($multibooking->slots, 'capabilities');
+			$singles = array_column($capabilities, 'single.create');
+			$recurs = array_column($capabilities, 'recur.create');
+			$can_book_single = $this->view_data['can_book_single'] = false;
+			$can_book_recur = $this->view_data['can_book_recur'] = false;
+			if (array_sum($singles) > 0) {
+				$can_book_single = $this->view_data['can_book_single'] = true;
+			}
+			if (array_sum($recurs) > 0) {
+				$can_book_recur = $this->view_data['can_book_recur'] = true;
+			}
+
+			// Determine default booking type
+			if (is_null($this->booking_type)) {
+				$booking_type = ($can_book_recur && ! $can_book_single)
+					? 'recurring'
+					: 'single'
+					;
+				$this->set_booking_type($booking_type);
+			}
+
+			$none = sprintf('(%s)', lang('app.none'));
+
+			// Populate these lists in case any slots of capabilites to set them
+			$this->populate_departments();
+			$this->view_data['department_options'] = results_to_assoc($this->all_departments, 'department_id', 'name', $none);
+			$this->populate_users();
+			$this->view_data['user_options'] = results_to_assoc($this->all_users, 'user_id', fn($user) => !empty($user->displayname)
+					? $user->displayname
+					: $user->username, $none);
+
+			// User constraints
+			$this->view_data['user_booking_limit'] = null;
+			$this->view_data['user_booking_count'] = null;
+			$this->view_data['user_permitted_booking_count'] = null;
+			$user_constraints = $this->CI->users_model->get_constraints($this->user->user_id);
+			$user_limit = $user_constraints['max_active_bookings'];
+			if ( ! is_null($user_limit)) {
+				$user_booking_count = $this->CI->users_model->get_scheduled_booking_count($this->user->user_id);
+				$permitted_booking_count = ($user_limit >= $user_booking_count)
+					? $user_limit - $user_booking_count
+					: null;
+				$this->view_data['user_booking_limit'] = $user_limit;
+				$this->view_data['user_booking_count'] = $user_booking_count;
+				$this->view_data['user_permitted_booking_count'] = $permitted_booking_count;
+			}
+		}
+
+		// Detect/set department
+		$user_department_id = $this->user->department_id;
+		if ($user_department_id) {
+			$this->department = $this->CI->departments_model->Get($user_department_id);
 		}
 
 		// Determine the handler method based on the provided 'step' value.
@@ -96,10 +142,6 @@ class MultiAgent extends BaseAgent
 
 			case 'details':
 				$this->handle_details();
-				break;
-
-			case 'recurring_customise':
-				$this->handle_recurring_customise();
 				break;
 
 			case 'recurring_preview':
@@ -137,22 +179,38 @@ class MultiAgent extends BaseAgent
 	 */
 	private function handle_details()
 	{
-		$this->view = 'bookings/create/multi/details';
-		$this->title = 'Create multiple bookings';
+		$this->title = lang('booking.create_multiple_bookings');
 
-		switch ($this->CI->input->post('type')) {
+		switch ($this->booking_type) {
 
-			case 'single':
-				$this->process_create_single();
+			case self::BOOK_SINGLE:
+				$this->subview = 'bookings/create/multi/single_details';
 				break;
 
-			case 'recurring':
-				$this->process_recurring_defaults();
+			case self::BOOK_RECUR:
+				$this->subview = 'bookings/create/multi/recur_defaults';
 				break;
+
+		}
+
+		if ($this->CI->input->post()) {
+
+			switch ($this->booking_type) {
+
+				case self::BOOK_SINGLE:
+					$this->process_create_single();
+					break;
+
+				case self::BOOK_RECUR:
+					$this->process_recurring_defaults();
+					break;
+			}
+
 		}
 	}
 
 
+	/*
 	private function handle_recurring_customise()
 	{
 		$this->view = 'bookings/create/multi/recurring_customise';
@@ -165,82 +223,7 @@ class MultiAgent extends BaseAgent
 			$this->process_recurring_customise();
 		}
 	}
-
-
-	private function handle_recurring_preview()
-	{
-		$this->view = 'bookings/create/multi/recurring_preview';
-		$this->title = 'Create multiple recurring bookings';
-
-		$session_key = sprintf('mb_%d_slots', $this->view_data['mb_id']);
-
-		$slot_data = isset($_SESSION[$session_key]) ? $_SESSION[$session_key] : [];
-
-		// die(print_r($slot_data));
-
-		// Get existing bookings for conflicts
-
-		// Loop through all slots in this multibooking
-		foreach ($this->multibooking->slots as &$slot) {
-
-			$mbs_id = $slot->mbs_id;
-
-			$slot->conflict_count = 0;
-
-			// Get booking data values from previous step
-			$data = isset($slot_data[$mbs_id]) ? $slot_data[$mbs_id] : FALSE;
-			if ( ! $data) continue;
-
-			$recurring_start = datetime_from_string($data['recurring_start']);
-			$recurring_end = datetime_from_string($data['recurring_end']);
-
-			$dates = [];
-			$instances = [];
-
-			foreach ($slot->recurring_dates as $row) {
-				if ($row->date < $recurring_start) continue;
-				if ($row->date > $recurring_end) continue;
-				$date_ymd = $row->date->format('Y-m-d');
-				// Add date to list of dates for find_conflicts() check
-				$dates[] = $date_ymd;
-				// Generate key and add the date to the list of instances that will be created
-				$key = Slot::generate_key($date_ymd, $slot->period_id, $slot->room_id);
-				$instances[$key]['datetime'] = $row->date;
-			}
-
-			// Find conflicts for this booking
-			$existing_bookings = $this->CI->bookings_model->find_conflicts($dates, $slot->period_id, $slot->room_id);
-
-			// Update 'instances' data with the options for each one
-			foreach ($instances as $key => $instance) {
-
-				$actions = [];
-
-				if (array_key_exists($key, $existing_bookings)) {
-					$actions['do_not_book'] = 'Keep existing booking';
-					$actions['replace'] = 'Replace existing booking';
-					$instances[$key]['booking'] = $existing_bookings[$key];
-					$slot->conflict_count++;
-				} else {
-					$actions['book'] = 'Book';
-					$actions['do_not_book'] = 'Do not book';
-				}
-
-				$instances[$key]['actions'] = $actions;
-			}
-
-			$slot->existing_bookings = $existing_bookings;
-			$slot->instances = $instances;
-		}
-
-		$this->view_data['slot_data'] = $slot_data;
-
-		if ($this->CI->input->post()) {
-			$this->process_create_recurring();
-		}
-	}
-
-
+	*/
 
 
 	/**
@@ -254,15 +237,8 @@ class MultiAgent extends BaseAgent
 		$slots = $this->CI->input->post('slots');
 
 		if ( ! $slots || empty($slots)) {
-			throw new AgentException("You did not select any free slots to book.");
-		}
-
-
-		if ( ! $this->is_admin && is_numeric($this->max_allowed_bookings)) {
-			if (count($slots) > $this->max_allowed_bookings) {
-				$msg = "You can only create a maximum of %d booking(s), please select fewer periods.";
-				throw new AgentException(sprintf($msg, $this->max_allowed_bookings));
-			}
+			$line = lang('booking.error.no_slots_selected');
+			throw new AgentException($line);
 		}
 
 		// Rows of data for multibooking.
@@ -270,16 +246,16 @@ class MultiAgent extends BaseAgent
 
 		// Validation rules
 		$rules = [
-			['field' => 'date', 'label' => 'Date', 'rules' => 'required|valid_date'],
-			['field' => 'period_id', 'label' => 'Period', 'rules' => 'required|integer'],
-			['field' => 'room_id', 'label' => 'Room', 'rules' => 'required|integer'],
+			['field' => 'date', 'label' => 'lang:app.date', 'rules' => 'required|valid_date'],
+			['field' => 'period_id', 'label' => 'lang:period.period', 'rules' => 'required|integer'],
+			['field' => 'room_id', 'label' => 'lang:room.room', 'rules' => 'required|integer'],
 		];
 
 		$this->CI->load->library('form_validation');
 
 		foreach ($slots as $json) {
 
-			$data = json_decode($json, TRUE);
+			$data = json_decode((string) $json, TRUE);
 
 			$this->CI->form_validation->set_rules($rules);
 			$this->CI->form_validation->set_data($data);
@@ -303,11 +279,11 @@ class MultiAgent extends BaseAgent
 		// The scenarios below shouldn't really happen:
 
 		if ( ! $date_info || ! $date_info->session_id) {
-			throw new AgentException('Selected date does not belong to a session.');
+			throw AgentException::forNoSession();
 		}
 
 		if ( ! $date_info->week_id) {
-			throw new AgentException('Selected date does not belong to a timetable week.');
+			throw AgentException::forNoWeek();
 		}
 
 		// Got data - create multibooking entry.
@@ -321,7 +297,8 @@ class MultiAgent extends BaseAgent
 		$mb_id = $this->CI->multi_booking_model->create($mb_data);
 
 		if ( ! $mb_id) {
-			throw new AgentException("Could not create multibooking entry.");
+			$line = lang('booking.error.multibooking_create_error');
+			throw new AgentException($line);
 		}
 
 		redirect(current_url() . '?' . http_build_query([
@@ -340,31 +317,30 @@ class MultiAgent extends BaseAgent
 		$this->CI->load->library('form_validation');
 
 		$rules = [
-			['field' => 'mb_id', 'label' => 'ID', 'rules' => 'required|integer'],
-			['field' => 'type', 'label' => 'Type', 'rules' => 'required|in_list[single]'],
-			['field' => 'slot_single[]', 'label' => 'Notes', 'rules' => 'required'],
+			['field' => 'mb_id', 'label' => 'lang:app.id', 'rules' => 'required|integer'],
+			['field' => 'slot_single[]', 'label' => 'lang:booking.notes', 'rules' => 'required'],
 		];
 
 		$this->CI->form_validation->set_rules($rules);
 
 		if ($this->CI->form_validation->run() === FALSE) {
-			$this->message = 'The form contained some invalid values. Please check and try again.';
+			$this->message = lang('app.form_error');
 			return FALSE;
 		}
 
 		$rules = [
-			['field' => 'date', 'label' => 'Date', 'rules' => 'required|valid_date'],
-			['field' => 'session_id', 'label' => 'Session', 'rules' => 'required|integer'],
-			['field' => 'period_id', 'label' => 'Period', 'rules' => 'required|integer'],
-			['field' => 'room_id', 'label' => 'Room', 'rules' => 'required|integer'],
-			['field' => 'department_id', 'label' => 'Department', 'rules' => 'integer'],
-			['field' => 'user_id', 'label' => 'User', 'rules' => 'integer'],
-			['field' => 'notes', 'label' => 'Notes', 'rules' => 'max_length[255]'],
+			['field' => 'date', 'label' => 'lang:app.date', 'rules' => 'required|valid_date'],
+			['field' => 'session_id', 'label' => 'lang:session.session', 'rules' => 'required|integer'],
+			['field' => 'period_id', 'label' => 'lang:period.period', 'rules' => 'required|integer'],
+			['field' => 'room_id', 'label' => 'lang:room.room', 'rules' => 'required|integer'],
+			['field' => 'department_id', 'label' => 'lang:department.department', 'rules' => 'integer'],
+			['field' => 'user_id', 'label' => 'lang:user.user', 'rules' => 'integer'],
+			['field' => 'notes', 'label' => 'lang:booking.notes', 'rules' => 'max_length[255]'],
 		];
 
-		$form_slots = $this->CI->input->post('slot_single');
-
 		$multibooking = $this->view_data['multibooking'];
+		$form_slots = $this->CI->input->post('slot_single');
+		$rows = [];
 
 		foreach ($multibooking->slots as $slot_data) {
 
@@ -376,24 +352,28 @@ class MultiAgent extends BaseAgent
 			// Not selected for creation
 			if ($form_slot['create'] == 0) continue;
 
-			$department_id = NULL;
-			if (isset($form_slot['department_id'])) {
-				$department_id = $form_slot['department_id'];
+			$room_id = $slot_data->room_id;
+
+			if ( ! has_permission(Permission::BK_SGL_CREATE, $room_id)) continue;
+
+			$department_id = null;
+			if (has_permission(Permission::BK_SGL_SET_DEPT, $room_id)) {
+				if (isset($form_slot['department_id'])) {
+					$department_id = $form_slot['department_id'];
+				}
+			} else {
+				if ( ! empty($this->user->department_id)) {
+					$department_id = $this->user->department_id;
+				}
 			}
 
-			$user_id = NULL;
-			if (isset($form_slot['user_id'])) {
-				$user_id = $form_slot['user_id'];
-			}
-
-			// Force logged-in user details for non-admins
-			if ( ! $this->is_admin) {
+			$user_id = null;
+			if (has_permission(Permission::BK_SGL_SET_USER, $room_id)) {
+				if (isset($form_slot['user_id'])) {
+					$user_id = $form_slot['user_id'];
+				}
+			} else {
 				$user_id = $this->user->user_id;
-				$department_id = $this->user->department_id;
-			}
-
-			if (empty($department_id)) {
-				$department_id = NULL;
 			}
 
 			$booking_data = [
@@ -401,9 +381,9 @@ class MultiAgent extends BaseAgent
 				'session_id' => $multibooking->session_id,
 				'period_id' => $slot_data->period_id,
 				'room_id' => $slot_data->room_id,
-				'department_id' => $department_id,
-				'user_id' => !empty($user_id) ? $user_id : NULL,
-				'notes' => !empty($form_slot['notes']) ? $form_slot['notes'] : NULL,
+				'department_id' => !empty($department_id) ? $department_id : null,
+				'user_id' => !empty($user_id) ? $user_id : null,
+				'notes' => !empty($form_slot['notes']) ? $form_slot['notes'] : null,
 			];
 
 			$this->CI->form_validation->reset_validation();
@@ -411,11 +391,28 @@ class MultiAgent extends BaseAgent
 			$this->CI->form_validation->set_data($booking_data);
 
 			if ($this->CI->form_validation->run() === FALSE) {
-				$this->message = 'One or more of the bookings contained some invalid values. Please check and try again.';
+				$line = lang('booking.error.some_invalid_values');
+				$this->message = $line;
 				return FALSE;
 			}
 
 			$rows[] = $booking_data;
+		}
+
+		if (empty($rows)) {
+			$this->success = false;
+			$this->message = lang('booking.error.none_created');
+			return false;
+		}
+
+		// Check row count is within user limit
+		if (isset($this->view_data['user_permitted_booking_count'])) {
+			$user_permitted_booking_count = $this->view_data['user_permitted_booking_count'];
+			if (count($rows) > $user_permitted_booking_count) {
+				$this->success = false;
+				$this->message = lang('booking.error.must_select_fewer');
+				return false;
+			}
 		}
 
 		$booking_ids = [];
@@ -431,92 +428,49 @@ class MultiAgent extends BaseAgent
 		if (count($booking_ids) === count($rows)) {
 			// Clear multibooking entry
 			$this->CI->multi_booking_model->delete($multibooking->mb_id);
-			// Finish
-			$this->success = TRUE;
-			$this->message = sprintf('%d bookings have been created.', count($booking_ids));
-			return TRUE;
+			$this->success = true;
+			$this->message = sprintf(lang('booking.success.some_created'), count($booking_ids));
+			return true;
 		}
 
 		$err = $this->CI->bookings_model->get_error();
 
-		$this->message = ($err)
-			? $err
-			: 'Could not create booking.';
+		$this->message = $err ?: lang('booking.error.generic')
+			;
 
-		return FALSE;
+		return false;
 	}
 
 
 	private function process_recurring_defaults()
 	{
-		// Validation rules
-		$rules = [
-			['field' => 'mb_id', 'label' => 'Multibooking ID', 'rules' => 'required|integer'],
-			['field' => 'step', 'label' => 'Step', 'rules' => 'required'],
-			['field' => 'department_id', 'label' => 'Department', 'rules' => 'integer'],
-			['field' => 'user_id', 'label' => 'User', 'rules' => 'integer'],
-			['field' => 'notes', 'label' => 'Notes', 'rules' => 'max_length[255]'],
-			['field' => 'recurring_start', 'label' => 'Recurring start', 'rules' => 'required'],
-			['field' => 'recurring_end', 'label' => 'Recurring end', 'rules' => 'required'],
-		];
-
-		$this->CI->load->library('form_validation');
-		$this->CI->form_validation->set_rules($rules);
-
-		if ($this->CI->form_validation->run() === FALSE) {
-			$this->message = 'One or more of the bookings contained some invalid values. Please check and try again.';
-			return FALSE;
-		}
-
-		$session_key = sprintf('mb_%d', $this->CI->input->post('mb_id'));
-
-		$_SESSION[$session_key] = [
-			'department_id' => $this->CI->input->post('department_id'),
-			'user_id' => $this->CI->input->post('user_id'),
-			'notes' => $this->CI->input->post('notes'),
-			'recurring_start' => $this->CI->input->post('recurring_start'),
-			'recurring_end' => $this->CI->input->post('recurring_end'),
-		];
-
-		redirect(current_url() . '?' . http_build_query([
-			'mb_id' => $this->CI->input->post('mb_id'),
-			'step' => 'recurring_customise',
-		]));
-	}
-
-
-	/**
-	 * Get all the details for all the slots.
-	 *
-	 */
-	private function process_recurring_customise()
-	{
+		// Validate
+		//
 		$this->CI->load->library('form_validation');
 
 		$rules = [
-			['field' => 'mb_id', 'label' => 'ID', 'rules' => 'required|integer'],
-			['field' => 'step', 'label' => 'Step', 'rules' => 'required|in_list[recurring_customise]'],
-			['field' => 'slots[]', 'label' => 'Slot', 'rules' => 'required'],
+			['field' => 'mb_id', 'label' => 'lang:app.id', 'rules' => 'required|integer'],
+			['field' => 'slots[]', 'label' => 'lang:booking.slot', 'rules' => 'required'],
 		];
 
 		$this->CI->form_validation->set_rules($rules);
 
 		if ($this->CI->form_validation->run() === FALSE) {
-			$this->message = 'The form contained some invalid values. Please check and try again.';
+			$this->message = lang('app.form_error');
 			return FALSE;
 		}
 
 		// Rules for each slot
 
 		$rules = [
-			['field' => 'session_id', 'label' => 'Session', 'rules' => 'required|integer'],
-			['field' => 'period_id', 'label' => 'Period', 'rules' => 'required|integer'],
-			['field' => 'room_id', 'label' => 'Room', 'rules' => 'required|integer'],
-			['field' => 'department_id', 'label' => 'Department', 'rules' => 'integer'],
-			['field' => 'user_id', 'label' => 'User', 'rules' => 'integer'],
-			['field' => 'notes', 'label' => 'Notes', 'rules' => 'max_length[255]'],
-			['field' => 'recurring_start', 'label' => 'Recurring start', 'rules' => 'required|valid_date'],
-			['field' => 'recurring_end', 'label' => 'Recurring end', 'rules' => 'required|valid_date'],
+			['field' => 'session_id', 'label' => 'lang:session.session', 'rules' => 'required|integer'],
+			['field' => 'period_id', 'label' => 'lang:period.period', 'rules' => 'required|integer'],
+			['field' => 'room_id', 'label' => 'lang:room.room', 'rules' => 'required|integer'],
+			['field' => 'department_id', 'label' => 'lang:department.department', 'rules' => 'integer'],
+			['field' => 'user_id', 'label' => 'lang:user.user', 'rules' => 'integer'],
+			['field' => 'notes', 'label' => 'lang:booking.notes', 'rules' => 'max_length[255]'],
+			['field' => 'recurring_start', 'label' => 'lang:booking.recur_start', 'rules' => 'required|valid_date'],
+			['field' => 'recurring_end', 'label' => 'lang:booking.recur_end', 'rules' => 'required|valid_date'],
 		];
 
 		$form_slots = $this->CI->input->post('slots');
@@ -531,38 +485,64 @@ class MultiAgent extends BaseAgent
 			// Not in form
 			if ( ! isset($form_slots[$mbs_id])) continue;
 			$form_slot = $form_slots[$mbs_id];
-			// Not selected for creation. Not used in this process yet.
-			// if ($form_slot['create'] == 0) continue;
+			// Skip if not selected for creation
+			if ($form_slot['create'] == 0) continue;
 
 			$recurring_start = $form_slot['recurring_start'];
 			$recurring_end = $form_slot['recurring_end'];
 
 			if ($recurring_start == 'session') {
-				foreach ($slot->recurring_dates as $row) {
-					$dt = datetime_from_string($row->date);
-					if ($dt >= $this->session->date_start) {
-						$recurring_start = $dt->format('Y-m-d');
-						break;
+				if (is_array($slot->recurring_dates)) {
+					foreach ($slot->recurring_dates as $row) {
+						$dt = datetime_from_string($row->date);
+						if ($dt >= $this->session->date_start) {
+							$recurring_start = $dt->format('Y-m-d');
+							break;
+						}
 					}
 				}
 			}
 
 			if ($recurring_end == 'session') {
-				foreach (array_reverse($slot->recurring_dates) as $row) {
-					$dt = datetime_from_string($row->date);
-					if ($dt <= $this->session->date_end) {
-						$recurring_end = $dt->format('Y-m-d');
-						break;
+				if (is_array($slot->recurring_dates)) {
+					foreach (array_reverse($slot->recurring_dates) as $row) {
+						$dt = datetime_from_string($row->date);
+						if ($dt <= $this->session->date_end) {
+							$recurring_end = $dt->format('Y-m-d');
+							break;
+						}
 					}
 				}
+			}
+
+			$room_id = $slot->room_id;
+
+			$department_id = null;
+			if (has_permission(Permission::BK_RECUR_CREATE, $room_id)) {
+				if (isset($form_slot['department_id'])) {
+					$department_id = $form_slot['department_id'];
+				}
+			} else {
+				if ( ! empty($this->user->department_id)) {
+					$department_id = $this->user->department_id;
+				}
+			}
+
+			$user_id = null;
+			if (has_permission(Permission::BK_RECUR_SET_USER, $room_id)) {
+				if (isset($form_slot['user_id'])) {
+					$user_id = $form_slot['user_id'];
+				}
+			} else {
+				$user_id = $this->user->user_id;
 			}
 
 			$booking_data = [
 				'session_id' => $multibooking->session_id,
 				'period_id' => $slot->period_id,
 				'room_id' => $slot->room_id,
-				'department_id' => !empty($form_slot['department_id']) ? $form_slot['department_id'] : NULL,
-				'user_id' => !empty($form_slot['user_id']) ? $form_slot['user_id'] : NULL,
+				'department_id' => $department_id,
+				'user_id' => $user_id,
 				'notes' => !empty($form_slot['notes']) ? $form_slot['notes'] : NULL,
 				'recurring_start' => $recurring_start,
 				'recurring_end' => $recurring_end,
@@ -572,24 +552,119 @@ class MultiAgent extends BaseAgent
 			$this->CI->form_validation->set_rules($rules);
 			$this->CI->form_validation->set_data($booking_data);
 
-			if ($this->CI->form_validation->run() === FALSE) {
-				$this->message = 'One or more of the bookings contained some invalid values. Please check and try again.';
-				return FALSE;
+			if ($this->CI->form_validation->run() === false) {
+				$this->message = lang('booking.error.some_invalid_values');
+				return false;
 			}
 
 			// Find recurring start/end dates
 			//
-
 			$slots[$mbs_id] = $booking_data;
 		}
 
+		// Store the booking data in the session for each slot
+		//
 		$session_key = sprintf('mb_%d_slots', $this->CI->input->post('mb_id'));
 		$_SESSION[$session_key] = $slots;
 
-		redirect(current_url() . '?' . http_build_query([
+		redirect(current_url().'?'.http_build_query([
 			'mb_id' => $this->CI->input->post('mb_id'),
 			'step' => 'recurring_preview',
 		]));
+	}
+
+
+	private function handle_recurring_preview()
+	{
+		$this->subview = 'bookings/create/multi/recur_preview';
+
+		$session_key = sprintf('mb_%d_slots', $this->view_data['mb_id']);
+
+		$slot_data = $_SESSION[$session_key] ?? [];
+
+		$user_constraints = $this->CI->users_model->get_constraints($this->user->user_id);
+		$max_instances = $user_constraints['recur_max_instances'];
+
+		// Get existing bookings for conflicts
+		$conflict_count = 0;
+
+		// Loop through all slots in this multibooking
+		foreach ($this->multibooking->slots as &$slot) {
+
+			$mbs_id = $slot->mbs_id;
+
+			$slot->conflict_count = 0;
+			$slot->ignore = false;
+
+			// Get booking data values from previous step
+			$data = $slot_data[$mbs_id] ?? FALSE;
+			if ( ! $data) {
+				$slot->ignore = true;
+				continue;
+			}
+
+			$recurring_start = datetime_from_string($data['recurring_start']);
+			$recurring_end = datetime_from_string($data['recurring_end']);
+
+			$dates = [];
+			$instances = [];
+
+			foreach ($slot->recurring_dates as $row) {
+				if ($row->date < $recurring_start) continue;
+				if ($row->date > $recurring_end) continue;
+				$date_ymd = $row->date->format('Y-m-d');
+				// Add date to list of dates for find_conflicts() check
+				$dates[] = $date_ymd;
+				// Generate key and add the date to the list of instances that will be created
+				$key = Slot::generate_key($date_ymd, $slot->period_id, $slot->room_id);
+				$instances[$key]['datetime'] = $row->date;
+			}
+
+			// Find conflicts for this booking
+			$existing_bookings = $this->CI->bookings_model->find_conflicts($dates, $slot->period_id, $slot->room_id);
+
+			$num_bookable = 0;
+
+			// Update 'instances' data with the options for each one
+			foreach ($instances as $key => $instance) {
+
+				$actions = [];
+
+				if (array_key_exists($key, $existing_bookings)) {
+					$actions = $this->get_actions($existing_bookings[$key]);
+					// $actions['do_not_book'] = 'Keep existing booking';
+					// $actions['replace'] = 'Replace existing booking';
+					$instances[$key]['booking'] = $existing_bookings[$key];
+					$slot->conflict_count++;
+					$conflict_count++;
+				} else {
+					$actions['book'] = lang('booking.book');
+					$actions['do_not_book'] = lang('booking.do_not_book');
+					$num_bookable++;
+				}
+
+				$instances[$key]['actions'] = $actions;
+			}
+
+			if ( ! is_null($max_instances) && $num_bookable > $max_instances) {
+				$diff = $num_bookable - $max_instances;
+				$line = lang('booking.error.too_many_instances');
+				$msg = sprintf($line, $max_instances, $diff);
+				$slot->message = $msg;
+				$slot->conflict_count++;
+				$conflict_count++;
+			}
+
+			$slot->existing_bookings = $existing_bookings;
+			$slot->instances = $instances;
+		}
+
+		$this->view_data['slot_data'] = $slot_data;
+		$this->view_data['conflict_count'] = $conflict_count;
+
+		if ($this->CI->input->post()) {
+			$this->process_create_recurring();
+		}
 	}
 
 
@@ -602,21 +677,21 @@ class MultiAgent extends BaseAgent
 		$this->CI->load->library('form_validation');
 
 		$rules = [
-			['field' => 'mb_id', 'label' => 'ID', 'rules' => 'required|integer'],
-			['field' => 'step', 'label' => 'Step', 'rules' => 'required|in_list[recurring_preview]'],
-			['field' => 'dates[]', 'label' => 'Dates', 'rules' => 'required'],
+			['field' => 'mb_id', 'label' => 'lang:app.id', 'rules' => 'required|integer'],
+			['field' => 'step', 'label' => 'lang:app.step', 'rules' => 'required|in_list[recurring_preview]'],
+			['field' => 'dates[]', 'label' => 'lang:app.dates', 'rules' => 'required'],
 		];
 
 		$this->CI->form_validation->set_rules($rules);
 
 		if ($this->CI->form_validation->run() === FALSE) {
-			$this->message = 'The form contained some invalid values. Please check and try again.';
+			$this->message = lang('app.form_error');
 			return FALSE;
 		}
 
 		// Get values for each series
 		$session_key = sprintf('mb_%d_slots', $this->multibooking->mb_id);
-		$session_slots = isset($_SESSION[$session_key]) ? $_SESSION[$session_key] : [];
+		$session_slots = $_SESSION[$session_key] ?? [];
 
 		// Get selected dates
 		$dates = $this->CI->input->post('dates');
@@ -624,6 +699,9 @@ class MultiAgent extends BaseAgent
 		$multibooking = $this->view_data['multibooking'];
 
 		$repeat_ids = [];
+
+		$user_constraints = $this->CI->users_model->get_constraints($this->user->user_id);
+		$max_instances = $user_constraints['recur_max_instances'];
 
 		$this->CI->db->trans_begin();
 
@@ -637,6 +715,18 @@ class MultiAgent extends BaseAgent
 			if ( ! isset($dates[$mbs_id])) continue;
 			$slot_dates = $dates[$mbs_id];
 			if (empty($slot_dates)) continue;
+
+			if ( ! is_null($max_instances)) {
+				$i = 0;
+				foreach ($slot_dates as $date => &$info) {
+					if ($info['action'] !== 'book') continue;
+					$i++;
+					if ($i > $max_instances) {
+						// Ensure we do not book once we have reached the constraint's max instances
+						$info['action'] = 'do_not_book';
+					}
+				}
+			}
 
 			$repeat_data = [
 				'session_id' => $multibooking->session_id,
@@ -656,7 +746,7 @@ class MultiAgent extends BaseAgent
 
 			if ( ! $repeat_id) {
 				$this->CI->db->trans_rollback();
-				$this->message = 'Could not create one or more recurring bookings.';
+				$this->message = lang('booking.error.generic');
 				return FALSE;
 			}
 
@@ -665,14 +755,15 @@ class MultiAgent extends BaseAgent
 
 		if ($this->CI->db->trans_status() === FALSE) {
 			$this->CI->db->trans_rollback();
-			$this->message = 'Could not create recurring bookings.';
+			$this->message = lang('booking.error.generic');
 			return FALSE;
 		}
 
 		$this->CI->db->trans_commit();
 
 		$this->success = TRUE;
-		$this->message = sprintf('%d recurring bookings have been created successfully.', count($repeat_ids));
+		$line = lang('booking.success.recurring.some_created');
+		$this->message = sprintf($line, count($repeat_ids));
 		return TRUE;
 	}
 

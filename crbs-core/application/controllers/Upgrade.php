@@ -281,7 +281,7 @@ class Upgrade extends MY_Controller
 			break;
 		}
 
-		$pass_star = str_repeat('*', strlen($db_config['password']));
+		$pass_star = str_repeat('*', strlen((string) $db_config['password']));
 		$db_config['summary'] = sprintf("%s:%s@%s/%s", $db_config['username'], $pass_star, $db['default']['hostname'], $db['default']['database']);
 
 		return $db_config;

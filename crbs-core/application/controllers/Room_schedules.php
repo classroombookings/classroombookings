@@ -10,7 +10,7 @@ class Room_schedules extends MY_Controller
 		parent::__construct();
 
 		$this->require_logged_in();
-		$this->require_auth_level(ADMINISTRATOR);
+		$this->require_permission(Permission::SETUP_SESSIONS);
 
 		$this->load->model([
 			'schedules_model',
@@ -19,7 +19,7 @@ class Room_schedules extends MY_Controller
 			'session_schedules_model',
 		]);
 
-		$this->data['showtitle'] = 'Room Schedules';
+		$this->data['showtitle'] = lang('session.room_schedules');
 	}
 
 
@@ -35,7 +35,7 @@ class Room_schedules extends MY_Controller
 		$session_schedules_flat = $this->session_schedules_model->flatten_results($session_schedules);
 
 		$this->data['session_schedules'] = $session_schedules_flat;
-		$this->data['title'] = $this->data['showtitle'] = 'Session: ' . $session->name . ': Room Schedules';
+		$this->data['title'] = $this->data['showtitle'] = sprintf('%s: %s: %s', lang('session.session'), $session->name, lang('session.room_schedules'));
 
 		$icons = $this->load->view('sessions/_icons', [
 			'session' => $session,
@@ -43,13 +43,12 @@ class Room_schedules extends MY_Controller
 		], TRUE);
 
 		if (empty($this->data['room_groups'])) {
-			$msg = "No room groups have been created yet.";
-			$body = "<p class='msgbox exclamation'>{$msg}</p>";
+			$msg = lang('session.room_schedules.no_groups');
+			$main = "<p class='msgbox exclamation'>{$msg}</p>";
 		} else {
-			$body = $this->load->view('room_schedules/index', $this->data, TRUE);
+			$main = $this->load->view('room_schedules/index', $this->data, TRUE);
 		}
 
-		$main = $this->load->view('room_schedules/index', $this->data, TRUE);
 		$side = $this->load->view('room_schedules/index_side', $this->data, TRUE);
 
 		$columns = [

@@ -1,15 +1,38 @@
 # classroombookings Changelog
 
-## [2.8.8] 2024-10-06
+## [2.15.0] 2025-04-20
 
-### Security
-- Escape session name on Bookings page.
+### Added
+- Roles: Creation of custom roles for users with a range of system and booking permissions.
+- Permissions: Fine-grained access control can be granted at rooms or room groups to users, departments or roles.
+- Export: Ability to export bookings.
+
+### Updated:
+- Bookings: Improved 'Toggle Multiple' interface.
+- Bookings: Added 'Today' button to navigation calendar to quickly view the current month.
+- Setup: Organised the menu into new categories.
 
 
-## [2.8.7] 2024-10-05
+## [2.11.0] 2023-11-03
 
-### Security
-- Escape room field names on room add/edit page.
+### Added:
+- Users: Added 'Force password change' marker to force a password change.
+
+
+## [2.10.0] 2023-10-29
+
+### Added:
+- Bookings: Allow cancellation of multiple bookings at once.
+
+### Updated:
+- Bookings: Improved user permission checks for editing and cancelling bookings.
+
+
+## [2.9.0] 2023-10-13
+
+### Updated:
+- Bookings: date selection calendar now has better highlighting of selected date and today.
+- Bookings: printable version has been improved.
 
 
 ## [2.8.0] 2023-09-15

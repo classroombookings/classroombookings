@@ -29,7 +29,7 @@ class MY_Log extends CI_Log
 		if ($parent_result === false) return $parent_result;
 
 		// Catch errors for managed error logging
-		if (CRBS_MANAGED && $level === 'error' && strpos($msg, 'Airbrake') === FALSE) {
+		if (CRBS_MANAGED && $level === 'error' && !str_contains((string) $msg, 'Airbrake')) {
 			if (class_exists(CI_Controller::class)) {
 				$CI =& get_instance();
 				if ( ! is_null($CI)) {
@@ -59,9 +59,7 @@ class MY_Log extends CI_Log
 	protected function _format_line($level, $date, $message)
 	{
 		if (CRBS_MANAGED) {
-			$code = isset($_SERVER['CRBS_TENANT_CODE'])
-				? $_SERVER['CRBS_TENANT_CODE']
-				: 'control';
+			$code = $_SERVER['CRBS_TENANT_CODE'] ?? 'control';
 			return "[{$code}] $level - $date --> $message".PHP_EOL;
 		}
 		return parent::_format_line($level, $date, $message);

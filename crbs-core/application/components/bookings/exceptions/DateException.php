@@ -9,7 +9,8 @@ class DateException extends \RuntimeException
 
 	public static function invalidDate($date_string)
 	{
-		return new static(sprintf("No date selected or date is not valid (%s).", $date_string));
+		$line = lang('exception.DateException.invalidDate');
+		return new static(sprintf($line, $date_string));
 	}
 
 
@@ -18,10 +19,11 @@ class DateException extends \RuntimeException
 		if ($datetime) {
 			$dt = $datetime->format('d/m/Y');
 		} else {
-			$dt = 'None';
+			$dt = lang('app.none');
 		}
 
-		return new static(sprintf("The selected date (%s), is not within the current Session.", $dt));
+		$line = lang('exception.DateException.forSessionRange');
+		return new static(sprintf($line, $dt));
 	}
 
 

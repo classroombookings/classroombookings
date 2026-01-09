@@ -3,6 +3,6 @@
 final class EventType
 {
 
-	CONST USER_LOGGED_IN = 'user:logged_in';
+	CONST string USER_LOGGED_IN = 'user:logged_in';
 
 }

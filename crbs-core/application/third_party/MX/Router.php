@@ -208,6 +208,7 @@ class MX_Router extends CI_Router
                 $this->directory = $module.'/'.$directory.'/';
                 return array_slice($segments, 2);
             }
+
         }
 
         // application controllers sub-directory exists?

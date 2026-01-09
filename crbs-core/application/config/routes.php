@@ -54,3 +54,7 @@ $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
 $route['controlpanel'] = 'dashboard';
+$route['changelog'] = 'dashboard/changelog';
+$route['changelog/status'] = 'dashboard/changelog_status';
+
+$route['setup/rooms'] = 'setup/rooms/dashboard';

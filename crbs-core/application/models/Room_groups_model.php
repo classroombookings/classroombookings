@@ -13,6 +13,8 @@ class Room_groups_model extends CI_Model
 	public function __construct()
 	{
 		parent::__construct();
+
+		$this->load->model('auth_model');
 	}
 
 
@@ -52,10 +54,11 @@ class Room_groups_model extends CI_Model
 	{
 		$out = [];
 
-		// Get the access control EXISTS query to filter the rooms
-		$permission = Access_control_model::ACCESS_VIEW;
-		$exists_sql = $this->access_control_model->get_rooms_exists($for_user_id, $permission, 'r.room_id');
-		$where_exists = sprintf('EXISTS (%s)', $exists_sql);
+		$rooms_subquery = null;
+		$user_has_bypass = $this->auth_model->user_has_permission($for_user_id, Permission::ROOM_VIEW);
+		if ( ! $user_has_bypass) {
+			$rooms_subquery = $this->auth_model->rooms_for_user_subquery($for_user_id);
+		}
 
 		$this->db->reset_query();
 
@@ -65,7 +68,9 @@ class Room_groups_model extends CI_Model
 		$this->db->join('rooms AS r', 'room_group_id', 'LEFT');
 		$this->db->where('r.bookable', 1);
 
-		$this->db->where($where_exists);
+		if ( ! is_null($rooms_subquery)) {
+			$this->db->where("r.room_id IN ({$rooms_subquery})");
+		}
 
 		$this->db->group_by('rg.room_group_id');
 		$this->db->order_by('rg.pos', 'asc');

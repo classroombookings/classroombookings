@@ -1,35 +1,20 @@
-<?php
-
-function import_status($key) {
-
-	$labels = array(
-		'username_empty' => 'Username empty',
-		'password_empty' => 'No password',
-		'username_exists' => 'User exists',
-		'success' => 'Success',
-		'db_error' => 'Error',
-		'invalid' => 'Failed validation',
-	);
-
-	if (array_key_exists($key, $labels)) {
-		return $labels[$key];
-	}
-
-	return 'Unknown';
-}
-
-?>
-
 <?php if (is_array($result)): ?>
 
-<table cellpadding="2" cellspacing="2" width="100%">
+<table
+	cellpadding="2"
+	cellspacing="2"
+	width="100%"
+	class="border-table"
+	border="0"
+	style="line-height:1.3;"
+>
 
 	<thead>
 		<tr class="heading">
-			<td class="h">Row</td>
-			<td class="h">Username</td>
-			<td class="h">Created</td>
-			<td class="h">Status</td>
+			<td class="h"><?= lang('user.import.row') ?></td>
+			<td class="h"><?= lang('user.field.username') ?></td>
+			<td class="h"><?= lang('user.import.created') ?></td>
+			<td class="h"><?= lang('app.status') ?></td>
 		</tr>
 	</thead>
 
@@ -43,8 +28,10 @@ function import_status($key) {
 			echo '<tr>';
 			echo "<td>#{$row->line}</td>";
 			echo '<td style="width: 50%">' . html_escape($row->user->username) . '</td>';
-			echo '<td>' . ($row->status == 'success' ? 'Yes' : 'No') . '</td>';
-			echo "<td style='font-weight:bold;color:{$colour}'>" . import_status($row->status) . "</td>";
+			echo '<td>' . ($row->status == 'success' ? lang('app.yes') : lang('app.no')) . '</td>';
+			$status_key = sprintf('user.import.status.%s', $row->status);
+			$status_line = lang($status_key);
+			echo "<td style='font-weight:bold;color:{$colour}'>{$status_line}</td>";
 			echo '</tr>';
 		}
 		?>
@@ -57,8 +44,8 @@ function import_status($key) {
 <?php
 
 $iconbar = iconbar(array(
-	array('users', 'All Users', 'school_manage_users.png'),
-	array('users/import', 'Import More Users', 'user_import.png'),
+	array('users', lang('user.all_users'), 'school_manage_users.png'),
+	array('users/import', lang('user.import_more'), 'user_import.png'),
 ));
 
 echo $iconbar;

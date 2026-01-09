@@ -51,12 +51,7 @@ class Installer
 
 		return [
 			'crbs' => [
-				'bia' => '0',
-				'bookings_show_user_recurring' => '1',
-				'bookings_show_user_single' => '1',
 				'colour' => '468ED8',
-				'date_format_long' => 'l jS F Y',
-				'date_format_weekday' => 'jS M',
 				'displaytype' => 'day',
 				'd_columns' => 'periods',
 				'login_message_enabled' => '0',
@@ -65,10 +60,8 @@ class Installer
 				'maintenance_mode' => '0',
 				'maintenance_mode_message' => '',
 				'name' => $this->name,
-				'num_max_bookings' => '0',
 				'session_auto_set_current_ts' => '',
 				'timezone' => $timezone,
-				'time_format_period' => 'g:i',
 				'website' => '',
 			],
 			'auth' => [
@@ -110,15 +103,17 @@ class Installer
 			return false;
 		}
 
+		$db_ok = false;
+
 		try {
 			$db_conn = @$this->CI->load->database($this->db_config, true);
-			$res = @$db_conn->initialize();
+			$db_ok = ($db_conn->initialize() !== FALSE);
 		} catch (Exception $e) {
 			$this->errors[] = $e->getMessage();
 			return false;
 		}
 
-		if ( ! $res) {
+		if ( ! $db_ok) {
 			$this->errors[] = 'Could not connect to the database server.';
 			return false;
 		}
@@ -136,7 +131,7 @@ class Installer
 		$this->CI->db->initialize();
 
 		$this->db_connection = $db_conn;
-		return $res;
+		return $db_ok;
 	}
 
 
@@ -199,7 +194,7 @@ class Installer
 			return $out;
 		}
 
-		$structure_ok = $this->create_structure();
+		$structure_ok = $this->run_sql_file('structure.sql');
 		if ( ! $structure_ok) return $out;
 
 		$migration_ok = $this->install_migration();
@@ -208,12 +203,14 @@ class Installer
 		$migrate_ok = $this->run_migrations();
 		if ( ! $migrate_ok) return $out;
 
+		$data_ok = $this->run_sql_file('data.sql');
+		if ( ! $data_ok) return $out;
+
 		$user_ok = $this->create_user();
 		if ( ! $user_ok) return $out;
 
 		$settings_ok = $this->install_settings();
 		if ( ! $settings_ok) return $out;
-
 
 		$out['success'] = true;
 
@@ -221,21 +218,25 @@ class Installer
 	}
 
 
-	private function create_structure()
+	private function run_sql_file($filename)
 	{
-		$filepath = APPPATH . 'modules/install/resources/structure.sql';
+		$filepath = APPPATH . 'modules/install/resources/' . $filename;
+
 		if ( ! is_file($filepath)) {
-			$this->errors[] = 'structure.sql file not found.';
+			$this->errors[] = sprintf('SQL file %s not found.', $filename);
 			return false;
 		}
 
 		$sql_file = file_get_contents($filepath);
+		if (empty($sql_file)) return true;
+
 		$queries = $this->parse_sql($sql_file);
 
 		$success = 0;
 		$total = count($queries);
 
 		foreach ($queries as $sql) {
+			// log_message('debug', "Query: $sql");
 			try {
 				$res = $this->db_connection->query($sql);
 			} catch (Exception $e) {
@@ -250,6 +251,7 @@ class Installer
 
 		return ($success == $total);
 	}
+
 
 
 	private function install_migration()
@@ -277,19 +279,23 @@ class Installer
 	{
 		$user_data = [
 			'username' => $this->initial_user['username'],
-			'password' => password_hash($this->initial_user['password'], PASSWORD_DEFAULT),
-			'authlevel' => ADMINISTRATOR,
-			'enabled' => '1',
+			'password' => password_hash((string) $this->initial_user['password'], PASSWORD_DEFAULT),
+			'role_id' => 1,
 			'department_id' => null,
+			'enabled' => 1,
 		];
 
 		$res = $this->db_connection->insert('users', $user_data);
 		$id = $this->db_connection->insert_id();
 
+
 		if ( ! $res && ! is_numeric($id)) {
 			$this->errors[] = 'Could not create user.';
 			return false;
 		}
+
+		$sql = "INSERT INTO users_constraints SET user_id = ?";
+		$this->db_connection->query($sql, [$id]);
 
 		return $id;
 	}
@@ -331,20 +337,21 @@ class Installer
 	{
 		$sql_list = [];
 		$query = "";
-		$lines = explode("\n", $content);
+		$lines = explode("\n", (string) $content);
 
 		foreach ($lines as $sql_line) {
 
 			$sql_line = trim($sql_line);
 
 			if (($sql_line === "")
-				|| (strpos($sql_line, "--") === 0)
-				|| (strpos($sql_line, "#") === 0)
+				|| (trim($sql_line) === '')
+				|| (str_starts_with($sql_line, "--"))
+				|| (str_starts_with($sql_line, "#"))
 			) {
 				continue;
 			}
 
-			$query .= $sql_line;
+			$query .= $sql_line . ' ';
 			// Checking whether the line is a valid statement
 			if (preg_match("/(.*);$/", $sql_line)) {
 				$query = trim($query);

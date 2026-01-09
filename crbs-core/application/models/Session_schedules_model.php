@@ -59,6 +59,26 @@ class Session_schedules_model extends CI_Model
 	}
 
 
+	/**
+	 * When adding a new session, populate the schedules for each room group
+	 * based on the `default_schedule_id` value on the session.
+	 *
+	 */
+	public function init_new_session(int $session_id)
+	{
+		$sql = "INSERT INTO session_schedules (session_id, room_group_id, schedule_id)
+				SELECT
+					s.session_id,
+					g.room_group_id,
+					s.default_schedule_id
+				FROM sessions s
+				CROSS JOIN room_groups g
+				WHERE s.session_id = ?";
+
+		return $this->db->query($sql, [$session_id]);
+	}
+
+
 	public function update($defaults, $data)
 	{
 		$rows = [];

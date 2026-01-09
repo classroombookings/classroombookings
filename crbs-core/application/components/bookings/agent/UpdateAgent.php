@@ -6,8 +6,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 
 use app\components\bookings\exceptions\AgentException;
-use app\components\bookings\Slot;
-use \Bookings_model;
+use Permission;
 
 
 /**
@@ -26,8 +25,10 @@ class UpdateAgent extends BaseAgent
 	const FEATURE_PERIOD = 'period';
 	const FEATURE_ROOM = 'room';
 	const FEATURE_DEPARTMENT = 'department';
-	const FEATURE_USER = 'user';
-	const FEATURE_NOTES = 'notes';
+	const FEATURE_VIEW_USER = 'view_user';
+	const FEATURE_EDIT_USER = 'edit_user';
+	const FEATURE_VIEW_NOTES = 'view_notes';
+	const FEATURE_EDIT_NOTES = 'edit_notes';
 
 	// Edit modes
 	const EDIT_ONE = '1';
@@ -65,62 +66,76 @@ class UpdateAgent extends BaseAgent
 		if (!empty($booking_id)) $this->booking = $this->CI->bookings_model->include($includes)->get($booking_id);
 		if ( ! $this->booking) throw AgentException::forNoBooking();
 
+		if ( ! booking_editable($this->booking)) throw AgentException::forAccessDenied();
+
 		// Get session of booking
 		$this->session = $this->CI->sessions_model->get($this->booking->session_id);
 		if ( ! $this->session) throw AgentException::forNoSession();
 
-		// Load rooms & periods lists
-		//
 		$schedule = $this->CI->schedules_model->get_applied_schedule($this->session->session_id, $this->booking->room->room_group_id);
 
-		// Load the list of available periods and rooms (for admins), now we have more required context.
-		//
-		if ($this->is_admin && !empty($schedule)) {
+		if (!empty($schedule)) {
+
+			// Load the list of available periods and rooms
 			$this->all_periods = $this->CI->periods_model->filtered([
 				'schedule_id' => $schedule->schedule_id,
 				'bookable' => 1,
 			]);
+
+			if (!empty($this->booking->room->room_group_id)) {
+				$this->all_rooms = $this->CI->rooms_model->get_bookable_rooms([
+					'user_id' => $this->user->user_id,
+					'room_group_id' => $this->booking->room->room_group_id,
+				]);
+			}
 		}
 
-		if ($this->is_admin && ! empty($this->booking->room->room_group_id)) {
-			$this->all_rooms = $this->CI->rooms_model->get_bookable_rooms([
-				'user_id' => $this->user->user_id,
-				'room_group_id' => $this->booking->room->room_group_id,
-			]);
-		}
-
-		//
 
 		// Get edit mode.
 		// This flag helps determine what fields can be edited (important for recurring bookings selection)
 		// Options are single, future, or all.
-		$this->edit_mode = $this->CI->input->post_get('edit')
-			? $this->CI->input->post_get('edit')
-			: self::EDIT_ONE;
+		$this->edit_mode = $this->CI->input->post_get('edit') ?: self::EDIT_ONE;
 
-		// Determine what aspects can be changed.
-		$default_feature = ($this->is_admin) ? TRUE : FALSE;
-
-		$this->features = [
-			self::FEATURE_DATE => $default_feature,
-			self::FEATURE_PERIOD => $default_feature,
-			self::FEATURE_ROOM => $default_feature,
-			self::FEATURE_DEPARTMENT => $default_feature,
-			self::FEATURE_USER => $default_feature,
-			self::FEATURE_NOTES => $default_feature,
-		];
-
-		// Booking owners can change the notes
-		if ($this->booking->user_id == $this->user->user_id) {
-			$this->features[self::FEATURE_NOTES] = TRUE;
+		$is_booking_owner = ($this->booking->user_id == $this->user->user_id);
+		if ($this->booking->repeat_id) {
+			$can_view_notes = has_permission(Permission::BK_RECUR_VIEW_OTHER_NOTES, $this->booking->room_id);
+			$can_view_user = has_permission(Permission::BK_RECUR_VIEW_OTHER_USERS, $this->booking->room_id);
+			$can_set_user = has_permission(Permission::BK_RECUR_SET_USER, $this->booking->room_id);
+			$can_edit_other = has_permission(Permission::BK_RECUR_EDIT_OTHER, $this->booking->room_id);
+			$can_set_departent = has_permission(Permission::BK_RECUR_SET_DEPT, $this->booking->room_id);
+		} else {
+			$can_view_notes = has_permission(Permission::BK_SGL_VIEW_OTHER_NOTES, $this->booking->room_id);
+			$can_view_user = has_permission(Permission::BK_SGL_VIEW_OTHER_USERS, $this->booking->room_id);
+			$can_set_user = has_permission(Permission::BK_SGL_SET_USER, $this->booking->room_id);
+			$can_edit_other = has_permission(Permission::BK_SGL_EDIT_OTHER, $this->booking->room_id);
+			$can_set_departent = has_permission(Permission::BK_SGL_SET_DEPT, $this->booking->room_id);
 		}
 
-		// If a recurring booking future or all is being edited, then it can't be moved.
+		if ($can_set_user) {
+			$this->populate_users();
+		}
+
+		if ($can_set_departent) {
+			$this->populate_departments();
+		}
+
+		$this->features = [
+			self::FEATURE_DATE => $is_booking_owner || $can_edit_other,
+			self::FEATURE_PERIOD => $is_booking_owner || $can_edit_other,
+			self::FEATURE_ROOM => $is_booking_owner || $can_edit_other,
+			self::FEATURE_VIEW_NOTES => $is_booking_owner || $can_view_notes,
+			self::FEATURE_EDIT_NOTES => $is_booking_owner || ($can_view_notes && $can_edit_other),
+			self::FEATURE_DEPARTMENT => $can_set_departent,
+			self::FEATURE_VIEW_USER => $is_booking_owner || $can_view_user,
+			self::FEATURE_EDIT_USER => ($can_view_user && $can_set_user),
+		];
+
+		// If a recurring booking future or all is being edited, then it can't be moved in time or space.
 		if ($this->booking->repeat_id) {
 			if (in_array($this->edit_mode, [self::EDIT_FUTURE, self::EDIT_ALL])) {
-				$this->features[self::FEATURE_DATE] = FALSE;
-				$this->features[self::FEATURE_PERIOD] = FALSE;
-				$this->features[self::FEATURE_ROOM] = FALSE;
+				$this->features[self::FEATURE_DATE] = false;
+				$this->features[self::FEATURE_PERIOD] = false;
+				$this->features[self::FEATURE_ROOM] = false;
 			}
 		}
 
@@ -131,7 +146,7 @@ class UpdateAgent extends BaseAgent
 	private function handle_edit()
 	{
 		$this->view = 'bookings/edit/form';
-		$this->title = 'Edit booking';
+		$this->title = lang('booking.edit.title');
 
 		if ($this->CI->input->post()) {
 			$this->process_edit_booking();
@@ -168,7 +183,7 @@ class UpdateAgent extends BaseAgent
 		$this->CI->form_validation->set_rules($rules);
 
 		if ($this->CI->form_validation->run() == FALSE) {
-			$this->message = 'The form contained some invalid values. Please check and try again.';
+			$this->message = lang('app.form_error');
 			return FALSE;
 		}
 
@@ -194,11 +209,11 @@ class UpdateAgent extends BaseAgent
 			$booking_data['department_id'] = $this->CI->input->post('department_id');
 		}
 
-		if ($this->features[self::FEATURE_USER]) {
+		if ($this->features[self::FEATURE_EDIT_USER]) {
 			$booking_data['user_id'] = $this->CI->input->post('user_id');
 		}
 
-		if ($this->features[self::FEATURE_NOTES]) {
+		if ($this->features[self::FEATURE_EDIT_NOTES]) {
 			$booking_data['notes'] = $this->CI->input->post('notes');
 		}
 
@@ -207,9 +222,9 @@ class UpdateAgent extends BaseAgent
 		if ($update) {
 
 			$msgs = [
-				self::EDIT_ONE => 'The booking has been updated successfully.',
-				self::EDIT_FUTURE => 'The booking and all future bookings in the series have been updated.',
-				self::EDIT_ALL => 'All bookings in the series have been updated successfully.',
+				self::EDIT_ONE => lang('booking.edit.one.success'),
+				self::EDIT_FUTURE => lang('booking.edit.future.success'),
+				self::EDIT_ALL => lang('booking.edit.all.success'),
 			];
 
 			$this->message = $msgs[$this->edit_mode];
@@ -220,9 +235,8 @@ class UpdateAgent extends BaseAgent
 
 		$err = $this->CI->bookings_model->get_error();
 
-		$this->message = ($err)
-			? $err
-			: 'Could not create booking.';
+		$this->message = $err ?: lang('booking.edit.error')
+			;
 
 		return FALSE;
 	}
@@ -233,27 +247,27 @@ class UpdateAgent extends BaseAgent
 		$rules = [];
 
 		if ($this->features[self::FEATURE_DATE]) {
-			$rules[] = ['field' => 'booking_date', 'label' => 'Date', 'rules' => sprintf('required|valid_date|no_conflict[%d]', $booking_id)];
+			$rules[] = ['field' => 'booking_date', 'label' => 'lang:app.date', 'rules' => sprintf('required|valid_date|no_conflict[%d]', $booking_id)];
 		}
 
 		if ($this->features[self::FEATURE_PERIOD]) {
-			$rules[] = ['field' => 'period_id', 'label' => 'Period', 'rules' => 'required|integer'];
+			$rules[] = ['field' => 'period_id', 'label' => 'lang:period.period', 'rules' => 'required|integer'];
 		}
 
 		if ($this->features[self::FEATURE_ROOM]) {
-			$rules[] = ['field' => 'room_id', 'label' => 'Room', 'rules' => 'required|integer'];
+			$rules[] = ['field' => 'room_id', 'label' => 'lang:room.room', 'rules' => 'required|integer'];
 		}
 
 		if ($this->features[self::FEATURE_DEPARTMENT]) {
-			$rules[] = ['field' => 'department_id', 'label' => 'Department', 'rules' => 'integer'];
+			$rules[] = ['field' => 'department_id', 'label' => 'lang:department.department', 'rules' => 'integer'];
 		}
 
-		if ($this->features[self::FEATURE_USER]) {
-			$rules[] = ['field' => 'user_id', 'label' => 'User', 'rules' => 'integer'];
+		if ($this->features[self::FEATURE_EDIT_USER]) {
+			$rules[] = ['field' => 'user_id', 'label' => 'lang:user.user', 'rules' => 'integer'];
 		}
 
-		if ($this->features[self::FEATURE_NOTES]) {
-			$rules[] = ['field' => 'notes', 'label' => 'Notes', 'rules' => 'max_length[255]'];
+		if ($this->features[self::FEATURE_EDIT_NOTES]) {
+			$rules[] = ['field' => 'notes', 'label' => 'lang:booking.notes', 'rules' => 'max_length[255]'];
 		}
 
 		return $rules;

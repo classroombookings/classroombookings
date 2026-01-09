@@ -1,13 +1,13 @@
 <dl>
-	<dt>Holidays</dt>
-	<dd>Enter the first and last dates of the holiday itself; do not include teaching days.</dd>
+	<dt><?= lang('holiday.holidays') ?></dt>
+	<dd><?= lang('holiday.help.dates') ?></dd>
 
-	<dt>Session</dt>
-	<dd>The holiday must be in <?= html_escape($session->name) ?>: between
-		<span><?= $session->date_start->format('d/m/Y') ?></span> and
+	<dt><?= lang('session.session') ?></dt>
+	<dd><?= sprintf(lang('holiday.help.session'), html_escape($session->name)) ?>
+		<span><?= $session->date_start->format('d/m/Y') ?></span> -
 		<span><?= $session->date_end->format('d/m/Y') ?>.</span>
 	</dd>
 
-	<dt>Date format</dt>
-	<dd>Use the <span>DD/MM/YYYY</span> format when entering dates. For example <em>16/04/2018</em>.</dd>
+	<dt><?= lang('holiday.help.date_format') ?></dt>
+	<dd><?= lang('holiday.help.date_format.text') ?></dd>
 </dl>

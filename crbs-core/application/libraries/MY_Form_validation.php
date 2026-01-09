@@ -21,7 +21,7 @@ class MY_Form_validation extends CI_Form_validation
 		$dt = datetime_from_string($value);
 
 		if ( ! $dt) {
-			$this->set_message('valid_date', '{field} must be a valid date.');
+			$this->set_message('valid_date', lang('validation.valid_date.error'));
 			return FALSE;
 		}
 
@@ -33,24 +33,24 @@ class MY_Form_validation extends CI_Form_validation
 	{
 		$am = strtotime('00:00');
 		$pm = strtotime('23:59');
-		$ts = strtotime($value);
+		$ts = strtotime((string) $value);
 
 		$has_ts = !empty($ts);
 		$is_after = $ts >= $am;
 		$is_before = $ts <= $pm;
 
 		if ( ! $has_ts) {
-			$this->set_message('valid_time', 'Time must be provided.');
+			$this->set_message('valid_time', lang('validation.valid_time.not_provided'));
 			return FALSE;
 		}
 
 		if ( ! $is_after) {
-			$this->set_message('valid_time', 'Time must be after 00:00');
+			$this->set_message('valid_time', lang('validation.valid_time.not_after'));
 			return FALSE;
 		}
 
 		if ( ! $is_before) {
-			$this->set_message('valid_time', 'Time must be before 23:59');
+			$this->set_message('valid_time', lang('validation.valid_time.not_before'));
 			return FALSE;
 		}
 
@@ -63,15 +63,31 @@ class MY_Form_validation extends CI_Form_validation
 		$earlier_value = $this->_field_data[$earlier_field]['postdata'];
 		if (empty($earlier_value)) return TRUE;
 
-		$earlier_ts = strtotime($earlier_value);
-		$ts = strtotime($value);
+		$earlier_ts = strtotime((string) $earlier_value);
+		$ts = strtotime((string) $value);
 
 		if ($ts < $earlier_ts) {
-			$this->set_message('time_is_after', 'Time must be after the earlier time.');
+			$this->set_message('time_is_after', lang('validation.time_is_after.error'));
 			return FALSE;
 		}
 
 		return TRUE;
+	}
+
+
+	public function date_is_after($value, $earlier_field)
+	{
+		$earlier_value = $this->_field_data[$earlier_field]['postdata'];
+
+		if (empty($earlier_value)) return true;
+
+		$earlier = datetime_from_string($earlier_value);
+		$later = datetime_from_string($value);
+
+		if ($later > $earlier) return true;
+
+		$this->set_message('date_is_after', lang('validation.date_is_after.error'));
+		return FALSE;
 	}
 
 
@@ -102,13 +118,29 @@ class MY_Form_validation extends CI_Form_validation
 		if ($conflict->booking_id == $booking_id) return TRUE;
 
 		// Include details in error message.
-		$booking_card_uri = site_url('bookings/card/' . $conflict->booking_id);
-		$msg = sprintf('Another booking already exists. <a href="%s" up-target=".bookings-card" up-layer="new popup" up-size="medium">View details</a>.',
-			$booking_card_uri
-		);
+		$booking_card_url = site_url('bookings/card/' . $conflict->booking_id);
 
-		$this->set_message('no_conflict', $msg);
+		$msg = lang('validation.no_conflict.error');
+		$view = lang('app.action.view_details');
+		$link = sprintf('%s <a href="%s" up-target=".bookings-card" up-layer="new popup" up-size="medium">%s</a>', $msg, $booking_card_url, $view);
+
+		$this->set_message('no_conflict', $link);
 		return FALSE;
+	}
+
+
+	public function is_not_current_password($value, $user_id)
+	{
+		$this->CI->load->model('users_model');
+		$user = $this->CI->users_model->get_by_id($user_id);
+		$current_hash = $user->password;
+		$is_current = password_verify((string) $value, (string) $current_hash);
+		if ($is_current) {
+			$this->set_message('is_not_current_password', lang('validation.is_not_current_password.error'));
+			return false;
+		}
+
+		return true;
 	}
 
 

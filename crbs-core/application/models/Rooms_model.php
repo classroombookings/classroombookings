@@ -21,11 +21,11 @@ class Rooms_model extends CI_Model
 	{
 		parent::__construct();
 
-		$this->load->model('access_control_model');
+		$this->load->model('auth_model');
 
-		$this->options[self::FIELD_TEXT] = 'Text';
-		$this->options[self::FIELD_CHECKBOX] = 'Checkbox';
-		$this->options[self::FIELD_SELECT] = 'Dropdown list';
+		$this->options[self::FIELD_TEXT] = lang('custom_field.type.'.self::FIELD_TEXT);
+		$this->options[self::FIELD_CHECKBOX] = lang('custom_field.type.'.self::FIELD_CHECKBOX);
+		$this->options[self::FIELD_SELECT] = lang('custom_field.type.'.self::FIELD_SELECT);
 	}
 
 
@@ -58,10 +58,15 @@ class Rooms_model extends CI_Model
 
 		$out = [];
 
-		// Get the access control EXISTS query to filter the rooms
-		$permission = Access_control_model::ACCESS_VIEW;
-		$exists_sql = $this->access_control_model->get_rooms_exists($for_user_id, $permission, 'rooms.room_id');
-		$where_exists = sprintf('EXISTS (%s)', $exists_sql);
+		if (is_null($for_user_id)) {
+			return $out;
+		}
+
+		$rooms_subquery = null;
+		$user_has_bypass = $this->auth_model->user_has_permission($for_user_id, Permission::ROOM_VIEW);
+		if ( ! $user_has_bypass) {
+			$rooms_subquery = $this->auth_model->rooms_for_user_subquery($for_user_id);
+		}
 
 		$this->db->reset_query();
 
@@ -83,8 +88,11 @@ class Rooms_model extends CI_Model
 		$this->db->join('users AS actor', sprintf('actor.user_id = %d', $for_user_id), 'INNER');
 		$this->db->join('room_groups AS rg', 'room_group_id', 'LEFT');
 
-		$this->db->where($where_exists);
 		$this->db->where('bookable', 1);
+
+		if ( ! is_null($rooms_subquery)) {
+			$this->db->where("rooms.room_id IN ({$rooms_subquery})");
+		}
 
 		if ($room_id !== NULL) {
 			$this->db->where('rooms.room_id', $room_id);
@@ -150,6 +158,10 @@ class Rooms_model extends CI_Model
 	{
 		$this->db->reset_query();
 		$this->build_rooms_query();
+
+		if ($this->db->field_exists('pos', 'room_groups')) {
+			$this->db->order_by('rg.pos', 'ASC');
+		}
 
 		if ($this->db->field_exists('pos', 'rooms')) {
 			$this->db->order_by("{$this->table}.pos", 'ASC');
@@ -271,10 +283,10 @@ class Rooms_model extends CI_Model
 
 		$info = [];
 
-		if (feature('room_groups') && $room->room_group_id) {
+		if ($room->room_group_id) {
 			$info[] = [
 				'name' => 'group',
-				'label' => 'Group',
+				'label' => lang('room_group.group'),
 				'value' => html_escape($room->group->name),
 			];
 		}
@@ -283,7 +295,7 @@ class Rooms_model extends CI_Model
 		if ($room->location) {
 			$info[] = [
 				'name' => 'location',
-				'label' => 'Location',
+				'label' => lang('room.field.location'),
 				'value' => html_escape($room->location),
 			];
 		}
@@ -292,7 +304,7 @@ class Rooms_model extends CI_Model
 		if ( ! empty($room->user_id)) {
 			$info[] = [
 				'name' => 'teacher',
-				'label' => 'Teacher',
+				'label' => lang('room.field.user_id'),
 				'value' => html_escape($room->owner->displayname),
 			];
 		}
@@ -300,7 +312,7 @@ class Rooms_model extends CI_Model
 		if ($room->notes) {
 			$info[] = [
 				'name' => 'notes',
-				'label' => 'Notes',
+				'label' => lang('room.field.notes'),
 				'value' => html_escape($room->notes),
 			];
 		}
@@ -315,24 +327,24 @@ class Rooms_model extends CI_Model
 
 			switch ($field->type) {
 				case 'TEXT':
-					$field_value = html_escape($field_values[$field->field_id]);
+					$field_value = html_escape($field_values[$field->field_id] ?? '');
 				break;
 
 				case 'CHECKBOX':
-					$val = boolval($field_values[$field->field_id]);
+					$val = boolval($field_values[$field->field_id] ?? 0);
 					if ($val) {
-						$img_src = base_url('assets/images/ui/enabled.png');
-						$alt = 'Yes';
+						$img_src = asset_url('assets/images/ui/enabled.png');
+						$alt = lang('app.yes');
 					} else {
-						$img_src = base_url('assets/images/ui/no.png');
-						$alt = 'No';
+						$img_src = asset_url('assets/images/ui/no.png');
+						$alt = lang('app.no');
 					}
-					$field_value = "<img src='{$img_src}' alt='{$alt}' up-tooltip='{$alt}' width='16' height='16'>";
+					$field_value = "<img src='{$img_src}' alt='{$alt}' up-tooltip='{$alt}' width='16' height='16' style='vertical-align:-20%'> <span style='line-height:16px'>{$alt}</span>";
 				break;
 
 				case 'SELECT':
 					foreach ($field->options as $option) {
-						if ($option->option_id == $field_values[$field->field_id]) {
+						if ($option->option_id == ($field_values[$field->field_id] ?? null)) {
 							$field_value = html_escape($option->value);
 							break;
 						}
@@ -416,7 +428,7 @@ class Rooms_model extends CI_Model
 	{
 		$user_id = (int) $user_id;
 
-		$sql = "SELECT room_id, name
+		$sql = "SELECT room_id, room_group_id, name
 				FROM rooms
 				WHERE user_id={$user_id}
 				ORDER BY name
@@ -436,22 +448,9 @@ class Rooms_model extends CI_Model
 
 	function insert($data)
 	{
-		// Run query to insert blank row
 		$this->db->insert('rooms', $data);
 
-		// Get id of inserted record
 		$room_id = $this->db->insert_id();
-
-		// Add initial access control
-		$access_control_data = array(
-			'target' => Access_control_model::TARGET_ROOM,
-			'target_id' => $room_id,
-			'actor' => Access_control_model::ACTOR_AUTHENTICATED,
-			'actor_id' => NULL,
-			'permission' => Access_control_model::ACCESS_VIEW,
-		);
-
-		$entry_id = $this->access_control_model->add_entry($access_control_data);
 
 		return $room_id;
 	}
@@ -477,11 +476,6 @@ class Rooms_model extends CI_Model
 	function delete($room_id)
 	{
 		$this->delete_photo($room_id);
-
-		$this->access_control_model->delete_where([
-			'target' => Access_control_model::TARGET_ROOM,
-			'target_id' => $room_id,
-		]);
 
 		return $this->db->delete('rooms', ['room_id' => $room_id]);
 	}
@@ -641,7 +635,7 @@ class Rooms_model extends CI_Model
 	{
 		$this->db->select('*');
 		$this->db->from('roomoptions');
-		$this->db->order_by('value asc');
+		// $this->db->order_by('value asc');
 		$this->db->where('field_id', $field_id);
 
 		$query = $this->db->get();

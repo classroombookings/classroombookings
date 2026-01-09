@@ -26,8 +26,8 @@ class Bookings_model extends CI_Model
 
 
 	// Legacy:
-	var $table_headings = '';
-	var $table_rows = array();
+	public $table_headings = '';
+	public $table_rows = array();
 
 
 
@@ -83,6 +83,85 @@ class Bookings_model extends CI_Model
 		}
 
 		return FALSE;
+	}
+
+
+	/**
+	 * Get all bookings by specified IDs.
+	 *
+	 */
+	public function find_by_ids(array $booking_ids)
+	{
+		if (empty($booking_ids)) return [];
+
+		$this->db->reset_query();
+
+		$this->db->select([
+			'b.booking_id',
+			'b.repeat_id',
+			'b.period_id',
+			'b.room_id',
+			'b.user_id',
+			'b.date',
+			'b.status',
+			'b.notes',
+			'p.time_start',
+			'p.time_end',
+		]);
+
+		$this->db->select([
+			'u.user_id AS user__user_id',
+			'u.username AS user__username',
+			'u.displayname AS user__displayname'
+		], FALSE);
+
+		$this->db->select([
+			'r.week_id AS repeat__week_id',
+			'r.weekday AS repeat__weekday',
+		], FALSE);
+
+		$this->db->select([
+			'w.week_id AS repeat_week__week_id',
+			'w.name AS repeat_week__name',
+			'w.fgcol AS repeat_week__fgcol',
+			'w.bgcol AS repeat_week__bgcol',
+		], FALSE);
+
+		$this->db->select([
+			'rm.user_id AS room__user_id',
+			'rm.name AS room__name',
+		]);
+
+		$this->db->select([
+			'dp.name AS department__name',
+		]);
+
+		$this->db->select([
+			'p.name AS period__name',
+			'p.time_start AS period__time_start',
+			'p.time_end AS period__time_end',
+		]);
+
+		$this->db->from("{$this->table} AS b");
+		$this->db->join('periods p', 'period_id', 'INNER');
+		$this->db->join('rooms rm', 'room_id', 'INNER');
+		$this->db->join('users u', 'b.user_id = u.user_id', 'LEFT');
+		$this->db->join('bookings_repeat r', 'repeat_id', 'LEFT');
+		$this->db->join('weeks w', 'week_id', 'LEFT');
+		$this->db->join('departments dp', 'b.department_id = dp.department_id', 'LEFT');
+
+		$this->db->where('b.status', self::STATUS_BOOKED);
+
+		$this->db->where_in('b.booking_id', $booking_ids);
+
+		$query = $this->db->get();
+		$result = $query->result();
+
+		foreach ($result as &$row) {
+			$row = $this->wake_value($row);
+		}
+
+		return $result;
 	}
 
 
@@ -227,9 +306,14 @@ class Bookings_model extends CI_Model
 			'w.bgcol AS repeat_week__bgcol',
 		], FALSE);
 
+		$this->db->select([
+			'rm.user_id AS room__user_id',
+		]);
+
 		$this->db->from("{$this->table} AS b");
 		$this->db->join('periods p', 'period_id', 'INNER');
-		$this->db->join('users u', 'user_id', 'LEFT');
+		$this->db->join('rooms rm', 'room_id', 'INNER');
+		$this->db->join('users u', 'b.user_id = u.user_id', 'LEFT');
 		$this->db->join('bookings_repeat r', 'repeat_id', 'LEFT');
 		$this->db->join('weeks w', 'week_id', 'LEFT');
 
@@ -268,6 +352,83 @@ class Bookings_model extends CI_Model
 		}
 
 		return $out;
+	}
+
+
+	public function export_unbuffered(array $filter, $fn)
+	{
+		$columns = [
+			'Booking ID' => 'b.booking_id',
+			'Recurring ID' => 'b.repeat_id',
+			'Type' => "IF(b.repeat_id IS NULL, 'Single', 'Recurring')",
+			'Status' => "CASE b.status WHEN 10 THEN 'Booked' WHEN 15 THEN 'Cancelled' END",
+			'Session' => 'sess.name',
+			'Date' => 'b.date',
+			'Weekday' => 'DAYNAME(b.date)',
+			'Timetable Week' => 'w.name',
+			'Period' => 'p.name',
+			'Schedule' => 'sched.name',
+			'Start Time' => "TIME_FORMAT(p.time_start, '%H:%i')",
+			'End Time' => "TIME_FORMAT(p.time_end, '%H:%i')",
+			'Room' => 'r.name',
+			'Room Group' => 'rg.name',
+			'Notes' => 'b.notes',
+			'Username' => 'u.username',
+			'User' => 'COALESCE(u.displayname, u.username)',
+			'Department' => 'dept.name',
+			'Created At' => 'b.created_at',
+			'Created User' => 'creu.username',
+			'Updated At' => 'b.updated_at',
+			'Updated User' => 'updu.username',
+			'Cancelled At' => 'b.cancelled_at',
+			'Cancelled User' => 'canu.username',
+		];
+
+		$this->db->reset_query();
+
+		foreach ($columns as $alias => $select) {
+			$str = sprintf("%s AS '%s'", $select, $alias);
+			$this->db->select($str, false);
+		}
+
+		$this->db->from("{$this->table} AS b");
+		$this->db->join('sessions sess', 'b.session_id = sess.session_id', 'INNER');
+		$this->db->join('periods p', 'b.period_id = p.period_id', 'INNER');
+		$this->db->join('schedules sched', 'p.schedule_id = sched.schedule_id', 'INNER');
+		$this->db->join('rooms r', 'b.room_id = r.room_id', 'INNER');
+		$this->db->join('room_groups rg', 'r.room_group_id = rg.room_group_id', 'INNER');
+		$this->db->join('dates d', 'b.date = d.date AND b.session_id = d.session_id', 'INNER');
+		$this->db->join('weeks w', 'd.week_id = w.week_id', 'LEFT');
+		$this->db->join('departments dept', 'b.department_id = dept.department_id', 'LEFT');
+		$this->db->join('users u', 'b.user_id = u.user_id', 'LEFT');
+		$this->db->join('users creu', 'b.created_by = creu.user_id', 'LEFT');
+		$this->db->join('users updu', 'b.updated_by = updu.user_id', 'LEFT');
+		$this->db->join('users canu', 'b.cancelled_by = canu.user_id', 'LEFT');
+
+		$include_cancelled = $filter['include_cancelled'] ?? 0;
+		if ($include_cancelled == 0) {
+			$this->db->where('b.status', self::STATUS_BOOKED);
+		}
+
+		if (array_key_exists('session_id', $filter) && ! empty($filter['session_id'])) {
+			$this->db->where('b.session_id', $filter['session_id']);
+		}
+
+		if (array_key_exists('room_group_id', $filter) && ! empty($filter['room_group_id'])) {
+			$this->db->where('r.room_group_id', $filter['room_group_id']);
+		}
+
+		$query = $this->db->get();
+
+		$fn(array_keys($columns));
+
+		while ($row = $query->unbuffered_row('array')) {
+			$fn(array_values($row));
+		}
+
+		// $result = $query->result();
+
+		// return $result;
 	}
 
 
@@ -376,7 +537,9 @@ class Bookings_model extends CI_Model
 				// Ensure we only send valid data to repeat table
 				$repeat_data = [];
 				foreach ($repeat_keys as $k) {
-					$repeat_data[$k] = isset($booking_data[$k]) ? $booking_data[$k] : NULL;
+					if (isset($data[$k])) {
+						$repeat_data[$k] = $data[$k];
+					}
 				}
 
 				$update_rep = $this->db->update('bookings_repeat', $repeat_data, $where);
@@ -607,6 +770,7 @@ class Bookings_model extends CI_Model
 		$this->db->reset_query();
 
 		$this->db->select([
+			'b.booking_id',
 			'b.date',
 			'b.notes',
 		]);
@@ -619,6 +783,7 @@ class Bookings_model extends CI_Model
 
 		$this->db->select([
 			'r.room_id AS room__room_id',
+			'r.room_group_id AS room__room_group_id',
 			'r.name AS room__name',
 		], FALSE);
 
@@ -669,6 +834,7 @@ class Bookings_model extends CI_Model
 		$this->db->reset_query();
 
 		$this->db->select([
+			'b.booking_id',
 			'b.date',
 			'b.notes',
 		]);
@@ -681,6 +847,7 @@ class Bookings_model extends CI_Model
 
 		$this->db->select([
 			'r.room_id AS room__room_id',
+			'r.room_group_id AS room__room_group_id',
 			'r.name AS room__name',
 		], FALSE);
 
@@ -715,36 +882,6 @@ class Bookings_model extends CI_Model
 	}
 
 
-	public function CountScheduledByUser($user_id)
-	{
-		$today = date("Y-m-d");
-		$time = date('H:i') . ':00';
-
-		$sql = 'SELECT COUNT(booking_id) AS total
-				FROM bookings
-				INNER JOIN periods USING (period_id)
-				WHERE bookings.user_id = ?
-				AND bookings.status = 10
-				AND bookings.date IS NOT NULL
-				AND bookings.repeat_id IS NULL
-				AND (
-					(bookings.date > ?)	/* after today */
-					OR
-					(bookings.date = ? AND periods.time_start > ?) /* today, but after cur time */
-				)';
-
-		$query = $this->db->query($sql, [
-			$user_id,
-			$today,
-			$today,
-			$time
-		]);
-
-		$row = $query->row_array();
-		return (int) $row['total'];
-	}
-
-
 	function TotalNum($user_id = 0)
 	{
 		$total = [];
@@ -776,7 +913,7 @@ class Bookings_model extends CI_Model
 		// $row = $query->row_array();
 		// $total['todate'] = $row['total'];
 
-		$total['active'] = $this->CountScheduledByUser($user_id);
+		$total['active'] = $this->users_model->get_scheduled_booking_count($user_id);
 
 		return $total;
 	}

@@ -40,6 +40,14 @@ class Departments_model extends CI_Model
 
 	public function delete($department_id)
 	{
+		// Update users to remove department membership
+		$sql = "UPDATE users SET department_id = NULL WHERE department_id = ?";
+		$this->db->query($sql, [$department_id]);
+
+		// Remove any ACLs that were for this department
+		$sql = "DELETE FROM auth_acl WHERE context_type='department' AND context_id=?";
+		$this->db->query($sql, [$department_id]);
+
 		return $this->db->delete('departments', ['department_id' => $department_id]);
 	}
 

@@ -7,92 +7,77 @@ $this->table->set_template([
 ]);
 
 
-$date_format = setting('date_format_long', 'crbs');
-
 // Date
 //
 $info[] = [
 	'name' => 'date',
-	'label' => 'Date',
-	'value' => $booking->date->format($date_format),
+	'label' => lang('app.date'),
+	'value' => date_output_long($booking->date),
 ];
 
 // Week
 //
 $info[] = [
 	'name' => 'week',
-	'label' => 'Week',
+	'label' => lang('week.week'),
 	'value' => week_dot($booking->week, 'sm') . ' ' . html_escape($booking->week->name),
 ];
 
 
 if ($booking->repeat_id) {
 	$weekday = Calendar::get_day_name($booking->repeat->weekday);
+	$lang_key = sprintf('cal_%s', strtolower((string) $weekday));
+	$weekday_lang = lang($lang_key);
 	$info[] = [
 		'name' => 'occurs',
-		'label' => 'Occurs',
-		'value' => sprintf("%s, every %s", $booking->week->name, $weekday),
+		'label' => lang('booking.occurs'),
+		'value' => sprintf("%s, %s %s", $booking->week->name, strtolower(lang('app.every')), $weekday_lang),
 	];
 } else {
 	$info[] = [
 		'name' => 'occurs',
-		'label' => 'Occurs',
-		'value' => 'Once',
+		'label' => lang('booking.occurs'),
+		'value' => lang('booking.occurs.once'),
 	];
 }
 
 // Period
 //
-$time_fmt = setting('time_format_period');
-$time = '';
-if (!empty($time_fmt)) {
-	$start = date($time_fmt, strtotime($booking->period->time_start));
-	$end = date($time_fmt, strtotime($booking->period->time_end));
-	$time = sprintf(' (%s - %s)', $start, $end);
-}
+$start = date_output_time($booking->period->time_start);
+$end = date_output_time($booking->period->time_end);
+$time = sprintf(' (%s - %s)', $start, $end);
 $info[] = [
 	'name' => 'period',
-	'label' => 'Period',
+	'label' => lang('period.period'),
 	'value' => html_escape($booking->period->name . $time),
 ];
 
 // User
 //
-$user_is_admin = $this->userauth->is_level(ADMINISTRATOR);
-$user_is_booking_owner = ($booking->user_id && $booking->user_id == $current_user->user_id);
-
-$display_user_setting = ($booking->repeat_id)
-	? setting('bookings_show_user_recurring')
-	: setting('bookings_show_user_single');
-
-$show_user = ($user_is_admin || $user_is_booking_owner || $display_user_setting);
-
-$user_label = '';
-if ($booking->user) {
-	$user_label = !empty($booking->user->displayname)
-		? $booking->user->displayname
-		: $booking->user->username;
+$user_value = '<em>' . lang('app.not_available') . '</em>';
+if (booking_user_viewable($booking)) {
+	$user_value = '<em>' . lang('app.not_set') . '</em>';
+	if ($booking->user) {
+		$user_label = !empty($booking->user->displayname)
+			? $booking->user->displayname
+			: $booking->user->username;
+		$user_value = html_escape($user_label);
+	}
 }
-
-$user_value = ($show_user && ! empty($booking->user))
-	? html_escape($user_label)
-	: '<em>Not available</em>';
 
 $info[] = [
 	'name' => 'user',
-	'label' => 'Booked by',
+	'label' => lang('booking.booked_by'),
 	'value' => $user_value,
 ];
 
 // Department
 //
-$department = ($booking->department)
-	? $booking->department
-	: ($booking->user ? $booking->user->department : false);
+$department = $booking->department ?: ($booking->user ? $booking->user->department : false);
 if ($department) {
 	$info[] = [
 		'name' => 'department',
-		'label' => 'Department',
+		'label' => lang('department.department'),
 		'value' => html_escape($department->name),
 	];
 }
@@ -100,11 +85,19 @@ if ($department) {
 // Notes
 //
 if (!empty($booking->notes)) {
+
+	$notes_value = '<em>' . lang('app.not_available') . '</em>';
+
+	if (booking_notes_viewable($booking)) {
+		$notes_value = html_escape($booking->notes);
+	}
+
 	$info[] = [
 		'name' => 'notes',
-		'label' => 'Notes',
-		'value' => html_escape($booking->notes),
+		'label' => lang('booking.notes'),
+		'value' => $notes_value,
 	];
+
 }
 
 

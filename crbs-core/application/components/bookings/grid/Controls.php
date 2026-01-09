@@ -5,6 +5,7 @@ namespace app\components\bookings\grid;
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 use app\components\bookings\Context;
+use Permission;
 
 
 class Controls
@@ -52,6 +53,7 @@ class Controls
 			case 'day':
 
 				$query_params = $this->context->get_query_params();
+				$query_params['selected_date'] = $query_params['date'];
 				unset($query_params['date']);
 
 				$data = [
@@ -98,7 +100,7 @@ class Controls
 
 	private function render_session_view()
 	{
-		$show_all = ($this->context->user && $this->context->user->authlevel == ADMINISTRATOR)
+		$show_all = ($this->context->user && has_permission(Permission::SYS_VIEW_ALL_SESSIONS))
 			? TRUE
 			: FALSE;
 
@@ -109,13 +111,13 @@ class Controls
 
 			if ($this->context->active_sessions) {
 				foreach ($this->context->active_sessions as $session) {
-					$session_options['Current and future'][$session->session_id] = $session->name;
+					$session_options[lang('booking.session.current')][$session->session_id] = $session->name;
 				}
 			}
 
 			if ($this->context->past_sessions) {
 				foreach ($this->context->past_sessions as $session) {
-					$session_options['Past'][$session->session_id] = $session->name;
+					$session_options[lang('booking.session.past')][$session->session_id] = $session->name;
 				}
 			}
 

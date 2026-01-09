@@ -12,18 +12,20 @@ class Sessions extends MY_Controller
 	{
 		parent::__construct();
 
-		$this->require_auth_level(ADMINISTRATOR);
+		$this->require_logged_in();
+		$this->require_permission(Permission::SETUP_SESSIONS);
 
 		$this->load->model([
 			'sessions_model',
 			'weeks_model',
 			'dates_model',
 			'schedules_model',
+			'session_schedules_model',
 		]);
 
 		$this->load->helper('date');
 
-		$this->data['showtitle'] = 'Sessions';
+		$this->data['showtitle'] = lang('session.sessions');
 
 	}
 
@@ -37,7 +39,7 @@ class Sessions extends MY_Controller
 		$this->data['active'] = $this->sessions_model->get_all_active();
 		$this->data['past'] = $this->sessions_model->get_all_past();
 
-		$this->data['title'] = 'Sessions';
+		$this->data['title'] = lang('session.sessions');
 
 		$body = $this->load->view('sessions/index', $this->data, TRUE);
 
@@ -79,7 +81,7 @@ class Sessions extends MY_Controller
 		$this->data['weeks'] = $weeks;
 		$this->data['calendar'] = $calendar;
 		$this->data['session'] = $session;
-		$this->data['title'] = $this->data['showtitle'] = 'Session: ' . $session->name;
+		$this->data['title'] = $this->data['showtitle'] = sprintf('%s: %s', lang('session.session'), $session->name);
 
 		$icons = $this->load->view('sessions/_icons', [
 			'session' => $session,
@@ -89,7 +91,7 @@ class Sessions extends MY_Controller
 		$body = $this->load->view('sessions/view', $this->data, TRUE);
 
 		if (empty($weeks)) {
-			$body = msgbox('error', 'Please add at least one Timetable Week.');
+			$body = msgbox('error', lang('session.error.no_timetable_weeks'));
 		}
 
 		$this->data['body'] = $icons . $body;
@@ -108,12 +110,11 @@ class Sessions extends MY_Controller
 
 		$updated = $this->dates_model->set_weeks($session_id, $dates);
 		if ($updated) {
-			$flashmsg = msgbox('info', "The session weeks have been updated.");
+			$flashmsg = msgbox('info', lang('session.save_weeks.success'));
 		} else {
-			$flashmsg = msgbox('error', "There was an error updating the session weeks.");
+			$flashmsg = msgbox('error', lang('session.save_weeks.error'));
 		}
 
-		// echo "done";
 		$this->session->set_flashdata('saved', $flashmsg);
 		redirect(current_url());
 	}
@@ -131,14 +132,14 @@ class Sessions extends MY_Controller
 		$week = $this->weeks_model->get($week_id);
 
 		if (empty($week)) {
-			$flashmsg = msgbox('error', 'No week selected.');
+			$flashmsg = msgbox('error', lang('session.bulk_week.no_week_selected'));
 			$this->session->set_flashdata('saved', $flashmsg);
 			redirect("sessions/view/{$session_id}");
 		}
 
 		$this->dates_model->apply_week($session_id, $week_id);
 
-		$flashmsg = msgbox('info', sprintf("%s has been applied to every week in the session.", html_escape($week->name)));
+		$flashmsg = msgbox('info', sprintf(lang('session.bulk_week.success'), html_escape($week->name)));
 		$this->session->set_flashdata('saved', $flashmsg);
 
 		redirect("sessions/view/{$session_id}");
@@ -151,7 +152,7 @@ class Sessions extends MY_Controller
 	 */
 	public function add()
 	{
-		$this->data['title'] = 'Add Session';
+		$this->data['title'] = lang('session.add.title');
 
 		$this->data['schedules'] = $this->schedules_model->get_all();
 
@@ -187,7 +188,7 @@ class Sessions extends MY_Controller
 
 		$this->data['session'] = $session;
 		$this->data['schedules'] = $this->schedules_model->get_all();
-		$this->data['title'] = $this->data['showtitle'] = 'Session: ' . $session->name . ': Edit details';
+		$this->data['title'] = $this->data['showtitle'] = sprintf('%s: %s', lang('session.edit.title'), $session->name);
 
 		if ($this->input->post()) {
 			$this->save_session($session_id);
@@ -222,16 +223,16 @@ class Sessions extends MY_Controller
 	{
 		$this->load->library('form_validation');
 
-		$this->form_validation->set_rules('name', 'Name', 'required|max_length[50]');
-		$this->form_validation->set_rules('is_selectable', 'User-selectable', 'required|in_list[0,1]');
-		$this->form_validation->set_rules('default_schedule_id', 'Default schedule', 'required|is_natural_no_zero');
+		$this->form_validation->set_rules('name', 'lang:session.field.name', 'required|max_length[50]');
+		$this->form_validation->set_rules('is_selectable', 'lang:session.field.is_selectable', 'required|in_list[0,1]');
+		$this->form_validation->set_rules('default_schedule_id', 'lang:session.field.default_schedule_id', 'required|is_natural_no_zero');
 
 		$callbackRule = !empty($session_id)
          	? sprintf('callback__date_check[%d]', $session_id)
          	: 'callback__date_check';
 
-		$this->form_validation->set_rules('date_start', 'Start date', "required|valid_date|{$callbackRule}");
-		$this->form_validation->set_rules('date_end', 'End date', "required|valid_date|{$callbackRule}");
+		$this->form_validation->set_rules('date_start', 'lang:session.field.date_start', "required|valid_date|{$callbackRule}");
+		$this->form_validation->set_rules('date_end', 'lang:session.field.date_end', "required|valid_date|date_is_after[date_start]|{$callbackRule}");
 
 		$data = array(
 			'name' => $this->input->post('name'),
@@ -249,20 +250,21 @@ class Sessions extends MY_Controller
 
 		if ($session_id) {
 			if ($this->sessions_model->update($session_id, $data)) {
-				$line = sprintf($this->lang->line('crbs_action_saved'), $data['name']);
-				$flashmsg = msgbox('info', $line);
+				$msg = sprintf(lang('session.update.success'), $data['name']);
+				$flashmsg = msgbox('info', $msg);
 			} else {
-				$line = sprintf($this->lang->line('crbs_action_dberror'), 'editing');
-				$flashmsg = msgbox('error', $line);
+				$flashmsg = msgbox('error', lang('session.update.error'));
 			}
 		} else {
 			if ($session_id = $this->sessions_model->insert($data)) {
 				$uri = "sessions/view/{$session_id}";
-				$line = sprintf($this->lang->line('crbs_action_added'), 'Session');
-				$flashmsg = msgbox('info', $line);
+				$msg = sprintf(lang('session.create.success'), $data['name']);
+				$flashmsg = msgbox('info', $msg);
+
+				// Set schedules from default_schedule_id
+				$this->session_schedules_model->init_new_session($session_id);
 			} else {
-				$line = sprintf($this->lang->line('crbs_action_dberror'), 'adding');
-				$flashmsg = msgbox('error', $line);
+				$flashmsg = msgbox('error', lang('session.create.error'));
 			}
 		}
 
@@ -281,7 +283,7 @@ class Sessions extends MY_Controller
 
 		if ($this->input->post('id')) {
 			$this->sessions_model->delete($this->input->post('id'));
-			$flashmsg = msgbox('info', $this->lang->line('crbs_action_deleted'));
+			$flashmsg = msgbox('info', sprintf(lang('session.delete.success'), $session->name));
 			$this->session->set_flashdata('saved', $flashmsg);
 			redirect('sessions');
 		}
@@ -289,9 +291,9 @@ class Sessions extends MY_Controller
 		$this->data['action'] = current_url();
 		$this->data['id'] = $id;
 		$this->data['cancel'] = 'sessions';
-		$this->data['text'] = 'If you delete this session, <strong>all bookings</strong> and holidays during this session will be <strong>permanently deleted</strong> as well.';
+		$this->data['text'] = lang('session.delete.warning');
 
-		$this->data['title'] = sprintf('Delete Session (%s)', html_escape($session->name));
+		$this->data['title'] = sprintf(lang('session.delete.title'), html_escape($session->name));
 
 		$title = "<h2>{$this->data['title']}</h2>";
 		$body = $this->load->view('partials/deleteconfirm', $this->data, TRUE);
@@ -318,7 +320,7 @@ class Sessions extends MY_Controller
 			$dt = datetime_from_string($value);
 			$dtFormat = $dt->format('d/m/Y');
 			$sessionName = $session->name;
-			$msg = sprintf("The {field} (%s) is already part of an existing session (%s).", $dtFormat, $sessionName);
+			$msg = sprintf(lang('session.validation.date_check'), $dtFormat, $sessionName);
 			$this->form_validation->set_message('_date_check', $msg);
 			return FALSE;
 		}

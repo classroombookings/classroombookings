@@ -270,7 +270,7 @@ class Dates_model extends CI_Model
 	{
 		$session = $this->sessions_model->get($session_id);
 		if ( ! $session) {
-			return FALSE;
+			return false;
 		}
 
 		$sql = "UPDATE {$this->table} SET session_id = NULL WHERE session_id = ?";
@@ -289,6 +289,10 @@ class Dates_model extends CI_Model
 			$rows[] = $str;
 		}
 
+		if (empty($rows)) {
+			return true;
+		}
+
 		$values = implode(',', $rows);
 
 		$sql = "INSERT INTO {$this->table}
@@ -302,7 +306,7 @@ class Dates_model extends CI_Model
 		$this->db->query($sql);
 
 		$sql = "DELETE FROM {$this->table} WHERE session_id IS NULL";
-		$this->db->query($sql);
+		return $this->db->query($sql);
 	}
 
 
@@ -441,11 +445,10 @@ GROUP BY date
 			}
 		}
 
-		if (empty($dates)) {
-			return TRUE;
-		}
+		if (empty($dates)) return true;
 
-		return $this->db->update_batch($this->table, $dates, 'date');
+		$res = $this->db->update_batch($this->table, $dates, 'date');
+		return ($res === false) ? false : true;
 	}
 
 
@@ -474,6 +477,8 @@ GROUP BY date
 		$sql = "UPDATE {$this->table} SET week_id = NULL WHERE session_id = ?";
 		$this->db->query($sql, $session->session_id);
 
+		$dates = [];
+
 		foreach ($data as $date => $week_id) {
 
 			$dt = DateTime::createFromFormat('!Y-m-d', $date);
@@ -490,7 +495,10 @@ GROUP BY date
 
 		}
 
-		return $this->db->update_batch($this->table, $dates, 'date');
+		if (empty($dates)) return true;
+
+		$res = $this->db->update_batch($this->table, $dates, 'date');
+		return ($res === false) ? false : true;
 	}
 
 

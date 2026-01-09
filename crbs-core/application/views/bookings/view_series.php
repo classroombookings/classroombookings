@@ -6,9 +6,7 @@ $this->table->set_template([
 	'table_open' => '<table class="zebra-table" style="line-height:1.3" width="100%" cellpadding="10" cellspacing="0" border="0">',
 ]);
 
-$this->table->set_heading('Status', 'Booking');
-
-$date_format = setting('date_format_long', 'crbs');
+$this->table->set_heading(lang('app.status'), lang('booking.booking'));
 
 $links = [];
 $info = [];
@@ -25,7 +23,7 @@ if ($booking->repeat_id) {
 
 	$links[] = [
 		'link' => $uri,
-		'name' => 'Back to booking details',
+		'name' => lang('booking.series.go_back'),
 		'icon' => 'arrow_turn_left.png',
 		'attrs' => [
 			'up-target' => '.bookings-view',
@@ -47,14 +45,17 @@ foreach ($all_bookings as $repeat_booking) {
 	$status_label = booking_status_label($repeat_booking);
 	$status_icon = booking_status_icon($repeat_booking);
 	$status = img([
-		'src' => base_url('assets/images/ui/' . $status_icon),
+		'src' => asset_url('assets/images/ui/' . $status_icon),
 		'title' => $status_label,
 		'alt' => $status_label,
 	]);
-	$date = "<strong>" . $repeat_booking->date->format($date_format) . "</strong>";
-	$notes = !empty($repeat_booking->notes)
-		? '<br>' . html_escape($repeat_booking->notes)
-		: '';
+	$date = "<strong>" . date_output_long($repeat_booking->date) . "</strong>";
+	$notes = '';
+	if (booking_notes_viewable($repeat_booking)) {
+		$notes = !empty($repeat_booking->notes)
+			? '<br>' . html_escape($repeat_booking->notes)
+			: '';
+	}
 
 	if ($repeat_booking->date == $booking->date) {
 		$date = "<span class='highlight'>{$date}</span>";
@@ -73,6 +74,6 @@ echo "<div class='messages'>{$messages}</div>";
 // Booking
 //
 
-echo "<h3>Bookings in series</h3>";
+echo "<h3>" . lang('booking.bookings_in_series') . "</h3>";
 echo $links_html;
 echo $info_html;

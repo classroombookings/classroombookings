@@ -12,7 +12,7 @@ It is available to [download and install yourself](https://www.classroombookings
 It is web-based - PHP and MySQL - and currently uses the [CodeIgniter 3](https://codeigniter.com/) framework.
 
 ## Documentation
-For installation instructions and configuration guide, please [read the documentation pages](https://www.classroombookings.com/docs/).
+For installation instructions and configuration guide, please [read the documentation pages](https://www.classroombookings.com/docs/self-hosted/).
 
 ## Bug Reports & Feature Requests
 Please check out [GitHub Issues](https://github.com/craigrodway/classroombookings/issues) to view existing issues or open a new bug report.

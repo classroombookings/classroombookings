@@ -8,6 +8,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class TabPane
 {
 
+	private $CI;
+
 	public $id;
 	public $tabs = [];
 
@@ -18,7 +20,7 @@ class TabPane
 	public function __construct($id = null)
 	{
 		$this->CI =& get_instance();
-		$this->id = $id ? $id : uniqid();
+		$this->id = $id ?: uniqid();
 	}
 
 

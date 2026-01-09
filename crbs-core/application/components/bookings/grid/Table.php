@@ -32,19 +32,12 @@ class Table
 		// Determine width of columns based on number of items
 		if ( ! $this->context->exception) {
 
-			switch ($this->context->columns) {
-				case 'periods':
-					$col_count = is_array($this->context->periods) ? count($this->context->periods) + 1 : 1;
-					break;
-				case 'days':
-					$col_count = is_array($this->context->dates) ? count($this->context->dates) + 1 : 1;
-					break;
-				case 'rooms':
-					$col_count = is_array($this->context->rooms) ? count($this->context->rooms) + 1 : 1;
-					break;
-				default:
-					$col_count = 0;
-			}
+			$col_count = match ($this->context->columns) {
+				'periods' => is_array($this->context->periods) ? count($this->context->periods) + 1 : 1,
+				'days' => is_array($this->context->dates) ? count($this->context->dates) + 1 : 1,
+				'rooms' => is_array($this->context->rooms) ? count($this->context->rooms) + 1 : 1,
+				default => 0,
+			};
 
 			$this->col_width = ($col_count > 0)
 				? sprintf('%d%%', round(100 / $col_count))
@@ -101,7 +94,30 @@ class Table
 			$classes .= ' has-highlight';
 		}
 
-		$table_open = "<table border='0' bordercolor='#ffffff' cellpadding='2' cellspacing='2' class='{$classes}'>";
+		$hs = <<<EOH
+init
+	on toggle_ms
+		toggle [@data-multi=true]
+		call updateUi()
+	end
+	def updateUi
+		if my [@data-multi]
+			set showElts to <.multi-select-content[data-multi='true']/>
+			set hideElts to <.multi-select-content[data-multi='false']/>
+			add .highlight to .multi-select-controller
+		else
+			set showElts to <.multi-select-content[data-multi='false']/>
+			set hideElts to <.multi-select-content[data-multi='true']/>
+			remove .highlight from .multi-select-controller
+		end
+		show showElts with display
+		hide hideElts with display
+	end
+EOH;
+
+		$table_open = '<table border="0" bordercolor="#ffffff" cellpadding="2" cellspacing="2" class="%s" data-script="%s">';
+		$table_open = sprintf($table_open, $classes, trim(html_escape($hs)));
+
 		$table_close = '</table>';
 
 		return $table_open . $tbody . $table_close;
@@ -124,20 +140,25 @@ class Table
 		$column_config = $this->get_columns();
 		$name = $column_config['name'];
 
-		foreach ($column_config['items'] as $col_item) {
+		if (is_array($column_config['items'])) {
 
-			$data = [
-				$name => $col_item,
-				'width' => $this->col_width,
-				'day_names' => $day_names,
-				'today' => $this->context->today,
-			];
+			foreach ($column_config['items'] as $col_item) {
 
-			$view_name = sprintf('bookings_grid/table/col_%s', $name);
+				$data = [
+					$name => $col_item,
+					'width' => $this->col_width,
+					'day_names' => $day_names,
+					'today' => $this->context->today,
+				];
 
-			$cells[] = $this->CI->load->view($view_name, $data, TRUE);
+				$view_name = sprintf('bookings_grid/table/col_%s', $name);
+
+				$cells[] = $this->CI->load->view($view_name, $data, TRUE);
+
+			}
 
 		}
+
 
 		$classes = [
 			'bookings-grid-row',
@@ -161,13 +182,13 @@ class Table
 		$row_config = $this->get_rows();
 		$name = $row_config['name'];
 
-		foreach ($row_config['items'] as $row_item) {
-
-			$content_rows[] = $this->render_content_row([
-				'name' => $name,
-				$name => $row_item,
-			]);
-
+		if (is_array($row_config['items'])) {
+			foreach ($row_config['items'] as $row_item) {
+				$content_rows[] = $this->render_content_row([
+					'name' => $name,
+					$name => $row_item,
+				]);
+			}
 		}
 
 		return implode("\n", $content_rows);
@@ -193,16 +214,20 @@ class Table
 		$column_config = $this->get_columns();
 		$col_name = $column_config['name'];
 
-		foreach ($column_config['items'] as $col_item) {
+		if (is_array($column_config['items'])) {
 
-			$cell_data = [
-				'row' => $params,
-				'column' => ['name' => $col_name, $col_name => $col_item ],
-			];
+			foreach ($column_config['items'] as $col_item) {
 
-			$cells[] = $this->render_cell($cell_data);
+				$cell_data = [
+					'row' => $params,
+					'column' => ['name' => $col_name, $col_name => $col_item ],
+				];
 
+				$cells[] = $this->render_cell($cell_data);
+
+			}
 		}
+
 
 		$classes = [
 			'bookings-grid-row',
@@ -247,12 +272,22 @@ class Table
 			'bookings-grid-slot',
 		];
 
+		$highlight = null;
+		$params = $this->context->get_query_params();
+		if (isset($params['highlight'])) {
+			$highlight = (int) $params['highlight'];
+		}
+
 		foreach ($this->context->slots as $slot) {
 
 			$slot_classes = [
 				sprintf('booking-status-%s', $slot->status),
 				sprintf('booking-status-%s-%s', $slot->status, $slot->reason),
 			];
+
+			if ($slot->booking && $slot->booking->booking_id == $highlight) {
+				$slot_classes[] = 'highlight';
+			}
 
 			$class_str = implode(' ', array_merge($classes, $slot_classes));
 

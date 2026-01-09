@@ -1,5 +1,5 @@
 <?php
-echo isset($notice) ? $notice : '';
+echo $notice ?? '';
 echo form_open_multipart(current_url(), array('class' => 'cssform', 'id' => 'install_step2'));
 ?>
 
@@ -11,7 +11,7 @@ echo form_open_multipart(current_url(), array('class' => 'cssform', 'id' => 'ins
 		<label for="database" class="required">School name</label>
 		<?php
 		$field = 'name';
-		$value = set_value($field, isset($_SESSION['data'][$field]) ? $_SESSION['data'][$field] : '', FALSE);
+		$value = set_value($field, $_SESSION['data'][$field] ?? '', FALSE);
 		echo form_input(array(
 			'name' => $field,
 			'id' => $field,
@@ -36,7 +36,7 @@ echo form_open_multipart(current_url(), array('class' => 'cssform', 'id' => 'ins
 		<label for="url" class="required">Username</label>
 		<?php
 		$field = 'admin_username';
-		$value = set_value($field, isset($_SESSION['data'][$field]) ? $_SESSION['data'][$field] : '', FALSE);
+		$value = set_value($field, $_SESSION['data'][$field] ?? '', FALSE);
 		echo form_input(array(
 			'name' => $field,
 			'id' => $field,
@@ -53,7 +53,7 @@ echo form_open_multipart(current_url(), array('class' => 'cssform', 'id' => 'ins
 		<label for="database" class="required">Password</label>
 		<?php
 		$field = 'admin_password';
-		$value = set_value($field, isset($_SESSION['data'][$field]) ? $_SESSION['data'][$field] : '', FALSE);
+		$value = set_value($field, $_SESSION['data'][$field] ?? '', FALSE);
 		echo form_input(array(
 			'name' => $field,
 			'id' => $field,

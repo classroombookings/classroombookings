@@ -3,22 +3,20 @@
 echo $this->session->flashdata('saved');
 
 $iconbar = iconbar(array(
-	array('departments/add', 'Add Department', 'add.png'),
+	array('departments/add', lang('department.add.action'), 'add.png'),
 ));
 
 echo $iconbar;
 
-$sort_cols = ["Name", "Description", "None"];
-
 ?>
 
-<table width="100%" cellpadding="2" cellspacing="2" border="0" class="zebra-table sort-table" id="jsst-departments" up-data='<?= json_encode($sort_cols) ?>'>
+<table width="100%" cellpadding="2" cellspacing="2" border="0" class="border-table">
 	<col /><col /><col />
 	<thead>
 	<tr class="heading">
-		<td class="h" title="Name">Name</td>
-		<td class="h" title="Description">Description</td>
-		<td class="n" title="X">&nbsp;</td>
+		<th width="30%" title="<?= lang('department.field.name') ?>"><?= lang('department.field.name') ?></th>
+		<th width="60%" title="<?= lang('department.field.description') ?>"><?= lang('department.field.description') ?></th>
+		<th width="10%" title="<?= lang('app.actions') ?>"><?= lang('app.actions') ?></th>
 	</tr>
 	</thead>
 	<tbody>
@@ -28,7 +26,7 @@ $sort_cols = ["Name", "Description", "None"];
 	foreach ($departments as $department) {
 	?>
 	<tr>
-		<td><?php echo html_escape($department->name) ?></td>
+		<td><?php echo anchor('departments/edit/'.$department->department_id, html_escape($department->name)) ?></td>
 		<td><?php echo html_escape($department->description) ?></td>
 		<td width="45" class="n"><?php
 			$actions['edit'] = 'departments/edit/'.$department->department_id;
@@ -39,7 +37,8 @@ $sort_cols = ["Name", "Description", "None"];
 	</tr>
 	<?php $i++; }
 	} else {
-		echo '<td colspan="4" align="center" style="padding:16px 0">No departments exist!</td>';
+		$msg = lang('department.no_items');
+		echo '<td colspan="3" align="center" style="padding:16px 0">' . $msg . '</td>';
 	}
 	?>
 	</tbody>

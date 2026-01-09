@@ -4,30 +4,20 @@ namespace app\components\bookings;
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-
-use \DateTime;
-use \DateInterval;
-use \DatePeriod;
-
-use app\components\Calendar;
 use app\components\bookings\grid\Controls;
 use app\components\bookings\grid\Header;
 use app\components\bookings\grid\Table;
-use app\components\bookings\exceptions\DateException;
 
 
 class Grid
 {
 
+	private \MY_Controller $CI;
 
-	// CI instance
-	private $CI;
-
-
-	// Context instance
-	private $context;
-
-
+	private Context $context;
+	private Controls $controls;
+	private Header $header;
+	private Table $table;
 
 	public function __construct(Context $context)
 	{
@@ -38,7 +28,6 @@ class Grid
 			'dates_model',
 			'users_model',
 			'rooms_model',
-			'access_control_model',
 			'periods_model',
 			'weeks_model',
 		]);
@@ -61,19 +50,40 @@ class Grid
 		$footer = $this->render_footer();
 		$legend = $this->render_legend();
 
+		$params = $this->context->get_query_params();
+		$query_str = http_build_query($params);
+
+		// Multi-select form: create bookings
+		//
 		$form_attrs = [
 			'up-layer' => 'new modal',
 			'up-size' => 'large',
 			'up-target' => '.bookings-create',
 			'up-dismissable' => 'button key',
+			'id' => 'form_create_multi',
 		];
-		$form_hidden = ['step' => 'selection'];
+		$form_hidden = ['step' => 'selection', 'params' => $query_str];
 		$form_open = form_open($this->context->base_uri . '/create/multi', $form_attrs, $form_hidden);
 		$form_close = form_close();
+		$create_form = $form_open . $form_close;
+
+		// Multi-select form: cancel existing bookings
+		//
+		$form_attrs = [
+			'up-layer' => 'new modal',
+			'up-size' => 'large',
+			'up-target' => '.bookings-cancel-multi',
+			'up-dismissable' => 'button key',
+			'id' => 'form_cancel_multi',
+		];
+		$form_hidden = ['step' => 'selection', 'params' => $query_str];
+		$form_open = form_open($this->context->base_uri . '/cancel_multi', $form_attrs, $form_hidden);
+		$form_close = form_close();
+		$cancel_form = $form_open . $form_close;
 
 		$style = $this->render_style();
 
-		$out = "{$controls}\n{$header}\n{$group_buttons}\n{$form_open}\n{$body}\n{$footer}\n{$form_close}\n{$legend}\n";
+		$out = "{$controls}\n{$header}\n{$group_buttons}\n{$body}\n{$footer}\n{$legend}\n{$create_form}\n{$cancel_form}\n";
 
 		return "{$style}<div id='bookings_grid' up-hungry>{$out}</div>";
 	}
@@ -81,7 +91,7 @@ class Grid
 
 	private function render_group_buttons()
 	{
-		if ( ! feature('room_groups') || $this->context->display_type == 'room') return '<br>';
+		if ($this->context->display_type == 'room') return '<br>';
 
 		$items = [];
 		$has_group = $this->context->room_group !== FALSE;
@@ -121,7 +131,11 @@ class Grid
 			return msgbox('error', $this->context->exception->getMessage());
 		}
 
-		return $this->table->render();
+		$ms = $this->render_multiselect_controls('header');
+
+		$table = $this->table->render();
+
+		return $ms . $table;
 	}
 
 
@@ -131,29 +145,57 @@ class Grid
 	 */
 	public function render_footer()
 	{
-		// if ( ! $this->CI->userauth->is_level(ADMINISTRATOR)) {
-		// 	return '';
-		// }
-
 		if ($this->context->exception) {
 			return '';
 		}
 
-		$input = form_checkbox([
-			'name' => 'multi_select',
-			'id' => 'multi_select',
-			'value' => '1',
-			'checked' => false,
-			'up-switch' => '.multi-select-content',
+		return $this->render_multiselect_controls('footer');
+	}
+
+
+	private function render_multiselect_controls($position = '')
+	{
+
+		switch ($position) {
+			case 'header':
+				$css = 'margin-bottom:8px;';
+				break;
+			case 'footer':
+				$css = 'margin-top:8px;margin-bottom:32px;';
+				break;
+		}
+
+		$toggle_true = '<span class="multi-select-content" style="display:none;font-size:110%" data-multi="true">&#9745;</span>';
+		$toggle_false = '<span class="multi-select-content" style="font-size:110%" data-multi="false">&#9745;</span>';
+
+		$toggle_btn = form_button([
+			'type' => 'button',
+			'data-script' => 'on click trigger toggle_ms on .bookings-grid',
+			'content' => $toggle_false . $toggle_true . ' ' . lang('booking.toggle_multi_select'),
+			'style' => 'padding:2px 6px;line-height:18x;margin-left:32px',
 		]);
-		$input_label = form_label($input . 'Enable multiple selection', 'multi_select', ['class' => 'ni', 'style' => 'display: inline-block;margin-bottom:8px']);
 
-		$check_block = "<div class='block b-50' style='text-align:right'>{$input_label}</div>";
+		$create_btn = form_button([
+			'type' => 'submit',
+			'style' => 'padding:4px 6px;line-height:18x;border:1px solid #2ECC40;background:#EBFAEC;display:none',
+			'class' => 'multi-select-content',
+			'data-multi' => 'true',
+			'form' => 'form_create_multi',
+			'content' => '&#10004; ' . lang('booking.create_bookings') . '...',
+		]);
 
-		$submit_button = "<button type='submit' style='margin-left:32px;display:none;' class='multi-select-content'>Create bookings...</button>";
-		$button_block = "<div class='block b-50'>{$submit_button}</div>";
+		$cancel_btn = form_button([
+			'type' => 'submit',
+			'style' => 'padding:4px 6px;line-height:18x;margin-left:16px;border:1px solid #FF4136;background:#FFEDEB;display:none',
+			'class' => 'multi-select-content',
+			'data-multi' => 'true',
+			'form' => 'form_cancel_multi',
+			'content' => '&#10008; ' . lang('booking.action.cancel_bookings') . '...',
+		]);
 
-		return "<div class='cssform block-group' style='margin-top:32px;'>{$check_block}{$button_block}</div>";
+		$button_block = "<div class='block b-100' style='text-align:right;'>{$create_btn}{$cancel_btn}{$toggle_btn}</div>";
+
+		return "<div class='cssform block-group multi-select-controller' style='padding:8px;{$css}'>{$button_block}</div>";
 	}
 
 
@@ -165,24 +207,31 @@ class Grid
 	{
 		$cells = [];
 
-		$legend = lang('bookings_legend_legend');
+		$legend = html_escape(lang('booking.legend.legend'));
 		$cells[] = "<td width='25%' align='right' valign='middle'><strong>{$legend}:</strong></td>";
 
-		$label = lang('bookings_legend_free');
+		$label = html_escape(lang('booking.legend.free'));
 		$class = 'bookings-grid-slot booking-status-available';
 		$cells[] = "<td class='{$class}' width='25%' align='center'><span class='bookings-grid-button'>{$label}</div></td>";
 
-		$label = lang('bookings_legend_static');
+		$label = html_escape(lang('booking.legend.static'));
 		$class = 'bookings-grid-slot booking-status-booked booking-status-booked-recurring';
 		$cells[] = "<td class='{$class}' width='25%' align='center'><span class='bookings-grid-button'>{$label}</div></td>";
 
-		$label = lang('bookings_legend_staff');
+		$label = html_escape(lang('booking.legend.staff'));
 		$class = 'bookings-grid-slot booking-status-booked booking-status-booked-single';
 		$cells[] = "<td class='{$class}' width='25%' align='center'><span class='bookings-grid-button'>{$label}</div></td>";
 
 		$cells_str = implode("\n", $cells);
 
-		$table = "<table border='0' cellpadding='4' cellspacing='4' class='bookings-grid is-legend' align='center' style='border:1px solid #000;border-width:0px 0px;margin:16px auto;'><tr>{$cells_str}</tr></table>";
+		$table = "<table
+			border='0'
+			cellpadding='4'
+			cellspacing='4'
+			class='bookings-grid is-legend'
+			align='center'
+			style='border:1px solid #000;border-width:0px 0px;margin:16px auto;'
+		><tr>{$cells_str}</tr></table>";
 
 		return $table;
 	}

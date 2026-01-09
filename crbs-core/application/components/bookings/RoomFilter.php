@@ -5,13 +5,6 @@ namespace app\components\bookings;
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 
-// use \DateTime;
-// use \DateInterval;
-// use \DatePeriod;
-
-use app\components\Calendar;
-
-
 class RoomFilter
 {
 

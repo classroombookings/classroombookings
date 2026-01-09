@@ -7,9 +7,9 @@
 
 function colour_mix($color_1 = array(0, 0, 0), $color_2 = array(0, 0, 0), $weight = 0.5)
 {
-	$f = function($x) use ($weight) { return $weight * $x; };
-	$g = function($x) use ($weight) { return (1 - $weight) * $x; };
-	$h = function($x, $y) { return round($x + $y); };
+	$f = (fn($x) => $weight * $x);
+	$g = (fn($x) => (1 - $weight) * $x);
+	$h = (fn($x, $y) => round($x + $y));
 	return array_map($h, array_map($f, $color_1), array_map($g, $color_2));
 }
 
@@ -42,13 +42,13 @@ function colour_shade($color, $weight = 0.5)
 
 function colour_hex2rgb($hex = "#000000")
 {
-	$f = function($x) { return hexdec($x); };
+	$f = (fn($x) => hexdec((string) $x));
 	return array_map($f, str_split(str_replace("#", "", $hex), 2));
 }
 
 function colour_rgb2hex($rgb = array(0, 0, 0))
 {
-	$f = function($x) { return str_pad(dechex($x), 2, "0", STR_PAD_LEFT); };
+	$f = (fn($x) => str_pad(dechex($x), 2, "0", STR_PAD_LEFT));
 	return "#" . implode("", array_map($f, $rgb));
 }
 

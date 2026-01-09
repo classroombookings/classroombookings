@@ -6,54 +6,26 @@ echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 
 <fieldset>
 
-	<legend accesskey="S" tabindex="<?php echo tab_index() ?>">Bookings</legend>
-
-	<p>
-		<label for="bia">Booking in advance</label>
-		<?php
-		$value = (int) set_value('bia', element('bia', $settings), FALSE);
-		echo form_input(array(
-			'name' => 'bia',
-			'id' => 'bia',
-			'size' => '5',
-			'maxlength' => '3',
-			'tabindex' => tab_index(),
-			'value' => $value,
-		));
-		?>
-		<p class="hint">How many days in the future users can make their own bookings. Enter <span>0</span> for no restriction.</p>
-	</p>
-	<?php echo form_error('bia') ?>
-
-	<p>
-		<label for="num_max_bookings">Maximum active bookings</label>
-		<?php
-		$value = (int) set_value('num_max_bookings', element('num_max_bookings', $settings), FALSE);
-		echo form_input(array(
-			'name' => 'num_max_bookings',
-			'id' => 'num_max_bookings',
-			'size' => '5',
-			'tabindex' => tab_index(),
-			'value' => $value,
-		));
-		?>
-		<p class="hint">Maximum number of active single bookings for a user. Enter <span>0</span> for no limit.</p>
-		<p class="hint">'Active' is any single booking for a date and period start time in the future.</p>
-	</p>
-	<?php echo form_error('num_max_bookings') ?>
-
-	<hr size="1" />
+	<legend accesskey="S" tabindex="<?php echo tab_index() ?>"><?= lang('settings.general.bookings') ?></legend>
 
 	<p id="settings_displaytype">
-		<label for="displaytype">Display type</label>
+		<label for="displaytype"><?= lang('settings.general.displaytype.label') ?></label>
 		<?php
 
 		$field = "displaytype";
 		$value = set_value($field, element($field, $settings), FALSE);
 
 		$options = [
-			['value' => 'day', 'label' => 'One day at a time', 'enable' => 'd_columns_rooms'],
-			['value' => 'room', 'label' => 'One room at a time', 'enable' => 'd_columns_days'],
+			[
+				'value' => 'day',
+				'label' => lang('settings.general.displaytype.day'),
+				'enable' => 'd_columns_rooms',
+			],
+			[
+				'value' => 'room',
+				'label' => lang('settings.general.displaytype.room'),
+				'enable' => 'd_columns_days',
+			],
 		];
 
 		foreach ($options as $opt) {
@@ -70,10 +42,18 @@ echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 		}
 
 		?>
-		<br />
-		<p class="hint">Specify the main focus of the bookings page.<br />
-			<strong><span>One day at a time</span></strong> - all periods and rooms are shown for the selected date.<br />
-			<strong><span>One room at a time</span></strong> - all periods and days of the week are shown for the selected room.
+		<p class="hint"><?= lang('settings.general.displaytype.hint') ?><br />
+			<?php
+			echo sprintf('<strong><span>%s</span></strong>: %s',
+				lang('settings.general.displaytype.day'),
+				lang('settings.general.displaytype.day.hint')
+			);
+			echo '<br />';
+			echo sprintf('<strong><span>%s</span></strong>: %s',
+				lang('settings.general.displaytype.room'),
+				lang('settings.general.displaytype.room.hint')
+			);
+			?>
 		</p>
 	</p>
 	<?php echo form_error('displaytype'); ?>
@@ -86,9 +66,21 @@ echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 		$value = set_value($field, element($field, $settings), FALSE);
 
 		$options = [
-			['value' => 'periods', 'label' => 'Periods', 'for' => ''],
-			['value' => 'rooms', 'label' => 'Rooms', 'for' => 'day'],
-			['value' => 'days', 'label' => 'Days', 'for' => 'room'],
+			[
+				'value' => 'periods',
+				'label' => lang('settings.general.columns.periods'),
+				'for' => '',
+			],
+			[
+				'value' => 'rooms',
+				'label' => lang('settings.general.columns.rooms'),
+				'for' => 'day',
+			],
+			[
+				'value' => 'days',
+				'label' => lang('settings.general.columns.days'),
+				'for' => 'room',
+			],
 		];
 
 		foreach ($options as $opt) {
@@ -103,12 +95,12 @@ echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 			echo "<label for='{$id}' class='d_columns_target ni' up-show-for='{$opt['for']}'>{$input}{$opt['label']}</label>";
 		}
 		?>
-		<p class="hint">Select which details you want to be displayed along the top of the bookings page.</p>
+		<p class="hint"><?= lang('settings.general.columns.hint') ?></p>
 	</p>
 	<?php echo form_error('d_columns') ?>
 
 	<p id="settings_highlight">
-		<label for="columns">Grid highlight</label>
+		<label for="columns"><?= lang('settings.general.grid_highlight.label') ?></label>
 		<?php
 
 		$field = 'grid_highlight';
@@ -121,47 +113,12 @@ echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 			'tabindex' => tab_index(),
 			'checked' => ($value == '1')
 		));
-		echo "<label for='{$field}' class='ni'>{$input} Apply a coloured highlight effect to mouse-focused slots on the bookings grid.</label>";
+		$hint = lang('settings.general.grid_highlight.hint');
+		echo "<label for='{$field}' class='ni'>{$input} {$hint}</label>";
 		?>
 	</p>
 	<br>
 	<?php echo form_error('grid_highlight') ?>
-
-	<hr size="1" />
-
-	<p>
-		<label for="<?= $field ?>">User details</label>
-		<?php
-
-		$field = 'bookings_show_user_recurring';
-		$value = set_value($field, element($field, $settings, '0'), FALSE);
-		echo form_hidden($field, '0');
-		$input = form_checkbox(array(
-			'name' => $field,
-			'id' => $field,
-			'value' => '1',
-			'tabindex' => tab_index(),
-			'checked' => ($value == '1')
-		));
-		echo "<label for='{$field}' class='ni'>{$input} Show users of recurring bookings</label>";
-
-		$field = 'bookings_show_user_single';
-		$value = set_value($field, element($field, $settings, '0'), FALSE);
-		echo form_hidden($field, '0');
-		$input = form_checkbox(array(
-			'name' => $field,
-			'id' => $field,
-			'value' => '1',
-			'tabindex' => tab_index(),
-			'checked' => ($value == '1')
-		));
-		echo "<label for='{$field}' class='ni'>{$input} Show users of single bookings</label>";
-		?>
-
-		<p class="hint">This setting controls the visibility of a booking's user on the Bookings page.</p>
-		<p class="hint">User details are always displayed to administrators, and on user's own bookings.</p>
-
-	</p>
 
 </fieldset>
 
@@ -170,15 +127,18 @@ echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 
 <fieldset>
 
-	<legend accesskey="D" tabindex="<?php echo tab_index() ?>">Date/Time</legend>
+	<legend accesskey="D" tabindex="<?php echo tab_index() ?>"><?= lang('settings.general.datetime') ?></legend>
 
 
 	<div style="padding: 16px 0;">
-		Dates follow the PHP format - <a href="https://www.php.net/manual/en/function.date.php#refsect1-function.date-parameters" target="_blank">view reference</a>.
+		<?php
+		$link = anchor('https://www.php.net/manual/en/function.date.php#refsect1-function.date-parameters', lang('settings.general.datetime.link'), ['target' => '_blank']);
+		echo sprintf('%s - %s', lang('settings.general.datetime.hint'), $link);
+		?>
 	</div>
 
 	<p>
-		<label for="timezone">Timezone</label>
+		<label for="timezone"><?= lang('settings.general.timezone.label') ?></label>
 		<?php
 		$value = set_value('timezone', element('timezone', $settings, date_default_timezone_get()), FALSE);
 		$input = form_dropdown([
@@ -196,55 +156,55 @@ echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 	<?php echo form_error('timezone') ?>
 
 	<p>
-		<label for="date_format_long">Long date format</label>
+		<label for="pattern_long"><?= lang('settings.general.date_format_long.label') ?></label>
 		<?php
-		$value = set_value('date_format_long', element('date_format_long', $settings), FALSE);
-		echo form_input(array(
-			'name' => 'date_format_long',
-			'id' => 'date_format_long',
-			'size' => '15',
-			'maxlength' => '10',
+		$value = set_value('pattern_long', element('pattern_long', $date_settings), FALSE);
+		echo form_dropdown([
+			'name' => 'pattern_long',
+			'id' => 'pattern_long',
+			'options' => ['' => '(Default)'] + $date_pattern_options,
+			'selected' => $value,
 			'tabindex' => tab_index(),
 			'value' => $value,
-		));
+		]);
 		?>
-		<p class="hint">Long date format displayed at the top of the bookings page.</p>
+		<p class="hint"><?= lang('settings.general.date_format_long.hint') ?></p>
 	</p>
-	<?php echo form_error('date_format_long') ?>
+	<?php echo form_error('pattern_long') ?>
 
 	<p>
-		<label for="date_format_weekday">Weekday date format</label>
+		<label for="pattern_weekday"><?= lang('settings.general.date_format_weekday.label') ?></label>
 		<?php
-		$value = set_value('date_format_weekday', element('date_format_weekday', $settings), FALSE);
-		echo form_input(array(
-			'name' => 'date_format_weekday',
-			'id' => 'date_format_weekday',
-			'size' => '15',
-			'maxlength' => '10',
+		$value = set_value('pattern_weekday', element('pattern_weekday', $date_settings), FALSE);
+		echo form_dropdown([
+			'name' => 'pattern_weekday',
+			'id' => 'pattern_weekday',
+			'options' => ['' => '(Default)'] + $date_pattern_options,
+			'selected' => $value,
 			'tabindex' => tab_index(),
 			'value' => $value,
-		));
+		]);
 		?>
-		<p class="hint">Short date format for a specific weekday.</p>
+		<p class="hint"><?= lang('settings.general.date_format_weekday.hint') ?></p>
 	</p>
-	<?php echo form_error('date_format_weekday') ?>
+	<?php echo form_error('pattern_weekday') ?>
 
 	<p>
-		<label for="time_format_period">Period time format</label>
+		<label for="pattern_time"><?= lang('settings.general.time_format_period.label') ?></label>
 		<?php
-		$value = set_value('time_format_period', element('time_format_period', $settings), FALSE);
-		echo form_input(array(
-			'name' => 'time_format_period',
-			'id' => 'time_format_period',
-			'size' => '15',
-			'maxlength' => '10',
+		$value = set_value('pattern_time', element('pattern_time', $date_settings), FALSE);
+		echo form_dropdown([
+			'name' => 'pattern_time',
+			'id' => 'pattern_time',
+			'options' => ['' => '(Default)'] + $time_pattern_options,
+			'selected' => $value,
 			'tabindex' => tab_index(),
 			'value' => $value,
-		));
+		]);
 		?>
-		<p class="hint">Time format for periods.</p>
+		<p class="hint"><?= lang('settings.general.time_format_period.hint') ?></p>
 	</p>
-	<?php echo form_error('time_format_period') ?>
+	<?php echo form_error('pattern_time') ?>
 
 
 </fieldset>
@@ -252,16 +212,16 @@ echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 
 <fieldset>
 
-	<legend accesskey="L" tabindex="<?php echo tab_index() ?>">Login Message</legend>
+	<legend accesskey="L" tabindex="<?php echo tab_index() ?>"><?= lang('settings.general.login_message') ?></legend>
 
-	<div>Display a custom message to users on the login page.</div>
+	<div><?= lang('settings.general.login_message.hint') ?></div>
 
 	<?php
 	$field = 'login_message_enabled';
 	$value = set_value($field, element($field, $settings, '0'), FALSE);
 	?>
 	<p>
-		<label for="<?= $field ?>">Enable</label>
+		<label for="<?= $field ?>"><?= lang('app.enable') ?></label>
 		<?php
 		echo form_hidden($field, '0');
 		echo form_checkbox(array(
@@ -279,7 +239,7 @@ echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 	$value = set_value($field, element($field, $settings, ''), FALSE);
 	?>
 	<p>
-		<label for="<?= $field ?>">Message</label>
+		<?= form_label(lang('settings.general.login_message_text'), $field) ?>
 		<?php
 		echo form_textarea(array(
 			'name' => $field,
@@ -297,12 +257,12 @@ echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 
 <fieldset>
 
-	<legend accesskey="M" tabindex="<?php echo tab_index() ?>">Maintenance Mode</legend>
+	<legend accesskey="M" tabindex="<?php echo tab_index() ?>"><?= lang('settings.general.maintenance_mode') ?></legend>
 
-	<div>Enabling Maintenance Mode prevents Teacher user accounts from viewing and making bookings. All users can still log in to make changes to their own account or change their password.</div>
+	<div><?= lang('settings.general.maintenance_mode.hint') ?></div>
 
 	<p>
-		<label for="maintenance_mode">Enable</label>
+		<label for="maintenance_mode"><?= lang('app.enable') ?></label>
 		<?php
 		$value = set_value('maintenance_mode', element('maintenance_mode', $settings, '0'), FALSE);
 		echo form_hidden('maintenance_mode', '0');
@@ -318,7 +278,7 @@ echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 
 
 	<p>
-		<label for="maintenance_mode_message">Message</label>
+		<label for="maintenance_mode_message"><?= lang('settings.general.maintenance_mode_message') ?></label>
 		<?php
 		$field = 'maintenance_mode_message';
 		$value = set_value($field, element($field, $settings, ''), FALSE);
@@ -331,7 +291,7 @@ echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 			'value' => $value,
 		));
 		?>
-		<p class="hint">This is the message that will be displayed during maintenance mode.</p>
+		<p class="hint"><?= lang('settings.general.maintenance_mode_message.hint') ?></p>
 	</p>
 	<?php echo form_error($field) ?>
 
@@ -341,9 +301,9 @@ echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 <?php if ( ! empty($feature_list)): ?>
 <fieldset>
 
-	<legend accesskey="X" tabindex="<?php echo tab_index() ?>">Experimental features</legend>
+	<legend accesskey="X" tabindex="<?php echo tab_index() ?>"><?= lang('settings.general.experimental_features') ?></legend>
 
-	<div>Get early access to try out new features and give feedback to help build a better booking system.</div>
+	<div><?= lang('settings.general.experimental_features.hint') ?></div>
 	<br>
 
 	<p>
@@ -378,8 +338,8 @@ echo form_open(current_url(), array('id'=>'settings', 'class'=>'cssform'));
 <?php
 
 $this->load->view('partials/submit', array(
-	'submit' => array('Save', tab_index()),
-	'cancel' => array('Cancel', tab_index(), 'controlpanel'),
+	'submit' => array(lang('app.action.save'), tab_index()),
+	'cancel' => array(lang('app.action.cancel'), tab_index(), 'setup'),
 ));
 
 echo form_close();

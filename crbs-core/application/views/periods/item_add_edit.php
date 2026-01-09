@@ -58,7 +58,7 @@ $total = array_sum($sizes);
 						'value' => '1',
 						'checked' => ($value == '1'),
 					]);
-					echo form_label('Bookable', $id);
+					echo form_label(lang('period.field.bookable'), $id);
 					echo $hidden;
 					echo $input;
 					?>
@@ -80,7 +80,7 @@ $total = array_sum($sizes);
 					if ( ! isset($focus)) {
 						$input['autofocus'] = '';
 					}
-					echo form_label('Name', $id);
+					echo form_label(lang('period.field.name'), $id);
 					echo form_input($input);
 					echo form_error($field);
 				?>
@@ -100,7 +100,7 @@ $total = array_sum($sizes);
 						'value' => $value,
 						'style' => 'width:100%',
 					];
-					echo form_label('Start', $id);
+					echo form_label(lang('period.field.start'), $id);
 					echo form_input($input);
 					echo form_error($field);
 					?>
@@ -120,7 +120,7 @@ $total = array_sum($sizes);
 						'value' => $value,
 						'style' => 'width:100%',
 					];
-					echo form_label('End', $id);
+					echo form_label(lang('period.field.end'), $id);
 					echo form_input($input);
 					echo form_error($field);
 					?>
@@ -140,7 +140,8 @@ $total = array_sum($sizes);
 					'value' => '1',
 					'checked' => ($value == '1'),
 				];
-				$label = form_label($day_name, $id);
+				$lang_key = sprintf('cal_%s', strtolower((string) $day_name));
+				$label = form_label(lang($lang_key), $id);
 				$input = form_checkbox($input);
 				echo "<div class='block' style='width:{$day_size}%'><p class='input-group'>{$label}{$hidden}{$input}</p></div>";
 			}
@@ -154,17 +155,17 @@ $total = array_sum($sizes);
 
 					<?php
 					$img = img([
-						'src' => base_url('assets/images/ui/disk.png'),
+						'src' => asset_url('assets/images/ui/disk.png'),
 						'hspace' => 6,
 						'border' => 0,
-						'alt' => 'Save',
+						'alt' => lang('app.action.save'),
 					]);
 					echo form_button([
 						'type' => 'submit',
 						'class' => 'btn-icon',
 						'name' => 'save',
 						'content' => $img,
-						'title' => 'Save',
+						'title' => lang('app.action.save'),
 					]);
 
 
@@ -172,26 +173,26 @@ $total = array_sum($sizes);
 
 						$uri = site_url(sprintf('periods/delete/%d/%d', $schedule->schedule_id, $period->period_id));
 						$img = img([
-							'src' => base_url('assets/images/ui/delete.png'),
+							'src' => asset_url('assets/images/ui/delete.png'),
 							'hspace' => 6,
 							'border' => 0,
-							'alt' => 'Edit',
+							'alt' => lang('app.action.edit'),
 						]);
 						echo anchor($uri, $img, [
-							'title' => 'Delete',
+							'title' => lang('app.action.delete'),
 							'hx-post' => $uri,
-							'hx-confirm' => 'ALL existing bookings for this period will also be deleted. Are you sure?',
+							'hx-confirm' => lang('period.delete.warning'),
 						]);
 
 						$uri = site_url(sprintf('periods/view/%d/%d', $schedule->schedule_id, $period->period_id));
 						$img = img([
-							'src' => base_url('assets/images/ui/arrow_undo.png'),
+							'src' => asset_url('assets/images/ui/arrow_undo.png'),
 							'hspace' => 6,
 							'border' => 0,
-							'alt' => 'Cancel',
+							'alt' => lang('app.action.cancel'),
 						]);
 						echo anchor($uri, $img, [
-							'title' => 'Revert',
+							'title' => lang('app.action.revert'),
 							'hx-get' => $uri,
 						]);
 

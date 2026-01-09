@@ -13,7 +13,7 @@ class Periods extends MY_Controller
 		parent::__construct();
 
 		$this->require_logged_in();
-		$this->require_auth_level(ADMINISTRATOR);
+		$this->require_permission(Permission::SETUP_SCHEDULES);
 
 		$this->load->model([
 			'schedules_model',
@@ -55,7 +55,7 @@ class Periods extends MY_Controller
 		$this->form_validation->set_rules($this->get_validation_rules());
 
 		if ($this->form_validation->run() == FALSE) {
-			hx_toast('error', 'Please check the fields and try again');
+			hx_toast('error', lang('app.validation_error'));
 			$view = $this->render_edit($schedule_id, $period_id);
 			$this->output->set_output($view);
 			return;
@@ -67,10 +67,10 @@ class Periods extends MY_Controller
 		$period_data = $this->period_from_values($data);
 
 		if ($action == 'insert') {
-			$message = sprintf("'%s' has been added to the schedule.", html_escape($period_data['name']));
+			$message = sprintf(lang('period.create.success'), html_escape($period_data['name']));
 			$period_id = $this->periods_model->insert($period_data);
 		} else {
-			$message = sprintf("'%s' has been updated.", html_escape($period_data['name']));
+			$message = sprintf(lang('period.update.success'), html_escape($period_data['name']));
 			$this->periods_model->update($period_id, $period_data);
 		}
 
@@ -101,7 +101,7 @@ class Periods extends MY_Controller
 	{
 		if ($this->input->method() === 'post') {
 			$this->periods_model->delete($period_id);
-			hx_toast('success', 'The period has been deleted from the schedule.');
+			hx_toast('success', lang('period.delete.success'));
 			return '';
 		}
 	}
@@ -138,15 +138,16 @@ class Periods extends MY_Controller
 	private function get_validation_rules()
 	{
 		$rules = [
-			['field' => 'schedule_id', 'label' => 'Schedule', 'rules' => 'required|integer'],
-			['field' => 'name', 'label' => 'Name', 'rules' => 'required|min_length[1]|max_length[30]'],
-			['field' => 'time_start', 'label' => 'Start time', 'rules' => 'required|min_length[4]|max_length[5]|valid_time'],
-			['field' => 'time_end', 'label' => 'End time', 'rules' => 'required|min_length[4]|max_length[5]|valid_time|time_is_after[time_start]'],
-			['field' => 'bookable', 'label' => 'Bookable', 'rules' => 'required|in_list[0,1]'],
+			['field' => 'schedule_id', 'label' => 'lang:schedule.schedule', 'rules' => 'required|integer'],
+			['field' => 'name', 'label' => 'lang:period.field.name', 'rules' => 'required|min_length[1]|max_length[30]'],
+			['field' => 'time_start', 'label' => 'lang:period.field.time_start', 'rules' => 'required|min_length[4]|max_length[5]|valid_time'],
+			['field' => 'time_end', 'label' => 'lang:period.field.time_end', 'rules' => 'required|min_length[4]|max_length[5]|valid_time|time_is_after[time_start]'],
+			['field' => 'bookable', 'label' => 'lang:period.field.bookable', 'rules' => 'required|in_list[0,1]'],
 		];
 
 		foreach (Calendar::get_day_names() as $day_num => $label) {
-			$rules[] = ['field' => "day_{$day_num}", 'label' => $label, 'rules' => 'required|in_list[0,1]'];
+			$lang_key = sprintf('cal_%s', strtolower((string) $label));
+			$rules[] = ['field' => "day_{$day_num}", 'label' => lang($lang_key), 'rules' => 'required|in_list[0,1]'];
 		}
 
 		return $rules;
@@ -163,8 +164,8 @@ class Periods extends MY_Controller
 			'schedule_id' => (int) $data['schedule_id'],
 			'bookable' => $data['bookable'] == 1 ? 1 : 0,
 			'name' => $data['name'],
-			'time_start' => date('H:i:00', strtotime($data['time_start'])),
-			'time_end' => date('H:i:00', strtotime($data['time_end'])),
+			'time_start' => date('H:i:00', strtotime((string) $data['time_start'])),
+			'time_end' => date('H:i:00', strtotime((string) $data['time_end'])),
 			'day_1' => $data['day_1'] == 1 ? 1 : 0,
 			'day_2' => $data['day_2'] == 1 ? 1 : 0,
 			'day_3' => $data['day_3'] == 1 ? 1 : 0,

@@ -1,0 +1,109 @@
+behavior ListBuilder
+	init
+		set :available to the first <[data-available]/> in me
+		set :selected to the first <[data-selected]/> in me
+		set :name to my @data-input-name
+		call syncInputs()
+	end
+
+	on dblclick from <[data-available]/> in me
+		send select_one
+	end
+
+	on dblclick from <[data-selected]/> in me
+		send remove_one
+	end
+
+	on click from <[data-action="select_one"]/> in me
+		send select_one
+	end
+
+	on click from <[data-action="select_all"]/> in me
+		send select_all
+	end
+
+	on click from <[data-action="remove_one"]/> in me
+		send remove_one
+	end
+
+	on click from <[data-action="remove_all"]/> in me
+		send remove_all
+	end
+
+	on change from <[data-selected]/> in me
+		call syncInputs()
+	end
+
+	on search from <[data-filter]/> in me
+		trigger keyup on it
+	end
+
+	on keypress[key=='Enter'] from <[data-filter]/> in me
+		halt the event
+	end
+
+	on keyup from <[data-filter]/> in me
+		set f to it
+		set q to f's value.toLowerCase()
+		set list to the next <select/> from f
+		if the event's key is 'Escape'
+			set f's value to ''
+			trigger keyup on f
+		else
+			show <option/> in list when its textContent.toLowerCase() contains q
+		end
+	end
+
+	--
+
+	on select_one
+		set items to getSelectedItems(:available)
+		call moveItems(items, :available, :selected)
+	end
+
+	on select_all
+		set items to <option/> in :available
+		call moveItems(items, :available, :selected)
+	end
+
+	on remove_one
+		set items to getSelectedItems(:selected)
+		call moveItems(items, :selected, :available)
+	end
+
+	on remove_all
+		set items to <option/> in :selected
+		call moveItems(items, :selected, :available)
+	end
+
+	--
+
+	def getSelectedItems(select)
+		return <option:checked/> in select
+	end
+
+	def moveItems(items, source, dest)
+		for item in items
+			set newItem to item.cloneNode(true)
+			-- set newItem's @selected to true
+			put newItem at the end of dest
+			remove item
+		end
+		send change to :selected
+	end
+
+	def syncInputs()
+		remove <input[data-lb="1"][type="hidden"]/> from me
+		set items to <option/> in :selected
+		for item in items
+			make an <input/> called hiddenInput
+			set hiddenInput's type to 'hidden'
+			set hiddenInput's name to :name + "[]"
+			set hiddenInput's value to the value of item
+			add [@data-lb=1] to hiddenInput
+			put hiddenInput after :selected
+			-- log hiddenInput
+		end
+	end
+
+end

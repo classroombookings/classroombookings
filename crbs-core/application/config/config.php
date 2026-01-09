@@ -542,10 +542,28 @@ $config['upload_path'] = FCPATH . 'uploads';
 // Temp
 $config['temp_path'] = FCPATH . 'local';
 
-// Onset release notes
-$config['onset_project'] = 'self-hosted';
-$config['onset_public_url'] = 'https://classroombookings.onset.io/project/self-hosted';
+$config['changelog_channel'] = 'opensource';
 
+$config['lang_map'] = [
+	'cy' => 'welsh',
+	'de' => 'german',
+	'fi' => 'finnish',
+	'fr' => 'french',
+	'es' => 'spanish',
+	'pt' => 'portuguese',
+	'pt-br' => 'portuguese-brazilian',
+];
+
+$config['lang_map_locale'] = [
+	'english' => 'en_GB',
+	'welsh' => 'cy_GB',
+	'german' => 'de_DE',
+	'finnish' => 'fi_FI',
+	'french' => 'fr_FR',
+	'spanish' => 'es_ES',
+	'portuguese' => 'pt_PT',
+	'portuguese-brazilian' => 'pt_BR',
+];
 
 
 if ( ! CRBS_MANAGED) {
@@ -561,19 +579,4 @@ if ( ! CRBS_MANAGED) {
 		}
 	}
 
-}
-
-
-// Managed
-if (CRBS_MANAGED) {
-
-	// Different error pages
-	if (ENVIRONMENT === 'production') {
-		$config['error_views_path'] = ROOTPATH . 'crbs-managed/views/errors/';
-	}
-
-	// Add custom config
-	if (is_file(ROOTPATH . 'crbs-managed/config/config.php')) {
-		include_once(ROOTPATH . 'crbs-managed/config/config.php');
-	}
 }

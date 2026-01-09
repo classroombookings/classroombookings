@@ -1,0 +1,29 @@
+behavior CheckAll
+	init
+		set :parentEl to me
+		set :otherChecks to <input[type=checkbox]:not([data-check-toggle])/> in :parentEl
+		call syncMainToggle()
+	end
+
+	on click from the first <input[data-check-toggle]/> in me
+		set status to its checked
+		for input in :otherChecks
+			set input.checked to status
+		end
+	end
+
+	on change from <input[type=checkbox]:not([data-check-toggle])/> in me
+		call syncMainToggle()
+	end
+
+	def syncMainToggle()
+		set checkedItems to <input[type=checkbox]:not([data-check-toggle]):checked/> in :parentEl
+		set toggleCheck to the first <input[data-check-toggle]/> in :parentEl
+		if checkedItems.length is equal to :otherChecks.length then
+			set toggleCheck's checked to true
+		else
+			set toggleCheck's checked to false
+		end
+	end
+
+end

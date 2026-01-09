@@ -1,7 +1,7 @@
 <?php
 
 if (is_demo_mode()) {
-	echo msgbox('notice large', "To prevent abuse and getting locked out, the authentication setting is disabled on the demo. You can still test the connection details and credentials.");
+	echo msgbox('notice large', lang('auth.ldap.demo_notice'));
 }
 
 echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform', 'ldap-settings' => ''));
@@ -11,14 +11,14 @@ echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform
 
 <fieldset>
 
-	<legend accesskey="L" tabindex="<?php echo tab_index() ?>">LDAP</legend>
+	<legend accesskey="L" tabindex="<?php echo tab_index() ?>"><?= lang('auth.ldap.ldap') ?></legend>
 
 	<?php
 	$field = 'ldap_enabled';
 	$value = set_value($field, element($field, $settings, '0'), FALSE);
 	?>
 	<p>
-		<label for="<?= $field ?>">Enable</label>
+		<label for="<?= $field ?>"><?= lang('auth.ldap.field.ldap_enabled') ?></label>
 		<?php
 		echo form_hidden($field, '0');
 		$input_options = [
@@ -36,7 +36,7 @@ echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform
 		}
 
 		$input = form_checkbox($input_options);
-		echo "<label for='{$field}' class='ni'>{$input} Use LDAP to authenticate users</label>";
+		echo "<label for='{$field}' class='ni'>{$input} " . lang('auth.ldap.field.ldap_enabled.title') . "</label>";
 	?>
 	</p>
 	<?php echo form_error($field) ?>
@@ -46,7 +46,7 @@ echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform
 	$value = set_value($field, element($field, $settings, '0'), FALSE);
 	?>
 	<p>
-		<label for="<?= $field ?>">Create users</label>
+		<label for="<?= $field ?>"><?= lang('auth.ldap.field.ldap_create_users') ?></label>
 		<?php
 		echo form_hidden($field, '0');
 		$input = form_checkbox(array(
@@ -56,26 +56,25 @@ echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform
 			'tabindex' => tab_index(),
 			'checked' => ($value == '1')
 		));
-		echo "<label for='{$field}' class='ni'>{$input} Automatically create user accounts on successful login.</label>";
+		echo "<label for='{$field}' class='ni'>{$input} " . lang('auth.ldap.field.ldap_create_users.title') . "</label>";
 		?>
-		<p class="hint">When enabled, any valid credentials returned from an LDAP authentication attempt will automatically create a classroombookings 'Teacher' account.</p><br>
-		<p class="hint">When not enabled, only users who have a classroombookings account will be authenticated.</p>
+		<p class="hint"><?= lang('auth.ldap.field.ldap_create_users.hint.1') ?></p><br>
+		<p class="hint"><?= lang('auth.ldap.field.ldap_create_users.hint.2') ?></p>
 	</p>
 	<?php echo form_error($field) ?>
 
 </fieldset>
 
-
 <fieldset>
 
-	<legend accesskey="C" tabindex="<?php echo tab_index() ?>">Connection</legend>
+	<legend accesskey="C" tabindex="<?php echo tab_index() ?>"><?= lang('auth.ldap.connection') ?></legend>
 
 	<?php
 	$field = 'ldap_server';
 	$value = set_value($field, element($field, $settings), FALSE);
 	?>
 	<p>
-		<label for="<?= $field ?>">Server</label>
+		<label for="<?= $field ?>"><?= lang('auth.ldap.field.ldap_server') ?></label>
 		<?php
 		echo form_input(array(
 			'name' => $field,
@@ -86,7 +85,7 @@ echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform
 			'value' => $value,
 		));
 		?>
-		<p class="hint">Hostname or IP address.</p>
+		<p class="hint"><?= lang('auth.ldap.field.ldap_server.hint') ?></p>
 	</p>
 	<?php echo form_error($field) ?>
 
@@ -95,7 +94,7 @@ echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform
 	$value = set_value($field, element($field, $settings), FALSE);
 	?>
 	<p>
-		<label for="<?= $field ?>">Port</label>
+		<label for="<?= $field ?>"><?= lang('auth.ldap.field.ldap_port') ?></label>
 		<?php
 		echo form_input(array(
 			'type' => 'number',
@@ -108,7 +107,7 @@ echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform
 			'style' => 'max-width:50px'
 		));
 		?>
-		<p class="hint">Standard ports are 389 (non-SSL) or 636 (SSL).</p>
+		<p class="hint"><?= lang('auth.ldap.field.ldap_port.hint') ?></p>
 	</p>
 	<?php echo form_error($field) ?>
 
@@ -117,7 +116,7 @@ echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform
 	$value = set_value($field, element($field, $settings, 3), FALSE);
 	?>
 	<p>
-		<label for="<?= $field ?>">Protocol version</label>
+		<label for="<?= $field ?>"><?= lang('auth.ldap.field.ldap_version') ?></label>
 		<?php
 		echo form_input(array(
 			'type' => 'number',
@@ -130,7 +129,7 @@ echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform
 			'style' => 'max-width:50px'
 		));
 		?>
-		<p class="hint">Usually 3.</p>
+		<p class="hint"><?= lang('auth.ldap.field.ldap_version.hint') ?></p>
 	</p>
 	<?php echo form_error($field) ?>
 
@@ -139,7 +138,7 @@ echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform
 	$value = set_value('ldap_use_tls', element('ldap_use_tls', $settings, '0'), FALSE);
 	?>
 	<p>
-		<label for="<?= $field ?>">Use TLS</label>
+		<label for="<?= $field ?>"><?= lang('auth.ldap.field.ldap_use_tls') ?></label>
 		<?php
 		echo form_hidden($field, '0');
 		echo form_checkbox(array(
@@ -158,7 +157,7 @@ echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform
 	$value = set_value('ldap_ignore_cert', element('ldap_ignore_cert', $settings, '0'), FALSE);
 	?>
 	<p>
-		<label for="<?= $field ?>">Ignore certificate</label>
+		<label for="<?= $field ?>"><?= lang('auth.ldap.field.ldap_ignore_cert') ?></label>
 		<?php
 		echo form_hidden($field, '0');
 		echo form_checkbox(array(
@@ -178,7 +177,7 @@ echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform
 	$value = set_value($field, element($field, $settings), FALSE);
 	?>
 	<p>
-		<label for="<?= $field ?>">Bind DN format</label>
+		<label for="<?= $field ?>"><?= lang('auth.ldap.field.ldap_bind_dn_format') ?></label>
 		<?php
 		echo form_textarea([
 			'name' => $field,
@@ -189,7 +188,7 @@ echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform
 			'value' => $value,
 		]);
 		?>
-		<p class="hint">This will vary depending on your server and configuration. The tag <span>:user</span> will be replaced with the authenticating user. Some common formats are:</p>
+		<p class="hint"><?= lang('auth.ldap.field.ldap_bind_dn_format.hint') ?></p>
 		<ul class="hint">
 			<li>EXAMPLE.LOCAL\:user</li>
 			<li>:user@EXAMPLE.LOCAL</li>
@@ -202,14 +201,14 @@ echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform
 
 <fieldset>
 
-	<legend accesskey="H" tabindex="<?php echo tab_index() ?>">Search</legend>
+	<legend accesskey="H" tabindex="<?php echo tab_index() ?>"><?= lang('auth.ldap.search') ?></legend>
 
 	<?php
 	$field = 'ldap_base_dn';
 	$value = set_value($field, element($field, $settings), FALSE);
 	?>
 	<p>
-		<label for="<?= $field ?>">Base DN</label>
+		<label for="<?= $field ?>"><?= lang('auth.ldap.field.ldap_base_dn') ?></label>
 		<?php
 		echo form_textarea(array(
 			'name' => $field,
@@ -220,7 +219,7 @@ echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform
 			'value' => $value,
 		));
 		?>
-		<p class="hint">E.g. dc=example,dc=local</p>
+		<p class="hint"><?= lang('app.example') ?>: dc=example,dc=local</p>
 	</p>
 	<?php echo form_error($field) ?>
 
@@ -229,7 +228,7 @@ echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform
 	$value = set_value($field, element($field, $settings), FALSE);
 	?>
 	<p>
-		<label for="<?= $field ?>">Search filter</label>
+		<label for="<?= $field ?>"><?= lang('auth.ldap.field.ldap_search_filter') ?></label>
 		<?php
 		echo form_textarea(array(
 			'name' => $field,
@@ -240,9 +239,9 @@ echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform
 			'value' => $value,
 		));
 		?>
-		<p class="hint">Example: (&(:attr=:user))</p>
+		<p class="hint"><?= lang('app.example') ?>: (&(:attr=:user))</p>
 		<br>
-		<p class="hint">The tag <span>:user</span> will be replaced by the user logging in.</p>
+		<p class="hint"><?= lang('auth.ldap.field.ldap_search_filter.hint') ?></p>
 	</p>
 	<?php echo form_error($field) ?>
 
@@ -251,21 +250,37 @@ echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform
 
 <fieldset>
 
-	<legend accesskey="U" tabindex="<?php echo tab_index() ?>">User attribute mapping</legend>
+	<legend accesskey="U" tabindex="<?php echo tab_index() ?>"><?= lang('auth.ldap.user_attribute_mapping') ?></legend>
 
 	<div class="fieldset-description">
-		<p>When you use a search filter to find the authenticating user, you can populate the following classroombookings user details with attributes found in LDAP each time they log in.</p>
-		<p>Combine multiple LDAP attributes by adding a colon before the attribute name, for example - <span>:givenName :sn</span>.</p>
-		<p>Leave these fields blank to disable automatic population.</p>
+		<p><?= lang('auth.ldap.user_attribute_mapping.hint.1') ?></p>
+		<p><?= lang('auth.ldap.user_attribute_mapping.hint.2') ?><span>:givenName :sn</span>.</p>
+		<p><?= lang('auth.ldap.user_attribute_mapping.hint.3') ?></p>
 	</div>
 
 	<?php
 
 	$fields = [
-		['name' => 'ldap_attr_firstname', 'label' => 'First Name', 'hint' => 'E.g. givenName'],
-		['name' => 'ldap_attr_lastname', 'label' => 'Last Name', 'hint' => 'E.g. sn'],
-		['name' => 'ldap_attr_displayname', 'label' => 'Display Name', 'hint' => "E.g. displayName or ':givenName :sn'"],
-		['name' => 'ldap_attr_email', 'label' => 'Email address', 'hint' => 'E.g. mail'],
+		[
+			'name' => 'ldap_attr_firstname',
+			'label' => lang('user.field.firstname'),
+			'hint' => sprintf('%s: %s', lang('app.example'), 'givenName'),
+		],
+		[
+			'name' => 'ldap_attr_lastname',
+			'label' => lang('user.field.lastname'),
+			'hint' => sprintf('%s: %s', lang('app.example'), 'sn'),
+		],
+		[
+			'name' => 'ldap_attr_displayname',
+			'label' => lang('user.field.displayname'),
+			'hint' => sprintf('%s: %s', lang('app.example'), "displayName or ':givenName :sn'"),
+		],
+		[
+			'name' => 'ldap_attr_email',
+			'label' => lang('user.field.email'),
+			'hint' => sprintf('%s: %s', lang('app.example'), "mail"),
+		],
 	];
 
 	foreach ($fields as $field) {
@@ -295,13 +310,54 @@ echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform
 
 </fieldset>
 
+<fieldset>
+	<legend><?= lang('auth.ldap.user_assignments') ?></legend>
+
+
+	<?php
+	$field = 'ldap_default_role_id';
+	$value = set_value($field, element($field, $settings, ''), FALSE);
+	?>
+	<p>
+		<label for="<?= $field ?>"><?= lang('role.role') ?></label>
+		<?php
+		echo form_dropdown([
+			'name' => 'ldap_default_role_id',
+			'id' => 'ldap_default_role_id',
+			'options' => $role_options,
+			'selected' => $value,
+			'tabindex' => tab_index(),
+		]);
+		?>
+	</p>
+	<?php echo form_error($field) ?>
+
+	<?php
+	$field = 'ldap_default_department_id';
+	$value = set_value($field, element($field, $settings, ''), FALSE);
+	?>
+	<p>
+		<label for="<?= $field ?>"><?= lang('department.department') ?></label>
+		<?php
+		echo form_dropdown([
+			'name' => 'ldap_default_department_id',
+			'id' => 'ldap_default_department_id',
+			'options' => $department_options,
+			'selected' => $value,
+			'tabindex' => tab_index(),
+		]);
+		?>
+	</p>
+	<?php echo form_error($field) ?>
+
+</fieldset>
+
 
 
 <?php
 
 $this->load->view('partials/submit', array(
-	'submit' => array('Save', tab_index()),
-	'cancel' => array('Cancel', tab_index(), 'controlpanel'),
+	'submit' => array(lang('app.action.save'), tab_index()),
 ));
 
 echo form_close();

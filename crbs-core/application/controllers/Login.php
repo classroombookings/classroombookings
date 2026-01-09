@@ -14,7 +14,11 @@ class Login extends MY_Controller
 
 	function index()
 	{
-		$this->data['title'] = 'Log in';
+		if ($this->input->post()) {
+			$this->handle_submit();
+		}
+
+		$this->data['title'] = lang('auth.log_in');
 
 		$this->data['message'] = '';
 		if (setting('login_message_enabled')) {
@@ -39,41 +43,42 @@ class Login extends MY_Controller
 
 		$columns['c2']['content'] = $logo_html;
 
-		$title = "<h2>Log in</h2>";
+		$title = sprintf("<h2>%s</h2>", lang('auth.log_in'));
 		$body = $this->load->view('columns', $columns, TRUE);
 
-		$this->data['body'] = $title . $body;
+		$auth = (string) $this->session->flashdata('auth');
+
+		$this->data['body'] = $title . $auth . $body;
 
 		return $this->render();
 	}
 
 
-	function submit()
+	private function handle_submit()
 	{
-		log_message('debug', 'login submit');
-
 		$this->load->library('form_validation');
-		$this->form_validation->set_rules('username', 'Username', 'required');
-		$this->form_validation->set_rules('password', 'Password', 'required');
+		$this->form_validation->set_rules('username', 'lang:user.field.username', 'required|max_length[255]');
+		$this->form_validation->set_rules('password', 'lang:user.field.password', 'required');
 
 		// Run validation
 		if ($this->form_validation->run() == FALSE) {
-	  		// Validation failed, load login page again
-			return $this->index();
+			return false;
 		}
 
-		// Form validation for length etc. passed, now see if the credentials are OK in the DB
-		// Post values
 		$username = $this->input->post('username');
 		$password = $this->input->post('password');
 
-		// Now see if we can login
 		if ($this->userauth->log_in($username, $password)) {
-			// Success! Redirect to control panel
-			redirect('');
+			// Success
+			$uri = '';
+			if (isset($_SESSION['post_login_uri'])) {
+				$uri = $_SESSION['post_login_uri'];
+				unset($_SESSION['post_login_uri']);
+			}
+			redirect($uri);
 		} else {
-			$this->session->set_flashdata('auth', msgbox('error', 'Incorrect username and/or password.'));
-			return $this->index();
+			$this->data['error'] = msgbox('error', lang('auth.bad_credentials'));
+			return false;
 		}
 	}
 

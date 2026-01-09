@@ -1,7 +1,5 @@
 <?php
 
-$block_class = 'b-33';
-
 $blocks = [];
 
 $blocks[] = [
@@ -19,34 +17,16 @@ $blocks[] = [
 	'figure' => $totals['active'],
 ];
 
-// total bookings ever
-// total in current session
-// current active bookings
-
-// if max_active:
-// maximum bookings allowed
-// number permitted (max - active)
-
-$max_active_bookings = (int) abs(setting('num_max_bookings'));
-if ($max_active_bookings > 0) {
-
-	$block_class = 'b-20';
-	$num_active = (int) $totals['active'];
-
+if ( ! is_null($constraints['max_active_bookings'])) {
 	$blocks[] = [
-		'title' => 'Maximum active bookings allowed',
-		'figure' => $max_active_bookings,
+		'title' => 'Maximum active bookings',
+		'figure' => $constraints['max_active_bookings'],
 	];
-
 	$blocks[] = [
-		'title' => 'Bookings you can make',
-		'figure' => ($max_active_bookings - $num_active),
+		'title' => 'Bookings you can create',
+		'figure' => ($constraints['max_active_bookings'] - $totals['active']),
 	];
-
 }
-
-
-// echo "<div class='block-group has-spacing'>";
 
 echo "<div style='margin-bottom:48px'>";
 
@@ -61,8 +41,6 @@ foreach ($blocks as $block) {
 	$block_content = "<div class='stat-item'><dl>{$title_html}{$figure_html}</dl></div>";
 
 	echo $block_content;
-
-	// echo "<div class='block {$block_class}'>{$block_content}</div>";
 
 }
 

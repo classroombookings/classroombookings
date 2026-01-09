@@ -128,16 +128,15 @@ class Settings_model extends CI_Model
 
 	private function wake_value($value)
 	{
-		if (substr($value, 0, 4) === 'b64:') {
-			$value = substr($value, 4);
+		if (str_starts_with((string) $value, 'b64:')) {
+			$value = substr((string) $value, 4);
 			$value = base64_decode($value);
-		}
-
-		$data = @unserialize($value);
-
-		if ($value === 'b:0;' || $data !== FALSE)
-		{
-			$value = $data;
+			$data = @unserialize($value);
+			if ($value === 'b:0;' || $data !== FALSE) {
+				$value = $data;
+			}
+		} elseif (str_starts_with((string) $value, '{') || str_starts_with((string) $value, '[')) {
+			$value = json_decode((string) $value, true);
 		}
 
 		return $value;
@@ -146,10 +145,8 @@ class Settings_model extends CI_Model
 
 	private function sleep_value($value)
 	{
-		if (is_array($value) || is_object($value))
-		{
-			$value = serialize($value);
-			$value = 'b64:' . base64_encode($value);
+		if (is_array($value) || is_object($value)) {
+			$value = json_encode($value, JSON_NUMERIC_CHECK);
 		}
 
 		return $value;

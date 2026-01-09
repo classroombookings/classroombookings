@@ -6,10 +6,22 @@ pre {
 </style>
 
 <div>
-	<h5>CSV format</h5>
-	<p>Your CSV file should be in this format:</p>
-	<pre><code>username, firstname, lastname, email, password</code></pre>
-	<p>It doesn't matter if it contains the header row.</p>
-	<p>Any usernames that already exist will be ignored.</p>
+	<h5><?= lang('user.import.csv_format') ?></h5>
+	<p><?= lang('user.import.csv_format.hint') ?></p>
+	<pre><code><?php
+		$fields = [
+			strtolower(lang('user.field.username')),
+			strtolower(lang('user.field.firstname')),
+			strtolower(lang('user.field.lastname')),
+			strtolower(lang('user.field.email')),
+			strtolower(lang('user.field.password')),
+			strtolower(lang('role.role')),
+			strtolower(lang('department.department')),
+		];
+		echo implode(', ', $fields);
+	?></code></pre>
+	<p><?= lang('user.import.header_row_hint') ?></p>
+	<p><?= lang('user.import.existing_user_hint') ?></p>
+	<p><?= lang('user.import.role_department_hint') ?></p>
 </div>
 <br>

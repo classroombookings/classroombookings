@@ -5,21 +5,17 @@ class Departments extends MY_Controller
 {
 
 
-
-
 	public function __construct()
 	{
 		parent::__construct();
 
 		$this->require_logged_in();
-		$this->require_auth_level(ADMINISTRATOR);
+		$this->require_permission(Permission::SETUP_DEPARTMENTS);
 
 		$this->load->library('pagination');
 		$this->load->model('crud_model');
 		$this->load->model('departments_model');
 	}
-
-
 
 
 	function index($page = NULL)
@@ -35,18 +31,14 @@ class Departments extends MY_Controller
 		$this->pagination->initialize($pagination_config);
 
 		$this->data['pagelinks'] = $this->pagination->create_links();
-		// Get list of rooms from database
 		$this->data['departments'] = $this->departments_model->Get(NULL, $pagination_config['per_page'], $page);
 
-		$this->data['title'] = 'Departments';
+		$this->data['title'] = lang('department.departments');
 		$this->data['showtitle'] = $this->data['title'];
 		$this->data['body'] = $this->load->view('departments/departments_index', $this->data, TRUE);
 
 		return $this->render();
 	}
-
-
-
 
 
 	/**
@@ -56,14 +48,12 @@ class Departments extends MY_Controller
 	function add()
 	{
 		// Load view
-		$this->data['title'] = 'Add Department';
+		$this->data['title'] = lang('department.add.title');
 		$this->data['showtitle'] = $this->data['title'];
 		$this->data['body'] = $this->load->view('departments/departments_add', NULL, TRUE);
 
 		return $this->render();
 	}
-
-
 
 
 	/**
@@ -78,14 +68,12 @@ class Departments extends MY_Controller
 			show_404();
 		}
 
-		$this->data['title'] = 'Edit Department';
+		$this->data['title'] = lang('department.edit.title');
 		$this->data['showtitle'] = $this->data['title'];
 		$this->data['body'] = $this->load->view('departments/departments_add', $this->data, TRUE);
 
 		return $this->render();
 	}
-
-
 
 
 	/**
@@ -98,9 +86,9 @@ class Departments extends MY_Controller
 
 		$this->load->library('form_validation');
 
-		$this->form_validation->set_rules('department_id', 'ID', 'integer');
-		$this->form_validation->set_rules('name', 'Name', 'required|min_length[1]|max_length[50]');
-		$this->form_validation->set_rules('description', 'Description', 'max_length[255]');
+		$this->form_validation->set_rules('department_id', 'lang:app.id', 'integer');
+		$this->form_validation->set_rules('name', 'lang:department.field.name', 'required|min_length[1]|max_length[50]');
+		$this->form_validation->set_rules('description', 'lang:department.field.description', 'max_length[255]');
 
 		if ($this->form_validation->run() == FALSE) {
 			return (empty($department_id) ? $this->add() : $this->edit($department_id));
@@ -117,20 +105,21 @@ class Departments extends MY_Controller
 			$department_id = $this->departments_model->insert($department_data);
 
 			if ($department_id) {
-				$line = sprintf($this->lang->line('crbs_action_added'), $department_data['name']);
+				$line = sprintf(lang('department.create.success'), $department_data['name']);
 				$flashmsg = msgbox('info', $line);
 			} else {
-				$line = sprintf($this->lang->line('crbs_action_dberror'), 'adding');
+				$line = sprintf(lang('department.create.error'));
 				$flashmsg = msgbox('error', $line);
 			}
 
 		} else {
 
 			if ($this->departments_model->update($department_id, $department_data)) {
-				$line = sprintf($this->lang->line('crbs_action_saved'), $department_data['name']);
+				// update
+				$line = sprintf(lang('department.update.success'), $department_data['name']);
 				$flashmsg = msgbox('info', $line);
 			} else {
-				$line = sprintf($this->lang->line('crbs_action_dberror'), 'editing');
+				$line = lang('department.update.error');
 				$flashmsg = msgbox('error', $line);
 			}
 
@@ -141,35 +130,35 @@ class Departments extends MY_Controller
 	}
 
 
-
-
 	/**
 	 * Delete a department
 	 *
 	 */
 	function delete($id = NULL)
 	{
-		if ($this->input->post('id')) {
+		$department = $this->departments_model->Get($id);
+		if ( ! $department) show_404();
+
+		if ($this->input->post('id') == $id) {
 			$this->departments_model->delete($this->input->post('id'));
-			$flashmsg = msgbox('info', $this->lang->line('crbs_action_deleted'));
+			$line = sprintf(lang('department.delete.success'), $department->name);
+			$flashmsg = msgbox('info', $line);
 			$this->session->set_flashdata('saved', $flashmsg);
 			redirect('departments');
+			return;
 		}
 
-		$this->data['action'] = 'departments/delete';
+		$this->data['action'] = 'departments/delete/'.$id;
 		$this->data['id'] = $id;
 		$this->data['cancel'] = 'departments';
-		$this->data['text'] = 'If you delete this department, you must re-assign any of its members to another department.';
+		$this->data['text'] = lang('department.delete.warning');
 
-		$row = $this->departments_model->Get($id);
-		$this->data['title'] = 'Delete Department ('.$row->name.')';
+		$this->data['title'] = sprintf(lang('department.delete.title'), $department->name);
 		$this->data['showtitle'] = $this->data['title'];
 		$this->data['body'] = $this->load->view('partials/deleteconfirm', $this->data, TRUE);
 
 		return $this->render();
 	}
-
-
 
 
 }

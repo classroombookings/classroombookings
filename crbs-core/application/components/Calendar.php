@@ -50,6 +50,13 @@ class Calendar
 	// Week ends on
 	private $last_day = 7;
 
+	// Actual today's date (for highlighting)
+	private $today;
+	private $today_dt;
+
+	// Highlight mode for nav mode
+	private $highlight_selected = 'day';
+
 
 	public function __construct($config = [])
 	{
@@ -57,6 +64,9 @@ class Calendar
 		$this->CI->load->helper('week');
 
 		$this->init($config);
+
+		$this->today = date('Y-m-d');
+		$this->today_dt = (new DateTime())->setTime(0, 0, 0);
 	}
 
 
@@ -105,11 +115,11 @@ class Calendar
 			'7' => 'Sun',
 		];
 
-		switch ($style) {
-			case 'long': return $long; break;
-			case 'short': return $short; break;
-			default: return FALSE;
-		}
+		return match ($style) {
+			'long' => $long,
+			'short' => $short,
+			default => FALSE,
+		};
 	}
 
 
@@ -184,12 +194,14 @@ class Calendar
 		}
 
 		$weeks = [];
-		foreach ($this->weeks as $week) {
-			$weeks[] = $week->week_id;
+		if (is_array($this->weeks)) {
+			foreach ($this->weeks as $week) {
+				$weeks[] = $week->week_id;
+			}
 		}
 
 		$data = [
-			'up-data' => json_encode_html(['weeks' => $weeks], TRUE),
+			'up-data' => json_encode_html(['weeks' => $weeks]),
 		];
 
 		$data_attrs = '';
@@ -242,38 +254,76 @@ class Calendar
 			'header' => $this->generate_month_header($month, $is_first, $is_last),
 			'week' => $this->generate_month_week($month),
 			'body' => $this->generate_month_body($month),
+			'footer' => $this->generate_month_footer($month),
 		];
 
 		$header = "<thead>{$parts['header']}\n{$parts['week']}</thead>";
 		$body = "<tbody>{$parts['body']}</tbody>";
+		$footer = "<tfoot>{$parts['footer']}</tfoot>";
 		$attrs = '';
 
 		if ($this->mode == self::MODE_NAVIGATE) {
 			$attrs = ($this->selected_month == $month->format('Y-m'))
 				? ''
-				: 'hidden'
+				: 'hidden '
 				;
+
+			$month_has_today = ($this->today_dt->format('Y-m') == $month->format('Y-m'));
+			$attrs .= $month_has_today ? 'data-month-today' : 'data-other-month';
 		}
 
-		$output = "<table class='{$this->month_class} mode-{$this->mode}' {$attrs}>\n{$header}\n{$body}\n</table>";
+		$output = "<table class='{$this->month_class} mode-{$this->mode}' {$attrs}>\n{$header}\n{$body}\n{$footer}\n</table>";
 		return $output;
+	}
+
+
+	private function generate_month_footer($month)
+	{
+		if ($this->mode !== self::MODE_NAVIGATE) return '';
+
+		$fmt = '<tr class="header-row"><th colspan="7">%s</th></tr>';
+
+		$script = <<<EOS
+on click add [@hidden] to <[data-other-month]/> then remove [@hidden] from <[data-month-today]/>
+EOS;
+
+		$attrs = [
+			'type' => 'button',
+			'content' => lang("cal.today"),
+			'data-script' => $script,
+		];
+
+		if ($this->today_dt->format('Y-m') == $month->format('Y-m')) {
+			$attrs['disabled'] = '';
+		}
+
+		$btn = form_button($attrs);
+
+		return sprintf($fmt, $btn);
 	}
 
 
 	private function generate_month_header($month, $is_first = false, $is_last = false)
 	{
-		$title = $month->format('F Y');
+		$title_date = $month->format('F Y');
+		$title_month = $month->format('F');
+		$title_year = $month->format('Y');
+
+		$lang_key = sprintf('cal_%s', strtolower((string) $title_month));
+
+		$title = sprintf('%s %s', lang($lang_key), $title_year);
+
 		$left = FALSE;
 		$right = FALSE;
 
 		if ($this->mode == self::MODE_NAVIGATE) {
-			$prev_img = img('assets/images/ui/arrow_left.png');
+			$prev_img = img(asset_url('assets/images/ui/arrow_left.png'));
 			$nav_prev = ($is_first)
 				? ''
 				: "<button class='nav-btn' type='button' data-dir='prev'>{$prev_img}</button>"
 				;
 
-			$next_img = img('assets/images/ui/arrow_right.png');
+			$next_img = img(asset_url('assets/images/ui/arrow_right.png'));
 			$nav_next = ($is_last)
 				? ''
 				: "<button class='nav-btn' type='button' data-dir='next'>{$next_img}</button>"
@@ -300,7 +350,9 @@ class Calendar
 		$day_names = self::get_day_names('short');
 		foreach (self::get_days_of_week() as $day_num) {
 			$day_name = $day_names[$day_num];
-			$cells[] = "<td>{$day_name}</td>";
+			$lang_key = sprintf('cal_%s', strtolower((string) $day_name));
+			$day_name_lang = lang($lang_key);
+			$cells[] = "<td>{$day_name_lang}</td>";
 		}
 
 		$cells_html = implode("\n", $cells);
@@ -408,6 +460,9 @@ class Calendar
 		$info = '';
 		$input = '';
 
+		$week_start = $this->get_week_start($date);
+		$week_end = $this->get_week_end($date);
+
 
 		switch ($this->mode) {
 
@@ -451,14 +506,29 @@ class Calendar
 					$disabled = "disabled='disabled'";
 				}
 
-				if ($this->selected_datetime && $this->selected_datetime->format('Y-m-d') == $date_ymd) {
-					$link_text = "<strong>%s</strong>";
-				} else {
-					$link_text = '%s';
+				$cls = '';
+
+				if ($this->today == $date_ymd && $date_ymd != $this->selected_datetime) {
+					$cls = 'is-today ';
+				}
+
+				if ($this->selected_datetime
+					&& $this->selected_datetime->format('Y-m-d') == $date_ymd
+					&& $this->highlight_selected == 'day'
+				) {
+					$cls = 'is-selected ';
+				}
+
+				if ($this->selected_datetime
+					&& $this->selected_datetime >= $week_start
+					&& $this->selected_datetime <= $week_end
+					&& $this->highlight_selected == 'week'
+				) {
+					$cls = 'is-selected ';
 				}
 
 				$url = sprintf($this->nav_url_format, $date_ymd);
-				$content_format = "<a href='{$url}' class='date-cell-content date-link' {$disabled}>{$link_text}</a>";
+				$content_format = "<a href='{$url}' class='date-cell-content date-link {$cls}' {$disabled}><span>%s</span></a>";
 				break;
 
 			case self::MODE_VIEW:
@@ -547,6 +617,28 @@ class Calendar
 
 		$period = new DatePeriod($start_date, $interval, $end_date);
 		return $period;
+	}
+
+
+	public function get_week_start($datetime)
+	{
+		$week_starts_day_name = self::get_day_names()[ Calendar::get_first_day_of_week() ];
+		$week_start = clone $datetime;
+		$week_start->modify('+1 day');
+		$week_start->modify("last {$week_starts_day_name}");
+
+		return $week_start;
+	}
+
+
+	public function get_week_end($datetime)
+	{
+		$week_end = clone $datetime;
+		while ($week_end->format('N') < 7) {
+			$week_end->modify('+1 days');
+		}
+
+		return $week_end;
 	}
 
 

@@ -9,25 +9,29 @@ class SettingsException extends \RuntimeException
 
 	public static function forDisplayType()
 	{
-		return new static("The 'Display Type' setting has not been set.");
+		$line = lang('exception.SettingsException.forDisplayType');
+		return new static($line);
 	}
 
 
 	public static function forColumns()
 	{
-		return new static("The 'Display Columns' setting has not been set.");
+		$line = lang('exception.SettingsException.forColumns');
+		return new static($line);
 	}
 
 
 	public static function forNoRooms()
 	{
-		return new static("There are no rooms available.");
+		$line = lang('exception.SettingsException.forNoRooms');
+		return new static($line);
 	}
 
 
 	public static function forNoSchedule()
 	{
-		return new static("This room group doesn't have a Schedule configured for this session.");
+		$line = lang('exception.SettingsException.forNoSchedule');
+		return new static($line);
 	}
 
 

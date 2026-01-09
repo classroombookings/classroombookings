@@ -17,10 +17,10 @@ echo form_open(current_url(), [
 
 <fieldset>
 
-	<legend accesskey="S" tabindex="<?= tab_index() ?>">Schedule details</legend>
+	<legend accesskey="S" tabindex="<?= tab_index() ?>"><?= lang('schedule.schedule') ?></legend>
 
 	<p>
-		<label for="name" class="required">Name</label>
+		<label for="name" class="required"><?= lang('schedule.field.name') ?></label>
 		<?php
 		$field = 'name';
 		$value = set_value($field, isset($schedule) ? $schedule->name : '', FALSE);
@@ -38,7 +38,7 @@ echo form_open(current_url(), [
 	<?php echo form_error('name'); ?>
 
 	<p>
-		<label for="description">Description</label>
+		<label for="description"><?= lang('schedule.field.description') ?></label>
 		<?php
 		$field = 'description';
 		$value = set_value($field, isset($schedule) ? $schedule->description : '', FALSE);
@@ -61,8 +61,8 @@ echo form_open(current_url(), [
 <?php
 
 $this->load->view('partials/submit', array(
-	'submit' => array('Save', tab_index()),
-	'cancel' => array('Cancel', tab_index(), 'schedules'),
+	'submit' => array(isset($schedule) ? lang('app.action.save') : lang('app.action.continue'), tab_index()),
+	'cancel' => array(lang('app.action.cancel'), tab_index(), 'schedules'),
 ));
 
 echo form_close();
@@ -74,14 +74,14 @@ echo form_close();
 
 <fieldset style="margin-top:30px">
 
-	<legend accesskey="P" tabindex="<?= tab_index() ?>">Periods</legend>
+	<legend accesskey="P" tabindex="<?= tab_index() ?>"><?= lang('period.periods') ?></legend>
 
 	<div
 		id="period_list"
 		hx-get="<?= site_url('periods/index/' . $schedule->schedule_id) ?>"
 		hx-trigger="load"
 	>
-		<p>Loading...</p>
+		<p><?= lang('app.loading') ?>...</p>
 	</div>
 </fieldset>
 

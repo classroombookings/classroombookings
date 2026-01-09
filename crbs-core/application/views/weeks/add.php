@@ -12,10 +12,10 @@ echo form_open(current_url(), ['class' => 'cssform', 'id' => 'week_add'], ['week
 
 <fieldset>
 
-	<legend accesskey="W" tabindex="<?= tab_index() ?>">Week</legend>
+	<legend accesskey="W" tabindex="<?= tab_index() ?>"><?= lang('week.week') ?></legend>
 
 	<p>
-		<label for="name" class="required">Name</label>
+		<label for="name" class="required"><?= lang('week.field.name') ?></label>
 		<?php
 		$field = 'name';
 		$value = set_value($field, isset($week) ? $week->name : '', FALSE);
@@ -32,7 +32,7 @@ echo form_open(current_url(), ['class' => 'cssform', 'id' => 'week_add'], ['week
 	<?php echo form_error($field) ?>
 
 	<div class="input-group">
-		<label for="bgcol" class="required">Colour</label>
+		<label for="bgcol" class="required"><?= lang('week.field.colour') ?></label>
 		<?php
 		$field = 'bgcol';
 		$value = set_value($field, isset($week) ? $week->bgcol : '', FALSE);
@@ -50,8 +50,8 @@ echo form_open(current_url(), ['class' => 'cssform', 'id' => 'week_add'], ['week
 <?php
 
 $this->load->view('partials/submit', array(
-	'submit' => array('Save', tab_index()),
-	'cancel' => array('Cancel', tab_index(), 'weeks'),
+	'submit' => array(isset($week) ? lang('app.action.save') : lang('app.action.create'), tab_index()),
+	'cancel' => array(lang('app.action.cancel'), tab_index(), 'weeks'),
 ));
 
 echo form_close();

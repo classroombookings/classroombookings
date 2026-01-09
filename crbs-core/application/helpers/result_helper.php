@@ -10,10 +10,10 @@ function nest_object_keys($row)
 
 		$sep = FALSE;
 
-		if (strpos($prop, '.') !== FALSE) {
+		if (str_contains((string) $prop, '.')) {
 			$sep = '.';
 		}
-		if (strpos($prop, '__') !== FALSE) {
+		if (str_contains((string) $prop, '__')) {
 			$sep = '__';
 		}
 
@@ -21,7 +21,7 @@ function nest_object_keys($row)
 			continue;
 		}
 
-		list($key, $field) = explode($sep, $prop);
+		[$key, $field] = explode($sep, (string) $prop);
 
 		if ( ! isset($row->$key) || ! is_object($row->$key)) {
 			$row->$key = new StdClass();
@@ -65,5 +65,17 @@ function results_to_assoc($results, $key_prop = '', $value_prop = '', $blank = N
 		$out[$key] = $value;
 	}
 
+	return $out;
+}
+
+
+
+function alphabetise_assoc_results(array $results)
+{
+	$out = [];
+	foreach ($results as $k => $v) {
+		$letter = strtoupper(substr((string) $v, 0, 1));
+		$out[$letter][$k] = $v;
+	}
 	return $out;
 }

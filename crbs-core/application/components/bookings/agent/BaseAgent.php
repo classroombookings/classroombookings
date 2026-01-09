@@ -5,9 +5,7 @@ namespace app\components\bookings\agent;
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 
-use app\components\bookings\exceptions\AgentException;
-use app\components\bookings\Slot;
-use \Bookings_model;
+use Permission;
 
 
 /**
@@ -17,7 +15,11 @@ use \Bookings_model;
 abstract class BaseAgent
 {
 
-	const TYPE = null;
+	const AGENT_MODE = null;
+
+	// Booking types
+	const BOOK_SINGLE = 'single';
+	const BOOK_RECUR = 'recurring';
 
 
 	// CI instance
@@ -30,31 +32,34 @@ abstract class BaseAgent
 	protected $message = '';
 
 	// Type of booking this agent instance is handling.
-	protected $type = FALSE;
+	protected $agent_mode = null;
+
+	// Type of booking being made (single or recurring)
+	protected ?string $booking_type = null;
 
 	// View name to load
 	protected $view = '';
 
 	// Current logged-in user
-	protected $user = FALSE;
+	protected $user = null;
 
 	// Session for the dates
 	protected $session;
 
-	// Flag for user admin level
-	protected $is_admin = FALSE;
-
 	// Marker for completion of process
-	protected $success = FALSE;
+	protected $success = false;
 
 	// Extra data that can be provided to view (for render())
 	protected $view_data = [];
 
-	// For admin (to select from)
-	protected $all_periods = [];
-	protected $all_rooms = [];
-	protected $all_departments = [];
-	protected $all_users = [];
+	// Main view with form
+	protected string $subview = '';
+
+	// Lists of lookups to select from
+	protected array $all_periods = [];
+	protected array $all_rooms = [];
+	protected array $all_departments = [];
+	protected array $all_users = [];
 
 
 	public function __construct()
@@ -77,15 +82,34 @@ abstract class BaseAgent
 
 		$this->CI->load->library('table');
 
-		$this->type = self::TYPE;
+		$this->agent_mode = self::AGENT_MODE;
 
 		// Initialise user
 		$this->user = $this->CI->userauth->user;
 		unset($this->user->password);
 
-		$this->is_admin = ($this->CI->userauth->is_level(ADMINISTRATOR));
+		$this->detect_booking_type();
+	}
 
-		$this->init_lists();
+
+	protected function detect_booking_type()
+	{
+		$sess_key = sprintf('%s.booking_type', $this->agent_mode);
+
+		if (isset($_SESSION[$sess_key])) {
+			$this->booking_type = $_SESSION[$sess_key];
+		}
+		if ($this->CI->input->post_get('booking_type')) {
+			$this->set_booking_type($this->CI->input->post_get('booking_type'));
+		}
+	}
+
+
+	protected function set_booking_type(string $type)
+	{
+		$sess_key = sprintf('%s.booking_type', $this->agent_mode);
+		$this->booking_type = $type;
+		$_SESSION[$sess_key] = $type;
 	}
 
 
@@ -105,16 +129,21 @@ abstract class BaseAgent
 	}
 
 
-	/**
-	 * Load lists of selectable items so permitted users can select from them.
-	 *
-	 */
-	protected function init_lists()
+	protected function populate_departments()
 	{
-		if ( ! $this->is_admin) return;
+		$departments = $this->CI->departments_model->Get(NULL, NULL, NULL);
+		if (is_array($departments)) {
+			$this->all_departments = $departments;
+		}
+	}
 
-		$this->all_departments = $this->CI->departments_model->Get(NULL, NULL, NULL);
-		$this->all_users = $this->CI->users_model->Get(NULL, NULL, NULL);
+
+	protected function populate_users()
+	{
+		$users = $this->CI->users_model->Get(NULL, NULL, NULL);
+		if (is_array($users)) {
+			$this->all_users = $users;
+		}
 	}
 
 
@@ -134,11 +163,11 @@ abstract class BaseAgent
 
 			'message' => $this->message,
 
-			'return_uri' => isset($_SESSION['return_uri']) ? $_SESSION['return_uri'] : '',
+			'return_uri' => $_SESSION['return_uri'] ?? '',
 			'user' => $this->user,
-			'is_admin' => $this->is_admin,
-			'allow_single' => TRUE,
-			'allow_recurring' => ($this->is_admin ? TRUE : FALSE),
+			'booking_type' => $this->booking_type,
+			'agent_mode' => $this->agent_mode,
+			'subview' => $this->subview,
 
 			'all_periods' => $this->all_periods,
 			'all_rooms' => $this->all_rooms,
@@ -150,6 +179,38 @@ abstract class BaseAgent
 		$vars = array_merge($default_vars, $this->get_view_data(), $this->view_data);
 
 		return $this->CI->load->view($this->view, $vars, TRUE);
+	}
+
+
+	protected function get_actions($booking)
+	{
+		$actions = [];
+
+		$user_is_owner = ($booking->user_id == $this->user->user_id);
+
+		if ($user_is_owner) {
+			$actions['replace'] = lang('booking.action.replace');
+			$actions['do_not_book'] = lang('booking.action.keep');
+			return $actions;
+		}
+
+		$booking_type = empty($booking->repeat_id) ? 'single' : 'recurring';
+		$actions['do_not_book'] = lang('booking.action.keep');
+
+		switch ($booking_type) {
+			case 'single':
+				if (has_permission(Permission::BK_SGL_CANCEL_OTHER, $booking->room_id)) {
+					$actions['replace'] = lang('booking.action.replace');
+				}
+				break;
+			case 'recurring':
+				if (has_permission(Permission::BK_RECUR_CANCEL_OTHER, $booking->room_id)) {
+					$actions['replace'] = lang('booking.action.replace');
+				}
+				break;
+		}
+
+		return $actions;
 	}
 
 

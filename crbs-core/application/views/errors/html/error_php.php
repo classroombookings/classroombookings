@@ -16,7 +16,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<p>Backtrace:</p>
 	<?php foreach (debug_backtrace() as $error): ?>
 
-		<?php if (isset($error['file']) && strpos($error['file'], realpath(BASEPATH)) !== 0): ?>
+		<?php if (isset($error['file']) && !str_starts_with($error['file'], realpath(BASEPATH))): ?>
 
 			<p style="margin-left:10px">
 			File: <?php echo $error['file'] ?><br />

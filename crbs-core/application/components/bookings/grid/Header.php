@@ -62,10 +62,10 @@ class Header
 
 			case 'day':
 
-				$prev_label = '&larr; Back';
-				$next_label = 'Next &rarr;';
+				$prev_label = '&larr; ' . lang('booking.nav.back');
+				$next_label = lang('booking.nav.next') . ' &rarr;';
 
-				$long_date = $this->context->datetime->format(setting('date_format_long'));
+				$long_date = date_output_long($this->context->datetime);
 
 				$data['title'] = $this->context->timetable_week
 					? $long_date . ' - ' . html_escape($this->context->timetable_week->name)
@@ -75,11 +75,12 @@ class Header
 
 			case 'room':
 
-				$prev_label = '&larr; Previous week';
-				$next_label = 'Next week &rarr;';
+				$prev_label = '&larr; ' . lang('booking.nav.week_prev');
+				$next_label = lang('booking.nav.week_next') . ' &rarr;';
 
-				$start_date = $this->context->week_start->format(setting('date_format_long'));
-				$week_text = sprintf('Week commencing %s', $start_date);
+				$start_date = date_output_long($this->context->week_start);
+				$line = lang('booking.nav.week_commencing');
+				$week_text = sprintf($line, $start_date);
 
 				$data['title'] = $this->context->timetable_week
 					? $week_text . ' - ' . html_escape($this->context->timetable_week->name)

@@ -4,11 +4,6 @@ namespace app\components\bookings;
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-
-// use \DateTime;
-// use \DateInterval;
-// use \DatePeriod;
-
 use app\components\Calendar;
 
 
@@ -39,14 +34,14 @@ class DateFilter
 
 	public function render()
 	{
-		$params = $this->context->get_query_params();
+		// $params = $this->context->get_query_params();
 
-		$data = [
-			'params' => $params,
-			'current_room' => $params['room'] ?? null,
-			'current_date' => $params['date'] ?? null,
-			'calendar' => $this->render_calendar(),
-		];
+		// $data = [
+		// 	'params' => $params,
+		// 	'current_room' => $params['room'] ?? null,
+		// 	'current_date' => $params['date'] ?? $params['selected_date'] ?? null,
+		// 	'calendar' => $this->render_calendar(),
+		// ];
 
 		return $this->render_calendar();
 	}
@@ -62,6 +57,7 @@ class DateFilter
 			'month_class' => 'session-calendar',
 			'selected_datetime' => $this->context->datetime,
 			'nav_url_format' => $this->get_url_format(),
+			'highlight_selected' => ($this->context->display_type == 'day') ? 'day' : 'week',
 		]);
 
 		return $calendar->generate_full_session();

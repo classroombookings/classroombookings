@@ -18,10 +18,6 @@ class Dashboard extends MY_Controller
 	*/
 	public function index()
 	{
-		if ($this->userauth->is_level(ADMINISTRATOR)) {
-			redirect('setup');
-		}
-
 		$this->load->model('bookings_model');
 		$this->load->model('users_model');
 
@@ -35,6 +31,8 @@ class Dashboard extends MY_Controller
 		// Get totals
 		$this->data['totals'] = $this->bookings_model->TotalNum($user_id);
 
+		$this->data['constraints'] = $this->users_model->get_constraints($user_id);
+
 		$this->data['title'] = 'Dashboard';
 		$this->data['showtitle'] = '';	//$this->data['title'];
 
@@ -43,6 +41,25 @@ class Dashboard extends MY_Controller
 		$this->data['body'] .= $this->load->view('dashboard/index', $this->data, TRUE);
 
 		return $this->render();
+	}
+
+
+	public function changelog()
+	{
+		$this->changelog->touch();
+
+		$url = $this->changelog->public_url();
+		if (is_null($url)) {
+			redirect('https://www.classroombookings.com/');
+		} else {
+			redirect($url);
+		}
+	}
+
+
+	public function changelog_status()
+	{
+		echo $this->changelog->get_indicator_icon();
 	}
 
 

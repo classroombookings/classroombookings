@@ -9,26 +9,30 @@ class AvailabilityException extends \RuntimeException
 
 	public static function forNoWeek()
 	{
-		return new static("The selected date is not assigned to a timetable week.");
+		$line = lang('exception.AvailabilityException.forNoWeek');
+		return new static($line);
 	}
 
 
 	public static function forNoPeriods()
 	{
-		return new static("There are no periods available for the selected date.");
+		$line = lang('exception.AvailabilityException.forNoPeriods');
+		return new static($line);
 	}
 
 
 	public static function forHoliday($holiday = NULL)
 	{
 		if ( ! is_object($holiday)) {
-			return new static('The date you selected is during a holiday.');
+			$line = lang('exception.AvailabilityException.forHoliday.unknown');
+			return new static($line);
 		}
 
-		$format = 'The date you selected is during a holiday: %s: %s - %s';
+		$line = lang('exception.AvailabilityException.forHoliday');
+		// @todo use a short date setting value
 		$start = $holiday->date_start->format('d/m/Y');
 		$end = $holiday->date_end->format('d/m/Y');
-		$str = sprintf($format, $holiday->name, $start, $end);
+		$str = sprintf($line, $holiday->name, $start, $end);
 		return new static($str);
 	}
 

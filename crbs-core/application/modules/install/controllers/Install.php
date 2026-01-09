@@ -163,19 +163,23 @@ class Install extends MY_Controller
 
 				$_SESSION['db_config'] = $db_config;
 
-				$test_db = $this->load->database($db_config, TRUE);
-				$res = $test_db->initialize();
+				$db_ok = false;
+				$db_msg = "Could not connect to the database with the provided values.";
+				try {
+					$db_conn = @$this->load->database($db_config, true);
+					$db_ok = ($db_conn->initialize() !== false);
+				} catch (Exception $e) {
+					$db_msg = "Database error: " . $e->getMessage();
+				}
 
-				if ( ! $res) {
-					$this->data['notice'] = msgbox('error', "Could not connect to the database with the provided values.");
+				if ( ! $db_ok) {
+					$this->data['notice'] = msgbox('error', $db_msg);
 				} else {
-					if ( ! $err) {
-						$_SESSION['requirements']['database'] = array('status' => 'ok');
-						$_SESSION['data'] = array_merge($_SESSION['data'], $data);
-						$_SESSION['install_step'] = 'info';
-						$_SESSION['step_config'] = TRUE;
-						redirect('install/info');
-					}
+					$_SESSION['requirements']['database'] = array('status' => 'ok');
+					$_SESSION['data'] = array_merge($_SESSION['data'], $data);
+					$_SESSION['install_step'] = 'info';
+					$_SESSION['step_config'] = TRUE;
+					redirect('install/info');
 				}
 			}
 
@@ -278,7 +282,9 @@ class Install extends MY_Controller
 				$_SESSION['install_complete'] = TRUE;
 				$_SESSION['step_checks'] = TRUE;
 				$_SESSION['install_step'] = 'complete';
-				redirect('install/complete');
+
+				$this->cleanup();
+				redirect('login');
 
 			}
 		}
@@ -296,25 +302,6 @@ class Install extends MY_Controller
 	}
 
 
-	public function complete()
-	{
-		if ( ! isset($_SESSION['step_checks']) && ! isset($_SESSION['install_complete'])) {
-			return redirect('install/checks');
-		}
-
-		$this->cleanup();
-
-		$this->load->database();
-		$this->load->library('userauth');
-
-		$this->data['title'] = 'Install classroombookings';
-		$this->data['showtitle'] = $this->data['title'];
-		$this->data['body'] = $this->load->view('install/complete', $this->data, TRUE);
-
-		return $this->render();
-	}
-
-
 	private function cleanup()
 	{
 		unset($_SESSION['data']);
@@ -324,6 +311,7 @@ class Install extends MY_Controller
 		unset($_SESSION['step_info']);
 		unset($_SESSION['step_checks']);
 		unset($_SESSION['db_config']);
+		$this->session->sess_destroy();
 	}
 
 
@@ -332,7 +320,7 @@ class Install extends MY_Controller
 		// PHP version
 		//
 		$_SESSION['requirements']['php_version'] = array('message' => 'Your PHP version is ' . PHP_VERSION . '.');
-		$has_php = (version_compare(PHP_VERSION, '7.2.0', '>='));
+		$has_php = (version_compare(PHP_VERSION, '8.4.0', '>='));
 		if ( ! $has_php) {
 			$_SESSION['requirements']['php_version']['status'] = 'err';
 		} else {
@@ -408,16 +396,22 @@ class Install extends MY_Controller
 		// Database
 		//
 		$db_config = $_SESSION['db_config'];
-		$test_db = $this->load->database($db_config, TRUE);
-		$res = $test_db->initialize();
-		$num_tables = count($test_db->list_tables());
+		$db_ok = false;
+		$db_msg = "Could not connect to the database with the provided values.";
+		try {
+			$db_conn = @$this->load->database($db_config, true);
+			$db_ok = ($db_conn->initialize() !== false);
+		} catch (Exception $e) {
+			$db_msg = "Database error: " . $e->getMessage();
+		}
 
-		if ( ! $res) {
-			$_SESSION['requirements']['database'] = array('status' => 'err', 'message' => 'Could not connect with the provided settings.');
+		if ( ! $db_ok) {
+			$_SESSION['requirements']['database'] = array('status' => 'err', 'message' => $db_msg);
 		} else {
 			$_SESSION['requirements']['database'] = array('status' => 'ok');
 		}
 
+		$num_tables = count($db_conn->list_tables());
 		if ($num_tables > 0) {
 			$_SESSION['requirements']['database_empty'] = array('status' => 'err', 'message' => "There are {$num_tables} tables in the database.");
 		} else {

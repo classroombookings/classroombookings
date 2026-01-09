@@ -24,16 +24,15 @@ $input_value = json_encode([
 
 <td class='<?= $class ?>'>
 
-
-
 	<label
 		style="display: none"
 		class="bookings-grid-button multi-select-content"
-		up-show-for=":checked"
+		data-multi="true"
 		for="<?= $input_id ?>"
 	>
 		<?php
 		echo form_checkbox([
+			'form' => 'form_create_multi',
 			'name' => $input_name,
 			'id' => $input_id,
 			'value' => $input_value,
@@ -41,14 +40,15 @@ $input_value = json_encode([
 		?>
 	</label>
 
-
-
 	<button
 		class="bookings-grid-button multi-select-content"
-		up-show-for=":unchecked"
+		data-single="<?= isset($allow_single) && $allow_single ? 1 : 0 ?>"
+		data-recurring="<?= isset($allow_recur) && $allow_recur ? 1 : 0 ?>"
+		data-multi="false"
 		up-href="<?= $url ?>"
 		up-target=".bookings-create"
 		up-layer="new"
+		up-cache="false"
 		up-preload
 	>&nbsp;
 	</button>

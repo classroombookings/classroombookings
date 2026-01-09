@@ -13,20 +13,21 @@ class Schedules extends MY_Controller
 	{
 		parent::__construct();
 
-		$this->require_auth_level(ADMINISTRATOR);
+		$this->require_logged_in();
+		$this->require_permission(Permission::SETUP_SCHEDULES);
 
 		$this->load->model([
 			'schedules_model',
 		]);
 
-		$this->data['showtitle'] = 'Schedules';
+		$this->data['showtitle'] = lang('schedule.schedules');
 	}
 
 
-	private function get_icons($session = NULL)
+	private function get_icons()
 	{
 		$items = [
-			['schedules', 'Schedules', 'school_manage_times.png'],
+			['schedules', lang('schedule.schedules'), 'school_manage_times.png'],
 		];
 
 		return $items;
@@ -37,7 +38,7 @@ class Schedules extends MY_Controller
 	{
 		$this->load->library('table');
 		$this->data['schedules'] = $this->schedules_model->get_all();
-		$this->data['title'] = 'Schedules';
+		$this->data['title'] = lang('schedule.schedules');
 
 		$icons = iconbar($this->get_icons(), 'schedules');
 		$body = $this->load->view('schedules/index', $this->data, TRUE);
@@ -50,7 +51,7 @@ class Schedules extends MY_Controller
 
 	public function add()
 	{
-		$this->data['title'] = 'Add new schedule';
+		$this->data['title'] = lang('schedule.add.title');
 		$this->data['showtitle'] = $this->data['title'];
 
 		if ($this->input->post()) {
@@ -68,7 +69,7 @@ class Schedules extends MY_Controller
 
 	public function edit($schedule_id)
 	{
-		$this->data['title'] = 'Edit schedule';
+		$this->data['title'] = lang('schedule.edit.title');
 		$this->data['showtitle'] = $this->data['title'];
 
 		$this->data['schedule'] = $this->find_schedule($schedule_id);
@@ -90,8 +91,8 @@ class Schedules extends MY_Controller
 	{
 		$this->load->library('form_validation');
 
-		$this->form_validation->set_rules('name', 'Name', 'required|max_length[32]');
-		$this->form_validation->set_rules('description', 'Description', "");
+		$this->form_validation->set_rules('name', 'lang:schedule.field.name', 'required|max_length[32]');
+		$this->form_validation->set_rules('description', 'lang:schedule.field.description', "trim");
 
 		$data = array(
 			'name' => $this->input->post('name'),
@@ -104,21 +105,19 @@ class Schedules extends MY_Controller
 
 		if ( ! is_null($schedule_id)) {
 			if ($this->schedules_model->update($schedule_id, $data)) {
-				$line = sprintf($this->lang->line('crbs_action_saved'), $data['name']);
-				$flashmsg = msgbox('info', $line);
+				$msg = sprintf(lang('schedule.update.success'), $data['name']);
+				$flashmsg = msgbox('info', $msg);
 			} else {
-				$line = sprintf($this->lang->line('crbs_action_dberror'), 'editing');
-				$flashmsg = msgbox('error', $line);
+				$flashmsg = msgbox('error', lang('schedule.update.error'));
 				$this->session->set_flashdata('saved', $flashmsg);
 				return FALSE;
 			}
 		} else {
 			if ($schedule_id = $this->schedules_model->insert($data)) {
-				$line = sprintf($this->lang->line('crbs_action_added'), 'Schedule');
-				$flashmsg = msgbox('info', $line);
+				$msg = sprintf(lang('schedule.create.success'), $data['name']);
+				$flashmsg = msgbox('info', $msg);
 			} else {
-				$line = sprintf($this->lang->line('crbs_action_dberror'), 'adding');
-				$flashmsg = msgbox('error', $line);
+				$flashmsg = msgbox('error', lang('schedule.create.error'));
 				$this->session->set_flashdata('saved', $flashmsg);
 				return FALSE;
 			}
@@ -139,7 +138,7 @@ class Schedules extends MY_Controller
 
 		if ($this->input->post('id')) {
 			$this->schedules_model->delete($this->input->post('id'));
-			$flashmsg = msgbox('info', $this->lang->line('crbs_action_deleted'));
+			$flashmsg = msgbox('info', sprintf(lang('schedule.delete.success'), $schedule->name));
 			$this->session->set_flashdata('saved', $flashmsg);
 			redirect('schedules');
 		}
@@ -147,9 +146,9 @@ class Schedules extends MY_Controller
 		$this->data['action'] = current_url();
 		$this->data['id'] = $id;
 		$this->data['cancel'] = 'schedules';
-		$this->data['text'] = 'Any bookings for rooms that use this schedule, and bookings that are for periods in this schedule, will be deleted.';
+		$this->data['text'] = lang('schedule.delete.warning');
 
-		$this->data['title'] = sprintf('Delete schedule (%s)', html_escape($schedule->name));
+		$this->data['title'] = sprintf(lang('schedule.delete.title'), html_escape($schedule->name));
 
 		$title = "<h2>{$this->data['title']}</h2>";
 		$body = $this->load->view('partials/deleteconfirm', $this->data, TRUE);

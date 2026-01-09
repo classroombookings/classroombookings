@@ -1,4 +1,4 @@
-<p>All times should be entered in the <span>24 hour</span> format, between 00:00 and 23:59. Periods times should not overlap.</p>
+<p><?= lang('period.hint') ?></p>
 
 <div>
 	<?php

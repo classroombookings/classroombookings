@@ -93,13 +93,19 @@ class Multi_booking_model extends CI_Model
 	 */
 	public function get_slots($mb)
 	{
-		$this->load->model('dates_model');
+		$this->load->model([
+			'dates_model',
+			'users_model',
+			'sessions_model',
+		]);
 
 		$this->db->reset_query();
 
 		$this->db->select([
 			'mbs.*',
 			'p.name AS period__name',
+			'p.time_start AS period__time_start',
+			'p.time_end AS period__time_end',
 			'r.name AS room__name',
 			'd.weekday AS weekday',
 		]);
@@ -116,6 +122,37 @@ class Multi_booking_model extends CI_Model
 
 		$out = [];
 
+		// Get & check user constraints
+		//
+		$user_constraints = $this->users_model->get_constraints($mb->user_id);
+		$min_days = $user_constraints['range_min'];
+		$max_days = $user_constraints['range_max'];
+		$constraint_check = false;
+
+		if (!is_null($min_days) || ! is_null($max_days)) {
+
+			$constraint_check = true;
+
+			// Constraint checking required
+			//
+
+			$today = (new \DateTime())->setTime(0, 0, 0);
+			$min_date = clone $today;
+			if (!is_null($min_days)) {
+				$min_date = $min_date->modify("+{$min_days} days");
+			}
+
+			if (is_null($max_days)) {
+				$session = $this->CI->sessions_model->get($mb->session_id);
+				$max_date = clone $session->date_end;
+			} else {
+				$max_date = clone $today;
+				$max_date->modify("+{$max_days} days");
+			}
+
+		}
+
+
 		foreach ($result as &$row) {
 
 			$key = Slot::generate_key($row->date, $row->period_id, $row->room_id);
@@ -124,6 +161,26 @@ class Multi_booking_model extends CI_Model
 			// Get the potential recurring dates for this slot
 			$recurring_dates = $this->dates_model->get_recurring_dates($mb->session_id, $mb->week_id, $row->weekday);
 			$row->recurring_dates = $recurring_dates;
+
+			$has_single_permission = has_permission(Permission::BK_SGL_CREATE, $row->room_id);
+			$constraint_applied = false;
+
+			if ($constraint_check) {
+				if ($row->datetime < $min_date) $constraint_applied = true;
+				if ($row->datetime > $max_date) $constraint_applied = true;
+			}
+
+			// Determine capabilities
+			//
+			$capabilities = [
+				'single.create' => $has_single_permission && $constraint_applied === false,
+				'single.set_user' => has_permission(Permission::BK_SGL_SET_USER, $row->room_id),
+				'single.set_department' => has_permission(Permission::BK_SGL_SET_DEPT, $row->room_id),
+				'recur.create' => has_permission(Permission::BK_RECUR_CREATE, $row->room_id),
+				'recur.set_user' => has_permission(Permission::BK_RECUR_SET_USER, $row->room_id),
+				'recur.set_department' => has_permission(Permission::BK_RECUR_SET_DEPT, $row->room_id),
+			];
+			$row->capabilities = $capabilities;
 
 			$out[ $key ] = nest_object_keys($row);
 		}
@@ -138,7 +195,7 @@ class Multi_booking_model extends CI_Model
 	 */
 	public function create($data)
 	{
-		$slots = isset($data['slots']) ? $data['slots'] : [];
+		$slots = $data['slots'] ?? [];
 
 		if (empty($slots)) {
 			$this->error = 'No slots provided.';
@@ -183,7 +240,6 @@ class Multi_booking_model extends CI_Model
 
 		return $id;
 	}
-
 
 
 }

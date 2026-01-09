@@ -16,12 +16,14 @@ $form_close = form_close();
 
 <fieldset>
 
-	<legend accesskey="S" tabindex="<?php echo tab_index() ?>">Schedules</legend>
+	<legend accesskey="S" tabindex="<?php echo tab_index() ?>"><?= lang('schedule.schedules') ?></legend>
 
 	<?php
 	$schedule_options = ['' => ''];
-	foreach ($schedules as $schedule) {
-		$schedule_options[ $schedule->schedule_id ] = html_escape($schedule->name);
+	if (is_array($schedules)) {
+		foreach ($schedules as $schedule) {
+			$schedule_options[ $schedule->schedule_id ] = html_escape($schedule->name);
+		}
 	}
 
 	// Render an input row for each room group.
@@ -35,7 +37,7 @@ $form_close = form_close();
 		$field_name = sprintf('group_schedule[%d][schedule_id]', $group->room_group_id);
 
 		$data_key = sprintf('session_%d_group_%d', $session->session_id, $group->room_group_id);
-		$data_val = isset($session_schedules[$data_key]) ? $session_schedules[$data_key] : '';
+		$data_val = $session_schedules[$data_key] ?? '';
 		$value = set_value($field_name, $data_val, FALSE);
 		$input = form_dropdown([
 			'name' => $field_name,
@@ -60,7 +62,7 @@ $form_close = form_close();
 <?php
 
 $this->load->view('partials/submit', array(
-	'submit' => array('Save', tab_index()),
+	'submit' => array(lang('app.action.save'), tab_index()),
 	// 'cancel' => array('Cancel', tab_index(), 'rooms'),
 ));
 

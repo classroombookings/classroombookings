@@ -1,22 +1,17 @@
-<?php
-$date_format = setting('date_format_long');
-$time_format = setting('time_format_period');
-?>
-
 <?php if ($user_bookings): ?>
 
 	<div class="block b-50">
 
 		<div class="box">
 
-			<h3 style="margin: 0 0 16px 0">Active bookings</h3>
+			<h3 style="margin: 0 0 16px 0"><?= lang('booking.active_bookings') ?></h3>
 			<ul class="dash-booking-list">
 
 				<?php
 				foreach ($user_bookings as $booking) {
 
-					$date_str = $booking->date->format($date_format);
-					$time_str = $booking->date->format($time_format);
+					$date_str = date_output_long($booking->date);
+					$time_str = date_output_time($booking->date);
 					$period_name = html_escape($booking->period->name);
 					$room_name = html_escape($booking->room->name);
 
@@ -36,7 +31,19 @@ $time_format = setting('time_format_period');
 						? '<span class="dash-booking-notes">' . html_escape($booking->notes) . '</span>'
 						: '';
 
-					echo "<li>{$title_html}{$room_html}{$notes_html}</li>";
+					$link = img([
+						'src' => asset_url('assets/images/ui/calendar.png'),
+					]);
+					$uri = 'bookings?date=%s&room=%d&room_group=%d&highlight=%d';
+					$uri = sprintf($uri,
+						$booking->date->format('Y-m-d'),
+						$booking->room->room_id,
+						$booking->room->room_group_id,
+						$booking->booking_id
+					);
+					$anchor = anchor($uri, $link, ['style' => 'display:inline-block;vertical-align:top;margin: 0 8px 0 0']);
+
+					echo "<li>{$anchor}<div style='display:inline-block'>{$title_html}{$room_html}{$notes_html}</div></li>";
 				}
 				?>
 			</ul>

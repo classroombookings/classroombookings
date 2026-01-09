@@ -41,14 +41,31 @@ function redirect($uri = '', $method = 'auto', $code = NULL)
 		}
 	}
 
-	switch ($method)
-	{
-		case 'refresh':
-			header('Refresh:0;url='.$uri);
-			break;
-		default:
-			header('Location: '.$uri, TRUE, $code);
-			break;
-	}
+	match ($method) {
+		'refresh' => header('Refresh:0;url='.$uri),
+		default => header('Location: '.$uri, TRUE, $code),
+	};
 	exit;
+}
+
+
+
+function asset_url($path, $use_version = false)
+{
+	$version = (ENVIRONMENT === 'development' ? time() : VERSION);
+
+	if (CRBS_MANAGED && config_item('asset_cdn_host')) {
+		if ($use_version) {
+			$url = sprintf('https://%s/%s?v=%s', config_item('asset_cdn_host'), $path, $version);
+		} else {
+			$url = sprintf('https://%s/%s', config_item('asset_cdn_host'), $path);
+		}
+	} else {
+		$url = base_url($path);
+		if ($use_version) {
+			$url .= '?v='.$version;
+		}
+	}
+
+	return $url;
 }

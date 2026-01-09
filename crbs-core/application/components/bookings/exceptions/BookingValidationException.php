@@ -9,13 +9,15 @@ class BookingValidationException extends \RuntimeException
 
 	public static function forExistingBooking()
 	{
-		return new static("Another booking already exists.");
+		$line = lang('exception.BookingValidationException.forExistingBooking');
+		return new static($line);
 	}
 
 
 	public static function forHoliday()
 	{
-		return new static("Booking cannot be created on a holiday.");
+		$line = lang('exception.BookingValidationException.forHoliday');
+		return new static($line);
 	}
 
 

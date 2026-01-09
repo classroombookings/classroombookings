@@ -1,5 +1,5 @@
 <?php
-echo isset($notice) ? $notice : '';
+echo $notice ?? '';
 ?>
 
 <p>Classroombookings has been upgraded!</p>

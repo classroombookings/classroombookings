@@ -16,6 +16,8 @@ class Auth_ldap
 	public $base_dn = '';
 	public $search_filter = '';
 	public $timeout = 10;
+	public $default_department_id = null;
+	public $default_role_id = null;
 
 	public $attr_firstname = '';
 	public $attr_lastname = '';
@@ -90,6 +92,9 @@ class Auth_ldap
 		$this->attr_lastname = element('ldap_attr_lastname', $settings);
 		$this->attr_displayname = element('ldap_attr_displayname', $settings);
 		$this->attr_email = element('ldap_attr_email', $settings);
+
+		$this->default_role_id = element('ldap_default_role_id', $settings);
+		$this->default_department_id = element('ldap_default_department_id', $settings);
 
 		$this->enabled = boolval(element('ldap_enabled', $settings));
 		$this->create_users = boolval(element('ldap_create_users', $settings));
@@ -166,7 +171,7 @@ class Auth_ldap
 
 			// Update, if there are attributes
 			if ( ! empty($user_data)) {
-				$this->CI->users_model->update($user_data, $db_user->user_id);
+				$this->CI->users_model->update($db_user->user_id, $user_data);
 				log_message('info', "AuthLDAP: Updated profile details for {$username}.");
 			}
 
@@ -175,8 +180,13 @@ class Auth_ldap
 			// Create user
 			$user_data['username'] = $username;
 			$user_data['created'] = date('Y-m-d H:i:s');
-			$user_data['authlevel'] = TEACHER;
 			$user_data['enabled'] = 1;
+			if ($this->default_department_id) {
+				$user_data['department_id'] = $this->default_department_id;
+			}
+			if ($this->default_role_id) {
+				$user_data['role_id'] = $this->default_role_id;
+			}
 
 			$user_id = $this->CI->users_model->insert($user_data);
 

@@ -1,28 +1,28 @@
 <?php
 if (!empty($message)) {
-	echo "<div>" . nl2br($message) . "</div><br><br>";
+	echo "<div>" . nl2br((string) $message) . "</div><br><br>";
 }
 
-echo $this->session->flashdata('auth');
+echo $error ?? '';
 
 echo validation_errors();
 
-echo form_open('login/submit', array('id'=>'login','class'=>'cssform'), array('page' => $this->uri->uri_string()) );
+echo form_open(current_url(), array('id'=>'login','class'=>'cssform'), array('page' => $this->uri->uri_string()) );
 
 ?>
 
 
-<fieldset style="width:336px;"><legend accesskey="L" tabindex="<?php echo tab_index() ?>">Log in</legend>
+<fieldset style="width:336px;"><legend accesskey="L" tabindex="<?php echo tab_index() ?>"><?= lang('auth.log_in') ?></legend>
 
 	<p>
-	  <label for="username" class="required">Username</label>
+	  <label for="username" class="required"><?= lang('user.field.username') ?></label>
 	  <?php
 		$value = set_value('username', '', FALSE);
 		echo form_input(array(
 			'name' => 'username',
 			'id' => 'username',
 			'size' => '20',
-			'maxlength' => '100',
+			'maxlength' => '255',
 			'tabindex' => tab_index(),
 			'value' => $value,
 		));
@@ -31,7 +31,7 @@ echo form_open('login/submit', array('id'=>'login','class'=>'cssform'), array('p
 
 
 	<p>
-	  <label for="password" class="required">Password</label>
+	  <label for="password" class="required"><?= lang('user.field.password') ?></label>
 	  <?php
 		echo form_password(array(
 			'name' => 'password',
@@ -48,7 +48,7 @@ echo form_open('login/submit', array('id'=>'login','class'=>'cssform'), array('p
 <?php
 
 $this->load->view('partials/submit', array(
-	'submit' => array('Login', tab_index()),
+	'submit' => array(lang('auth.log_in'), tab_index()),
 ));
 
 echo form_close();

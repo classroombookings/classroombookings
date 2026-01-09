@@ -3,72 +3,97 @@
 echo $this->session->flashdata('saved');
 
 $iconbar = iconbar(array(
-	array('users/add', 'Add User', 'add.png'),
-	array('users/import', 'Import Users', 'user_import.png'),
+	array('users/add', lang('user.add.action'), 'add.png'),
 ));
 
 echo $iconbar;
 
 $this->load->view('users/filter');
 
-$sort_cols = ["Type", "Enabled", "Username", "Display Name", "Last Login", "Actions"];
+$this->table->set_template([
+	'table_open' => '<table
+		class="border-table has-icons"
+		style="line-height:1.3;margin-top:16px;margin-bottom:16px"
+		width="100%"
+		cellspacing="2"
+		border="0"
+		>',
+	'heading_row_start' => '<tr class="heading">',
+]);
 
-?>
+$this->table->set_heading([
+	['data' => sort_link('users', 'enabled', lang('user.field.enabled')), 'width' => '5%'],
+	['data' => sort_link('users', 'username', lang('user.field.username')), 'width' => '20%'],
+	['data' => sort_link('users', 'displayname', lang('user.field.displayname')), 'width' => '20%'],
+	['data' => sort_link('users', 'role', lang('role.role')), 'width' => '15%'],
+	['data' => sort_link('users', 'department', lang('department.department')), 'width' => '15%'],
+	['data' => sort_link('users', 'lastlogin', lang('user.last_logged_in')), 'width' => '15%'],
+	['data' => lang('app.actions'), 'width' => '5%'],
+]);
 
-<div id="users_list">
+foreach ($users as $user) {
 
-	<table width="100%" cellpadding="2" cellspacing="2" border="0" class="zebra-table sort-table" up-data='<?= json_encode($sort_cols) ?>'>
-		<col /><col /><col /><col />
-		<thead>
-		<tr class="heading">
-			<td width="7%" class="h" title="Type">Type</td>
-			<td width="8%" class="h" title="Enabled">Enabled</td>
-			<td width="20%" class="h" title="Username">Username</td>
-			<td width="20%" class="h" title="Name">Display name</td>
-			<td width="20%" class="h" title="Lastlogin">Last login</td>
-			<td width="5%" class="n" title="X"></td>
-		</tr>
-		</thead>
-		<tbody>
-		<?php
-		$i=0;
-		if ($users) {
-		foreach ($users as $user) { ?>
-		<tr>
-			<?php
-			$img_type = ($user->authlevel == ADMINISTRATOR ? 'user_administrator.png' : 'user_teacher.png');
-			$img_enabled = ($user->enabled == 1) ? 'enabled.png' : 'no.png';
-			?>
-			<td width="50" align="center"><img src="<?= base_url("assets/images/ui/{$img_type}") ?>" width="16" height="16"  alt="<?php echo $img_type ?>" /></td>
-			<td width="70" align="center"><img src="<?= base_url("assets/images/ui/{$img_enabled}") ?>" width="16" height="16"  alt="<?php echo $img_enabled ?>" /></td>
-			<td><?php echo html_escape($user->username) ?></td>
-			<td><?php
-			if( $user->displayname == '' ){ $user->displayname = $user->username; }
-			echo html_escape($user->displayname);
-			?></td>
-			<td><?php
-			if($user->lastlogin == '0000-00-00 00:00:00' || empty($user->lastlogin)){
-				$lastlogin = 'Never';
-			} else {
-				$lastlogin = date("d/m/Y, H:i", strtotime($user->lastlogin));
-			}
-			echo $lastlogin;
-			?></td>
-			<td width="45" class="n"><?php
-				$actions['edit'] = 'users/edit/'.$user->user_id;
-				$actions['delete'] = 'users/delete/'.$user->user_id;
-				$this->load->view('partials/editdelete', $actions);
-				?>
-			</td>
-		</tr>
-		<?php $i++; } } ?>
-		</tbody>
-	</table>
+	$img_enabled = ($user->enabled == 1) ? 'enabled.png' : 'no.png';
+	$enabled_html = img([
+		'src' => asset_url("assets/images/ui/{$img_enabled}"),
+		'width' => "16",
+		'height' => "16",
+		'alt' => $img_enabled,
+	]);
 
-	<?= $pagelinks ?>
+	$name = html_escape($user->username);
+	$username_html = anchor('users/edit/'.$user->user_id, $name);
 
-</div>
+	if ($user->displayname == '') {
+		$user->displayname = $user->username;
+	}
+	$display_html = html_escape($user->displayname);
 
-<?php
+	$role_html = html_escape($user->role);
+
+	$department_html = html_escape($user->department);
+
+	if ($user->lastlogin == '0000-00-00 00:00:00' || empty($user->lastlogin)) {
+		$last_login_html = lang('app.never');
+	} else {
+		$last_login_html = date("d/m/Y H:i", strtotime((string) $user->lastlogin));
+	}
+
+	$actions = [
+		'edit' => 'users/edit/' . $user->user_id,
+		'delete' => 'users/delete/' . $user->user_id,
+	];
+	$actions_html = $this->load->view('partials/editdelete', $actions, TRUE);
+
+	$this->table->add_row([
+		// $type_html,
+		$enabled_html,
+		$username_html,
+		$display_html,
+		$role_html,
+		$department_html,
+		$last_login_html,
+		$actions_html,
+	]);
+
+}
+
+//
+
+
+echo "<div id='users_list'>";
+
+if (empty($users)) {
+
+	echo msgbox('info', lang('user.no_items'));
+
+} else {
+
+	echo $this->table->generate();
+	echo $pagelinks;
+
+}
+
+echo "</div>";
 
 echo $iconbar;

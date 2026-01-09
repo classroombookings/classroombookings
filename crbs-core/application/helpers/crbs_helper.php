@@ -56,6 +56,15 @@ function setting($key, $group = 'crbs')
 }
 
 
+function user_setting($key, $user_id = null)
+{
+	$user_id ??= $_SESSION['user_id'] ?? null;
+	if (is_null($user_id)) return null;
+	$group = sprintf('user.%d', $user_id);
+	return setting($key, $group);
+}
+
+
 function feature($name)
 {
 	return setting($name, 'features') == '1';
@@ -89,4 +98,42 @@ function hx_toast($type, $text, $time = 4000)
 		],
 	]);
 	$CI->output->set_header("HX-Trigger: {$toast_json}");
+}
+
+
+
+function has_permission(string $permission, ...$additional_args): bool
+{
+	$CI =& get_instance();
+	if ( ! isset($CI->permission)) return false;
+    return $CI->permission->can($permission, ...$additional_args);
+}
+
+
+function has_any_permission(array $permissions)
+{
+	$CI =& get_instance();
+	if ( ! isset($CI->permission)) return false;
+	return array_any($permissions, fn($p) => has_permission($p));
+}
+
+
+
+function has_setup_permission()
+{
+	$setup_permissions = [
+		Permission::SETUP_AUTHENTICATION,
+		Permission::SETUP_DEPARTMENTS,
+		Permission::SETUP_ROLES,
+		Permission::SETUP_ROOMS,
+		Permission::SETUP_ROOMS_ACL,
+		Permission::SETUP_SCHEDULES,
+		Permission::SETUP_SESSIONS,
+		Permission::SETUP_SETTINGS,
+		Permission::SETUP_TIMETABLE_WEEKS,
+		Permission::SETUP_USERS,
+		Permission::SYS_EXPORT_BOOKINGS,
+	];
+
+	return has_any_permission($setup_permissions);
 }

@@ -14,6 +14,7 @@ use app\components\bookings\exceptions\DateException;
 use app\components\bookings\exceptions\SessionException;
 use app\components\bookings\exceptions\SettingsException;
 use app\components\bookings\exceptions\AvailabilityException;
+use Permission;
 
 
 class Context
@@ -47,6 +48,8 @@ class Context
 
 	/**
 	 * Session row object
+	 *
+	 * @var object
 	 *
 	 */
 	private $session = FALSE;
@@ -200,7 +203,6 @@ class Context
 			'users_model',
 			'rooms_model',
 			'room_groups_model',
-			'access_control_model',
 			'schedules_model',
 			'periods_model',
 			'weeks_model',
@@ -220,18 +222,14 @@ class Context
 			'user_id' => $this->CI->userauth->user->user_id,
 			'room_id' => $this->CI->input->get('room'),
 			'room_group_id' => $this->CI->input->get('room_group'),
-			'session_id' => isset($_SESSION['current_session_id'])
-				? $_SESSION['current_session_id']
-				: NULL,
-			'date_string' => $this->CI->input->get('date')
-				? $this->CI->input->get('date')
-				: date('Y-m-d'),
+			'session_id' => $_SESSION['current_session_id'] ?? NULL,
+			'date_string' => $this->CI->input->get('date') ?: date('Y-m-d'),
 			'direction' => $this->CI->input->get('dir'),
 			'base_uri' => 'bookings',
 		];
 
-		$config = array_filter($config, function($var) { return !empty($var); });
-		$params = array_filter($params, function($var) { return !empty($var); });
+		$config = array_filter($config, fn($var) => !empty($var));
+		$params = array_filter($params, fn($var) => !empty($var));
 
 		$config = array_merge($config, $params);
 
@@ -277,7 +275,7 @@ class Context
 			? $rows[$key]
 			: FALSE;
 
-		$this->today = new DateTime();
+		$this->today = (new DateTime())->setTime(0, 0, 0);
 
 		// Initialise other section
 		//
@@ -315,31 +313,18 @@ class Context
 		// Load list of selectable sessions
 		$this->available_sessions = $this->CI->sessions_model->get_selectable();
 
-
-		if ($this->user && $this->user->authlevel == ADMINISTRATOR) {
+		if ($this->user && has_permission(Permission::SYS_VIEW_ALL_SESSIONS)) {
 			$this->past_sessions = $this->CI->sessions_model->get_all_past();
 			$this->active_sessions = $this->CI->sessions_model->get_all_active();
 			$allow_any = TRUE;
 		}
 
-		switch (true) {
-
-			case ($allow_any && !empty($this->session_id)):
-				$this->session = $this->CI->sessions_model->get($this->session_id);
-				break;
-
-			case ($allow_any && is_array($this->active_sessions) && ! empty($this->active_sessions)):
-				$this->session = $this->active_sessions[0];
-				break;
-
-			case ( ! $allow_any && !empty($this->session_id)):
-				$this->session = $this->CI->sessions_model->get_available_session($this->session_id);
-				break;
-
-			default:
-				$this->session = $this->CI->sessions_model->get_current();
-
-		}
+		$this->session = match (true) {
+			$allow_any && !empty($this->session_id) => $this->CI->sessions_model->get($this->session_id),
+			$allow_any && is_array($this->active_sessions) && ! empty($this->active_sessions) => $this->active_sessions[0],
+			! $allow_any && !empty($this->session_id) => $this->CI->sessions_model->get_available_session($this->session_id),
+			default => $this->CI->sessions_model->get_current(),
+		};
 
 		if ( ! $this->session) return;
 
@@ -366,6 +351,8 @@ class Context
 				$this->date_string = $first_bookable_date;
 			}
 		}
+
+		$this->session_id = $this->session->session_id;
 
 		$holidays = $this->CI->holidays_model->get_by_session($this->session->session_id);
 
@@ -438,7 +425,7 @@ class Context
 
 		// Get Timetable Week
 		$date_key = $this->datetime->format('Y-m-d');
-		$date_info = isset($this->dates[$date_key]) ? $this->dates[$date_key] : FALSE;
+		$date_info = $this->dates[$date_key] ?? FALSE;
 		if ($date_info && $date_info->week_id && isset($this->weeks[$date_info->week_id])) {
 			$this->timetable_week = $this->weeks[$date_info->week_id];
 		}
@@ -770,9 +757,10 @@ class Context
 			'dir' => $this->direction,
 			'room' => $this->room ? $this->room->room_id : NULL,
 			'room_group' => $this->room_group ? $this->room_group->room_group_id : NULL,
+			'highlight' => $this->CI->input->get('highlight'),
 		];
 
-		return array_filter($vars, function($var) { return !empty($var); });
+		return array_filter($vars, fn($var) => !empty($var));
 	}
 
 

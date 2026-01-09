@@ -5,18 +5,17 @@
 	cellspacing="2"
 	border="0"
 	class="border-table table-align-vat"
-	up-data='<?= json_encode($sort_cols) ?>'
 	id="<?= $id ?>"
 >
 	<col /><col /><col /><col />
 	<thead>
 		<tr class="heading">
-			<td class="h" width="20%" title="Name">Name</td>
-			<td class="h" width="10%" title="Current?">Current?</td>
-			<td class="h" width="10%" title="Available?">Available?</td>
-			<td class="h" width="25%" title="Start date">Start date</td>
-			<td class="h" width="25%" title="End date">End date</td>
-			<td class="h" width="10%" title="Actions"></td>
+			<td class="h" width="20%"><?= lang('session.field.name') ?></td>
+			<td class="h" width="10%"><?= lang('session.field.is_current') ?></td>
+			<td class="h" width="15%"><?= lang('session.field.is_selectable') ?></td>
+			<td class="h" width="25%"><?= lang('session.field.date_start') ?></td>
+			<td class="h" width="25%"><?= lang('session.field.date_end') ?></td>
+			<td class="h" width="5%"></td>
 		</tr>
 	</thead>
 
@@ -24,7 +23,9 @@
 
 	<tbody>
 		<tr>
-			<td colspan="6" align="center" style="padding:16px 0; color: #666">No sessions.</td>
+			<td colspan="6" align="center" style="padding:16px 0; color: #666">
+				<?= lang('session.no_items') ?>
+			</td>
 		</tr>
 	</tbody>
 
@@ -32,8 +33,6 @@
 
 	<tbody>
 		<?php
-
-		$dateFormat = setting('date_format_long', 'crbs');
 
 		foreach ($items as $session) {
 
@@ -46,21 +45,21 @@
 			// Current
 			$img = '';
 			if ($session->is_current == 1) {
-				$img = img(['src' => 'assets/images/ui/enabled.png', 'width' => '16', 'height' => '16', 'alt' => 'Current session']);
+				$img = img(['src' => asset_url('assets/images/ui/enabled.png'), 'width' => '16', 'height' => '16', 'alt' => lang('session.field.is_current')]);
 			}
 			echo "<td>{$img}</td>";
 
 			// Selectable
 			$img = '';
 			if ($session->is_selectable == 1) {
-				$img = img(['src' => 'assets/images/ui/enabled.png', 'width' => '16', 'height' => '16', 'alt' => 'Selectable']);
+				$img = img(['src' => asset_url('assets/images/ui/enabled.png'), 'width' => '16', 'height' => '16', 'alt' => lang('session.field.is_selectable')]);
 			}
 			echo "<td>{$img}</td>";
 
-			$start = $session->date_start ? $session->date_start->format($dateFormat) : '';
+			$start = $session->date_start ? date_output_long($session->date_start) : '';
 			echo "<td>{$start}</td>";
 
-			$end = $session->date_end ? $session->date_end->format($dateFormat) : '';
+			$end = $session->date_end ? date_output_long($session->date_end) : '';
 			echo "<td>{$end}</td>";
 
 			echo "<td>";

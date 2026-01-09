@@ -1,75 +1,131 @@
 <?php
 
+use app\components\BookingActionChecker;
+use app\permissions\BookingPermissions;
+
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 
 
 function booking_editable($booking)
 {
-	$CI =& get_instance();
-
 	if ( ! $booking) return FALSE;
 
-	$is_admin = $CI->userauth->is_level(ADMINISTRATOR);
-	if ($is_admin) return TRUE;
+	$CI =& get_instance();
 
-	$is_booking_owner = ($CI->userauth->user->user_id == $booking->user_id);
-	if ($is_booking_owner) return TRUE;
+	// Owner check
+	//
+	$user_id = $booking->user_id;
+	if ($user_id == $CI->userauth->user->user_id) {
+		return true;
+	}
 
-	return FALSE;
+	$permission_name = $booking->repeat_id
+		? Permission::BK_RECUR_EDIT_OTHER
+		: Permission::BK_SGL_EDIT_OTHER
+		;
+
+	return has_permission($permission_name, $booking->room_id);
 }
 
 
 function booking_cancelable($booking)
 {
-	$CI =& get_instance();
+	$permission_name = $booking->repeat_id
+		? Permission::BK_RECUR_CANCEL_OTHER
+		: Permission::BK_SGL_CANCEL_OTHER
+		;
 
-	$is_admin = $CI->userauth->is_level(ADMINISTRATOR);
-	if ($is_admin) return TRUE;
+	// Check permission *without* room provided.
+	// This allows users that have the permission assigned at the Role (likely admins) to cancel it without any other restrictions
+	if (has_permission($permission_name)) {
+		return true;
+	}
 
 	$today = (new DateTime());
 
-	// Check for time if we have it
+	// Today: Check for time if we have it
 	$is_past = ($booking->time_end instanceof \DateTime && $today > $booking->time_end);
-	if ($is_past) return FALSE;
+	if ($is_past) {
+		return false;
+	}
 
 	// Check for past date
 	$today->setTime(0, 0, 0);
-	if ($booking->date < $today) return FALSE;
+	if ($booking->date < $today) {
+		return false;
+	}
 
-	$is_booking_owner = ($CI->userauth->user->user_id == $booking->user_id);
-	$is_room_owner = ($CI->userauth->user->user_id == $booking->room->user_id && ! $booking->repeat_id);
+	$CI =& get_instance();
 
-	if ($is_booking_owner || $is_room_owner) return TRUE;
+	// Owner check
+	$user_id = $booking->user_id;
+	if ($user_id == $CI->userauth->user->user_id) {
+		return true;
+	}
 
-	return FALSE;
+	return has_permission($permission_name, $booking->room_id);
+}
+
+
+function booking_user_viewable($booking)
+{
+	$CI =& get_instance();
+
+	// Owner check
+	//
+	$user_id = $booking->user_id;
+	if ($user_id == $CI->userauth->user->user_id) {
+		return true;
+	}
+
+	$permission_name = $booking->repeat_id
+		? Permission::BK_RECUR_VIEW_OTHER_USERS
+		: Permission::BK_SGL_VIEW_OTHER_USERS
+		;
+
+	return has_permission($permission_name, $booking->room_id);
+}
+
+
+function booking_notes_viewable($booking)
+{
+	$CI =& get_instance();
+
+	// Owner check
+	//
+	$user_id = $booking->user_id;
+	if ($user_id == $CI->userauth->user->user_id) {
+		return true;
+	}
+
+	$permission_name = $booking->repeat_id
+		? Permission::BK_RECUR_VIEW_OTHER_NOTES
+		: Permission::BK_SGL_VIEW_OTHER_NOTES
+		;
+
+	return has_permission($permission_name, $booking->room_id);
 }
 
 
 function booking_status_label($booking)
 {
-	switch ($booking->status) {
-		case Bookings_model::STATUS_BOOKED:
-			$label = 'Booked';
-			break;
-		case Bookings_model::STATUS_CANCELLED:
-			$label = 'Cancelled';
-			break;
-	}
+	$label = match ($booking->status) {
+		Bookings_model::STATUS_BOOKED => lang('booking.status.booked'),
+		Bookings_model::STATUS_CANCELLED => lang('booking.status.cancelled'),
+		default => $booking->status,
+	};
 
 	return $label;
 }
 
 function booking_status_icon($booking)
 {
-	switch ($booking->status) {
-		case Bookings_model::STATUS_BOOKED:
-			$label = 'enabled.png';
-			break;
-		case Bookings_model::STATUS_CANCELLED:
-			$label = 'delete.png';
-			break;
-	}
+	$label = match ($booking->status) {
+		Bookings_model::STATUS_BOOKED => 'enabled.png',
+		Bookings_model::STATUS_CANCELLED => 'delete.png',
+		default => $booking->status,
+	};
 
 	return $label;
 }

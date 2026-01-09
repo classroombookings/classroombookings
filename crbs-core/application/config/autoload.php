@@ -102,6 +102,7 @@ $autoload['helper'] = [
 	'array',
 	'crbs',
 	'unpoly',
+	'db',
 ];
 
 /*

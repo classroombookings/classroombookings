@@ -56,6 +56,11 @@
 		display: inline-block;
 	}
 
+	.session-calendar .week-{week_id} .is-selected span {
+		color: {fg_col};
+		background-color: {bg_col};
+	}
+
 	/*.calendar .range-start.week-{week_id} .date-item {
 		border-left: 4px solid {boundary_bg};
 	}

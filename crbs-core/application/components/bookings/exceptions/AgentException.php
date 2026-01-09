@@ -9,42 +9,57 @@ class AgentException extends \RuntimeException
 
 	public static function forInvalidType($types)
 	{
-		return new static("Unrecognised booking type. Should be one of " . implode(', ', $types));
+		$line = lang('exception.AgentException.forInvalidType');
+		$msg = sprintf($line, implode(', ', $types));
+		return new static($msg);
 	}
 
 	public static function forNoSession()
 	{
-		return new static('Requested date does not belong to a session.');
+		$line = lang('exception.AgentException.forNoSession');
+		return new static($line);
 	}
 
 
 	public static function forNoPeriod()
 	{
-		return new static('Requested period could not be found.');
+		$line = lang('exception.AgentException.forNoPeriod');
+		return new static($line);
 	}
 
 
 	public static function forNoRoom()
 	{
-		return new static('Requested room could not be found or is not bookable.');
+		$line = lang('exception.AgentException.forNoRoom');
+		return new static($line);
 	}
 
 
 	public static function forInvalidDate()
 	{
-		return new static('Requested date is not recognised or is not bookable.');
+		$line = lang('exception.AgentException.forInvalidDate');
+		return new static($line);
 	}
 
 
 	public static function forNoWeek()
 	{
-		return new static('Requested date is not associated with a timetable week.');
+		$line = lang('exception.AgentException.forNoWeek');
+		return new static($line);
 	}
 
 
 	public static function forNoBooking()
 	{
-		return new static('Requested booking could not be found.');
+		$line = lang('exception.AgentException.forNoBooking');
+		return new static($line);
+	}
+
+
+	public static function forAccessDenied()
+	{
+		$line = lang('exception.AgentException.forAccessDenied');
+		return new static($line);
 	}
 
 

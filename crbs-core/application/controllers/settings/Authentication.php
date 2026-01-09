@@ -9,11 +9,15 @@ class Authentication extends MY_Controller
 	{
 		parent::__construct();
 
-		$this->require_auth_level(ADMINISTRATOR);
+		$this->require_logged_in();
+		$this->require_permission(Permission::SETUP_AUTHENTICATION);
 
-		$this->lang->load('auth');
+		$this->load->model([
+			'roles_model',
+			'departments_model',
+		]);
 
-		$this->data['showtitle'] = 'Authentication';
+		$this->data['showtitle'] = lang('auth.authentication');
 	}
 
 
@@ -25,9 +29,15 @@ class Authentication extends MY_Controller
 	{
 		$ldap_available = extension_loaded('ldap');
 
-		$this->data['title'] = 'LDAP';
+		$this->data['title'] = lang('auth.ldap.ldap');
 
 		$this->data['settings'] = $this->settings_model->get_all('auth');
+
+		$departments = $this->departments_model->Get(NULL, NULL, NULL);
+		$this->data['department_options'] = results_to_assoc($departments, 'department_id', 'name', sprintf('(%s)', lang('app.none')));
+
+		$roles = $this->roles_model->get_all();
+		$this->data['role_options'] = results_to_assoc($roles, 'role_id', 'name', sprintf('(%s)', lang('app.none')));
 
 		if ($ldap_available) {
 
@@ -46,10 +56,10 @@ class Authentication extends MY_Controller
 			$body .= $this->load->view('columns', $columns, TRUE);
 
 		} else {
-			$body = msgbox('error', 'The PHP LDAP module is not installed or enabled.');
+			$body = msgbox('error', lang('auth.ldap.error.no_module'));
 		}
 
-		$this->data['body'] = '<h2>LDAP</h2>' . $body;
+		$this->data['body'] = '<h2>' . lang('auth.ldap.ldap') . '</h2>' . $body;
 
 		if ($this->input->post()) {
 			$this->save_ldap();
@@ -76,10 +86,20 @@ class Authentication extends MY_Controller
 			'attr_email' => $this->input->post('ldap_attr_email'),
 		];
 
-		$this->load->library('auth_ldap', $config);
-
 		$username = $this->input->post('username');
 		$password = $this->input->post('password');
+
+		$this->load->library('auth_ldap', $config);
+
+		if (is_demo_mode()) {
+			$this->data['config'] = $config;
+			$this->data['user'] = false;
+			$this->data['user_bind_dn'] = $this->auth_ldap->get_user_bind_dn($username);
+			$this->data['user_search_filter'] = $this->auth_ldap->get_user_search_filter($username);
+			$this->data['errors'] = ['demo_mode'];
+			$this->load->view('settings/authentication/ldap_test_results', $this->data);
+			return;
+		}
 
 		$user = $this->auth_ldap->verify($username, $password);
 
@@ -106,21 +126,30 @@ class Authentication extends MY_Controller
 	private function save_ldap()
 	{
 		$this->load->library('form_validation');
-		$this->form_validation->set_rules('ldap_enabled', 'LDAP Enabled', 'required|is_natural');
-		$this->form_validation->set_rules('ldap_create_users', 'Create users', 'required|is_natural');
-		$this->form_validation->set_rules('ldap_server', 'Server', 'required|max_length[100]');
-		$this->form_validation->set_rules('ldap_port', 'Port', 'required|is_natural_no_zero');
-		$this->form_validation->set_rules('ldap_version', 'Version', 'required|is_natural');
-		$this->form_validation->set_rules('ldap_use_tls', 'Use TLS', 'required|is_natural');
-		$this->form_validation->set_rules('ldap_ignore_cert', 'Ignore certiicate', 'required|is_natural');
-		$this->form_validation->set_rules('ldap_bind_dn_format', 'Bind DN format', 'required|max_length[1024]');
-		$this->form_validation->set_rules('ldap_base_dn', 'Base DN', 'max_length[1024]');
-		$this->form_validation->set_rules('ldap_search_filter', 'Search filter', 'max_length[1024]');
 
-		$this->form_validation->set_rules('ldap_attr_firstname', 'First Name attribute', 'max_length[255]');
-		$this->form_validation->set_rules('ldap_attr_lastname', 'Last Name attribute', 'max_length[255]');
-		$this->form_validation->set_rules('ldap_attr_displayname', 'Display Name attribute', 'max_length[255]');
-		$this->form_validation->set_rules('ldap_attr_email', 'Email attribute', 'max_length[255]');
+		$opt_required = '';
+		if ($this->input->post('ldap_enabled') == 1) {
+			$opt_required = 'required|';
+		}
+
+		$this->form_validation->set_rules('ldap_enabled', 'lang:auth.ldap.field.ldap_enabled', 'required|is_natural');
+		$this->form_validation->set_rules('ldap_create_users', 'lang:auth.ldap.field.ldap_create_users', $opt_required.'is_natural');
+		$this->form_validation->set_rules('ldap_server', 'lang:auth.ldap.field.ldap_server', $opt_required.'max_length[100]');
+		$this->form_validation->set_rules('ldap_port', 'lang:auth.ldap.field.ldap_port', $opt_required.'is_natural_no_zero');
+		$this->form_validation->set_rules('ldap_version', 'lang:auth.ldap.field.ldap_version', $opt_required.'is_natural');
+		$this->form_validation->set_rules('ldap_use_tls', 'lang:auth.ldap.field.ldap_use_tls', $opt_required.'is_natural');
+		$this->form_validation->set_rules('ldap_ignore_cert', 'lang:auth.ldap.field.ldap_ignore_cert', $opt_required.'is_natural');
+		$this->form_validation->set_rules('ldap_bind_dn_format', 'lang:auth.ldap.field.ldap_bind_dn_format', $opt_required.'max_length[1024]');
+		$this->form_validation->set_rules('ldap_base_dn', 'lang:auth.ldap.field.ldap_base_dn', 'max_length[1024]');
+		$this->form_validation->set_rules('ldap_search_filter', 'lang:auth.ldap.field.ldap_search_filter', 'max_length[1024]');
+
+		$this->form_validation->set_rules('ldap_attr_firstname', 'lang:user.field.firstname', 'max_length[255]');
+		$this->form_validation->set_rules('ldap_attr_lastname', 'lang:user.field.lastname', 'max_length[255]');
+		$this->form_validation->set_rules('ldap_attr_displayname', 'lang:user.field.displayname', 'max_length[255]');
+		$this->form_validation->set_rules('ldap_attr_email', 'lang:user.field.email', 'max_length[255]');
+
+		$this->form_validation->set_rules('ldap_default_role_id', 'lang:role.role', 'is_natural_no_zero');
+		$this->form_validation->set_rules('ldap_default_department_id', 'lang:department.department', 'is_natural_no_zero');
 
 		if ($this->form_validation->run() == FALSE) {
 			return FALSE;
@@ -141,6 +170,8 @@ class Authentication extends MY_Controller
 			'ldap_attr_lastname',
 			'ldap_attr_displayname',
 			'ldap_attr_email',
+			'ldap_default_role_id',
+			'ldap_default_department_id',
 		];
 
 		$settings = [];
@@ -168,7 +199,7 @@ class Authentication extends MY_Controller
 
 		$this->settings_model->set($settings, 'auth');
 
-		$this->session->set_flashdata('saved', msgbox('info', 'LDAP settings have been updated.'));
+		$this->session->set_flashdata('saved', msgbox('info', lang('auth.ldap.save.success')));
 
 		redirect('settings/authentication/ldap');
 	}

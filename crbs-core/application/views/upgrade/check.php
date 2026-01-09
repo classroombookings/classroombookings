@@ -1,5 +1,5 @@
 <?php
-echo isset($notice) ? $notice : '';
+echo $notice ?? '';
 
 echo "<div class='req-error'>";
 echo msgbox('exclamation', "Please address the errors below and refresh the page before continuing.");
@@ -34,7 +34,7 @@ $errors = 0;
 		<?php
 		$default = config_item('base_url');
 		$field = 'url';
-		$value = set_value($field, isset($_SESSION[$field]) ? $_SESSION[$field] : $default, FALSE);
+		$value = set_value($field, $_SESSION[$field] ?? $default, FALSE);
 		echo form_input(array(
 			'name' => $field,
 			'id' => $field,

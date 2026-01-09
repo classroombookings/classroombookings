@@ -1,7 +1,7 @@
 <?php
 
 if ($booking->user_id && $current_user->user_id != $booking->user_id) {
-	echo msgbox('exclamation', 'This is not your own.');
+	echo msgbox('exclamation', lang('booking.warning.not_own'));
 	echo "<br>";
 }
 
@@ -10,7 +10,7 @@ $cls = '';
 
 if ($booking->repeat_id) {
 
-	$heading = '<strong>Cancel recurring booking:</strong><br><br>';
+	$heading = '<strong>' . lang('booking.cancel.recurring.title') . ':</strong><br><br>';
 
 	$cls = 'is-repeat';
 
@@ -20,40 +20,40 @@ if ($booking->repeat_id) {
 		'type' => 'submit',
 		'name' => 'cancel',
 		'value' => '1',
-		'content' => 'This booking only',
+		'content' => lang('booking.selection.this_only'),
 	]);
 
 	$buttons[] = form_button([
 		'type' => 'submit',
 		'name' => 'cancel',
 		'value' => 'future',
-		'content' => 'This and future bookings in series',
+		'content' => lang('booking.selection.future'),
 	]);
 
 	$buttons[] = form_button([
 		'type' => 'submit',
 		'name' => 'cancel',
 		'value' => 'all',
-		'content' => 'All bookings in series',
+		'content' => lang('booking.selection.all'),
 	]);
 
-	$cancel = "<a href='#' up-dismiss>No, keep it</a>";
+	$cancel = "<br><br><a href='#' up-dismiss>" . lang('booking.cancel.abort') . "</a>";
 
 	$content = implode("\n", $buttons) . $cancel;
 
 } else {
 
-	$heading = '<strong>Cancel this booking?</strong><br><br>';
+	$heading = '<strong>' . lang('booking.cancel.single.title') . '</strong><br><br>';
 
 	$submit = form_button([
 		'type' => 'submit',
 		'name' => 'cancel',
 		'value' => '1',
-		'content' => 'Yes, cancel booking',
+		'content' => lang('booking.cancel.single.action'),
 		'autofocus' => true,
 	]);
 
-	$cancel = "<a href='#' up-dismiss>No, keep it</a>";
+	$cancel = "<a href='#' up-dismiss>" . lang('booking.cancel.abort') . "</a>";
 
 	$content = "{$submit} &nbsp; {$cancel}";
 }

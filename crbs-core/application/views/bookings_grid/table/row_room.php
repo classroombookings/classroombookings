@@ -14,9 +14,7 @@ $link = anchor($url, $name, [
 	<?php
 	$owner = '&nbsp;';
 	if ($room->owner) {
-		$owner = $room->owner->displayname
-			? $room->owner->displayname
-			: $room->owner->username;
+		$owner = $room->owner->displayname ?: $room->owner->username;
 		$owner = html_escape($owner);
 		echo "<span style='font-size: 90%'>{$owner}</span>";
 	}

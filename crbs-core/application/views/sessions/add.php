@@ -15,10 +15,10 @@ echo form_open(current_url(), ['class' => 'cssform', 'id' => 'session_add'], ['s
 
 <fieldset>
 
-	<legend accesskey="S" tabindex="<?= tab_index() ?>">Session</legend>
+	<legend accesskey="S" tabindex="<?= tab_index() ?>"><?= lang('session.session') ?></legend>
 
 	<p>
-		<label for="name" class="required">Name</label>
+		<label for="name" class="required"><?= lang('session.field.name') ?></label>
 		<?php
 		$field = 'name';
 		$value = set_value($field, isset($session) ? $session->name : '', FALSE);
@@ -35,7 +35,7 @@ echo form_open(current_url(), ['class' => 'cssform', 'id' => 'session_add'], ['s
 	<?php echo form_error('name'); ?>
 
 	<p>
-		<label for="date_start" class="required">Start date</label>
+		<label for="date_start" class="required"><?= lang('session.field.date_start') ?></label>
 		<?php
 		$field = 'date_start';
 		$value = set_value('date_start', isset($session) ? $session->date_start->format('d/m/Y') : '', FALSE);
@@ -47,13 +47,13 @@ echo form_open(current_url(), ['class' => 'cssform', 'id' => 'session_add'], ['s
 			'tabindex' => tab_index(),
 			'value' => $value,
 		));
+		echo date_picker_img('date_start');
 		?>
-		<img style="cursor:pointer" align="top" src="<?= base_url('assets/images/ui/cal_day.png') ?>" width="16" height="16" title="Choose date" onclick="displayDatePicker('date_start', false);" />
 	</p>
 	<?php echo form_error($field); ?>
 
 	<p>
-		<label for="date_end" class="required">End date</label>
+		<label for="date_end" class="required"><?= lang('session.field.date_end') ?></label>
 		<?php
 		$field = 'date_end';
 		$value = set_value('date_end', isset($session) ? $session->date_end->format('d/m/Y') : '', FALSE);
@@ -65,13 +65,13 @@ echo form_open(current_url(), ['class' => 'cssform', 'id' => 'session_add'], ['s
 			'tabindex' => tab_index(),
 			'value' => $value,
 		));
+		echo date_picker_img('date_end');
 		?>
-		<img style="cursor:pointer" align="top" src="<?= base_url('assets/images/ui/cal_day.png') ?>" width="16" height="16" title="Choose date" onclick="displayDatePicker('date_end', false);" />
 	</p>
 	<?php echo form_error($field); ?>
 
 	<p>
-		<label for="is_selectable">Available</label>
+		<label for="is_selectable"><?= lang('session.field.is_selectable') ?></label>
 		<?php
 		$field = 'is_selectable';
 		$value = isset($session) ? $session->is_selectable : '0';
@@ -85,17 +85,19 @@ echo form_open(current_url(), ['class' => 'cssform', 'id' => 'session_add'], ['s
 			'checked' => $checked,
 		));
 		?>
-		<p class="hint">Allow users to view and make bookings in this session.</p>
+		<p class="hint"><?= lang('session.field.is_selectable.hint') ?></p>
 	</p>
 	<?php echo form_error($field); ?>
 
 
 	<p>
-		<label for="default_schedule_id">Default schedule</label>
+		<label for="default_schedule_id"><?= lang('session.field.default_schedule_id') ?></label>
 		<?php
 		$schedule_options = ['' => ''];
-		foreach ($schedules as $schedule) {
-			$schedule_options[ $schedule->schedule_id ] = html_escape($schedule->name);
+		if (is_array($schedules)) {
+			foreach ($schedules as $schedule) {
+				$schedule_options[ $schedule->schedule_id ] = html_escape($schedule->name);
+			}
 		}
 		$field = 'default_schedule_id';
 		$value = set_value($field, isset($session) ? $session->default_schedule_id : '', FALSE);
@@ -117,8 +119,8 @@ echo form_open(current_url(), ['class' => 'cssform', 'id' => 'session_add'], ['s
 <?php
 
 $this->load->view('partials/submit', array(
-	'submit' => array('Save', tab_index()),
-	'cancel' => isset($session) ? null : array('Cancel', tab_index(), 'sessions'),
+	'submit' => array(isset($session) ? lang('app.action.save') : lang('app.action.create'), tab_index()),
+	'cancel' => isset($session) ? null : array(lang('app.action.cancel'), tab_index(), 'sessions'),
 ));
 
 echo form_close();

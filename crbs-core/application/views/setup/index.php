@@ -2,35 +2,33 @@
 
 echo $this->session->flashdata('saved');
 
-echo '<h2>School setup</h2>';
-dotable($school_menu);
+$order = [
+	'users',
+	'resources',
+	'timetable',
+	'setup',
+];
 
-echo '<h2>Management</h2>';
-dotable($manage_menu);
+echo "<div class='block-group setup-menu'>";
 
-
-function dotable($array){
-
-	echo '<table width="100%" cellpadding="0" cellspacing="0" border="0">';
-	echo '<tbody>';
-	$row = 0;
-
-	foreach($array as $link){
-		if($row == 0){ echo '<tr>'; }
-		echo '<td width="33%">';
-		echo '<h5 style="margin:14px 0px">';
-		echo '<a href="'.$link['url'].'">';
-		echo '<img src="' . base_url('assets/images/ui/'.$link['icon']) . '" alt="'.$link['label'].'" hspace="4" align="top" width="16" height="16" />';
-		echo $link['label'];
-		echo '</a>';
-		echo '</h5>';
-		echo '</td>';
-		echo "\n";
-		if($row == 2){ echo '</tr>'."\n\n"; $row = -1; }
-		$row++;
+foreach ($order as $group) {
+	if ( ! isset($setup_menu[$group])) continue;
+	$items = $setup_menu[$group];
+	echo "<div class='block b-25'>";
+	$title = lang('setup.group.'.$group);
+	echo "<h3 class='setup-menu-heading'>{$title}</h3>";
+	echo "<ul>";
+	if ($items !== null) {
+		foreach ($items as $link) {
+			echo "<li>";
+			echo '<a href="'.$link['url'].'" class="setup-menu-link">';
+			echo '<img src="' . asset_url('assets/images/ui/'.$link['icon']) . '" alt="'.$link['label'].'" width="16" height="16" />';
+			echo $link['label'];
+			echo '</a>';
+			echo "</li>";
+		}
 	}
-
-	echo '</tbody>';
-	echo '</table>'."\n\n";
+	echo "</ul>";
+	echo "</div>";
 }
-?>
+echo "</div>";

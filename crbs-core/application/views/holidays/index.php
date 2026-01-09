@@ -3,36 +3,29 @@
 $messages = $this->session->flashdata('saved');
 echo "<div class='messages'>{$messages}</div>";
 
-
 echo iconbar([
-	['holidays/add?session_id=' . $session->session_id, 'Add Holiday', 'add.png'],
+	['holidays/add?session_id=' . $session->session_id, lang('holiday.add.action'), 'add.png'],
 ]);
 
-$sort_cols = ["Name", "StartDate", "EndDate", "None"];
-
 ?>
-
-
 
 <table
 	width="100%"
 	cellpadding="4"
 	cellspacing="2"
 	border="0"
-	class="zebra-table sort-table"
-	up-data='<?= json_encode($sort_cols) ?>'
-	id="jsst-holidays"
+	class="border-table"
 >
 
 	<col /><col /><col /><col />
 
 	<thead>
 		<tr class="heading">
-			<td class="h" width="30%" title="Name">Name</td>
-			<td class="h" width="25%" title="StartDate">Start Date</td>
-			<td class="h" width="25%" title="EndDate">End Date</td>
-			<td class="h" width="10%" title="Duration">Duration</td>
-			<td class="n" width="10%" title="X"></td>
+			<th class="h" width="30%" title="<?= lang('holiday.field.name') ?>"><?= lang('holiday.field.name') ?></th>
+			<th class="h" width="25%" title="<?= lang('holiday.field.date_start') ?>"><?= lang('holiday.field.date_start') ?></th>
+			<th class="h" width="25%" title="<?= lang('holiday.field.date_end') ?>"><?= lang('holiday.field.date_end') ?></th>
+			<th class="h" width="10%" title="<?= lang('holiday.field.duration') ?>"><?= lang('holiday.field.duration') ?></th>
+			<th class="h" width="10%" title="<?= lang('app.actions') ?>"><?= lang('app.actions') ?></th>
 		</tr>
 	</thead>
 
@@ -41,7 +34,7 @@ $sort_cols = ["Name", "StartDate", "EndDate", "None"];
 
 	<tbody>
 		<tr>
-			<td colspan="4" align="center" style="padding:16px 0; color: #666">No holidays.</td>
+			<td colspan="5" align="center" style="padding:16px 0; color: #666"><?= lang('holiday.no_items') ?></td>
 		</tr>
 	</tbody>
 
@@ -50,24 +43,24 @@ $sort_cols = ["Name", "StartDate", "EndDate", "None"];
 	<tbody>
 		<?php
 
-		$dateFormat = setting('date_format_long', 'crbs');
-
 		foreach ($holidays as $holiday) {
 
 			echo "<tr>";
 
 			$name = html_escape($holiday->name);
-			echo "<td>{$name}</td>";
+			$link = anchor('holidays/edit/'.$holiday->holiday_id, $name);
+			echo "<td>{$link}</td>";
 
-			$start = $holiday->date_start ? $holiday->date_start->format($dateFormat) : '';
+			$start = $holiday->date_start ? date_output_long($holiday->date_start) : '';
 			echo "<td>{$start}</td>";
 
-			$end = $holiday->date_end ? $holiday->date_end->format($dateFormat) : '';
+			$end = $holiday->date_end ? date_output_long($holiday->date_end) : '';
 			echo "<td>{$end}</td>";
 
 			// Duration
 			$duration = 1 + ($holiday->date_start->diff($holiday->date_end)->format('%a'));
-			echo "<td>{$duration} days</td>";
+			$duration_str = sprintf('%s %s', $duration, strtolower(lang('cal.days')));
+			echo "<td>{$duration_str}</td>";
 
 			echo "<td>";
 			$actions['edit'] = 'holidays/edit/'.$holiday->holiday_id;

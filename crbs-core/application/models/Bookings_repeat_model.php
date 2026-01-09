@@ -46,7 +46,7 @@ class Bookings_repeat_model extends CI_Model
 	 */
 	public function create($data)
 	{
-		$dates = isset($data['dates']) ? $data['dates'] : [];
+		$dates = $data['dates'] ?? [];
 		if (empty($dates)) return FALSE;
 
 		unset($data['dates']);
@@ -86,7 +86,7 @@ class Bookings_repeat_model extends CI_Model
 			// Cancel existing booking if requested
 			if ($action == 'replace') {
 				// Get ID of existing booking to replace
-				$replace_booking_id = isset($info['replace_booking_id']) ? $info['replace_booking_id'] : NULL;
+				$replace_booking_id = $info['replace_booking_id'] ?? NULL;
 				$this->bookings_model->cancel_single($replace_booking_id);
 				$action = 'book';
 			}

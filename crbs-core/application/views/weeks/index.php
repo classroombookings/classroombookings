@@ -4,10 +4,8 @@ $messages = $this->session->flashdata('saved');
 echo "<div class='messages'>{$messages}</div>";
 
 echo iconbar([
-	array('weeks/add', 'Add Week', 'add.png'),
+	array('weeks/add', lang('week.add.action'), 'add.png'),
 ]);
-
-$sort_cols = ["Name", "Colour", "None"];
 
 ?>
 
@@ -16,18 +14,14 @@ $sort_cols = ["Name", "Colour", "None"];
 	cellpadding="4"
 	cellspacing="2"
 	border="0"
-	class="zebra-table sort-table"
-	id="jsst-weeks"
-	up-data='<?= json_encode($sort_cols) ?>'
+	class="border-table"
 >
-	<col /><col /><col />
 
 	<thead>
 		<tr class="heading">
-			<td class="h" width="5%" title="Colour"></td>
-			<td class="h" width="85%" title="Name">Name</td>
-			<!-- <td class="h" title="Colour">Colour</td> -->
-			<td class="n" width="10%" title="X">&nbsp;</td>
+			<th class="h" width="5%" title="<?= lang('week.field.colour') ?>"></th>
+			<th class="h" width="85%" title="<?= lang('week.field.name') ?>"><?= lang('week.field.name') ?></th>
+			<th class="n" width="10%" title="<?= lang('app.actions') ?>"><?= lang('app.actions') ?></th>
 		</tr>
 	</thead>
 
@@ -35,7 +29,7 @@ $sort_cols = ["Name", "Colour", "None"];
 
 	<tbody>
 		<tr>
-			<td colspan="4" align="center" style="padding:16px 0; color: #666">No weeks.</td>
+			<td colspan="3" align="center" style="padding:16px 0; color: #666"><?= lang('week.no_items') ?></td>
 		</tr>
 	</tbody>
 
@@ -52,7 +46,8 @@ $sort_cols = ["Name", "Colour", "None"];
 			echo "<td style='text-align:center'>{$dot}</td>";
 
 			$name = html_escape($week->name);
-			echo "<td>{$name}</td>";
+			$link = anchor('weeks/edit/'.$week->week_id, $name);
+			echo "<td>{$link}</td>";
 
 			echo "<td>";
 			$actions['edit'] = 'weeks/edit/'.$week->week_id;

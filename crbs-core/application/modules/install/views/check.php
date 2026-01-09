@@ -1,5 +1,5 @@
 <?php
-echo isset($notice) ? $notice : '';
+echo $notice ?? '';
 
 echo "<div class='req-error'>";
 echo msgbox('exclamation', "Please address the errors below and refresh the page before continuing.");
@@ -10,7 +10,7 @@ echo form_open(current_url(), array('class' => 'cssform', 'id' => 'install_step3
 echo form_hidden('install', '1');
 
 $items = array(
-	'php_version' => 'PHP Version 7.2.0 or greater',
+	'php_version' => 'PHP Version 8.4.0 or greater',
 	'php_module_gd' => "PHP module 'GD' is available",
 	'php_module_ldap' => "PHP module 'LDAP' is available",
 	'database' => 'Database connection',

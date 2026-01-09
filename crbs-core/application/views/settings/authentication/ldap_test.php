@@ -28,16 +28,16 @@ echo form_open('settings/authentication/ldap_test', $attrs, $hidden);
 <fieldset>
 
 	<div class="fieldset-description">
-		<p><small>Change settings on the left then enter a username and password here to test them. You don't need to click Save before testing the credentials.</small></p>
-		<p><small>These credentials are only passed to the LDAP server and are never saved or stored.</small></p>
+		<p><small><?= lang('auth.ldap.test.hint.1') ?></small></p>
+		<p><small><?= lang('auth.ldap.test.hint.2') ?></small></p>
 		<br>
 	</div>
 
-	<legend accesskey="T" tabindex="<?php echo tab_index() ?>">Test Settings</legend>
+	<legend accesskey="T" tabindex="<?php echo tab_index() ?>"><?= lang('auth.ldap.test.title') ?></legend>
 
 	<p class="input-group">
 		<?php
-		echo form_label('Username', 'username');
+		echo form_label(lang('user.field.username'), 'username');
 		echo form_input([
 			'name' => 'username',
 			'id' => 'username',
@@ -50,7 +50,7 @@ echo form_open('settings/authentication/ldap_test', $attrs, $hidden);
 
 	<p class="input-group">
 		<?php
-		echo form_label('Password', 'password');
+		echo form_label(lang('user.field.password'), 'password');
 		echo form_password([
 			'name' => 'password',
 			'id' => 'password',
@@ -62,15 +62,19 @@ echo form_open('settings/authentication/ldap_test', $attrs, $hidden);
 	</p>
 
 	<?php
-	echo form_submit([
-		'value' => 'Test credentials',
+	$attrs = [
+		'value' => lang('auth.ldap.test.verify'),
 		'tabindex' => tab_index(),
-	]);
+	];
+	if (is_demo_mode()) {
+		$attrs['disabled'] = '';
+	}
+	echo form_submit($attrs);
 	?>
 
 </fieldset>
 
-<div class="loading-notice">Testing connection...</div>
+<div class="loading-notice"><?= lang('auth.ldap.test.verifying') ?>...</div>
 
 <?= form_close() ?>
 

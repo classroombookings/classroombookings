@@ -6,9 +6,8 @@ echo "<div class='messages'>{$messages}</div>";
 $css = $calendar->get_css();
 echo "<style type='text/css'>{$css}</style>";
 
-$dateFormat = setting('date_format_long', 'crbs');
-$start = $session->date_start ? $session->date_start->format($dateFormat) : '';
-$end = $session->date_end ? $session->date_end->format($dateFormat) : '';
+$start = $session->date_start ? date_output_long($session->date_start) : '';
+$end = $session->date_end ? date_output_long($session->date_end) : '';
 echo "<p><strong>Start date: </strong>{$start}</p>";
 echo "<p><strong>End date:</strong> {$end}</p>";
 
@@ -19,7 +18,7 @@ if ( ! empty($weeks)) {
 	]);
 }
 
-echo "<br><p>Click on the dates in each calendar to toggle the Timetable Week for that week.</p><br>";
+echo "<br><p>" . lang('session.weeks.intro') . "</p><br>";
 
 echo form_open(current_url(), [], ['session_id' => $session->session_id]);
 

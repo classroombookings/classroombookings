@@ -9,10 +9,10 @@ echo form_open('profile/save', array('class' => 'cssform', 'id' => 'profile_edit
 
 <fieldset>
 
-	<legend accesskey="U" tabindex="<?php tab_index() ?>">User Information</legend>
+	<legend accesskey="U" tabindex="<?php tab_index() ?>"><?= lang('account.details') ?></legend>
 
 	<p>
-	  <label for="email" class="required">Email address</label>
+	  <label for="email"><?= lang('user.field.email') ?></label>
 	  <?php
 		$email = set_value('email', $user->email, FALSE);
 		echo form_input(array(
@@ -20,7 +20,7 @@ echo form_open('profile/save', array('class' => 'cssform', 'id' => 'profile_edit
 			'id' => 'email',
 			'size' => '35',
 			'maxlength' => '255',
-			'tabindex' =>tab_index(),
+			'tabindex' => tab_index(),
 			'value' => $email,
 		));
 		?>
@@ -29,7 +29,7 @@ echo form_open('profile/save', array('class' => 'cssform', 'id' => 'profile_edit
 
 
 	<p>
-	  <label for="password1">Password</label>
+	  <label for="password1"><?= lang('user.field.password') ?></label>
 	  <?php
 		echo form_password(array(
 			'name' => 'password1',
@@ -40,11 +40,12 @@ echo form_open('profile/save', array('class' => 'cssform', 'id' => 'profile_edit
 		));
 		?>
 	</p>
+	<p class="hint"><?= lang('user.field.password.hint') ?></p>
 	<?php echo form_error('password1'); ?>
 
 
 	<p>
-	  <label for="password2">Password (again)</label>
+	  <label for="password2"><?= lang('user.field.password2') ?></label>
 	  <?php
 		echo form_password(array(
 			'name' => 'password2',
@@ -65,7 +66,7 @@ echo form_open('profile/save', array('class' => 'cssform', 'id' => 'profile_edit
 
 
 	<p>
-	  <label for="firstname">First name</label>
+	  <label for="firstname"><?= lang('user.field.firstname') ?></label>
 	  <?php
 		$firstname = set_value('firstname', $user->firstname, FALSE);
 		echo form_input(array(
@@ -82,7 +83,7 @@ echo form_open('profile/save', array('class' => 'cssform', 'id' => 'profile_edit
 
 
 	<p>
-	  <label for="lastname">Last name</label>
+	  <label for="lastname"><?= lang('user.field.lastname') ?></label>
 	  <?php
 		$lastname = set_value('lastname', $user->lastname, FALSE);
 		echo form_input(array(
@@ -99,7 +100,7 @@ echo form_open('profile/save', array('class' => 'cssform', 'id' => 'profile_edit
 
 
 	<p>
-	  <label for="displayname">Display name</label>
+	  <label for="displayname"><?= lang('user.field.displayname') ?></label>
 	  <?php
 		$displayname = set_value('displayname', $user->displayname, FALSE);
 		echo form_input(array(
@@ -116,7 +117,7 @@ echo form_open('profile/save', array('class' => 'cssform', 'id' => 'profile_edit
 
 
 	<p>
-	  <label for="ext">Extension</label>
+	  <label for="ext"><?= lang('user.field.ext') ?></label>
 	  <?php
 		$ext = set_value('ext', $user->ext, FALSE);
 		echo form_input(array(
@@ -134,10 +135,28 @@ echo form_open('profile/save', array('class' => 'cssform', 'id' => 'profile_edit
 
 </fieldset>
 
+<?php if ($can_change_lang): ?>
+<fieldset>
+	<p>
+	  <label for="language"><?= lang('language.language') ?></label>
+	  <?php
+		$value = set_value('language', $user_settings['language'] ?: '', false);
+		echo form_dropdown([
+			'name' => 'language',
+			'id' => 'language',
+			'options' => array_merge(['' => sprintf('(%s)', lang('app.default'))], $language_options),
+			'selected' => $value,
+			'tabindex' => tab_index(),
+		]);
+		?>
+	</p>
+	<?php echo form_error('lastname'); ?>
+</fieldset>
+<?php endif; ?>
 
 <?php
 $this->load->view('partials/submit', array(
-	'submit' => array('Save', tab_index()),
+	'submit' => array(lang('app.action.save'), tab_index()),
 ));
 
 echo form_close();

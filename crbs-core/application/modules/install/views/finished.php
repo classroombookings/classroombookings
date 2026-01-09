@@ -1,6 +1,6 @@
 <?php echo $db ?>
 
-<p>You have successfully set up <?php echo stripslashes($school['name']) ?>!</p>
+<p>You have successfully set up <?php echo stripslashes((string) $school['name']) ?>!</p>
 
 <p>
 <?php
