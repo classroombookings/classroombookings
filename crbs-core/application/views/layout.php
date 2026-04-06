@@ -133,7 +133,11 @@ var BASE_URL = "<?= base_url() ?>";
 					if ( ! empty($global_menu)) {
 						echo "<p class='iconbar'>";
 						foreach ($global_menu as $idx => $item) {
-							$icon = img(asset_url('assets/images/ui/' . $item['icon']), FALSE, "align='top' alt='{$item['label']}'");
+							$icon = img([
+								'src' => asset_url('assets/images/ui/' . $item['icon']),
+								'align' => 'top',
+								'alt' => html_escape(strip_tags( (string) $item['label'] )),
+							]);
 							$label = $icon . html_escape($item['label']);
 							echo anchor($item['url'], $label);
 						}
