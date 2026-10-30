@@ -6,7 +6,7 @@ $day_name = Calendar::get_day_name($slot->datetime->format('N'));
 $lang_key = sprintf('cal_%s', strtolower((string) $day_name));
 $day_name_lang = lang($lang_key);
 
-$period = $slot->period->name;
+$period = html_escape($slot->period->name ?? '');
 
 if ($slot->conflict_count === 0) {
 	$icon_name = 'accept.png';

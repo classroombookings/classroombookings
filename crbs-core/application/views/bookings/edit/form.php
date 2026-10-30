@@ -87,7 +87,7 @@ if ($features[UpdateAgent::FEATURE_PERIOD]) {
 	$input = form_dropdown([
 		'name' => $field,
 		'id' => $field,
-		'options' => $options,
+		'options' => html_escape($options),
 		'selected' => $value,
 	]);
 } else {
@@ -109,7 +109,7 @@ if ($features[UpdateAgent::FEATURE_ROOM]) {
 	$input = form_dropdown([
 		'name' => $field,
 		'id' => $field,
-		'options' => $options,
+		'options' => html_escape($options),
 		'selected' => $value,
 	]);
 } else {
@@ -130,7 +130,7 @@ if ($features[UpdateAgent::FEATURE_DEPARTMENT]) {
 	$input = form_dropdown([
 		'name' => $field,
 		'id' => $field,
-		'options' => $options,
+		'options' => html_escape($options),
 		'selected' => $value,
 	]);
 } else {
@@ -155,13 +155,14 @@ if ($features[UpdateAgent::FEATURE_EDIT_USER]) {
 	$input = form_dropdown([
 		'name' => $field,
 		'id' => $field,
-		'options' => $options,
+		'options' => html_escape($options),
 		'selected' => $value,
 	]);
 } elseif ($features[UpdateAgent::FEATURE_VIEW_USER] && !empty($booking->user)) {
 	$input = !empty($booking->user->displayname)
 		? $booking->user->displayname
 		: $booking->user->username;
+	$input = html_escape($input);
 } else {
 	$input = '<em>' . lang('app.not_available') . '</em>';
 }

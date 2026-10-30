@@ -37,6 +37,7 @@ foreach ($slots as $key => $slot) {
 		$user_label = !empty($slot['booking']->user->displayname)
 			? $slot['booking']->user->displayname
 			: $slot['booking']->user->username;
+		$user_label = html_escape($user_label);
 
 		$notes_html = '';
 		if (!empty($slot['booking']->notes)) {

@@ -164,7 +164,7 @@ foreach ($by_room as $room_id => $data) {
 			$input = form_dropdown([
 				'name' => $user_field,
 				'id' => $user_field,
-				'options' => $user_options,
+				'options' => html_escape($user_options),
 				'selected' => $value,
 				'up-copy-group' => $copy_group,
 			]);

@@ -37,6 +37,7 @@ foreach ($slot->instances as $key => $instance) {
 		$user_label = !empty($instance['booking']->user->displayname)
 				? $instance['booking']->user->displayname
 				: $instance['booking']->user->username;
+		$user_label = html_escape($user_label);
 
 		$notes_html = '';
 		if (!empty($instance['booking']->notes)) {
