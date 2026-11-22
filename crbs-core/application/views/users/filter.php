@@ -36,7 +36,7 @@
 				echo form_dropdown([
 					'name' => 'role_id',
 					'id' => 'role_id',
-					'options' => $role_options,
+					'options' => html_escape($role_options),
 					'selected' => $filter['role_id'] ?? '',
 				]);
 			?>
@@ -52,7 +52,7 @@
 				echo form_dropdown([
 					'name' => 'department_id',
 					'id' => 'department_id',
-					'options' => $department_options,
+					'options' => html_escape($department_options),
 					'selected' => $filter['department_id'] ?? '',
 				]);
 			?>

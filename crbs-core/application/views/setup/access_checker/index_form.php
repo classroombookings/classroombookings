@@ -26,7 +26,7 @@ echo form_open($uri, $attrs, $hidden);
 		echo form_dropdown([
 			'name' => 'user_id',
 			'id' => 'check_user_id',
-			'options' => ['' => ''] + $user_options,
+			'options' => html_escape(['' => ''] + $user_options),
 			'selected' => set_value('user_id', ''),
 			'style' => 'width:100%',
 		]);
@@ -39,7 +39,7 @@ echo form_open($uri, $attrs, $hidden);
 		echo form_dropdown([
 			'name' => 'room_id',
 			'id' => 'check_room_id',
-			'options' => ['' => ''] + $room_options,
+			'options' => html_escape(['' => ''] + $room_options),
 			'selected' => set_value('room_id', ''),
 			'style' => 'width:100%',
 		]);

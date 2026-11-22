@@ -25,7 +25,7 @@ echo form_open($uri, $attrs, $hidden);
 		echo form_dropdown([
 			'name' => 'room_id',
 			'id' => 'check_room_id',
-			'options' => ['' => ''] + $room_options,
+			'options' => html_escape(['' => ''] + $room_options),
 			'selected' => set_value('room_id', ''),
 			'style' => 'width:100%',
 		]);

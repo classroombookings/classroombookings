@@ -33,7 +33,7 @@ $value = set_value($field, $period->period_id, FALSE);
 $input = form_dropdown([
 	'name' => $field,
 	'id' => $field,
-	'options' => $options,
+	'options' => html_escape($options),
 	'selected' => $value,
 ]);
 echo "<p>{$label}{$input}</p>";

@@ -136,7 +136,7 @@ if (is_array($multibooking->slots)) {
 			$input = form_dropdown([
 				'name' => $user_field,
 				'id' => $user_field,
-				'options' => $user_options,
+				'options' => html_escape($user_options),
 				'selected' => $value,
 				'up-copy-group' => 'user_id',
 			]);

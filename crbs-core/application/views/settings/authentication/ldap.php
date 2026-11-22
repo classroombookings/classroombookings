@@ -324,7 +324,7 @@ echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform
 		echo form_dropdown([
 			'name' => 'ldap_default_role_id',
 			'id' => 'ldap_default_role_id',
-			'options' => $role_options,
+			'options' => html_escape($role_options),
 			'selected' => $value,
 			'tabindex' => tab_index(),
 		]);
@@ -342,7 +342,7 @@ echo form_open(current_url(), array('id' => 'ldap_settings', 'class' => 'cssform
 		echo form_dropdown([
 			'name' => 'ldap_default_department_id',
 			'id' => 'ldap_default_department_id',
-			'options' => $department_options,
+			'options' => html_escape($department_options),
 			'selected' => $value,
 			'tabindex' => tab_index(),
 		]);

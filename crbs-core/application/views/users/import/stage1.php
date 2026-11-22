@@ -58,7 +58,7 @@ echo form_hidden('action', 'import');
 		echo form_dropdown([
 			'name' => 'role_id',
 			'id' => 'role_id',
-			'options' => $role_options,
+			'options' => html_escape($role_options),
 			'selected' => $value,
 			'tabindex' => tab_index(),
 		]);
@@ -73,7 +73,7 @@ echo form_hidden('action', 'import');
 		echo form_dropdown([
 			'name' => 'department_id',
 			'id' => 'department_id',
-			'options' => $department_options,
+			'options' => html_escape($department_options),
 			'selected' => $value,
 			'tabindex' => tab_index(),
 		]);
