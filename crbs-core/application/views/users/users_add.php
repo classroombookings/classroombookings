@@ -128,7 +128,7 @@ echo form_open(current_url(), array('class' => 'cssform', 'id' => 'users_add'), 
 					$raw_value = $role->{$id};
 					$value = ($raw_value == null) ? 'Not set' : $raw_value;
 					$role_fmt = lang('constraint.user.inherit_role_hint');
-					$label = sprintf($role_fmt, $role->name, $value);
+					$label = sprintf($role_fmt, html_escape($role->name), $value);
 				}
 			}
 			$type_field_id = "constraints_{$id}_type_{$opt['value']}";

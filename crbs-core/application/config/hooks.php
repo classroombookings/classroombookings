@@ -17,11 +17,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * Initialise events
  *
  */
-$hook['post_controller_constructor'][] = function() {
+/*$hook['post_controller_constructor'][] = function() {
 
 	$CI =& get_instance();
 	$CI->benchmark->mark('events_start');
-	require_once(APPPATH . 'events/EventType.php');
 
 	$dirs = [
 		APPPATH . 'events',
@@ -42,4 +41,4 @@ $hook['post_controller_constructor'][] = function() {
 	}
 
 	$CI->benchmark->mark('events_end');
-};
+};*/

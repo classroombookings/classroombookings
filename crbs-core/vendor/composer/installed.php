@@ -3,7 +3,7 @@
         'name' => 'classroombookings/crbs-open',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => 'e3e9a9fbc98dfdc8798089c7aa4a6d5ff8ac2629',
+        'reference' => 'fcea8ca5841c8037bc3ab72285ea1a70ef0fc8cb',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'classroombookings/crbs-open' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'e3e9a9fbc98dfdc8798089c7aa4a6d5ff8ac2629',
+            'reference' => 'fcea8ca5841c8037bc3ab72285ea1a70ef0fc8cb',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../../',
             'aliases' => array(),
