@@ -353,8 +353,8 @@ class Rooms_model extends CI_Model
 			}
 
 			$info[] = [
-				'name' => "field_{$field->name}",
-				'label' => $field->name,
+				'name' => sprintf("field_%s", html_escape($field->name)),
+				'label' => html_escape($field->name),
 				'value' => $field_value,
 			];
 
